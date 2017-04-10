@@ -1,0 +1,8 @@
+# python
+*.pyc
+MANIFEST
+__pycache__
+dist
+
+# vim
+*.swp

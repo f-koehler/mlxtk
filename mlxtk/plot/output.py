@@ -3,6 +3,7 @@ import matplotlib.pyplot
 import mlxtk.inout.output
 import mlxtk.plot.container
 
+
 def plot_overview(path):
     data = mlxtk.inout.output.read(path)
 
@@ -12,7 +13,7 @@ def plot_overview(path):
     matplotlib.pyplot.sca(axes[0])
     matplotlib.pyplot.xlabel("$t$")
     matplotlib.pyplot.ylabel(r"$\left|\Psi\right|(t)-1$")
-    matplotlib.pyplot.plot(data["time"], data["norm"]-1)
+    matplotlib.pyplot.plot(data["time"], data["norm"] - 1)
 
     matplotlib.pyplot.sca(axes[1])
     matplotlib.pyplot.xlabel("$t$")

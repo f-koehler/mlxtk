@@ -3,6 +3,7 @@ import os.path
 import pandas
 import re
 
+
 def read_raw(path):
     re_time = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_node = re.compile(r"^node:\s+\d+\s+layer:\s+\d+$")
@@ -41,7 +42,7 @@ def read_raw(path):
             # check if line is beginning of a new chunk
             m = re_m.match(splt[0])
             if m:
-                if current_id != None:
+                if current_id is not None:
                     # make sure a list for the current id is in the dict
                     if current_id not in natpops:
                         natpops[current_id] = []
@@ -52,7 +53,7 @@ def read_raw(path):
                     pass
 
                 # start a new chunk
-                current_id = int(m.group(1))-1
+                current_id = int(m.group(1)) - 1
                 current_chunk = splt[1:]
                 continue
 
@@ -60,7 +61,7 @@ def read_raw(path):
             current_chunk += splt
 
     # finish last chunk
-    if current_id != None:
+    if current_id is not None:
         # make sure a list for the current id is in the dict
         if current_id not in natpops:
             natpops[current_id] = []
@@ -71,26 +72,27 @@ def read_raw(path):
         pass
 
     # start a new chunk
-    current_id = int(m.group(1))-1
+    current_id = int(m.group(1)) - 1
     current_chunk = splt[1:]
 
     # convert to data frames
     for id in natpops:
-        names = ["time"] + ["orbital_{}".format(i) for i in range(0, len(natpops[id][0]))]
+        names = ["time"] + [
+            "orbital_{}".format(i) for i in range(0, len(natpops[id][0]))
+        ]
 
         natpops[id] = numpy.array(natpops[id])
         shape = natpops[id].shape
-        new_matrix = numpy.zeros((shape[0], shape[1] + 1), dtype=natpops[id].dtype)
-        new_matrix[:,1:] = natpops[id] / 1000
-        new_matrix[:,0] = times
+        new_matrix = numpy.zeros(
+            (shape[0], shape[1] + 1), dtype=natpops[id].dtype)
+        new_matrix[:, 1:] = natpops[id] / 1000
+        new_matrix[:, 0] = times
 
-        natpops[id] = pandas.DataFrame(
-            data=new_matrix,
-            columns=names
-        )
+        natpops[id] = pandas.DataFrame(data=new_matrix, columns=names)
         natpops[id].transpose()
 
     return [natpops[id] for id in natpops]
+
 
 def write(values, output_dir):
     if not os.path.exists(output_dir):
@@ -98,15 +100,10 @@ def write(values, output_dir):
 
     for i, dataset in enumerate(values):
         path = os.path.join(output_dir, "natpop_{}.gz".format(i))
-        dataset.to_csv(
-            path,
-            index=False,
-            compression="gzip"
-        )
+        dataset.to_csv(path, index=False, compression="gzip")
+
 
 def read(dir, id):
     data = pandas.read_csv(
-        os.path.join(dir, "natpop_{}.gz".format(id)),
-        compression="gzip"
-    )
+        os.path.join(dir, "natpop_{}.gz".format(id)), compression="gzip")
     return data

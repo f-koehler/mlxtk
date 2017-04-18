@@ -7,5 +7,4 @@ setup(
     author="Fabian Köhler",
     author_email="fkoehler@physnet.uni-hamburg.de",
     url="https://github.com/f-koehler/mlxtk",
-    packages=["mlxtk"]
-)
+    packages=["mlxtk"])

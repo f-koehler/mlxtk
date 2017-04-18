@@ -7,6 +7,7 @@ import re
 import mlxtk.inout.gpop
 import mlxtk.plot.container
 
+
 def plot_overview(dir, ncols=1):
     dir = os.path.expanduser(dir)
     re_file = re.compile(r"^density_(\d+)\.gz$")
@@ -47,13 +48,12 @@ def plot_overview(dir, ncols=1):
 
         matplotlib.pyplot.xlabel("$t$")
         matplotlib.pyplot.ylabel("x")
-        matplotlib.pyplot.title((r"{\tt gpop_" + str(id) + "}").replace("_", r"\_"))
+        matplotlib.pyplot.title(
+            (r"{\tt gpop_" + str(id) + "}").replace("_", r"\_"))
 
         x, y = numpy.meshgrid(density["time"].values, grid["x"].values)
         matplotlib.pyplot.pcolormesh(
-            x, y, density.transpose().values[1:],
-            cmap="CMRmap"
-        )
+            x, y, density.transpose().values[1:], cmap="CMRmap")
 
     return container
 
@@ -65,12 +65,12 @@ def animate(dir, id=0):
     container = mlxtk.plot.container.PlotContainer()
     container.activate()
 
-
-    ymax = density.values[:,1:].max()
+    ymax = density.values[:, 1:].max()
     matplotlib.pyplot.ylim(0, ymax)
 
     line, = matplotlib.pyplot.plot(grid["x"], density.values[0][1:])
-    title = matplotlib.pyplot.text(grid["x"].mean(), 0.5, "t={}".format(density["time"].values[0]))
+    title = matplotlib.pyplot.text(grid["x"].mean(), 0.5,
+                                   "t={}".format(density["time"].values[0]))
 
     def func(i):
         line.set_ydata(density.values[i][1:])
@@ -78,10 +78,10 @@ def animate(dir, id=0):
         return line, title
 
     container.animation = matplotlib.animation.FuncAnimation(
-        container.figure, func,
+        container.figure,
+        func,
         frames=numpy.arange(0, len(density["time"].values)),
         blit=True,
-        interval=1
-    )
+        interval=1)
 
     return container

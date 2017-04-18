@@ -56,8 +56,9 @@ def read_raw(input_file):
             fh.readline()
 
     for v in values:
-        v["grid"] = pandas.DataFrame(v["grid"])
-        v["densities"] = pandas.DataFrame(v["densities"])
+        names = ["time"] + ["x_{}".format(i) for i in range(0, len(v["densities"][1]) -1)]
+        v["grid"] = pandas.DataFrame(v["grid"], columns=["x"])
+        v["densities"] = pandas.DataFrame(v["densities"], columns = names)
 
     return values
 

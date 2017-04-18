@@ -1,12 +1,14 @@
 import matplotlib.pyplot
 import os
 import re
+import numpy
 
-import mlxtk.inout.natpop
+import mlxtk.inout.gpop
 import mlxtk.plot.container
 
 def plot_overview(dir, ncols=1):
-    re_file = re.compile(r"^natpop_(\d+)\.gz$")
+    dir = os.path.expanduser(dir)
+    re_file = re.compile(r"^density_(\d+)\.gz$")
 
     files = []
     ids = []
@@ -19,21 +21,17 @@ def plot_overview(dir, ncols=1):
         if not m:
             continue
 
-        files.append(path)
-        ids.append(m.group(1))
+        ids.append(int(m.group(1)))
 
-    if not ids:
-        return
-
-    n = len(files)
+    n = len(ids)
     ncols = min(n, ncols)
     nrows = round(float(n) / ncols)
 
     fig, axes = matplotlib.pyplot.subplots(nrows=nrows, ncols=ncols)
     container = mlxtk.plot.container.PlotContainer(fig, axes)
 
-    for i, id in enumerate(ids):
-        data = mlxtk.inout.natpop.read(dir, id)
+    for id in ids:
+        grid, density = mlxtk.inout.gpop.read(dir, id)
 
         if nrows == 1:
             if ncols == 1:
@@ -46,13 +44,13 @@ def plot_overview(dir, ncols=1):
             matplotlib.pyplot.sca(axes[i / ncols][i % ncols])
 
         matplotlib.pyplot.xlabel("$t$")
-        matplotlib.pyplot.ylabel("natural population")
-        matplotlib.pyplot.xlim(data["time"][0], data["time"].values[-1])
-        matplotlib.pyplot.title((r"{\tt natpop_" + id + "}").replace("_", r"\_"))
+        matplotlib.pyplot.ylabel("x")
+        matplotlib.pyplot.title((r"{\tt gpop_" + str(id) + "}").replace("_", r"\_"))
 
-        for col in data:
-            if col == "time":
-                continue
-            matplotlib.pyplot.plot(data["time"], data[col])
+        x, y = numpy.meshgrid(density["time"].values, grid["x"].values)
+        matplotlib.pyplot.pcolormesh(
+            x, y, density.transpose().values[1:],
+            cmap="CMRmap"
+        )
 
     return container

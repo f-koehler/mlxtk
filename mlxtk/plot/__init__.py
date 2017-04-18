@@ -1,1 +1,1 @@
-from mlxtk.plot.container import show
+from mlxtk.plot.container import show, save_animation

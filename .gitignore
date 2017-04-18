@@ -3,6 +3,7 @@
 MANIFEST
 __pycache__
 dist
+test.py
 
 # vim
 *.swp

@@ -93,6 +93,9 @@ def read_raw(path):
     return [natpops[id] for id in natpops]
 
 def write(values, output_dir):
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
     for i, dataset in enumerate(values):
         path = os.path.join(output_dir, "natpop_{}.gz".format(i))
         dataset.to_csv(

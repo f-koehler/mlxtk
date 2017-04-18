@@ -32,10 +32,10 @@ def plot_overview(dir, ncols=1):
     nrows = round(float(n) / ncols)
 
     fig, axes = matplotlib.pyplot.subplots(nrows=nrows, ncols=ncols)
-    container = plot.container.PlotContainer(fig, axes)
+    container = mlxtk.plot.container.PlotContainer(fig, axes)
 
     for i, id in enumerate(ids):
-        data = inout.natpop.read(dir, id)
+        data = mlxtk.inout.natpop.read(dir, id)
 
         if nrows == 1:
             if ncols == 1:

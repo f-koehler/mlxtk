@@ -4,16 +4,15 @@ import mlxtk.inout.output
 import mlxtk.plot.container
 
 def plot_overview(path):
-    data = inout.output.read(path)
+    data = mlxtk.inout.output.read(path)
 
     fig, axes = matplotlib.pyplot.subplots(3)
-    container = plot.container.PlotContainer(fig, axes)
+    container = mlxtk.plot.container.PlotContainer(fig, axes)
 
     matplotlib.pyplot.sca(axes[0])
     matplotlib.pyplot.xlabel("$t$")
     matplotlib.pyplot.ylabel(r"$\left|\Psi\right|(t)-1$")
     matplotlib.pyplot.plot(data["time"], data["norm"]-1)
-    # matplotlib.pyplot.ylim(0.98, 1.02)
 
     matplotlib.pyplot.sca(axes[1])
     matplotlib.pyplot.xlabel("$t$")

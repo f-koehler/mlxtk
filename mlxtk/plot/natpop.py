@@ -49,8 +49,8 @@ def plot_overview(dir, ncols=1):
         matplotlib.pyplot.xlabel("$t$")
         matplotlib.pyplot.ylabel("natural population")
         matplotlib.pyplot.xlim(data["time"][0], data["time"].values[-1])
-        matplotlib.pyplot.title(
-            (r"{\tt natpop_" + id + "}").replace("_", r"\_"))
+        matplotlib.pyplot.title((r"{\tt natpop_" + id + "}").replace(
+            "_", r"\_"))
 
         for col in data:
             if col == "time":

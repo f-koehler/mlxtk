@@ -48,8 +48,8 @@ def plot_overview(dir, ncols=1):
 
         matplotlib.pyplot.xlabel("$t$")
         matplotlib.pyplot.ylabel("x")
-        matplotlib.pyplot.title(
-            (r"{\tt gpop_" + str(id) + "}").replace("_", r"\_"))
+        matplotlib.pyplot.title((r"{\tt gpop_" + str(id) + "}").replace(
+            "_", r"\_"))
 
         x, y = numpy.meshgrid(density["time"].values, grid["x"].values)
         matplotlib.pyplot.pcolormesh(

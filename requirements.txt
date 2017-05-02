@@ -1,3 +1,4 @@
 matplotlib>=2.0.0
 numpy
 pandas>=0.18.1
+progressbar2

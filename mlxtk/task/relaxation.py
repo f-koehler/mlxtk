@@ -1,111 +1,20 @@
-from mlxtk.task.task import Task
+from mlxtk.task.propagation import Propagation
 
 import logging
-import os.path
-import re
-import shutil
 import subprocess
 
 
-class Relaxation(Task):
+class Relaxation(Propagation):
     def __init__(self, initial_wavefunction, final_wavefunction, operator,
                  **kwargs):
-        Task.__init__(self, "relax_{}_to_{}".format(initial_wavefunction,
-                                                    final_wavefunction))
-        self.initial_wavefunction = initial_wavefunction
-        self.final_wavefunction = final_wavefunction
-        self.operator = operator
+        Propagation.__init__(self, initial_wavefunction, final_wavefunction,
+                             operator, **kwargs)
+        self.name = "relax_{}_to_{}".format(initial_wavefunction,
+                                            final_wavefunction)
+
+        self.type = "Relaxation"
 
         self.statsteps = kwargs.get("statsteps", 0)
-        self.dt = kwargs.get("dt", 1.)
-        self.tfinal = kwargs.get("tfinal", self.dt)
-
-    def is_up_to_date(self):
-        hash_path = self.get_hash_path()
-        input_path = self.get_input_path()
-        output_path = self.get_output_path()
-        operator_path = self.get_operator_path()
-
-        if not os.path.exists(input_path):
-            raise RuntimeError("Wavefunction \"{}\" does not exist (\"{}\")".
-                               format(initial_wavefunction, input_path))
-
-        if not os.path.exists(operator_path):
-            raise RuntimeError("Operator \"{}\" does not exist (\"{}\")".
-                               format(operator, operator_path))
-
-        if not os.path.exists(hash_path):
-            return False
-
-        if self.hash() != self.read_hash_file():
-            return False
-
-        if not os.path.exists(output_path):
-            return False
-
-        cond1 = (os.path.getmtime(output_path) > os.path.getmtime(input_path))
-        cond2 = (
-            os.path.getmtime(output_path) > os.path.getmtime(operator_path))
-        return (cond1 or cond2)
-
-    def get_input_path(self):
-        return os.path.join(self.root_dir, "wavefunctions",
-                            self.initial_wavefunction + ".wfn")
-
-    def get_output_path(self):
-        return os.path.join(self.root_dir, "wavefunctions",
-                            self.final_wavefunction + ".wfn")
-
-    def get_operator_path(self):
-        return os.path.join(self.root_dir, "operators", self.operator + ".op")
-
-    def _copy_operator(self):
-        dst = os.path.join(self.get_tmp_dir(), self.operator + ".op")
-        logging.info("Copy Hamiltonian: %s -> %s",
-                     self.get_operator_path(), dst)
-        shutil.copy(self.get_operator_path(), dst)
-
-    def _copy_initial_wavefunction(self):
-        dst = os.path.join(self.get_tmp_dir(),
-                           self.initial_wavefunction + ".wfn")
-        logging.info("Copy initial wave function: %s -> %s",
-                     self.get_input_path(), dst)
-        shutil.copy(self.get_input_path(), dst)
-
-    def _copy_final_wavefunction(self):
-        tmp_output = os.path.join(self.get_tmp_dir(), "restart")
-        logging.info("Copy initial wave function: %s -> %s", tmp_output,
-                     self.get_output_path())
-        shutil.copy(tmp_output, self.get_output_path())
-
-    def _copy_natpop(self):
-        src = os.path.join(self.get_tmp_dir(), "natpop")
-        dst = os.path.join(self.root_dir, "natural_populations",
-                           self.name + ".natpop")
-        logging.info("Copy natural population: %s -> %s", src, dst)
-        shutil.copy(src, dst)
-
-    def _copy_gpop(self):
-        src = os.path.join(self.get_tmp_dir(), "gpop")
-        dst = os.path.join(self.root_dir, "gpops", self.name + ".gpop")
-        logging.info("Copy gpop: %s -> %s", src, dst)
-        shutil.copy(src, dst)
-
-    def _create_output_dirs(self):
-        dir = os.path.join(self.root_dir, "natural_populations")
-        if not os.path.exists(dir):
-            logging.info("Create directory: %s", dir)
-            os.mkdir(dir)
-
-        dir = os.path.join(self.root_dir, "gpops")
-        if not os.path.exists(dir):
-            logging.info("Create directory: %s", dir)
-            os.mkdir(dir)
-
-        dir = os.path.join(self.root_dir, "outputs")
-        if not os.path.exists(dir):
-            logging.info("Create directory: %s", dir)
-            os.mkdir(dir)
 
     def _execute(self):
         logging.info("Execute relaxation procedure: %s -> %s",
@@ -124,67 +33,3 @@ class Relaxation(Task):
             universal_newlines=True)
 
         return process
-
-    def _watch_output(self, process):
-        re_output = re.compile(
-            r"^\s+time:\s+(\d+\.\d+(?:[eE][+-]\d+)?)\s+done$")
-
-        # print live info about run
-        try:
-            import progressbar
-            with progressbar.ProgressBar(
-                    max_value=self.tfinal + self.dt) as bar:
-                for line in iter(process.stdout.readline, ""):
-                    m = re_output.match(line)
-                    if not m:
-                        continue
-                    bar.update(float(m.group(1)))
-        except ImportError:
-            for line in iter(process.stdout.readline, ""):
-                m = re_output.match(line)
-                if not m:
-                    continue
-                logging.info("Finished step: %f", float(m.group(1)))
-
-    def run(self):
-        if self.is_up_to_date():
-            logging.info(
-                "Relaxation task \"%s\" -> \"%s\" is up-to-date, skip",
-                self.initial_wavefunction, self.final_wavefunction)
-            return
-
-        # prepare temporary dir
-        tmp_dir = self.create_tmp_dir()
-
-        # copy initial wave function
-        self._copy_initial_wavefunction()
-
-        # copy operator
-        self._copy_operator()
-
-        # run program
-        process = self._execute()
-        self._watch_output(process)
-        return_code = process.wait()
-        if return_code:
-            raise subprocess.CalledProcessError(return_code, cmd)
-
-        logging.info("Finished relaxation procedure: %s -> %s",
-                     self.initial_wavefunction, self.final_wavefunction)
-
-        self._create_output_dirs()
-        self._copy_final_wavefunction()
-        self._copy_natpop()
-        self._copy_gpop()
-        self.clean()
-
-        # write hash
-        self.write_hash_file()
-
-    def update_project(self, proj):
-        def dummy():
-            raise RuntimeError(
-                "The wavefunction is created with relaxation task \"%s\"".
-                format(self.name))
-
-        proj.add_wavefunction(self.final_wavefunction, dummy)

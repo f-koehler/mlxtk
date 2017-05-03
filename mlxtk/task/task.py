@@ -6,6 +6,7 @@ import shutil
 
 
 class Task:
+
     def __init__(self, name):
         self.name = name
         self.root_dir = None

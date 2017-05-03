@@ -49,11 +49,11 @@ class Project():
             os.mkdir(operator_path)
         operator_updated = {}
         for name in self.operators:
-            logging.info("Generating operator: %s", name)
+            logging.info("Generate operator: %s", name)
             op = self.operators[name]()
 
             path = os.path.join(operator_path, name + ".op")
-            logging.info("Writing operator: %s -> %s", name, path)
+            logging.info("Write operator: %s -> %s", name, path)
             updated = mlxtk.operator.write_operator(op, path)
 
             operator_updated[name] = updated
@@ -68,11 +68,11 @@ class Project():
             os.mkdir(wavefunction_path)
         wavefunction_updated = {}
         for name in self.wavefunctions:
-            logging.info("Generating wave function: %s", name)
+            logging.info("Generate wave function: %s", name)
             wfn = self.wavefunctions[name]()
 
             path = os.path.join(wavefunction_path, name + ".wfn")
-            logging.info("Writing wave function: %s -> %s", name, path)
+            logging.info("Write wave function: %s -> %s", name, path)
 
             updated = mlxtk.wavefunction.write_wavefunction(wfn, path)
             wavefunction_updated[name] = updated

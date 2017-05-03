@@ -59,29 +59,55 @@ class Relaxation(Task):
     def get_operator_path(self):
         return os.path.join(self.root_dir, "operators", self.operator + ".op")
 
-    def run(self):
-        if self.is_up_to_date():
-            logging.info(
-                "Relaxation task \"%s\" -> \"%s\" is up-to-date, skip",
-                self.initial_wavefunction, self.final_wavefunction)
-            return
-
-        # prepare temporary dir
-        tmp_dir = self.create_tmp_dir()
-
-        # copy initial wave function
-        tmp_input = os.path.join(tmp_dir, self.initial_wavefunction + ".wfn")
-        logging.info("Copy initial wave function: %s -> %s",
-                     self.get_input_path(), tmp_input)
-        shutil.copy(self.get_input_path(), tmp_input)
-
-        # copy operator
-        tmp_operator = os.path.join(tmp_dir, self.operator + ".op")
+    def _copy_operator(self):
+        dst = os.path.join(self.get_tmp_dir(), self.operator + ".op")
         logging.info("Copy Hamiltonian: %s -> %s",
-                     self.get_operator_path(), tmp_operator)
-        shutil.copy(self.get_operator_path(), tmp_operator)
+                     self.get_operator_path(), dst)
+        shutil.copy(self.get_operator_path(), dst)
 
-        # run program
+    def _copy_initial_wavefunction(self):
+        dst = os.path.join(self.get_tmp_dir(),
+                           self.initial_wavefunction + ".wfn")
+        logging.info("Copy initial wave function: %s -> %s",
+                     self.get_input_path(), dst)
+        shutil.copy(self.get_input_path(), dst)
+
+    def _copy_final_wavefunction(self):
+        tmp_output = os.path.join(self.get_tmp_dir(), "restart")
+        logging.info("Copy initial wave function: %s -> %s", tmp_output,
+                     self.get_output_path())
+        shutil.copy(tmp_output, self.get_output_path())
+
+    def _copy_natpop(self):
+        src = os.path.join(self.get_tmp_dir(), "natpop")
+        dst = os.path.join(self.root_dir, "natural_populations",
+                           self.name + ".natpop")
+        logging.info("Copy natural population: %s -> %s", src, dst)
+        shutil.copy(src, dst)
+
+    def _copy_gpop(self):
+        src = os.path.join(self.get_tmp_dir(), "gpop")
+        dst = os.path.join(self.root_dir, "gpops", self.name + ".gpop")
+        logging.info("Copy gpop: %s -> %s", src, dst)
+        shutil.copy(src, dst)
+
+    def _create_output_dirs(self):
+        dir = os.path.join(self.root_dir, "natural_populations")
+        if not os.path.exists(dir):
+            logging.info("Create directory: %s", dir)
+            os.mkdir(dir)
+
+        dir = os.path.join(self.root_dir, "gpops")
+        if not os.path.exists(dir):
+            logging.info("Create directory: %s", dir)
+            os.mkdir(dir)
+
+        dir = os.path.join(self.root_dir, "outputs")
+        if not os.path.exists(dir):
+            logging.info("Create directory: %s", dir)
+            os.mkdir(dir)
+
+    def _execute(self):
         logging.info("Execute relaxation procedure: %s -> %s",
                      self.initial_wavefunction, self.final_wavefunction)
         cmd = [
@@ -94,9 +120,12 @@ class Relaxation(Task):
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=tmp_dir,
+            cwd=self.get_tmp_dir(),
             universal_newlines=True)
 
+        return process
+
+    def _watch_output(self, process):
         re_output = re.compile(
             r"^\s+time:\s+(\d+\.\d+(?:[eE][+-]\d+)?)\s+done$")
 
@@ -116,6 +145,26 @@ class Relaxation(Task):
                 if not m:
                     continue
                 logging.info("Finished step: %f", float(m.group(1)))
+
+    def run(self):
+        if self.is_up_to_date():
+            logging.info(
+                "Relaxation task \"%s\" -> \"%s\" is up-to-date, skip",
+                self.initial_wavefunction, self.final_wavefunction)
+            return
+
+        # prepare temporary dir
+        tmp_dir = self.create_tmp_dir()
+
+        # copy initial wave function
+        self._copy_initial_wavefunction()
+
+        # copy operator
+        self._copy_operator()
+
+        # run program
+        process = self._execute()
+        self._watch_output(process)
         return_code = process.wait()
         if return_code:
             raise subprocess.CalledProcessError(return_code, cmd)
@@ -123,13 +172,10 @@ class Relaxation(Task):
         logging.info("Finished relaxation procedure: %s -> %s",
                      self.initial_wavefunction, self.final_wavefunction)
 
-        # copy resulting wave_function
-        tmp_output = os.path.join(tmp_dir, "restart")
-        logging.info("Copy initial wave function: %s -> %s", tmp_output,
-                     self.get_output_path())
-        shutil.copy(tmp_output, self.get_output_path())
-
-        # clean up
+        self._create_output_dirs()
+        self._copy_final_wavefunction()
+        self._copy_natpop()
+        self._copy_gpop()
         self.clean()
 
         # write hash

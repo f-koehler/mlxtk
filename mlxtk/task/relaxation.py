@@ -5,6 +5,7 @@ import subprocess
 
 
 class Relaxation(Propagation):
+
     def __init__(self, initial_wavefunction, final_wavefunction, operator,
                  **kwargs):
         Propagation.__init__(self, initial_wavefunction, final_wavefunction,

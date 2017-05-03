@@ -8,10 +8,11 @@ import subprocess
 
 
 class Propagation(Task):
+
     def __init__(self, initial_wavefunction, final_wavefunction, operator,
                  **kwargs):
-        Task.__init__(self, "propagate_{}_to_{}".format(
-            initial_wavefunction, final_wavefunction))
+        Task.__init__(self, "propagate_{}_to_{}".format(initial_wavefunction,
+                                                        final_wavefunction))
 
         self.type = "Propagation"
 
@@ -33,8 +34,8 @@ class Propagation(Task):
                                format(initial_wavefunction, input_path))
 
         if not os.path.exists(operator_path):
-            raise RuntimeError("Operator \"{}\" does not exist (\"{}\")".
-                               format(operator, operator_path))
+            raise RuntimeError("Operator \"{}\" does not exist (\"{}\")".format(
+                operator, operator_path))
 
         if not os.path.exists(hash_path):
             return False
@@ -63,8 +64,8 @@ class Propagation(Task):
 
     def _copy_operator(self):
         dst = os.path.join(self.get_tmp_dir(), self.operator + ".op")
-        logging.info("Copy Hamiltonian: %s -> %s",
-                     self.get_operator_path(), dst)
+        logging.info("Copy Hamiltonian: %s -> %s", self.get_operator_path(),
+                     dst)
         shutil.copy(self.get_operator_path(), dst)
 
     def _copy_initial_wavefunction(self):
@@ -113,9 +114,9 @@ class Propagation(Task):
         logging.info("Execute propagation procedure: %s -> %s",
                      self.initial_wavefunction, self.final_wavefunction)
         cmd = [
-            "qdtk_propagate.x", "-cont", "-rst", self.initial_wavefunction + ".wfn",
-            "-opr", self.operator + ".op", "-gramschmidt", "-dt", str(self.dt),
-            "-tfinal", str(self.tfinal)
+            "qdtk_propagate.x", "-cont", "-rst",
+            self.initial_wavefunction + ".wfn", "-opr", self.operator + ".op",
+            "-gramschmidt", "-dt", str(self.dt), "-tfinal", str(self.tfinal)
         ]
         process = subprocess.Popen(
             cmd,
@@ -182,6 +183,7 @@ class Propagation(Task):
         self.write_hash_file()
 
     def update_project(self, proj):
+
         def dummy():
             raise RuntimeError(
                 "The wavefunction is created with relaxation task \"%s\"".

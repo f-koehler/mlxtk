@@ -35,13 +35,8 @@ class Project():
     def add_task(self, task):
         self.tasks.append(task)
 
-    def run(self):
-        logging.basicConfig(level=logging.INFO)
-
-        logging.info("Start project")
-        if not os.path.exists(self.root_dir):
-            logging.info("Create root path: %s)", self.root_dir)
-            os.mkdir(self.root_dir)
+    def _write_operators(self):
+        retval = False
 
         operator_path = os.path.join(self.root_dir, "operators")
         if not os.path.exists(operator_path):
@@ -55,12 +50,17 @@ class Project():
             path = os.path.join(operator_path, name + ".op")
             logging.info("Write operator: %s -> %s", name, path)
             updated = mlxtk.operator.write_operator(op, path)
-
             operator_updated[name] = updated
+            retval = (retval or updated)
             if updated:
                 logging.info("Updated operator file: %s", path)
             else:
                 logging.info("Operator \"%s\" is up-to-date, skip", name)
+
+        return retval
+
+    def _write_wavefunctions(self):
+        retval = False
 
         wavefunction_path = os.path.join(self.root_dir, "wavefunctions")
         if not os.path.exists(wavefunction_path):
@@ -73,13 +73,39 @@ class Project():
 
             path = os.path.join(wavefunction_path, name + ".wfn")
             logging.info("Write wave function: %s -> %s", name, path)
-
             updated = mlxtk.wavefunction.write_wavefunction(wfn, path)
             wavefunction_updated[name] = updated
+            retval = (retval or updated)
             if updated:
                 logging.info("Updated wave function file: %s", path)
             else:
                 logging.info("Wave function \"%s\" is up-to-date, skip", name)
+
+        return retval
+
+    def is_up_to_date(self):
+        if self._write_operators():
+            return False
+
+        if self._write_wavefunctions():
+            return False
+
+        for task in tasks:
+            if not task.is_up_to_date():
+                return False
+
+        return True
+
+    def run(self):
+        logging.basicConfig(level=logging.INFO)
+
+        logging.info("Start project")
+        if not os.path.exists(self.root_dir):
+            logging.info("Create root path: %s)", self.root_dir)
+            os.mkdir(self.root_dir)
+
+        self._write_operators()
+        self._write_wavefunctions()
 
         task_hash_path = os.path.join(self.root_dir, "task_hashes")
         if not os.path.exists(task_hash_path):

@@ -2,6 +2,7 @@ from mlxtk.operator import *
 from mlxtk.project import *
 from mlxtk.primitive import *
 from mlxtk.wavefunction import *
+from mlxtk.task import *
 
 grid_points = 32
 x_min = -1
@@ -37,7 +38,7 @@ def get_1b_hamiltonian():
 
 def get_initial_hamiltonian():
     H = Operatorb()
-    H.define_dofs_and_grids((1,), (grid_x,))
+    H.define_dofs_and_grids((1, ), (grid_x, ))
     H.addLabel("dx^2", Termb(grid_x.d2dvr))
     H.addLabel("x^2", Termb(grid_x.x**2))
     H.addLabel("delta", Termb(grid_x.delta_w()))
@@ -53,7 +54,7 @@ def get_initial_hamiltonian():
 
 def get_quenched_hamiltonian():
     H = Operatorb()
-    H.define_dofs_and_grids((1,), (grid_x,))
+    H.define_dofs_and_grids((1, ), (grid_x, ))
     H.addLabel("dx^2", Termb(grid_x.d2dvr))
     H.addLabel("x^2", Termb(grid_x.x**2))
     H.addLabel("delta", Termb(grid_x.delta_w()))
@@ -77,4 +78,7 @@ project.add_operator("H_1b", get_1b_hamiltonian)
 project.add_operator("H_initial", get_initial_hamiltonian)
 project.add_operator("H_quenched", get_quenched_hamiltonian)
 project.add_wavefunction("initial", get_initial_wavefunction)
+project.add_task(
+    Relaxation(
+        "initial", "relaxed", "H_initial", statsteps=100, tfinal=10, dt=0.1))
 project.run()

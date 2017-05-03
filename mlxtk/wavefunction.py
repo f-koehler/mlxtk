@@ -49,5 +49,5 @@ def init_single_bosonic_species(hamiltonian_1b, tape, num_spfs, number_state):
     spfs = QDTK.Wavefunction.grab_lowest_eigenfct(num_spfs, evecs)
     QDTK.Tools.Mathematics.gramSchmidt(spfs)
     wavefunction = QDTK.Wavefunction.Wavefunction(tape=tape)
-    wavefunction.init_coef_sing_spec_B(number_state, num_spfs, full_spf=True)
+    wavefunction.init_coef_sing_spec_B(number_state, spfs, full_spf=True)
     return wavefunction

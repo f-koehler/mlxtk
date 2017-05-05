@@ -1,6 +1,6 @@
 import mlxtk.hash
+import mlxtk.log as log
 
-import logging
 import os.path
 import shutil
 
@@ -27,9 +27,9 @@ class Task:
     def create_working_dir(self):
         working_dir = self.get_working_dir()
         if os.path.exists(working_dir):
-            logging.info("Remove old temporary dir: %s", working_dir)
+            log.info("Remove old temporary dir: %s", working_dir)
             shutil.rmtree(working_dir)
-        logging.info("Create temporary dir: %s", working_dir)
+        log.info("Create temporary dir: %s", working_dir)
         os.mkdir(working_dir)
 
         return working_dir
@@ -37,8 +37,12 @@ class Task:
     def clean(self):
         working_dir = self.get_working_dir()
         if os.path.exists(working_dir):
-            logging.info("Remove temporary dir: %s", working_dir)
+            log.info("Remove temporary dir: %s", working_dir)
             shutil.rmtree(working_dir)
+
+    def show_header(self):
+        print("")
+        log.draw_box("TASK: {}".format(self.name))
 
     def __str__(self):
         return str(self.__dict__)

@@ -1,4 +1,6 @@
+import argparse
 import os
+import sys
 
 import mlxtk.log as log
 import mlxtk.operator
@@ -117,6 +119,24 @@ class Project():
             task.update_project(self)
 
         os.chdir(cwd)
+
+    def print_header(self):
+        log.draw_box("PROJECT:" + self.root_dir)
+
+    def main(self):
+        parser_root = argparse.ArgumentParser(
+            description="Work with ML-MCTDH(X) simulations")
+        subparsers = parser_root.add_subparsers(
+            title="subcommands", dest="subcommand")
+
+        subparsers.add_parser("run", description="Run the project")
+        subparsers.add_parser("clean", description="Clean the project")
+
+        args = parser_root.parse_args()
+
+        if args.subcommand == "run":
+            self.print_header()
+            return self.run()
 
     def __str__(self):
         return str(self.__dict__)

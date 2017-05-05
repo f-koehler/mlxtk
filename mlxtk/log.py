@@ -1,8 +1,11 @@
 import logging
-from logging import debug, info, basicConfig
+import io
+from logging import debug, info, warn, basicConfig
+from logging import INFO, DEBUG, WARNING
 
-# logging.basicConfig(level=logging.INFO)
-basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+
+# basicConfig(level=logging.DEBUG)
 
 
 def draw_box(text, min_width=80):
@@ -22,3 +25,19 @@ def draw_box(text, min_width=80):
         line += "*"
         info(line)
     info(border)
+
+
+class LogWrapper(io.TextIOBase):
+
+    def __init__(self, level):
+        self.level = level
+
+    def write(s):
+        if self.level == INFO:
+            return info(s)
+
+        if self.level == DEBUG:
+            return info(s)
+
+        if self.level == WARNING:
+            return warn(s)

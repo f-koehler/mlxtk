@@ -1,11 +1,12 @@
 from mlxtk.task.task import Task
-from mlxtk.filesystem import relative_symlink
+from mlxtk.filesystem import relative_symlink, unlink_if_present
 import mlxtk.log as log
 
 import os.path
 import re
 import shutil
 import subprocess
+import sys
 
 
 class Propagation(Task):
@@ -133,6 +134,8 @@ class Propagation(Task):
     def _execute(self):
         log.info("Execute propagation procedure: %s -> %s",
                  self.initial_wavefunction, self.final_wavefunction)
+
+        wrapper = log.LogWrapper(log.WARNING)
         cmd = [
             "qdtk_propagate.x", "-rst", self.initial_wavefunction + ".wfn",
             "-opr", self.operator + ".op", "-gramschmidt", "-dt", str(self.dt),
@@ -145,7 +148,7 @@ class Propagation(Task):
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=sys.stderr,
             cwd=self.get_working_dir(),
             universal_newlines=True)
 
@@ -159,7 +162,8 @@ class Propagation(Task):
         try:
             import progressbar
             with progressbar.ProgressBar(
-                    max_value=self.tfinal + self.dt) as bar:
+                    max_value=self.tfinal + self.dt,
+                    redirect_stderr=True) as bar:
                 for line in iter(process.stdout.readline, ""):
                     m = re_output.match(line)
                     if not m:
@@ -173,8 +177,7 @@ class Propagation(Task):
                 log.info("Finished step to: %f", float(m.group(1)))
 
     def run(self):
-        print("")
-        log.draw_box("TASK: {}".format(self.name))
+        self.show_header()
         if self.is_up_to_date():
             log.info(self.type + " task \"%s\" -> \"%s\" is up-to-date, skip",
                      self.initial_wavefunction, self.final_wavefunction)
@@ -215,3 +218,12 @@ class Propagation(Task):
                 format(self.name))
 
         proj.add_wavefunction(self.final_wavefunction, dummy)
+
+    def clean(self):
+        self.show_header()
+        unlink_if_present(self.get_output_path())
+        unlink_if_present(
+            os.path.join("natural_populations", self.name + ".natpop"))
+        unlink_if_present(os.path.join("gpops", self.name + ".gpop"))
+        unlink_if_present(os.path.join("outputs", self.name + ".out"))
+        Task.clean(self)

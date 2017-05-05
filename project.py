@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from mlxtk.operator import *
 from mlxtk.project import *
 from mlxtk.primitive import *
@@ -80,7 +81,8 @@ project.add_operator("H_quenched", get_quenched_hamiltonian)
 project.add_wavefunction("initial", get_initial_wavefunction)
 project.add_task(
     Relaxation(
-        "initial", "relaxed", "H_initial", statsteps=100, tfinal=10, dt=0.01))
+        "initial", "relaxed", "H_initial", statsteps=100, tfinal=5, dt=0.01))
 project.add_task(
-    Propagation("relaxed", "propagated", "H_quenched", tfinal=10, dt=0.01))
-project.run()
+    Propagation("relaxed", "propagated", "H_quenched", tfinal=5, dt=0.01))
+
+project.main()

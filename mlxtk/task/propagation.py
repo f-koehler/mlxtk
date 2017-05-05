@@ -1,4 +1,5 @@
 from mlxtk.task.task import Task
+from mlxtk.filesystem import relative_symlink
 
 import logging
 import os.path
@@ -22,6 +23,7 @@ class Propagation(Task):
 
         self.dt = kwargs.get("dt", 1.)
         self.tfinal = kwargs.get("tfinal", self.dt)
+        self.continuation = kwargs.get("continuation", False)
 
     def is_up_to_date(self):
         hash_path = self.get_hash_path()
@@ -31,11 +33,11 @@ class Propagation(Task):
 
         if not os.path.exists(input_path):
             raise RuntimeError("Wavefunction \"{}\" does not exist (\"{}\")".
-                               format(initial_wavefunction, input_path))
+                               format(self.initial_wavefunction, input_path))
 
         if not os.path.exists(operator_path):
             raise RuntimeError("Operator \"{}\" does not exist (\"{}\")".format(
-                operator, operator_path))
+                self.operator, operator_path))
 
         if not os.path.exists(hash_path):
             return False
@@ -52,15 +54,15 @@ class Propagation(Task):
         return (cond1 or cond2)
 
     def get_input_path(self):
-        return os.path.join(self.root_dir, "wavefunctions",
+        return os.path.join("wavefunctions",
                             self.initial_wavefunction + ".wfn")
 
     def get_output_path(self):
-        return os.path.join(self.root_dir, "wavefunctions",
+        return os.path.join("wavefunctions",
                             self.final_wavefunction + ".wfn")
 
     def get_operator_path(self):
-        return os.path.join(self.root_dir, "operators", self.operator + ".op")
+        return os.path.join("operators", self.operator + ".op")
 
     def _copy_operator(self):
         dst = os.path.join(self.get_tmp_dir(), self.operator + ".op")
@@ -75,37 +77,44 @@ class Propagation(Task):
                      self.get_input_path(), dst)
         shutil.copy(self.get_input_path(), dst)
 
-    def _copy_final_wavefunction(self):
-        tmp_output = os.path.join(self.get_tmp_dir(), "restart")
-        logging.info("Copy initial wave function: %s -> %s", tmp_output,
-                     self.get_output_path())
-        shutil.copy(tmp_output, self.get_output_path())
+    def _symlink_final_wavefunction(self):
+        src = os.path.join(self.get_tmp_dir(), "restart")
+        dst = self.get_output_path()
+        logging.info("Copy initial wave function: %s -> %s", src,
+                     dst)
+        relative_symlink(src, dst)
 
-    def _copy_natpop(self):
+    def _symlink_natpop(self):
         src = os.path.join(self.get_tmp_dir(), "natpop")
-        dst = os.path.join(self.root_dir, "natural_populations",
+        dst = os.path.join("natural_populations",
                            self.name + ".natpop")
-        logging.info("Copy natural population: %s -> %s", src, dst)
-        shutil.copy(src, dst)
+        logging.info("Symlink natural population: %s -> %s", src, dst)
+        relative_symlink(src, dst)
 
-    def _copy_gpop(self):
+    def _symlink_gpop(self):
         src = os.path.join(self.get_tmp_dir(), "gpop")
-        dst = os.path.join(self.root_dir, "gpops", self.name + ".gpop")
-        logging.info("Copy gpop: %s -> %s", src, dst)
-        shutil.copy(src, dst)
+        dst = os.path.join("gpops", self.name + ".gpop")
+        logging.info("Symlink gpop: %s -> %s", src, dst)
+        relative_symlink(src, dst)
+
+    def _symlink_output(self):
+        src = os.path.join(self.get_tmp_dir(), "output")
+        dst = os.path.join("outputs", self.name + ".out")
+        logging.info("Symlink output: %s -> %s", src, dst)
+        relative_symlink(src, dst)
 
     def _create_output_dirs(self):
-        dir = os.path.join(self.root_dir, "natural_populations")
+        dir = os.path.join("natural_populations")
         if not os.path.exists(dir):
             logging.info("Create directory: %s", dir)
             os.mkdir(dir)
 
-        dir = os.path.join(self.root_dir, "gpops")
+        dir = os.path.join("gpops")
         if not os.path.exists(dir):
             logging.info("Create directory: %s", dir)
             os.mkdir(dir)
 
-        dir = os.path.join(self.root_dir, "outputs")
+        dir = os.path.join("outputs")
         if not os.path.exists(dir):
             logging.info("Create directory: %s", dir)
             os.mkdir(dir)
@@ -114,7 +123,7 @@ class Propagation(Task):
         logging.info("Execute propagation procedure: %s -> %s",
                      self.initial_wavefunction, self.final_wavefunction)
         cmd = [
-            "qdtk_propagate.x", "-cont", "-rst",
+            "qdtk_propagate.x", "-rst",
             self.initial_wavefunction + ".wfn", "-opr", self.operator + ".op",
             "-gramschmidt", "-dt", str(self.dt), "-tfinal", str(self.tfinal)
         ]
@@ -175,9 +184,9 @@ class Propagation(Task):
                      self.initial_wavefunction, self.final_wavefunction)
 
         self._create_output_dirs()
-        self._copy_final_wavefunction()
-        self._copy_natpop()
-        self._copy_gpop()
+        self._symlink_final_wavefunction()
+        self._symlink_natpop()
+        self._symlink_gpop()
 
         # write hash
         self.write_hash_file()

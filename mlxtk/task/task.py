@@ -9,10 +9,9 @@ class Task:
 
     def __init__(self, name):
         self.name = name
-        self.root_dir = None
 
     def get_hash_path(self):
-        return os.path.join(self.root_dir, "task_hashes", self.name + ".hash")
+        return os.path.join("task_hashes", self.name + ".hash")
 
     def read_hash_file(self):
         with open(self.get_hash_path()) as fh:
@@ -23,7 +22,7 @@ class Task:
             fh.write(self.hash())
 
     def get_tmp_dir(self):
-        return os.path.join(self.root_dir, "tmp_" + self.name)
+        return "tmp_" + self.name
 
     def create_tmp_dir(self):
         tmp_dir = self.get_tmp_dir()

@@ -38,16 +38,15 @@ class Project():
     def _write_operators(self):
         retval = False
 
-        operator_path = os.path.join(self.root_dir, "operators")
-        if not os.path.exists(operator_path):
-            logging.info("Create operator path: %s", operator_path)
-            os.mkdir(operator_path)
+        if not os.path.exists("operators"):
+            logging.info("Create operator path: %s", "operators")
+            os.mkdir("operators")
         operator_updated = {}
         for name in self.operators:
             logging.info("Generate operator: %s", name)
             op = self.operators[name]()
 
-            path = os.path.join(operator_path, name + ".op")
+            path = os.path.join("operators", name + ".op")
             logging.info("Write operator: %s -> %s", name, path)
             updated = mlxtk.operator.write_operator(op, path)
             operator_updated[name] = updated
@@ -62,16 +61,15 @@ class Project():
     def _write_wavefunctions(self):
         retval = False
 
-        wavefunction_path = os.path.join(self.root_dir, "wavefunctions")
-        if not os.path.exists(wavefunction_path):
-            logging.info("Create wavefunction path: %s", wavefunction_path)
-            os.mkdir(wavefunction_path)
+        if not os.path.exists("wavefunctions"):
+            logging.info("Create wavefunction path: %s", "wavefunctions")
+            os.mkdir("wavefunctions")
         wavefunction_updated = {}
         for name in self.wavefunctions:
             logging.info("Generate wave function: %s", name)
             wfn = self.wavefunctions[name]()
 
-            path = os.path.join(wavefunction_path, name + ".wfn")
+            path = os.path.join("wavefunctions", name + ".wfn")
             logging.info("Write wave function: %s -> %s", name, path)
             updated = mlxtk.wavefunction.write_wavefunction(wfn, path)
             wavefunction_updated[name] = updated
@@ -104,18 +102,22 @@ class Project():
             logging.info("Create root path: %s)", self.root_dir)
             os.mkdir(self.root_dir)
 
+        cwd = os.getcwd()
+        os.chdir(self.root_dir)
+
         self._write_operators()
         self._write_wavefunctions()
 
-        task_hash_path = os.path.join(self.root_dir, "task_hashes")
-        if not os.path.exists(task_hash_path):
-            logging.info("Create task hashes path: %s", task_hash_path)
-            os.mkdir(task_hash_path)
+        if not os.path.exists("task_hashes"):
+            logging.info("Create task hashes path: %s", "task_hashes")
+            os.mkdir("task_hashes")
 
         for task in self.tasks:
             task.root_dir = self.root_dir
             task.run()
             task.update_project(self)
+
+        os.chdir(cwd)
 
     def __str__(self):
         return str(self.__dict__)

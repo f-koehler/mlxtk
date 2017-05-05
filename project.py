@@ -82,5 +82,5 @@ project.add_task(
     Relaxation(
         "initial", "relaxed", "H_initial", statsteps=100, tfinal=10, dt=0.01))
 project.add_task(
-    Propagation("relaxed", "propagated", "H_quenched", tfinal=20, dt=0.01))
+    Propagation("relaxed", "propagated", "H_quenched", tfinal=10, dt=0.01))
 project.run()

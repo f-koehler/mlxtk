@@ -1,6 +1,6 @@
-import logging
 import os
 
+import mlxtk.log as log
 import mlxtk.operator
 import mlxtk.wavefunction
 
@@ -39,22 +39,22 @@ class Project():
         retval = False
 
         if not os.path.exists("operators"):
-            logging.info("Create operator path: %s", "operators")
+            log.info("Create operator path: %s", "operators")
             os.mkdir("operators")
         operator_updated = {}
         for name in self.operators:
-            logging.info("Generate operator: %s", name)
+            log.info("Generate operator: %s", name)
             op = self.operators[name]()
 
             path = os.path.join("operators", name + ".op")
-            logging.info("Write operator: %s -> %s", name, path)
+            log.info("Write operator: %s -> %s", name, path)
             updated = mlxtk.operator.write_operator(op, path)
             operator_updated[name] = updated
             retval = (retval or updated)
             if updated:
-                logging.info("Updated operator file: %s", path)
+                log.info("Updated operator file: %s", path)
             else:
-                logging.info("Operator \"%s\" is up-to-date, skip", name)
+                log.info("Operator \"%s\" is up-to-date, skip", name)
 
         return retval
 
@@ -62,22 +62,22 @@ class Project():
         retval = False
 
         if not os.path.exists("wavefunctions"):
-            logging.info("Create wavefunction path: %s", "wavefunctions")
+            log.info("Create wavefunction path: %s", "wavefunctions")
             os.mkdir("wavefunctions")
         wavefunction_updated = {}
         for name in self.wavefunctions:
-            logging.info("Generate wave function: %s", name)
+            log.info("Generate wave function: %s", name)
             wfn = self.wavefunctions[name]()
 
             path = os.path.join("wavefunctions", name + ".wfn")
-            logging.info("Write wave function: %s -> %s", name, path)
+            log.info("Write wave function: %s -> %s", name, path)
             updated = mlxtk.wavefunction.write_wavefunction(wfn, path)
             wavefunction_updated[name] = updated
             retval = (retval or updated)
             if updated:
-                logging.info("Updated wave function file: %s", path)
+                log.info("Updated wave function file: %s", path)
             else:
-                logging.info("Wave function \"%s\" is up-to-date, skip", name)
+                log.info("Wave function \"%s\" is up-to-date, skip", name)
 
         return retval
 
@@ -95,11 +95,10 @@ class Project():
         return True
 
     def run(self):
-        logging.basicConfig(level=logging.INFO)
 
-        logging.info("Start project")
+        log.info("Start project")
         if not os.path.exists(self.root_dir):
-            logging.info("Create root path: %s)", self.root_dir)
+            log.info("Create root path: %s)", self.root_dir)
             os.mkdir(self.root_dir)
 
         cwd = os.getcwd()
@@ -108,9 +107,9 @@ class Project():
         self._write_operators()
         self._write_wavefunctions()
 
-        if not os.path.exists("task_hashes"):
-            logging.info("Create task hashes path: %s", "task_hashes")
-            os.mkdir("task_hashes")
+        if not os.path.exists("hashes"):
+            log.info("Create task hashes path: %s", "hashes")
+            os.mkdir("hashes")
 
         for task in self.tasks:
             task.root_dir = self.root_dir

@@ -11,7 +11,7 @@ class Task:
         self.name = name
 
     def get_hash_path(self):
-        return os.path.join("task_hashes", self.name + ".hash")
+        return os.path.join("hashes", "task_" + self.name + ".hash")
 
     def read_hash_file(self):
         with open(self.get_hash_path()) as fh:
@@ -21,24 +21,24 @@ class Task:
         with open(self.get_hash_path(), "w") as fh:
             fh.write(self.hash())
 
-    def get_tmp_dir(self):
-        return "tmp_" + self.name
+    def get_working_dir(self):
+        return "task_" + self.name
 
-    def create_tmp_dir(self):
-        tmp_dir = self.get_tmp_dir()
-        if os.path.exists(tmp_dir):
-            logging.info("Remove old temporary dir: %s", tmp_dir)
-            shutil.rmtree(tmp_dir)
-        logging.info("Create temporary dir: %s", tmp_dir)
-        os.mkdir(tmp_dir)
+    def create_working_dir(self):
+        working_dir = self.get_working_dir()
+        if os.path.exists(working_dir):
+            logging.info("Remove old temporary dir: %s", working_dir)
+            shutil.rmtree(working_dir)
+        logging.info("Create temporary dir: %s", working_dir)
+        os.mkdir(working_dir)
 
-        return tmp_dir
+        return working_dir
 
     def clean(self):
-        tmp_dir = self.get_tmp_dir()
-        if os.path.exists(tmp_dir):
-            logging.info("Remove temporary dir: %s", tmp_dir)
-            shutil.rmtree(tmp_dir)
+        working_dir = self.get_working_dir()
+        if os.path.exists(working_dir):
+            logging.info("Remove temporary dir: %s", working_dir)
+            shutil.rmtree(working_dir)
 
     def __str__(self):
         return str(self.__dict__)

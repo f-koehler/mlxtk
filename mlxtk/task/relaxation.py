@@ -30,7 +30,7 @@ class Relaxation(Propagation):
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=self.get_tmp_dir(),
+            cwd=self.get_working_dir(),
             universal_newlines=True)
 
         return process

@@ -3,9 +3,8 @@ import io
 from logging import debug, info, warn, basicConfig
 from logging import INFO, DEBUG, WARNING
 
-logging.basicConfig(level=logging.INFO)
-
-# basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 def draw_box(text, min_width=80):

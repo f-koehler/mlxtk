@@ -117,26 +117,12 @@ class Project():
 
         for task in self.tasks:
             task.run()
-            task.update_project(self)
 
         os.chdir(cwd)
 
     def archive(self):
-        cwd = os.getcwd()
-        os.chdir(self.name)
-
-        files = []
-        for root, _, files in os.walk("."):
-            for filename in files:
-                files.append()
-
-        subprocess.check_output(["tar", "xfJ", self.name + ".tar.xz"] + files)
-
-        os.chdir(cwd)
-
-        shutil.move(
-            os.path.join(self.name, self.name + ".tar.xz"),
-            self.name + ".tar.xz")
+        subprocess.check_output(
+            ["tar", "xfJ", self.name + ".tar.xz", self.name])
 
     def clean(self):
         raise NotImplementedError

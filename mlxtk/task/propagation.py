@@ -85,6 +85,7 @@ class Propagation(Task):
         shutil.copy(self.get_operator_path(), dst)
 
     def _copy_initial_wavefunction(self):
+        print(os.getcwd())
         dst = os.path.join(self.get_working_dir(),
                            self.initial_wavefunction + ".wfn")
         log.info("Copy initial wave function: %s -> %s",
@@ -160,15 +161,13 @@ class Propagation(Task):
 
         # print live info about run
         try:
-            import progressbar
-            with progressbar.ProgressBar(
-                    max_value=self.tfinal + self.dt,
-                    redirect_stderr=True) as bar:
+            import tqdm
+            with tqdm.tqdm(total=self.tfinal + self.dt) as bar:
                 for line in iter(process.stdout.readline, ""):
                     m = re_output.match(line)
                     if not m:
                         continue
-                    bar.update(float(m.group(1)))
+                    bar.update(self.dt)
         except ImportError:
             for line in iter(process.stdout.readline, ""):
                 m = re_output.match(line)

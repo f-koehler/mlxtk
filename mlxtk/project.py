@@ -1,5 +1,7 @@
 import argparse
 import os
+import shutil
+import subprocess
 import sys
 
 import mlxtk.log as log
@@ -13,13 +15,13 @@ class Project():
     Attributes:
         operators (dict): dictionary containing operator creation functions
             index by names
-        root_dir (str): root path for all files created during execution
+        name (str): root path for all files created during execution
     """
 
-    def __init__(self, root_dir="."):
+    def __init__(self, name="."):
         self.operators = {}
         self.wavefunctions = {}
-        self.root_dir = root_dir
+        self.name = name
         self.tasks = []
 
     def add_operator(self, name, func):
@@ -99,12 +101,12 @@ class Project():
     def run(self):
 
         log.info("Start project")
-        if not os.path.exists(self.root_dir):
-            log.info("Create root path: %s)", self.root_dir)
-            os.mkdir(self.root_dir)
+        if not os.path.exists(self.name):
+            log.info("Create root path: %s)", self.name)
+            os.mkdir(self.name)
 
         cwd = os.getcwd()
-        os.chdir(self.root_dir)
+        os.chdir(self.name)
 
         self._write_operators()
         self._write_wavefunctions()
@@ -114,14 +116,33 @@ class Project():
             os.mkdir("hashes")
 
         for task in self.tasks:
-            task.root_dir = self.root_dir
             task.run()
             task.update_project(self)
 
         os.chdir(cwd)
 
-    def print_header(self):
-        log.draw_box("PROJECT:" + self.root_dir)
+    def archive(self):
+        cwd = os.getcwd()
+        os.chdir(self.name)
+
+        files = []
+        for root, _, files in os.walk("."):
+            for filename in files:
+                files.append()
+
+        subprocess.check_output(["tar", "xfJ", self.name + ".tar.xz"] + files)
+
+        os.chdir(cwd)
+
+        shutil.move(
+            os.path.join(self.name, self.name + ".tar.xz"),
+            self.name + ".tar.xz")
+
+    def clean(self):
+        raise NotImplementedError
+
+    def show_header(self):
+        log.draw_box("PROJECT: " + self.name)
 
     def main(self):
         parser_root = argparse.ArgumentParser(
@@ -130,13 +151,21 @@ class Project():
             title="subcommands", dest="subcommand")
 
         subparsers.add_parser("run", description="Run the project")
+        subparsers.add_parser(
+            "archive", description="Create an archive with results")
         subparsers.add_parser("clean", description="Clean the project")
 
         args = parser_root.parse_args()
 
         if args.subcommand == "run":
-            self.print_header()
+            self.show_header()
             return self.run()
+
+        if args.subcommand == "archive":
+            if not self.is_up_to_date():
+                self.error("Project is not up-to-date, run first!")
+                exit(1)
+            return self.archive()
 
     def __str__(self):
         return str(self.__dict__)

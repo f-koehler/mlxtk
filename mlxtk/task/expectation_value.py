@@ -18,7 +18,7 @@ class ExpectationValue(SubTask):
         self.operator = operator
 
         self.input_files = [os.path.join("operators", self.operator + ".op")]
-        self.output_files = [self.operator + ".eval"]
+        self.output_files = [self.operator + ".expval"]
         self.symlinks = []
 
     def execute(self):
@@ -26,7 +26,8 @@ class ExpectationValue(SubTask):
 
         cmd = [
             "qdtk_expect.x", "-rst", self.wavefunction + ".wfn", "-opr",
-            self.operator + ".op", "-save", self.operator + ".eval"
+            self.operator + ".op", "-save", self.operator + ".expval", "-psi",
+            "psi"
         ]
         log.debug("Full command: %s", " ".join(cmd))
 

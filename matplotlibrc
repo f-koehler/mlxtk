@@ -1,4 +1,4 @@
 axes.grid:        True
-backend:          qt5agg
+backend:          qt4agg
 savefig.dpi:      600
 text.usetex:      True

@@ -28,10 +28,7 @@ def get_1b_hamiltonian():
     H.addLabel("kin", Coef(-0.5))
     H.addLabel("pot", Coef(0.5 * (w0**2)))
 
-    table = "\n".join([
-        "kin | 1 dx^2",
-        "pot | 1 x^2",
-    ])
+    table = create_table("kin | 1 dx^2", "pot | 1 x^2")
     H.readTable(table)
 
     return H
@@ -47,7 +44,7 @@ def get_initial_hamiltonian():
     H.addLabel("pot", Coefb(0.5 * (w0**2)))
     H.addLabel("int", Coefb(g))
 
-    table = "\n".join(["kin | 1 dx^2", "pot | 1 x^2", "int | {1:1} delta"])
+    table = create_table("kin | 1 dx^2", "pot | 1 x^2", "int | {1:1} delta")
     H.readTableb(table)
 
     return H
@@ -63,7 +60,7 @@ def get_quenched_hamiltonian():
     H.addLabel("pot", Coefb(0.5 * (w1**2)))
     H.addLabel("int", Coefb(g))
 
-    table = "\n".join(["kin | 1 dx^2", "pot | 1 x^2", "int | {1:1} delta"])
+    table = create_table("kin | 1 dx^2", "pot | 1 x^2", "int | {1:1} delta")
     H.readTableb(table)
 
     return H

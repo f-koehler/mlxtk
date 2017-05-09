@@ -153,5 +153,13 @@ class Project():
                 exit(1)
             return self.archive()
 
+        if args.subcommand == "clean":
+            for task in self.tasks:
+                try:
+                    task.clean()
+                except BaseException:
+                    pass
+            return
+
     def __str__(self):
         return str(self.__dict__)

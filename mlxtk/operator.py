@@ -50,3 +50,10 @@ def write_operator(operator, path):
         fh.write(s)
 
     return True
+
+
+def create_table(*args):
+    output = ""
+    for arg in args:
+        output += arg + "\n"
+    return output

@@ -1,5 +1,6 @@
-from mlxtk.task.task import Task
 from mlxtk.task.expectation_value import ExpectationValue
+from mlxtk.task.plot import EnergyPlot, ExpectationValuePlot, NormPlot, OverlapPlot
+from mlxtk.task.task import Task
 import mlxtk.log as log
 
 import os.path
@@ -53,10 +54,25 @@ class Propagation(Task):
         self.tfinal = kwargs.get("tfinal", self.dt)
         self.reset_time = kwargs.get("reset_time", True)
 
+        self.add_default_plots()
+
     def add_expectation_value(self, operator):
         self.write_psi = True
         self.subtasks.append(
             ExpectationValue(operator, self.initial_wavefunction))
+        self.subtasks[-1].parent_task = self
+
+        self.subtasks.append(ExpectationValuePlot(operator))
+        self.subtasks[-1].parent_task = self
+
+    def add_default_plots(self):
+        self.subtasks.append(EnergyPlot())
+        self.subtasks[-1].parent_task = self
+
+        self.subtasks.append(NormPlot())
+        self.subtasks[-1].parent_task = self
+
+        self.subtasks.append(OverlapPlot())
         self.subtasks[-1].parent_task = self
 
     def execute(self):

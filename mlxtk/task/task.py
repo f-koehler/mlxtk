@@ -69,21 +69,22 @@ class Task:
                 return False
 
         # check if any input file is newer than any output file
-        newest_input = max(
-            self.input_files,
-            key=lambda input_file: os.path.getmtime(input_file))
-        oldest_output = min(
-            self.output_files,
-            key=lambda output_file: os.path.getmtime(
-                os.path.join(
-                    self.get_working_dir(),
-                    output_file)))
-        if os.path.getmtime(newest_input) > os.path.getmtime(
-                os.path.join(self.get_working_dir(), oldest_output)):
-            log.debug(
-                "Task %s is not up-to-date, input file \"%s\" is newer than output file \"%s\"",
-                self.name, newest_input, oldest_output)
-            return False
+        if (len(self.input_files) > 1) and (len(self.output_files)):
+            newest_input = max(
+                self.input_files,
+                key=lambda input_file: os.path.getmtime(input_file))
+            oldest_output = min(
+                self.output_files,
+                key=lambda output_file: os.path.getmtime(
+                    os.path.join(
+                        self.get_working_dir(),
+                        output_file)))
+            if os.path.getmtime(newest_input) > os.path.getmtime(
+                    os.path.join(self.get_working_dir(), oldest_output)):
+                log.debug(
+                    "Task %s is not up-to-date, input file \"%s\" is newer than output file \"%s\"",
+                    self.name, newest_input, oldest_output)
+                return False
 
         # check if any subtask is not up-to-date
         for task in self.subtasks:

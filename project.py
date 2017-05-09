@@ -69,20 +69,43 @@ def get_quenched_hamiltonian():
     return H
 
 
+def get_x():
+    x = Operatorb()
+    x.define_dofs_and_grids((1,), (grid_x,))
+    x.addLabel("x", Termb(grid_x.x))
+    x.addLabel("prefactor", Coefb(1))
+    x.readTableb("prefactor | 1 x")
+    return x
+
+
+def get_x2():
+    x2 = Operatorb()
+    x2.define_dofs_and_grids((1,), (grid_x,))
+    x2.addLabel("x^2", Termb(grid_x.x**2))
+    x2.addLabel("prefactor", Coefb(1))
+    x2.readTableb("prefactor | 1 x^2")
+    return x2
+
+
 def get_initial_wavefunction():
     return init_single_bosonic_species(get_1b_hamiltonian(), tape, num_spfs,
                                        number_state)
 
 
+relaxation = Relaxation(
+    "initial", "relaxed", "H_initial", statsteps=100, tfinal=5, dt=0.01)
+propagation = Propagation(
+    "relaxed", "propagated", "H_quenched", tfinal=5, dt=0.01)
+propagation.add_expectation_value("x")
+propagation.add_expectation_value("x2")
+
 project = Project("test_project")
 project.add_operator("H_1b", get_1b_hamiltonian)
 project.add_operator("H_initial", get_initial_hamiltonian)
 project.add_operator("H_quenched", get_quenched_hamiltonian)
+project.add_operator("x", get_x)
+project.add_operator("x2", get_x2)
 project.add_wavefunction("initial", get_initial_wavefunction)
-project.add_task(
-    Relaxation(
-        "initial", "relaxed", "H_initial", statsteps=100, tfinal=5, dt=0.01))
-project.add_task(
-    Propagation("relaxed", "propagated", "H_quenched", tfinal=5, dt=0.01))
-
+project.add_task(relaxation)
+project.add_task(propagation)
 project.main()

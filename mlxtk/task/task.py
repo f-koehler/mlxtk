@@ -2,11 +2,16 @@ import mlxtk.hash
 import mlxtk.log as log
 from mlxtk.filesystem import relative_symlink, unlink_if_present
 
+import collections
 import os.path
 import shutil
 
 
 class Task:
+
+    def __init__(self):
+        self.subtasks = []
+
     def hash(self):
         """Compute the hash of the task
 
@@ -14,7 +19,14 @@ class Task:
             str: hash of this instance which is computed by calling
                 :meth:`mlxtk.hash.hash_dict` on ``__dict__``.
         """
-        return mlxtk.hash.hash_dict(self.__dict__)
+        properties = collections.OrderedDict()
+        for key in self.__dict__:
+            if key == "subtasks":
+                continue
+            properties[key] = self.__dict__[key]
+        properties["subtask_len"] = len(self.subtasks)
+        properties["subtask_names"] = [task.name for task in self.subtasks]
+        return mlxtk.hash.hash_dict(properties)
 
     def is_up_to_date(self):
         """ Check if the task is up-to-date
@@ -39,9 +51,12 @@ class Task:
             return False
 
         # check if hash has changed
-        if self.hash() != self.read_hash_file():
+        current_hash = self.hash()
+        stored_hash = self.read_hash_file()
+        if current_hash != stored_hash:
             log.debug("Task %s is not up-to-date, hash differs from hash file",
                       self.name)
+            log.debug("\t%s  !=  %s", current_hash, stored_hash)
             return False
 
         # check if all output files exist
@@ -54,16 +69,28 @@ class Task:
                 return False
 
         # check if any input file is newer than any output file
-        newest_input = max(self.input_files,
-                           key=lambda input_file: os.path.getmtime(input_file))
-        oldest_output = min(self.output_files,
-                            key=lambda output_file: os.path.getmtime(os.path.join(self.get_working_dir(), output_file)))
+        newest_input = max(
+            self.input_files,
+            key=lambda input_file: os.path.getmtime(input_file))
+        oldest_output = min(
+            self.output_files,
+            key=lambda output_file: os.path.getmtime(
+                os.path.join(
+                    self.get_working_dir(),
+                    output_file)))
         if os.path.getmtime(newest_input) > os.path.getmtime(
                 os.path.join(self.get_working_dir(), oldest_output)):
             log.debug(
                 "Task %s is not up-to-date, input file \"%s\" is newer than output file \"%s\"",
                 self.name, newest_input, oldest_output)
             return False
+
+        # check if any subtask is not up-to-date
+        for task in self.subtasks:
+            if not task.is_up_to_date():
+                log.debug("Task %s is not up-to-date, sub-task %s is outdated",
+                          self.name, task.name)
+                return False
 
         # task is up-to-date
         return True
@@ -82,7 +109,9 @@ class Task:
         Returns:
             str: The hash as string
         """
-        with open(self.get_hash_path()) as fh:
+        path = self.get_hash_path()
+        with open(path) as fh:
+            log.debug("Read hash file: %s", path)
             return fh.read()
 
     def copy_input_files(self):
@@ -147,7 +176,9 @@ class Task:
             log.info("up-to-date, skip")
             return
 
-        working_dir = self.create_working_dir()
+        self.create_working_dir()
+
+        working_dir = self.get_working_dir()
         self.copy_input_files()
         os.chdir(working_dir)
         self.execute()
@@ -156,6 +187,9 @@ class Task:
         self.create_symlinks()
         self.write_hash_file()
 
+        for subtask in self.subtasks:
+            subtask.run()
+
         self.remove_working_copies()
 
     def write_hash_file(self):
@@ -163,7 +197,9 @@ class Task:
 
         Hash this instance and write the result to the corresponding hash file.
         """
-        with open(self.get_hash_path(), "w") as fh:
+        path = self.get_hash_path()
+        with open(path, "w") as fh:
+            log.debug("Write hash file: %s", path)
             fh.write(self.hash())
 
     def get_working_dir(self):
@@ -187,13 +223,12 @@ class Task:
         log.info("Create temporary dir: %s", working_dir)
         os.mkdir(working_dir)
 
-        return working_dir
-
     def remove_working_copies(self):
         """Remove copies of input files
         """
         for input_file in self.input_files:
-            path = os.path.join(self.get_working_dir(), os.path.basename(input_file))
+            path = os.path.join(self.get_working_dir(),
+                                os.path.basename(input_file))
             if os.path.exists(path):
                 log.debug("Remove working copy: %s", path)
                 os.remove(path)
@@ -218,3 +253,38 @@ class Task:
         """Represent the task as a string
         """
         return str(self.__dict__)
+
+
+class SubTask(Task):
+
+    def __init__(self, parent_task):
+        Task.__init__(self)
+
+        self.parent_task = parent_task
+
+    def get_hash_path(self):
+        return os.path.join("hashes", "task_{}_subtask_{}.hash".format(
+            self.parent_task.name, self.name))
+
+    def get_working_dir(self):
+        return self.parent_task.get_working_dir()
+
+    def show_header(self):
+        print("")
+        log.underline("SUBTASK: {}".format(self.name))
+
+    def create_working_dir(self):
+        pass
+
+    def hash(self):
+        properties = collections.OrderedDict()
+        for key in self.__dict__:
+            if key == "subtasks":
+                continue
+            if key == "parent_task":
+                continue
+            properties[key] = self.__dict__[key]
+        properties["subtask_len"] = len(self.subtasks)
+        properties["subtask_names"] = [task.name for task in self.subtasks]
+        properties["parent_task"] = self.parent_task.name
+        return mlxtk.hash.hash_dict(properties)

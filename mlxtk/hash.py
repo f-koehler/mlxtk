@@ -1,3 +1,4 @@
+import pickle
 import subprocess
 
 hash_program = "sha512sum"

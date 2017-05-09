@@ -1,4 +1,3 @@
-from mlxtk.task.task import Task
 from mlxtk.task.propagation import Propagation
 import mlxtk.log as log
 
@@ -13,7 +12,7 @@ class Relaxation(Propagation):
                              operator, **kwargs)
 
         self.name = "relax_{}_to_{}".format(initial_wavefunction,
-                                                final_wavefunction)
+                                            final_wavefunction)
         self.type = "Relaxation"
 
         self.statsteps = kwargs.get("statsteps", 0)

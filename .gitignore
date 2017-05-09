@@ -2,10 +2,11 @@ test_project
 
 # python
 *.pyc
+*.pyo
 MANIFEST
 __pycache__
-dist
 build
+dist
 test.py
 
 # vim

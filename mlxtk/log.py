@@ -1,10 +1,23 @@
-import logging
-import io
 from logging import debug, info, warn, basicConfig
 from logging import INFO, DEBUG, WARNING
 
-# logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.DEBUG)
+import colorama
+import logging
+import io
+
+logging.addLevelName(
+    logging.INFO, colorama.Fore.GREEN + "INFO    " + colorama.Style.RESET_ALL)
+logging.addLevelName(
+    logging.DEBUG, colorama.Fore.WHITE + "DEBUG   " + colorama.Style.RESET_ALL)
+logging.addLevelName(
+    logging.WARNING, colorama.Fore.YELLOW +
+    logging.getLevelName(logging.WARNING) + colorama.Style.RESET_ALL)
+logging.addLevelName(logging.ERROR,
+                     colorama.Fore.RED + "ERROR   " + colorama.Style.RESET_ALL)
+logging.addLevelName(logging.CRITICAL,
+                     colorama.Fore.RED + "CRITICAL" + colorama.Style.RESET_ALL)
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s  %(levelname)s  %(message)s")
 
 
 def draw_box(text, min_width=80):
@@ -24,6 +37,20 @@ def draw_box(text, min_width=80):
         line += "*"
         info(line)
     info(border)
+
+
+def underline(text):
+    lines = text.splitlines()
+    max_line_length = len(max(lines, key=lambda line: len(line)))
+
+    for line in lines:
+        info(line)
+
+    line = ""
+    for i in range(0, max_line_length):
+        line += "-"
+
+    info(line)
 
 
 class LogWrapper(io.TextIOBase):

@@ -3,7 +3,7 @@ import pandas
 import os.path
 
 
-def read(path):
+def read_output(path):
     _, ext = os.path.splitext(path)
     if ext == ".gz":
         data = pandas.read_csv(

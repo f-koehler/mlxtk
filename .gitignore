@@ -1,13 +1,2 @@
-test_project
-
-# python
 *.pyc
-*.pyo
-MANIFEST
-__pycache__
-build
-dist
-test.py
-
-# vim
-*.swp
+*.egg-info

@@ -1,5 +1,5 @@
-colorama
-matplotlib>=2.0.0
-numpy
-pandas>=0.18.1
-tqdm
+colorama==0.3.9
+matplotlib==2.0.2
+numpy==1.13.1
+pandas==0.20.3
+scipy==0.19.1

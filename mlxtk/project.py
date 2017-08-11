@@ -3,7 +3,9 @@ from mlxtk.task.operator import OperatorCreationTask
 from mlxtk.task.propagate import PropagationTask
 from mlxtk.task.wavefunction import WaveFunctionCreationTask
 
+import argparse
 import os
+import shutil
 
 
 def create_operator_table(*args):
@@ -47,5 +49,41 @@ class Project:
         self.propagate(initial, "exact_diag_" + initial, hamiltonian, **kwargs)
 
     def main(self):
-        for task in self.tasks:
-            task.execute()
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers(title="subcommands")
+
+        def run():
+            for task in self.tasks:
+                task.execute()
+            exit(0)
+
+        parser_run = subparsers.add_parser("run")
+        parser_run.set_defaults(func=run)
+
+        def ls():
+            if self.operators:
+                print("Operators:")
+                for op in self.operators:
+                    print("\t" + op)
+
+            if self.wavefunctions:
+                print("Wave Functions:")
+                for wfn in self.wavefunctions:
+                    print("\t" + wfn)
+            exit(0)
+
+        parser_ls = subparsers.add_parser("ls")
+        parser_ls.set_defaults(func=ls)
+
+        def clean():
+            choice = raw_input(
+                "Remove \"{}\"? (y/n) ".format(self.root_dir)).lower()
+            if choice == "y":
+                shutil.rmtree(self.root_dir)
+            exit(0)
+
+        parser_clean = subparsers.add_parser("clean")
+        parser_clean.set_defaults(func=clean)
+
+        args = parser.parse_args()
+        args.func()

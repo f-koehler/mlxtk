@@ -1,15 +1,10 @@
+from mlxtk import hashing
+from mlxtk.stringio import StringIO
+
 from QDTK.Operator import Operator
 from QDTK.Operatorb import Operatorb
 
-from mlxtk import hashing
-from mlxtk import log
-
 import os
-import sys
-if sys.version_info <= (3, 0):
-    from StringIO import StringIO
-else:
-    from io import StringIO
 
 
 class OperatorCreationTask:
@@ -17,18 +12,56 @@ class OperatorCreationTask:
         self.project = project
         self.name = name
         self.func = func
-        self.output_path = os.path.join(project.root_dir, name + ".opr")
         self.operator_data = None
-        self.logger = log.getLogger("operator")
+        self.logger = project.get_logger("operator")
+
+    def execute(self):
+        self.logger.info("task: create operator \"%s\"", self.name)
+
+        if self.is_up_to_date():
+            self._update_project(False)
+            self.logger.info("already up-to-date")
+            self.logger.info("done")
+            return
+
+        # create the operator file
+        self.logger.info("write operator file")
+        with open(self._get_output_path(), "w") as fh:
+            fh.write(self.operator_data)
+
+        # mark operator update
+        self._update_project(True)
+
+        self.logger.info("done")
 
     def is_up_to_date(self):
-        # check for name conflict
+        self._check_conflicts()
+        self._get_operator_data()
+
+        if not self._is_file_present():
+            return False
+
+        # check if operator already up-to-date
+        hash_current = hashing.hash_file(self._get_output_path())
+        hash_new = hashing.hash_string(self.operator_data)
+        if hash_current != hash_new:
+            self.logger.info("hash mismatch")
+            self.logger.debug("%s != %s", hash_current, hash_new)
+            return False
+
+        return True
+
+    def set_project_targets(self):
+        self._check_conflicts()
+        self.project.operators[self.name] = {"path": self._get_output_path()}
+
+    def _check_conflicts(self):
         if self.name in self.project.operators:
             self.logger.critical("operator \"%s\" already exists", self.name)
             raise RuntimeError("name conflict: operator \"{}\" already exists".
                                format(self.name))
 
-        # calculate the operator and get the contents for the new operator file
+    def _get_operator_data(self):
         sio = StringIO()
         operator = self.func()
         if isinstance(operator, Operator):
@@ -40,41 +73,17 @@ class OperatorCreationTask:
                 "Unknown operator type \"{}\"".format(type(operator).__name__))
         self.operator_data = sio.getvalue()
 
-        # check if operator already up-to-date
-        if os.path.exists(self.output_path):
-            hash_current = hashing.hash_file(self.output_path)
-            hash_new = hashing.hash_string(self.operator_data)
-            if hash_current != hash_new:
-                self.logger.info("hash mismatch")
-                self.logger.debug("  %s != %s", hash_current, hash_new)
-                return False
-        else:
-            self.logger.info("file does not exist")
-            return False
+    def _get_output_path(self):
+        return os.path.join(self.project.get_operator_dir(), self.name)
 
-        return True
+    def _is_file_present(self):
+        ret = os.path.exists(self._get_output_path())
+        if not ret:
+            self.logger.info("operator file does not exist")
+        return ret
 
-    def execute(self):
-        self.logger.info("task: create operator \"%s\"", self.name)
-
-        if self.is_up_to_date():
-            self.project.operators[self.name] = {
-                "updated": False,
-                "path": self.output_path
-            }
-            self.logger.info("already up-to-date")
-            self.logger.info("done")
-            return
-
-        # create the operator file
-        self.logger.info("write operator file")
-        with open(self.output_path, "w") as fh:
-            fh.write(self.operator_data)
-
-        # mark operator update
+    def _update_project(self, updated):
         self.project.operators[self.name] = {
-            "updated": False,
-            "path": self.output_path
+            "updated": updated,
+            "path": self._get_output_path()
         }
-
-        self.logger.info("done")

@@ -1,12 +1,11 @@
-from distutils.spawn import find_executable
 from mlxtk import hashing
-from mlxtk import log
 from mlxtk.inout import output as io_output
+from mlxtk.process import watch_process
+
+from distutils.spawn import find_executable
 
 import os
 import shutil
-import subprocess
-import threading
 
 
 class PropagationTask:
@@ -59,20 +58,100 @@ class PropagationTask:
         self.energy_only = kwargs.get("energy_only", False)
 
         # create logger
-        self.logger = kwargs.get("logger", log.getLogger("propagate"))
+        self.logger = kwargs.get("logger", self.project.get_logger("propagate"))
 
-        # determine task name and directory
-        if self.relax:
-            self.task_name = "relax_{}_{}".format(initial, final)
-        elif self.improved_relax:
-            self.task_name = "improved_relax_{}_{}".format(initial, final)
-        elif self.exact_diag:
-            self.task_name = "exact_diag_{}".format(initial)
-        else:
-            self.task_name = "propagate_{}_{}".format(initial, final)
-        self.task_dir = os.path.join(self.project.root_dir, self.task_name)
+    def set_project_targets(self):
+        self._check_conflicts()
+        self.project.wavefunctions[self.final] = {
+            "path": os.path.join(self._get_task_dir(), "restart")
+        }
+        if self.psi:
+            self.project.psis["{}_{}".format(self.initial, self.final)] = {
+                "path": os.path.join(self._get_task_dir(), "psi")
+            }
 
     def is_up_to_date(self):
+        self._check_conflicts()
+
+        # create task dir if not present
+        if not os.path.exists(self._get_task_dir()):
+            self.logger.info("task dir does not exist")
+            return False
+
+        # check if initial wave function changed
+        if self._has_initial_wave_function_changed():
+            return False
+
+        # check if hamiltonian changed
+        if self._has_hamiltonian_changed():
+            return False
+
+        # check if last run was complete
+        if not self._is_last_run_complete():
+            return False
+
+        return self._is_command_hash_valid()
+
+    def execute(self):
+        if self.relax or self.improved_relax:
+            self.logger.info("task: relax wave function \"%s\" -> \"%s\"",
+                             self.initial, self.final)
+        else:
+            self.logger.info("task: propagate wave function \"%s\" -> \"%s\"",
+                             self.initial, self.final)
+
+        # compose the call to qdtk_propagate
+        cmd = self._compose_command()
+
+        if not os.path.exists(self._get_task_dir()):
+            self.logger.info("create task directory")
+            os.makedirs(self._get_task_dir())
+
+        # check if task is up-to-date
+        if self.is_up_to_date():
+            self._update_project(False)
+            self.logger.info("task already up-to-date")
+            self.logger.info("done")
+            return
+
+        # copy initial wave function
+        self._copy_wave_function()
+
+        # copy hamiltonian
+        self._copy_hamiltonian()
+
+        # run qdtk_propagate.x
+        self.logger.info("command: %s", " ".join(cmd))
+        watch_process(
+            cmd,
+            lambda l: self.logger.info(l),
+            lambda l: self.logger.warning(l),
+            cwd=self._get_task_dir())
+
+        # remove initial wave function
+        self._remove_wave_function()
+
+        # remove hamiltonian
+        self._remove_hamiltonian()
+
+        # create parameter file
+        cmd_hash_file = self._get_command_hash_path()
+        self.logger.info("write cmd hash file")
+        with open(cmd_hash_file, "w") as fh:
+            fh.write(self._get_command_hash())
+
+        # create qdtk_propagate hash file
+        exe_hash_file = self._get_exe_hash_path()
+        self.logger.info("write qdtk_propagate.x hash file")
+        with open(exe_hash_file, "w") as fh:
+            fh.write(hashing.hash_file(cmd[0]))
+
+        # mark wave function as updated
+        self._update_project(True)
+
+        self.logger.info("done")
+
+    def _check_conflicts(self):
         # check if initial wave function exists
         if self.initial not in self.project.wavefunctions:
             self.logger.critical("unknown initial wave function \"%s\"",
@@ -95,166 +174,10 @@ class PropagationTask:
                 "name conflict: wave function \"{}\" already exists".format(
                     self.final))
 
-        # check if initial wave function changed
-        if self.project.wavefunctions[self.initial]["updated"]:
-            self.logger.info("initial wave function changed")
-            return False
-
-        # check if hamiltonian changed
-        if self.project.operators[self.hamiltonian]["updated"]:
-            self.logger.info("hamiltonian changed")
-            return False
-
-        # create task dir if not present
-        if not os.path.exists(self.task_dir):
-            os.makedirs(self.task_dir)
-            self.logger.info("create task directory")
-            return False
-
-        # check if qdtk_propagate hash file exists
-        exe_hash_file = os.path.join(self.task_dir, "qdtk_propagate.x.hash")
-        if not os.path.exists(exe_hash_file):
-            self.logger.info("qdtk_propagate.x hash file does not exist")
-            return False
-
-        # check hash of qdt_propagate.x
-        with open(exe_hash_file) as fh:
-            hash_current = fh.read().strip()
-
-        exe = self.find_exe()
-        exe_hash = hashing.hash_file(exe)
-        if hash_current != exe_hash:
-            self.logger.warning("".join([
-                "qdtk_propagate.x hash changed,",
-                "consider restarting manually"
-            ]))
-            self.logger.debug("  %s != %s", hash_current, exe_hash)
-
-        # check if last run was complete
-        if not self.exact_diag:
-            times = io_output.read_output(
-                os.path.join(self.task_dir, "output")).time.values
-            if times.max() < self.tfinal:
-                self.logger.info("last run was incomplete")
-                self.cont = True
-                return False
-
-        # check if cmd hash file exists
-        cmd_hash_file = os.path.join(self.task_dir, "cmd.hash")
-        if not os.path.exists(cmd_hash_file):
-            self.logger.info("command hash file does not exist")
-            return False
-
-        # check parameter hash
-        cmd_hash = self.calc_command_hash()
-        with open(cmd_hash_file) as fh:
-            hash_current = fh.read().strip()
-
-        if hash_current != cmd_hash:
-            self.logger.info("propagation parameters changed")
-            self.logger.debug("  %s != %s", hash_current, cmd_hash)
-            return False
-
-        return True
-
-    def execute(self):
-        if self.relax or self.improved_relax:
-            self.logger.info("task: relax wave function \"%s\" -> \"%s\"",
-                             self.initial, self.final)
-        else:
-            self.logger.info("task: propagate wave function \"%s\" -> \"%s\"",
-                             self.initial, self.final)
-
-        # compose the call to qdtk_propagate
-        cmd = self.compose_command()
-        self.logger.info("command: %s", " ".join(cmd))
-
-        # check if task is up-to-date
-        if self.is_up_to_date():
-            self.logger.info("task already up-to-date")
-            self.project.wavefunctions[self.final] = {
-                "updated": False,
-                "path": os.path.join(self.task_dir, "restart")
-            }
-            return
-
-        # copy initial wave function
-        self.logger.info("copy initial wave function to task dir")
-        shutil.copy2(self.project.wavefunctions[self.initial]["path"],
-                     os.path.join(self.task_dir, self.initial))
-
-        # copy hamiltonian
-        self.logger.info("copy hamiltonian to task dir")
-        shutil.copy2(self.project.operators[self.hamiltonian]["path"],
-                     os.path.join(self.task_dir, self.hamiltonian))
-
-        # run qdtk_propagate.x
-        process = subprocess.Popen(
-            cmd,
-            cwd=self.task_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-
-        def log_stdout(pipe):
-            l = log.getLogger("qdtk_propagate.x")
-            with pipe:
-                for line in iter(pipe.readline, ""):
-                    l.info(line.strip('\n'))
-
-        def log_stderr(pipe):
-            l = log.getLogger("qdtk_propagate.x")
-            with pipe:
-                for line in iter(pipe.readline, ""):
-                    l.warning(line.strip('\n'))
-
-        threading.Thread(target=log_stdout, args=[process.stdout]).start()
-        threading.Thread(target=log_stderr, args=[process.stderr]).start()
-
-        # wait for process to terminate
-        return_code = process.wait()
-        if return_code:
-            self.logger.critical("qdtk_propagate.x failed with code %d",
-                                 return_code)
-            raise subprocess.CalledProcessError(return_code, cmd)
-
-        # remove initial wave function
-        self.logger.info("remove initial wave function")
-        os.remove(os.path.join(self.task_dir, self.initial))
-
-        # remove hamiltonian
-        self.logger.info("remove hamiltonian")
-        os.remove(os.path.join(self.task_dir, self.hamiltonian))
-
-        # create parameter file
-        cmd_hash_file = os.path.join(self.task_dir, "cmd.hash")
-        self.logger.info("write cmd hash file")
-        with open(cmd_hash_file, "w") as fh:
-            fh.write(self.calc_command_hash())
-
-        # create qdtk_propagate hash file
-        exe_hash_file = os.path.join(self.task_dir, "qdtk_propagate.x.hash")
-        self.logger.info("write qdtk_propagate.x hash file")
-        with open(exe_hash_file, "w") as fh:
-            fh.write(hashing.hash_file(cmd[0]))
-
-        # mark wave function as updated
-        self.project.wavefunctions[self.final] = {
-            "updated": False,
-            "path": os.path.join(self.task_dir, "restart")
-        }
-        self.logger.info("done")
-
-    def find_exe(self):
-        exe = find_executable("qdtk_propagate.x")
-        if not exe:
-            self.logger.critical("cannot find qdtk_propagate.x")
-            raise RuntimeError("failed to find qdtk_propagate.x")
-        return exe
-
-    def compose_command(self):
+    def _compose_command(self):
         cmd = [
-            self.find_exe(), "-rst", self.initial, "-opr", self.hamiltonian,
-            "-dt",
+            self._find_executable(), "-rst", self.initial, "-opr",
+            self.hamiltonian, "-dt",
             str(self.dt), "-tfinal",
             str(self.tfinal)
         ]
@@ -303,8 +226,126 @@ class PropagationTask:
 
         return cmd
 
-    def calc_command_hash(self):
-        cmd = self.compose_command()[2:]
+    def _copy_hamiltonian(self):
+        self.logger.info("copy hamiltonian to task dir")
+        shutil.copy2(self.project.operators[self.hamiltonian]["path"],
+                     os.path.join(self._get_task_dir(), self.hamiltonian))
+
+    def _copy_wave_function(self):
+        self.logger.info("copy initial wave function to task dir")
+        shutil.copy2(self.project.wavefunctions[self.initial]["path"],
+                     os.path.join(self._get_task_dir(), self.initial))
+
+    def _find_executable(self):
+        exe = find_executable("qdtk_propagate.x")
+        if not exe:
+            self.logger.critical("cannot find qdtk_propagate.x")
+            raise RuntimeError("failed to find qdtk_propagate.x")
+        return exe
+
+    def _get_command_hash(self):
+        cmd = self._compose_command()[2:]
         if "-cont" in cmd:
             cmd.remove("-cont")
         return hashing.hash_string("".join(cmd))
+
+    def _get_command_hash_path(self):
+        return os.path.join(
+            self.project.get_hash_dir(),
+            "propagation_" + self._get_task_name() + "_command")
+
+    def _get_exe_hash_path(self):
+        return os.path.join(
+            self.project.get_hash_dir(),
+            "propagation_" + self._get_task_name() + "_qdtk_propagate.x")
+
+    def _get_task_name(self):
+        if self.relax:
+            return "relax_{}_{}".format(self.initial, self.final)
+        if self.improved_relax:
+            return "improved_relax_{}_{}".format(self.initial, self.final)
+        if self.exact_diag:
+            return "exact_diag_{}".format(self.initial)
+        return "propagate_{}_{}".format(self.initial, self.final)
+
+    def _get_task_dir(self):
+        return os.path.join(self.project.root_dir, self._get_task_name())
+
+    def _has_hamiltonian_changed(self):
+        ret = self.project.operators[self.hamiltonian]["updated"]
+        if ret:
+            self.logger.info("hamiltonian changed")
+        return ret
+
+    def _has_initial_wave_function_changed(self):
+        ret = self.project.wavefunctions[self.initial]["updated"]
+        if ret:
+            self.logger.info("initial wave function changed")
+        return ret
+
+    def _is_command_hash_valid(self):
+        cmd_hash_file = self._get_command_hash_path()
+        if not os.path.exists(cmd_hash_file):
+            self.logger.info("command hash file does not exist")
+            return False
+
+        # check cmd hash
+        cmd_hash = self._get_command_hash()
+        with open(self._get_command_hash_path()) as fh:
+            hash_current = fh.read().strip()
+
+        if hash_current != cmd_hash:
+            self.logger.info("propagation parameters changed")
+            self.logger.debug("%s != %s", hash_current, cmd_hash)
+            return False
+        return True
+
+    def _is_exe_hash_valid(self):
+        exe_hash_file = self._get_exe_hash_path()
+        if not os.path.exists(exe_hash_file):
+            self.logger.info("qdtk_propagate.x hash file does not exist")
+            return False
+
+        with open(exe_hash_file) as fh:
+            hash_current = fh.read().strip()
+
+        exe = self._find_executable()
+        exe_hash = hashing.hash_file(exe)
+        if hash_current != exe_hash:
+            self.logger.warning("qdtk_propagate.x hash changed, " +
+                                "consider restarting manually")
+            self.logger.debug("%s != %s", hash_current, exe_hash)
+            return False
+        return True
+
+    def _is_last_run_complete(self):
+        if self.exact_diag:
+            return True
+
+        times = io_output.read_output(
+            os.path.join(self._get_task_dir(), "output")).time.values
+        if times.max() < self.tfinal:
+            self.logger.info("last run was incomplete")
+            self.cont = True
+            return False
+        return True
+
+    def _remove_hamiltonian(self):
+        self.logger.info("remove hamiltonian")
+        os.remove(os.path.join(self._get_task_dir(), self.hamiltonian))
+
+    def _remove_wave_function(self):
+        self.logger.info("remove initial wave function")
+        os.remove(os.path.join(self._get_task_dir(), self.initial))
+
+    def _update_project(self, updated):
+        self.project.wavefunctions[self.final] = {
+            "updated": False,
+            "path": os.path.join(self._get_task_dir(), "restart")
+        }
+        if self.psi:
+            self.project.psis["{}_{}".format(self.initial, self.final)] = {
+                "updated": True,
+                "path": os.path.join(self._get_task_dir(), "psi")
+            }
+        pass

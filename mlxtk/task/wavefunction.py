@@ -1,12 +1,6 @@
 from mlxtk import hashing
-from mlxtk import log
-
+from mlxtk.stringio import StringIO
 import os
-import sys
-if sys.version_info <= (3, 0):
-    from StringIO import StringIO
-else:
-    from io import StringIO
 
 
 class WaveFunctionCreationTask:
@@ -14,12 +8,52 @@ class WaveFunctionCreationTask:
         self.project = project
         self.name = name
         self.func = func
-        self.output_path = os.path.join(project.root_dir, name + ".wfn")
         self.wave_function_data = None
-        self.logger = log.getLogger("operator")
+        self.logger = self.project.get_logger("wavefunction")
+
+    def execute(self):
+        self.logger.info("task: create wave function \"%s\"", self.name)
+
+        if self.is_up_to_date():
+            self._update_project(False)
+            self.logger.info("already up-to-date")
+            self.logger.info("done")
+            return
+
+        # create the wave function file
+        self.logger.info("write wave function file")
+        with open(self._get_output_path(), "w") as fh:
+            fh.write(self.wave_function_data)
+
+        # mark wave function update
+
+        self.logger.info("done")
+        self._update_project(True)
+
+    def set_project_targets(self):
+        self._check_conflict()
+        self.project.wavefunctions[self.name] = {
+            "path": self._get_output_path()
+        }
 
     def is_up_to_date(self):
-        # check for name conflict
+        self._check_conflict()
+        self._get_wavefunction_data()
+
+        if not self._is_file_present():
+            return False
+
+        # check if wave function already up-to-date
+        hash_current = hashing.hash_file(self._get_output_path())
+        hash_new = hashing.hash_string(self.wave_function_data)
+        if hash_current != hash_new:
+            self.logger.info("hash mismatch")
+            self.logger.debug("%s != %s", hash_current, hash_new)
+            return False
+
+        return True
+
+    def _check_conflict(self):
         if self.name in self.project.wavefunctions:
             self.logger.critical("wave function \"%s\" already exists",
                                  self.name)
@@ -27,47 +61,23 @@ class WaveFunctionCreationTask:
                 "name conflict: wave function \"{}\" already exists".format(
                     self.name))
 
-        # calculate the operator and get the contents for the new operator file
+    def _get_output_path(self):
+        return os.path.join(self.project.get_wave_function_dir(), self.name)
+
+    def _get_wavefunction_data(self):
         sio = StringIO()
         wavefunction = self.func()
         wavefunction.createWfnFile(sio)
         self.wave_function_data = sio.getvalue()
 
-        # check if operator already up-to-date
-        if os.path.exists(self.output_path):
-            hash_current = hashing.hash_file(self.output_path)
-            hash_new = hashing.hash_string(self.wave_function_data)
-            if hash_current != hash_new:
-                self.logger.info("hash mismatch")
-                self.logger.debug("  %s != %s", hash_current, hash_new)
-                return False
-        else:
-            self.logger.info("file does not exist")
-            return False
+    def _is_file_present(self):
+        ret = os.path.exists(self._get_output_path())
+        if not ret:
+            self.logger.info("wave function file does not exist")
+        return ret
 
-        return True
-
-    def execute(self):
-        self.logger.info("task: create wave function \"%s\"", self.name)
-
-        if self.is_up_to_date():
-            self.project.wavefunctions[self.name] = {
-                "updated": False,
-                "path": self.output_path
-            }
-            self.logger.info("already up-to-date")
-            self.logger.info("done")
-            return
-
-        # create the operator file
-        self.logger.info("write operator file")
-        with open(self.output_path, "w") as fh:
-            fh.write(self.wave_function_data)
-
-        # mark operator update
+    def _update_project(self, updated):
         self.project.wavefunctions[self.name] = {
-            "updated": False,
-            "path": self.output_path
+            "updated": updated,
+            "path": self._get_output_path()
         }
-
-        self.logger.info("done")

@@ -58,7 +58,8 @@ class PropagationTask:
         self.energy_only = kwargs.get("energy_only", False)
 
         # create logger
-        self.logger = kwargs.get("logger", self.project.get_logger("propagate"))
+        self.logger = kwargs.get("logger",
+                                 self.project.get_logger("propagate"))
 
     def set_project_targets(self):
         self._check_conflicts()
@@ -124,8 +125,8 @@ class PropagationTask:
         self.logger.info("command: %s", " ".join(cmd))
         watch_process(
             cmd,
-            lambda l: self.logger.info(l),
-            lambda l: self.logger.warning(l),
+            self.logger.info,
+            self.logger.warning,
             cwd=self._get_task_dir())
 
         # remove initial wave function
@@ -340,12 +341,11 @@ class PropagationTask:
 
     def _update_project(self, updated):
         self.project.wavefunctions[self.final] = {
-            "updated": False,
+            "updated": updated,
             "path": os.path.join(self._get_task_dir(), "restart")
         }
         if self.psi:
             self.project.psis["{}_{}".format(self.initial, self.final)] = {
-                "updated": True,
+                "updated": updated,
                 "path": os.path.join(self._get_task_dir(), "psi")
             }
-        pass

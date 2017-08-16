@@ -1,13 +1,13 @@
+import os
+
 from mlxtk import hashing
 from mlxtk.stringio import StringIO
 
 from QDTK.Operator import Operator
 from QDTK.Operatorb import Operatorb
 
-import os
 
-
-class OperatorCreationTask:
+class OperatorCreationTask(object):
     def __init__(self, project, name, func):
         self.project = project
         self.name = name
@@ -31,7 +31,6 @@ class OperatorCreationTask:
 
         # mark operator update
         self._update_project(True)
-
         self.logger.info("done")
 
     def is_up_to_date(self):

@@ -1,6 +1,6 @@
-import pandas
-
 import os.path
+
+import pandas
 
 
 def read_output(path):

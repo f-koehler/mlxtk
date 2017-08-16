@@ -1,15 +1,6 @@
-from logging import CRITICAL
-from logging import DEBUG
-from logging import ERROR
-from logging import FileHandler
-from logging import Formatter
-from logging import INFO
-from logging import StreamHandler
-from logging import WARNING
-from logging import addLevelName
-from logging import basicConfig
-from logging import getLevelName
-from logging import getLogger
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
+from logging import *
 
 try:
     import colorama
@@ -30,7 +21,7 @@ try:
 except ImportError:
     pass
 
-format = "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
+logging_format = "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
 
-basicConfig(format=format, level=DEBUG)
-formatter = Formatter(format)
+basicConfig(format=logging_format, level=DEBUG)
+formatter = Formatter(logging_format)

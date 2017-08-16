@@ -1,9 +1,10 @@
-from mlxtk import hashing
-from mlxtk.stringio import StringIO
 import os
 
+from mlxtk import hashing
+from mlxtk.stringio import StringIO
 
-class WaveFunctionCreationTask:
+
+class WaveFunctionCreationTask(object):
     def __init__(self, project, name, func):
         self.project = project
         self.name = name
@@ -26,9 +27,8 @@ class WaveFunctionCreationTask:
             fh.write(self.wave_function_data)
 
         # mark wave function update
-
-        self.logger.info("done")
         self._update_project(True)
+        self.logger.info("done")
 
     def set_project_targets(self):
         self._check_conflict()

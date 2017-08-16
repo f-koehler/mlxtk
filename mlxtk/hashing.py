@@ -1,21 +1,21 @@
 import hashlib
 
 
-def hash_file(file):
-    h = hashlib.sha256()
-    with open(file, "rb") as fh:
-        h.update(fh.read())
-        return h.hexdigest()
+def hash_file(path):
+    hfunc = hashlib.sha256()
+    with open(path, "rb") as fhandle:
+        hfunc.update(fhandle.read())
+    return hfunc.hexdigest()
 
 
 def hash_string(string):
-    h = hashlib.sha256()
-    h.update(string.encode())
-    return h.hexdigest()
+    hfunc = hashlib.sha256()
+    hfunc.update(string.encode())
+    return hfunc.hexdigest()
 
 
 def hash_values(*args):
-    h = hashlib.sha256()
+    hfunc = hashlib.sha256()
     string = str(len(args)) + "".join([str(arg) for arg in args])
-    h.update(string.encode())
-    return h.hexdigest()
+    hfunc.update(string.encode())
+    return hfunc.hexdigest()

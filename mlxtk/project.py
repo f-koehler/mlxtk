@@ -10,6 +10,7 @@ from mlxtk import log
 from mlxtk.task.operator import OperatorCreationTask
 from mlxtk.task.propagate import PropagationTask
 from mlxtk.task.wavefunction import WaveFunctionCreationTask
+from mlxtk.task.copy_wavefunction import CopyWavefunctionTask
 
 
 def create_operator_table(*args):
@@ -129,6 +130,9 @@ class Project(object):
         # reset loggers and exit
         self._reset_loggers()
         exit(0)
+
+    def copy_wave_function(self, name, path):
+        self.tasks.append(CopyWavefunctionTask(self, name, path))
 
     def create_operator(self, name, func):
         self.tasks.append(OperatorCreationTask(self, name, func))

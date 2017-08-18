@@ -5,6 +5,7 @@ import threading
 def watch_process(cmd, stdout_watcher, stderr_watcher, **kwargs):
     kwargs["stdout"] = subprocess.PIPE
     kwargs["stderr"] = subprocess.PIPE
+    kwargs["universal_newlines"] = True
 
     proc = subprocess.Popen(cmd, **kwargs)
 

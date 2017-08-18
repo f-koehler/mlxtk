@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import input
 
 import argparse
 import os
@@ -32,15 +33,12 @@ class Project(object):
         self.logger = kwargs.get("logger", self.get_logger("project"))
 
     def action_clean(self):
-        if not os.path.exists(self.root_dir):
-            self.logger.error(
-                "project dir is not present, no need to clean up")
-            exit(1)
-        choice = raw_input(
-            "Remove \"{}\"? (y/n) ".format(self.root_dir)).lower()
-        if choice == "y":
-            shutil.rmtree(self.root_dir)
-        exit(0)
+        if os.path.exists(self.root_dir):
+            choice = input(
+                "Remove \"{}\"? (y/n) ".format(self.root_dir)).lower()
+            if choice == "y":
+                shutil.rmtree(self.root_dir)
+        return 0
 
     def action_ls(self):
         for task in self.tasks:
@@ -63,7 +61,8 @@ class Project(object):
             print("Wave Function Dynamics (Psi Files):")
             for psi in self.psis:
                 print("\t" + psi)
-        exit(0)
+
+        return 0
 
     def action_qsub(self):
         # create root directory
@@ -104,7 +103,7 @@ class Project(object):
 
         # reset loggers and exit
         self._reset_loggers()
-        exit(0)
+        return 0
 
     def action_run(self):
         # create root directory
@@ -129,16 +128,17 @@ class Project(object):
 
         # reset loggers and exit
         self._reset_loggers()
-        exit(0)
+        return 0
 
     def copy_wave_function(self, name, path):
         self.tasks.append(CopyWavefunctionTask(self, name, path))
 
-    def create_operator(self, name, func):
-        self.tasks.append(OperatorCreationTask(self, name, func))
+    def create_operator(self, name, func, func_args=[]):
+        self.tasks.append(OperatorCreationTask(self, name, func, func_args))
 
-    def create_wavefunction(self, name, func):
-        self.tasks.append(WaveFunctionCreationTask(self, name, func))
+    def create_wavefunction(self, name, func, func_args=[]):
+        self.tasks.append(
+            WaveFunctionCreationTask(self, name, func, func_args))
 
     def get_logger(self, name):
         logger = log.getLogger(name)

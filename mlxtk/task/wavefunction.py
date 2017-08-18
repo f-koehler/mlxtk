@@ -5,10 +5,11 @@ from mlxtk.stringio import StringIO
 
 
 class WaveFunctionCreationTask(object):
-    def __init__(self, project, name, func):
+    def __init__(self, project, name, func, func_args=[]):
         self.project = project
         self.name = name
         self.func = func
+        self.func_args = func_args
         self.wave_function_data = None
         self.logger = self.project.get_logger("wavefunction")
 
@@ -66,7 +67,7 @@ class WaveFunctionCreationTask(object):
 
     def _get_wavefunction_data(self):
         sio = StringIO()
-        wavefunction = self.func()
+        wavefunction = self.func(*self.func_args)
         wavefunction.createWfnFile(sio)
         self.wave_function_data = sio.getvalue()
 

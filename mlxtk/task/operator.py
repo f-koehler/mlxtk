@@ -8,10 +8,11 @@ from QDTK.Operatorb import Operatorb
 
 
 class OperatorCreationTask(object):
-    def __init__(self, project, name, func):
+    def __init__(self, project, name, func, func_args=[]):
         self.project = project
         self.name = name
         self.func = func
+        self.func_args = func_args
         self.operator_data = None
         self.logger = project.get_logger("operator")
 
@@ -62,7 +63,7 @@ class OperatorCreationTask(object):
 
     def _get_operator_data(self):
         sio = StringIO()
-        operator = self.func()
+        operator = self.func(*self.func_args)
         if isinstance(operator, Operator):
             operator.createOperatorFile(sio)
         elif isinstance(operator, Operatorb):

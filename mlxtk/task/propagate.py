@@ -79,6 +79,11 @@ class PropagationTask:
             self.logger.info("task dir does not exist")
             return False
 
+        # check if task was run at all
+        if not os.path.exists(os.path.join(self._get_task_dir(), "output")):
+            self.logger.info("output file does not exist")
+            return False
+
         # check if initial wave function changed
         if self._has_initial_wave_function_changed():
             return False

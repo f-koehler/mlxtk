@@ -8,6 +8,7 @@ import subprocess
 import sys
 
 from mlxtk import log
+from mlxtk import sge
 from mlxtk.task.operator import OperatorCreationTask
 from mlxtk.task.propagate import PropagationTask
 from mlxtk.task.wavefunction import WaveFunctionCreationTask
@@ -32,7 +33,7 @@ class Project(object):
         self.log_file_handler = None
         self.logger = kwargs.get("logger", self.get_logger("project"))
 
-    def action_clean(self):
+    def action_clean(self, args):
         if os.path.exists(self.root_dir):
             choice = input(
                 "Remove \"{}\"? (y/n) ".format(self.root_dir)).lower()
@@ -40,7 +41,7 @@ class Project(object):
                 shutil.rmtree(self.root_dir)
         return 0
 
-    def action_ls(self):
+    def action_ls(self, args):
         for task in self.tasks:
             task.set_project_targets()
 
@@ -64,7 +65,7 @@ class Project(object):
 
         return 0
 
-    def action_qsub(self):
+    def action_qsub(self, args):
         # create root directory
         self._create_root_directory()
 
@@ -76,36 +77,27 @@ class Project(object):
         self.log_file_handler.setFormatter(log.formatter)
         self.logger = self.get_logger("project")
 
-        # create job file
-        # yapf: disable
-        job_file = [
-            "#!/bin/bash",
-            "#$ -N " + self.name,
-            "#$ -q quantix.q",
-            "#$ -S /bin/bash",
-            "#$ -cwd",
-            "#$ -j y",
-            "#$ -V",
-            "#$ -l h_vmem=8G",
-            "#$ -l h_cpu=0:10:00",
-            "python " + sys.argv[0] + " run"
-        ]
-        # yapf: enable
-        self.logger.debug("contents of job file")
-        for line in job_file:
-            self.logger.debug("  " + line)
+        self.logger.info("write SGE job file")
+        job_file_path = os.path.join(self.root_dir, "job.sh")
+        job_cmd = " ".join(["python", sys.argv[0], "run"])
+        sge.write_job_file(job_file_path, self.name, job_cmd, args)
 
-        proc = subprocess.Popen(["qsub"], stdin=subprocess.PIPE)
-        proc.communicate("\n".join(job_file))
-        return_code = proc.wait()
-        if return_code:
-            raise subprocess.CalledProcessError("qsub", return_code)
+        self.logger.info("submit job")
+        jobid = sge.submit_job(job_file_path)
+
+        self.logger.info("write epilogue script")
+        epilogue_script_path = os.path.join(self.root_dir, "epilogue.sh")
+        sge.write_epilogue_script(epilogue_script_path, jobid)
+
+        self.logger.info("write stop script")
+        stop_script_path = os.path.join(self.root_dir, "stop.sh")
+        sge.write_stop_script(stop_script_path, [jobid])
 
         # reset loggers and exit
         self._reset_loggers()
         return 0
 
-    def action_run(self):
+    def action_run(self, args):
         # create root directory
         self._create_root_directory()
 
@@ -178,12 +170,13 @@ class Project(object):
 
         parser_qsub = subparsers.add_parser("qsub")
         parser_qsub.set_defaults(func=self.action_qsub)
+        sge.add_parser_arguments(parser_qsub)
 
         parser_run = subparsers.add_parser("run")
         parser_run.set_defaults(func=self.action_run)
 
         args = parser.parse_args()
-        args.func()
+        args.func(args)
 
     def propagate(self, initial, final, hamiltonian, **kwargs):
         self.tasks.append(

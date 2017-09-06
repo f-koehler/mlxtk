@@ -1,32 +1,28 @@
-import matplotlib.axes
-import matplotlib.figure
-import matplotlib.pyplot
+from matplotlib import rc
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+
+def set_style():
+    rc("axes", grid=True)
+    rc("figure", dpi=200)
+    rc("savefig", bbox="tight", directory="", dpi=600, format="pdf")
+
+
+set_style()
 
 
 class Plot:
     def __init__(self, **kwargs):
-        figure = kwargs.get("figure", None)
-        axes = kwargs.get("axes", None)
+        self.figure = kwargs.get("figure", Figure())
+        self.canvas = FigureCanvas(self.figure)
+        self.axes = kwargs.get("axes", None)
 
-        if not figure or not axes:
-            self.figure, self.axes = matplotlib.pyplot.subplots(
-                nrows=kwargs.get("nrows", 1), ncols=kwargs.get("ncols", 1))
-        else:
-            self.figure = figure
-            self.axes = None
-
-    def activate(self):
-        try:
-            matplotlib.pyplot.sca(self.axes)
-        except:
-            try:
-                matplotlib.pyplot.sca(self.axes[0])
-            except:
-                matplotlib.pyplot.sca(self.axes[0][0])
+        if not self.axes:
+            self.axes = self.figure.add_subplot(1, 1, 1)
 
     def save(self, *args, **kwargs):
         self.figure.savefig(*args, **kwargs)
 
     def show(self):
-        self.activate()
-        matplotlib.pyplot.show()
+        self.figure.show()

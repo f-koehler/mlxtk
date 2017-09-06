@@ -121,22 +121,34 @@ class ParameterScan(object):
 
     def main(self):
         parser = argparse.ArgumentParser()
-        subparsers = parser.add_subparsers(title="subcommands")
+        subparsers = parser.add_subparsers(
+            title="subcommands",
+            help=
+            "The help for each subcommand can be shown by passing -h/--help to it."
+        )
 
-        parser_clean = subparsers.add_parser("clean")
+        parser_clean = subparsers.add_parser(
+            "clean", help="delete all files create by the parameter scan")
         parser_clean.set_defaults(func=self.action_clean)
 
         # parser_ls = subparsers.add_parser("ls")
         # parser_ls.set_defaults(func=self.action_ls)
 
-        parser_qsub = subparsers.add_parser("qsub")
+        # parser_plot = subparsers.add_parameter()
+
+        parser_qsub = subparsers.add_parser(
+            "qsub",
+            help="submit the parameter scan to the SGE batch-queuing system")
         parser_qsub.set_defaults(func=self.action_qsub)
         sge.add_parser_arguments(parser_qsub)
 
-        parser_run = subparsers.add_parser("run")
+        parser_run = subparsers.add_parser(
+            "run", help="run parameter scan locally")
         parser_run.set_defaults(func=self.action_run)
 
-        parser_run_id = subparsers.add_parser("run-index")
+        parser_run_id = subparsers.add_parser(
+            "run-index",
+            help="run project with a certain parmeter index (internal use)")
         parser_run_id.set_defaults(func=self.action_run_index)
         parser_run_id.add_argument(
             "id", type=str, help="index of the job to run")

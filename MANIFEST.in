@@ -1,1 +1,2 @@
 recursive-include mlxtk *.py
+recursive-include scripts *.py

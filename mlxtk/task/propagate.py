@@ -1,5 +1,8 @@
 from mlxtk import hashing
 from mlxtk.inout import output as io_output
+from mlxtk.plot.energy import plot_energy
+from mlxtk.plot.norm import plot_norm
+from mlxtk.plot.overlap import plot_overlap
 from mlxtk.process import watch_process
 
 from distutils.spawn import find_executable
@@ -17,7 +20,7 @@ class PropagationTask:
         self.final = final
         self.hamiltonian = hamiltonian
 
-        self.dt = kwargs.get("dt", 0.1)
+        self.dt = kwargs.get("dt", 1.0)
         self.tfinal = kwargs.get("tfinal", self.dt)
 
         # operation modes
@@ -60,43 +63,6 @@ class PropagationTask:
         # create logger
         self.logger = kwargs.get("logger",
                                  self.project.get_logger("propagate"))
-
-    def set_project_targets(self):
-        self._check_conflicts()
-        self.project.wavefunctions[self.final] = {
-            "path": os.path.join(self._get_task_dir(), "restart")
-        }
-        if self.psi:
-            self.project.psis["{}_{}".format(self.initial, self.final)] = {
-                "path": os.path.join(self._get_task_dir(), "psi")
-            }
-
-    def is_up_to_date(self):
-        self._check_conflicts()
-
-        # create task dir if not present
-        if not os.path.exists(self._get_task_dir()):
-            self.logger.info("task dir does not exist")
-            return False
-
-        # check if task was run at all
-        if not os.path.exists(os.path.join(self._get_task_dir(), "output")):
-            self.logger.info("output file does not exist")
-            return False
-
-        # check if initial wave function changed
-        if self._has_initial_wave_function_changed():
-            return False
-
-        # check if hamiltonian changed
-        if self._has_hamiltonian_changed():
-            return False
-
-        # check if last run was complete
-        if not self._is_last_run_complete():
-            return False
-
-        return self._is_command_hash_valid()
 
     def execute(self):
         if self.relax or self.improved_relax:
@@ -156,6 +122,62 @@ class PropagationTask:
         self._update_project(True)
 
         self.logger.info("done")
+
+    def is_up_to_date(self):
+        self._check_conflicts()
+
+        # create task dir if not present
+        if not os.path.exists(self._get_task_dir()):
+            self.logger.info("task dir does not exist")
+            return False
+
+        # check if task was run at all
+        if not os.path.exists(os.path.join(self._get_task_dir(), "output")):
+            self.logger.info("output file does not exist")
+            return False
+
+        # check if initial wave function changed
+        if self._has_initial_wave_function_changed():
+            return False
+
+        # check if hamiltonian changed
+        if self._has_hamiltonian_changed():
+            return False
+
+        # check if last run was complete
+        if not self._is_last_run_complete():
+            return False
+
+        return self._is_command_hash_valid()
+
+    def plot(self):
+        def get_path(relative):
+            return os.path.join(self._get_task_dir(), relative)
+
+        if self.exact_diag:
+            return
+
+        self.logger.info("read output file")
+        output = io_output.read_output(get_path("output"))
+
+        self.logger.info("plotting energy")
+        plot_energy(output).save(get_path("energy.pdf"))
+
+        self.logger.info("plotting norm")
+        plot_norm(output).save(get_path("norm.pdf"))
+
+        self.logger.info("plotting overlap")
+        plot_overlap(output).save(get_path("overlap.pdf"))
+
+    def set_project_targets(self):
+        self._check_conflicts()
+        self.project.wavefunctions[self.final] = {
+            "path": os.path.join(self._get_task_dir(), "restart")
+        }
+        if self.psi:
+            self.project.psis["{}_{}".format(self.initial, self.final)] = {
+                "path": os.path.join(self._get_task_dir(), "psi")
+            }
 
     def _check_conflicts(self):
         # check if initial wave function exists

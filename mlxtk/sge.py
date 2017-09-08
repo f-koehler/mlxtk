@@ -15,6 +15,8 @@ def add_parser_arguments(parser):
         "--time",
         default="00:10:00",
         help="maximum computation time for the job(s)")
+    parser.add_argument(
+        "--cpus", default="1", help="number of cpus to use for SMP")
     pass
 
 
@@ -53,7 +55,8 @@ def write_job_file(path, name, cmd, args, output=None):
         "#$ -j y",
         "#$ -V",
         "#$ -l h_vmem={memory}",
-        "#$ -l h_cpu={time}"
+        "#$ -l h_cpu={time}",
+        "#$ -pe smp {cpus}"
         # yapf: enable
     ]
     if output:
@@ -65,6 +68,7 @@ def write_job_file(path, name, cmd, args, output=None):
         queue=args.queue,
         memory=args.memory,
         time=args.time,
+        cpus=args.cpus,
         cmd=cmd,
         output=output)
 

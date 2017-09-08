@@ -96,6 +96,9 @@ class ParameterScan(object):
 
         self.logger.info("submitted %d jobs", counter)
 
+    def action_table(self, args):
+        pass
+
     def add_parameter(self, name, values):
         self.parameters.append(Parameter(name, values))
 
@@ -121,11 +124,7 @@ class ParameterScan(object):
 
     def main(self):
         parser = argparse.ArgumentParser()
-        subparsers = parser.add_subparsers(
-            title="subcommands",
-            help=
-            "The help for each subcommand can be shown by passing -h/--help to it."
-        )
+        subparsers = parser.add_subparsers(title="subcommands")
 
         parser_clean = subparsers.add_parser(
             "clean", help="delete all files create by the parameter scan")

@@ -60,6 +60,8 @@ class PropagationTask:
         self.eig_tot = kwargs.get("eig_tot", 1)
         self.energy_only = kwargs.get("energy_only", False)
 
+        self.threads = kwargs.get("threads", 1)
+
         # create logger
         self.logger = kwargs.get("logger",
                                  self.project.get_logger("propagate"))
@@ -251,6 +253,9 @@ class PropagationTask:
             cmd.append("-resetnorm")
         if self.gramschmidt:
             cmd.append("-gramschmidt")
+
+        if self.threads:
+            cmd += ["-threads", str(self.threads)]
 
         return cmd
 

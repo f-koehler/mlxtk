@@ -8,10 +8,7 @@ import sys
 
 from mlxtk import log
 from mlxtk import sge
-from mlxtk.task.operator import OperatorCreationTask
-from mlxtk.task.propagate import PropagationTask
-from mlxtk.task.wavefunction import WaveFunctionCreationTask
-from mlxtk.task.copy_wavefunction import CopyWavefunctionTask
+import mlxtk.task
 
 
 def create_operator_table(*args):
@@ -33,6 +30,11 @@ class Project(object):
         self.logger = kwargs.get("logger", self.get_logger("project"))
 
     def action_clean(self, args):
+        """Delete all project output
+
+        Args:
+            args: additional command line arguments
+        """
         if os.path.exists(self.root_dir):
             choice = input(
                 "Remove \"{}\"? (y/n) ".format(self.root_dir)).lower()
@@ -129,16 +131,43 @@ class Project(object):
         return 0
 
     def copy_wave_function(self, name, path):
-        self.tasks.append(CopyWavefunctionTask(self, name, path))
+        self.tasks.append(mlxtk.task.CopyWavefunctionTask(self, name, path))
 
     def create_operator(self, name, func, func_args=[]):
-        self.tasks.append(OperatorCreationTask(self, name, func, func_args))
+        """Add an operator creation task to the project
+
+        Args:
+            name (str): Name of the operator.
+            func: A callable that returns the Operator/Operatorb object.
+            func_args (list): Any extra arguments func might need.
+        """
+        self.tasks.append(
+            mlxtk.task.OperatorCreationTask(self, name, func, func_args))
 
     def create_wavefunction(self, name, func, func_args=[]):
+        """Add a wave function creation task to the project
+
+        Args:
+            name (str): Name of the wave function
+            func: A callable that returns the Wavefunction object
+            func_args: (list): Any extra arguments func might need
+        """
         self.tasks.append(
-            WaveFunctionCreationTask(self, name, func, func_args))
+            mlxtk.task.WaveFunctionCreationTask(self, name, func, func_args))
 
     def get_logger(self, name):
+        """Get the logging handler with the given name
+
+        By using this function instead of :py:func:`logging.getLogger` it is
+        ensured that the logger is associated with the file handler of the
+        project.
+
+        Args:
+            name (str): Name of the logger
+
+        Returns:
+            logging.Logger: The requested logger
+        """
         logger = log.getLogger(name)
         if self.log_file_handler:
             logger.addHandler(self.log_file_handler)
@@ -151,6 +180,11 @@ class Project(object):
         self.propagate(initial, "exact_diag_" + initial, hamiltonian, **kwargs)
 
     def get_hash_dir(self):
+        """Get the path of the hash directory
+
+        Returns:
+            str: Full path of the hash directory
+        """
         return os.path.join(self.root_dir, "hashes")
 
     def get_operator_dir(self):
@@ -160,11 +194,22 @@ class Project(object):
         return os.path.join(self.root_dir, "wave_functions")
 
     def improved_relax(self, initial, final, hamiltonian, **kwargs):
+        """Add an improved relaxation task to the project
+
+        Args:
+            initial (str): Name of the initial wave function
+            final (str): Name of the final wave function
+            hamiltonian (str): Name of the operator to use for the propagation
+        """
         kwargs["improved_relax"] = True
         kwargs["logger"] = self.get_logger("improved_relax")
         self.propagate(initial, final, hamiltonian, **kwargs)
 
     def main(self):
+        """Main function of the project
+
+        This function handles command line arguments and executes the actions requested by the user
+        """
         parser = argparse.ArgumentParser()
         subparsers = parser.add_subparsers(
             title="subcommands",
@@ -196,10 +241,25 @@ class Project(object):
         args.func(args)
 
     def propagate(self, initial, final, hamiltonian, **kwargs):
+        """Add a wave function propagation task to the project
+
+        Args:
+            initial (str): Name of the initial wave function
+            final (str): Name of the final wave function
+            hamiltonian (str): Name of the operator to use for the propagation
+        """
         self.tasks.append(
-            PropagationTask(self, initial, final, hamiltonian, **kwargs))
+            mlxtk.task.PropagationTask(self, initial, final, hamiltonian, **
+                                       kwargs))
 
     def relax(self, initial, final, hamiltonian, **kwargs):
+        """Add a relaxation task to the project
+
+        Args:
+            initial (str): Name of the initial wave function
+            final (str): Name of the final wave function
+            hamiltonian (str): Name of the operator to use for the propagation
+        """
         kwargs["relax"] = True
         kwargs["logger"] = self.get_logger("relax")
         self.propagate(initial, final, hamiltonian, **kwargs)

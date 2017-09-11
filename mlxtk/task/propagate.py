@@ -12,6 +12,33 @@ import shutil
 
 
 class PropagationTask:
+    """Create a PropagationTask
+
+    Attributes:
+        project: Project this task is part of
+
+        initial (str): Name of the initial wave function
+        final (str): Name of the final wave function
+        hamiltonian (str): Name of the Hamiltonian used for the propagation
+
+        dt (float): Time step size for the integrator
+        tfinal (float): Stopping time for the integrator
+
+        relax (bool): Whether this is a relaxation task
+        improved_relax (bool): Whether this is an improved relaxation task
+        exact_diag (bool): Whether this is an exact diagonalization task
+
+        psi (bool): Whether to create a psi file (containing the wave function after each time step)
+        cont (bool): Whether this a continuation of a previous run
+        rstzero (bool): Whether to reset the time to zero in the output files
+        trans_mat (bool): Whether to write out the transition matrices
+
+    Args:
+        project: The project this task is part of
+        initial (str): Name of the initial wave function
+        final (str): Name of the final wave function
+        hamiltonian (str): Name of the Hamilton operator to be used for propagation
+    """
     def __init__(self, project, initial, final, hamiltonian, **kwargs):
         self.project = project
 
@@ -126,6 +153,11 @@ class PropagationTask:
         self.logger.info("done")
 
     def is_up_to_date(self):
+        """Check if the task is up-to-date or not
+
+        Returns:
+            bool: True if the project is up-to-date, False otherwise
+        """
         self._check_conflicts()
 
         # create task dir if not present
@@ -153,6 +185,8 @@ class PropagationTask:
         return self._is_command_hash_valid()
 
     def plot(self):
+        """Plot the results of the propagation
+        """
         def get_path(relative):
             return os.path.join(self._get_task_dir(), relative)
 

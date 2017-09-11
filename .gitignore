@@ -1,4 +1,5 @@
 *.egg-info
 *.gitignore
 *.pyc
+*.swp
 .ctags

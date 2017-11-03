@@ -1,21 +1,22 @@
-import hashlib
-
-
-def hash_file(path):
-    hfunc = hashlib.sha256()
-    with open(path, "rb") as fhandle:
-        hfunc.update(fhandle.read())
-    return hfunc.hexdigest()
+import subprocess
 
 
 def hash_string(string):
-    hfunc = hashlib.sha256()
-    hfunc.update(string.encode())
-    return hfunc.hexdigest()
+    process = subprocess.Popen(
+        ["sha256sum"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    out, _ = process.communicate(string.encode())
+    if process.wait() != 0:
+        raise RuntimeError("Running \"sha256sum\" to hash string failed")
+    return out.decode().split()[0]
+
+
+def hash_file(path):
+    process = subprocess.Popen(["sha256sum", path], stdout=subprocess.PIPE)
+    out, _ = process.communicate()
+    if process.wait() != 0:
+        raise RuntimeError("Running \"sha256sum\" to hash file failed")
+    return out.decode().split()[0]
 
 
 def hash_values(*args):
-    hfunc = hashlib.sha256()
-    string = str(len(args)) + "".join([str(arg) for arg in args])
-    hfunc.update(string.encode())
-    return hfunc.hexdigest()
+    return hash_string(str(len(args)) + "".join([str(arg) for arg in args]))

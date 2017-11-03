@@ -1,89 +1,48 @@
 import os
 
-from mlxtk import hashing
-from mlxtk.stringio import StringIO
-
 from QDTK.Operator import Operator
 from QDTK.Operatorb import Operatorb
 
+from mlxtk.stringio import StringIO
+from mlxtk.task import task
 
-class OperatorCreationTask(object):
-    def __init__(self, project, name, func, func_args=[]):
-        self.project = project
-        self.name = name
-        self.func = func
-        self.func_args = func_args
-        self.operator_data = None
-        self.logger = project.get_logger("operator")
 
-    def execute(self):
-        self.logger.info("task: create operator \"%s\"", self.name)
+class OperatorCreationTask(task.Task):
+    def __init__(self, name, function, **kwargs):
+        self.operator_name = name
+        self.operator_creator = function
 
-        if self.is_up_to_date():
-            self._update_project(False)
-            self.logger.info("already up-to-date")
-            self.logger.info("done")
-            return
+        kwargs["task_type"] = "OperatorCreationTask"
 
-        # create the operator file
-        self.logger.info("write operator file")
-        with open(self._get_output_path(), "w") as fh:
-            fh.write(self.operator_data)
+        task.Task.__init__(
+            self,
+            "create_operator_file_" + name,
+            self.write_operator_file,
+            inputs=[task.FunctionInput("operator_string", self.get_operator_string)],
+            outputs=[task.FileOutput(name, name + ".operator")],
+            **kwargs)
 
-        # mark operator update
-        self._update_project(True)
-        self.logger.info("done")
-
-    def is_up_to_date(self):
-        self._check_conflicts()
-        self._get_operator_data()
-
-        if not self._is_file_present():
-            return False
-
-        # check if operator already up-to-date
-        hash_current = hashing.hash_file(self._get_output_path())
-        hash_new = hashing.hash_string(self.operator_data)
-        if hash_current != hash_new:
-            self.logger.info("hash mismatch")
-            self.logger.debug("%s != %s", hash_current, hash_new)
-            return False
-
-        return True
-
-    def set_project_targets(self):
-        self._check_conflicts()
-        self.project.operators[self.name] = {"path": self._get_output_path()}
-
-    def _check_conflicts(self):
-        if self.name in self.project.operators:
-            self.logger.critical("operator \"%s\" already exists", self.name)
-            raise RuntimeError("name conflict: operator \"{}\" already exists".
-                               format(self.name))
-
-    def _get_operator_data(self):
+    def get_operator_string(self):
+        operator = self.operator_creator()
         sio = StringIO()
-        operator = self.func(*self.func_args)
         if isinstance(operator, Operator):
             operator.createOperatorFile(sio)
         elif isinstance(operator, Operatorb):
             operator.createOperatorFileb(sio)
         else:
-            raise TypeError(
-                "Unknown operator type \"{}\"".format(type(operator).__name__))
-        self.operator_data = sio.getvalue()
+            raise TypeError("Unknown operator type \"{}\"".format(
+                type(operator).__name__))
 
-    def _get_output_path(self):
-        return os.path.join(self.project.get_operator_dir(), self.name)
+        return sio.getvalue()
 
-    def _is_file_present(self):
-        ret = os.path.exists(self._get_output_path())
-        if not ret:
-            self.logger.info("operator file does not exist")
-        return ret
-
-    def _update_project(self, updated):
-        self.project.operators[self.name] = {
-            "updated": updated,
-            "path": self._get_output_path()
-        }
+    def write_operator_file(self):
+        operator = self.operator_creator()
+        path = os.path.join(self.cwd, self.operator_name + ".operator")
+        with open(path, "w") as fhandle:
+            if isinstance(operator, Operator):
+                operator.createOperatorFile(fhandle)
+            elif isinstance(operator, Operatorb):
+                operator.createOperatorFileb(fhandle)
+            else:
+                raise TypeError("Unknown operator type \"{}\"".format(
+                    type(operator).__name__))

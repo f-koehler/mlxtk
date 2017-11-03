@@ -2,4 +2,5 @@
 *.gitignore
 *.pyc
 *.swp
+*~
 .ctags

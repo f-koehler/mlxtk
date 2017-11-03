@@ -71,7 +71,7 @@ def add_fft(name, npoints, xmin, xmax):
 
 def get(name):
     if name not in DVRS:
-        log.getLogger("dvr").info("constructing dvr \"%s\" (%s)", name,
+        log.getLogger("DVR").info("constructing dvr \"%s\" (%s)", name,
                                   REGISTERED_DVRS[name][0].__name__)
         DVRS[name] = REGISTERED_DVRS[name][0](*REGISTERED_DVRS[name][1:])
 

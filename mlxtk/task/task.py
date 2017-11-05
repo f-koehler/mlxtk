@@ -40,6 +40,13 @@ class FileOutput(object):
             return None
         return hashing.hash_file(path)
 
+    def make_directories(self):
+        dirname = os.path.dirname(self.filename)
+        if dirname:
+            if os.path.exists(dirname):
+                return
+            os.makedirs(os.path.join(self.cwd, dirname))
+
 
 class Task(object):
     def __init__(self, name, function, **kwargs):
@@ -51,6 +58,7 @@ class Task(object):
         self.task_type = kwargs.get("task_type", "Task")
         self.state_file = kwargs.get("state_file",
                                      os.path.join(self.cwd, name + ".state"))
+        self.preprocess_steps = []
         self.input_states = None
         self.output_states = None
         self.stored_input_states = None
@@ -66,6 +74,10 @@ class Task(object):
             out.cwd = self.cwd
 
     def get_current_state(self):
+        for i, step in enumerate(self.preprocess_steps):
+            self.logger.info("run preprocessing step %d", i)
+            step()
+
         self.set_cwds()
         self.input_states = {inp.name: inp.get_state() for inp in self.inputs}
         self.output_states = {
@@ -90,6 +102,8 @@ class Task(object):
         self.stored_output_states = json_src["outputs"]
 
     def is_up_to_date(self):
+        self.set_cwds()
+
         if not os.path.exists(self.state_file):
             self.logger.info("not up-to-date, state file does not exist")
             return False
@@ -127,6 +141,10 @@ class Task(object):
         if self.is_up_to_date():
             self.logger.info("already up-to-date")
             return False
+
+        self.logger.info("create directories")
+        for out in self.outputs:
+            out.make_directories()
 
         self.logger.info("run task")
         self.function()

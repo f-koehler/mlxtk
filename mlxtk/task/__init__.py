@@ -3,5 +3,5 @@ projects
 """
 # from mlxtk.task.copy_wavefunction import CopyWavefunctionTask
 from mlxtk.task.operator import OperatorCreationTask
-# from mlxtk.task.propagate import PropagationTask
+from mlxtk.task.propagate import PropagationTask
 from mlxtk.task.wavefunction import WaveFunctionCreationTask

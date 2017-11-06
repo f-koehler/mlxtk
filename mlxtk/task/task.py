@@ -41,11 +41,11 @@ class FileOutput(object):
         return hashing.hash_file(path)
 
     def make_directories(self):
-        dirname = os.path.dirname(self.filename)
+        dirname = os.path.dirname(os.path.join(self.cwd, self.filename))
         if dirname:
             if os.path.exists(dirname):
                 return
-            os.makedirs(os.path.join(self.cwd, dirname))
+            os.makedirs(dirname)
 
 
 class Task(object):
@@ -54,7 +54,7 @@ class Task(object):
         self.function = function
         self.inputs = kwargs.get("inputs", [])
         self.outputs = kwargs.get("outputs", [])
-        self.cwd = kwargs.get("cwd", os.getcwd())
+        self.cwd = "."
         self.task_type = kwargs.get("task_type", "Task")
         self.state_file = kwargs.get("state_file",
                                      os.path.join(self.cwd, name + ".state"))
@@ -87,7 +87,7 @@ class Task(object):
 
     def write_state_file(self):
         self.set_cwds()
-        with open(self.state_file, "w") as fhandle:
+        with open(os.path.join(self.cwd, self.state_file), "w") as fhandle:
             json.dump({
                 "inputs": self.input_states,
                 "outputs": self.output_states
@@ -95,7 +95,7 @@ class Task(object):
 
     def read_state_file(self):
         self.set_cwds()
-        with open(self.state_file, "r") as fhandle:
+        with open(os.path.join(self.cwd, self.state_file), "r") as fhandle:
             json_src = json.load(fhandle)
 
         self.stored_input_states = json_src["inputs"]
@@ -104,7 +104,7 @@ class Task(object):
     def is_up_to_date(self):
         self.set_cwds()
 
-        if not os.path.exists(self.state_file):
+        if not os.path.exists(os.path.join(self.cwd, self.state_file)):
             self.logger.info("not up-to-date, state file does not exist")
             return False
 

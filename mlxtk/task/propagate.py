@@ -13,7 +13,7 @@ class PropagationTask(task.Task):
         self.initial_wave_function = initial_wave_function
         self.operator = operator
 
-        self.dt = kwargs.get("dt", 1.)
+        self.dt = kwargs.get("dt", 0.1)
         self.tfinal = kwargs.get("tfinal", 1.)
         self.psi = kwargs.get("psi", False)
         self.relax = kwargs.get("relax", False)
@@ -26,15 +26,34 @@ class PropagationTask(task.Task):
         self.zvode_mf = kwargs.get("zvode_mf", 10)
         self.atol = kwargs.get("atol", 1e-10)
         self.rtol = kwargs.get("rtol", 1e-10)
-        self.reg = kwargs.get("reg", 1e-8)
+        self.reg = kwargs.get("reg", 1e-12)
         self.exproj = kwargs.get("exproj", False)
         self.resetnorm = kwargs.get("resetnorm", False)
         self.gramschmidt = kwargs.get("gramschmidt", False)
         self.statsteps = kwargs.get("statsteps", 0)
-        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-8)
-        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-8)
+        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-9)
+        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-9)
 
-        kwargs["task_type"] = "PropagationTask"
+        if self.relax:
+            kwargs["task_type"] = "RelaxationTask"
+            name = "relax_" + name
+            if self.statsteps == 0:
+                self.statsteps = 30
+        elif self.improved_relax:
+            name = "improved_relax_" + name
+            kwargs["task_type"] = "ImprovedRelaxationTask"
+        else:
+            name = "propagate_" + name
+            kwargs["task_type"] = "PropagationTask"
+
+        inp_parameters = task.FileInput("parameters",
+                                        os.path.join(self.propagation_name,
+                                                     "parameters.json"))
+        inp_wave_function = task.FileInput(
+            "initial_wave_function",
+            self.initial_wave_function + ".wave_function")
+        inp_operator = task.FileInput("hamiltonian",
+                                      self.operator + ".operator")
 
         out_restart = task.FileOutput("final_wave_function",
                                       os.path.join(self.propagation_name,
@@ -46,18 +65,13 @@ class PropagationTask(task.Task):
         out_output = task.FileOutput("qdtk_output",
                                      os.path.join(self.propagation_name,
                                                   "output"))
-        out_parameters = task.FileOutput("parameters",
-                                         os.path.join(self.propagation_name,
-                                                      "parameters.json"))
 
         task.Task.__init__(
             self,
-            "create_operator_file_" + name,
+            name,
             self.run_propagation,
-            inputs=[],
-            outputs=[
-                out_restart, out_gpop, out_npop, out_output, out_parameters
-            ],
+            inputs=[inp_parameters, inp_wave_function, inp_operator],
+            outputs=[out_restart, out_gpop, out_npop, out_output],
             **kwargs)
 
         self.preprocess_steps.append(self.write_propagation_parameters)
@@ -90,7 +104,11 @@ class PropagationTask(task.Task):
         parameters = self.get_parameter_dict()
         cmd = ["qdtk_propagate.x"]
         for name in parameters:
-            cmd += ["-" + name, str(parameters[name])]
+            if isinstance(parameters[name], bool):
+                if parameters[name]:
+                    cmd += ["-" + name]
+            else:
+                cmd += ["-" + name, str(parameters[name])]
 
         cmd += [
             "-opr", self.operator + ".operator", "-rst",
@@ -100,14 +118,17 @@ class PropagationTask(task.Task):
 
     def run_propagation(self):
         self.logger.info("copy initial wave function")
-        shutil.copy2(self.initial_wave_function + ".wave_function",
-                     os.path.join(self.cwd, self.propagation_name,
-                                  "initial.wave_function"))
+        shutil.copy2(
+            os.path.join(self.cwd,
+                         self.initial_wave_function + ".wave_function"),
+            os.path.join(self.cwd, self.propagation_name,
+                         "initial.wave_function"))
 
         self.logger.info("copy operator")
-        shutil.copy2(self.operator + ".operator",
-                     os.path.join(self.cwd, self.propagation_name,
-                                  "hamiltonian.operator"))
+        shutil.copy2(
+            os.path.join(self.cwd, self.operator + ".operator"),
+            os.path.join(self.cwd, self.propagation_name,
+                         "hamiltonian.operator"))
 
         self.logger.info("run qdtk_propagate.x")
         command = self.get_command()

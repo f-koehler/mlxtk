@@ -1,6 +1,7 @@
 from matplotlib import rc
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
+# from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+# from matplotlib.figure import Figure
+from matplotlib.pyplot import figure, show
 
 
 def set_style():
@@ -14,8 +15,8 @@ set_style()
 
 class Plot:
     def __init__(self, **kwargs):
-        self.figure = kwargs.get("figure", Figure())
-        self.canvas = FigureCanvas(self.figure)
+        self.figure = kwargs.get("figure", figure())
+        # self.canvas = FigureCanvas(self.figure)
         self.axes = kwargs.get("axes", None)
 
         if not self.axes:
@@ -25,4 +26,5 @@ class Plot:
         self.figure.savefig(*args, **kwargs)
 
     def show(self):
-        self.figure.show()
+        # self.figure.show()
+        show()

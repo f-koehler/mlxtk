@@ -1,91 +1,70 @@
-import os.path
+import numpy
 import pandas
+import re
+from mlxtk.stringio import StringIO
 
 
-def read_raw(input_file):
-    t = []
+def read_gpop(path):
+    regex_time_stamp = re.compile(r"^#\s+(.+)\s+\[au\]$")
+    times = []
+    dofs = []
+    grids = {}
+    densities = {}
 
-    new_block = False
-    values = []
+    with open(path, "r") as fhandle:
+        match = regex_time_stamp.match(fhandle.readline())
+        if match:
+            times.append(float(match.group(1)))
 
-    with open(input_file) as fh:
         while True:
-            line = fh.readline()
-            if line == '':
-                # an empty string can only occur at EOF
+            dof, grid_points = fhandle.readline().split()
+            dof = int(dof)
+            grid_points = int(grid_points)
+
+            sio = StringIO()
+            for i in range(0, grid_points):
+                sio.write(fhandle.readline())
+            sio.seek(0)
+            data = pandas.read_csv(sio, sep=r"\s+", names=["grid", "density"])
+            sio = None
+
+            # unfortuantely reading from the fhandle directly does not seem to
+            # work
+            # data = pandas.read_csv(
+            #     fhandle,
+            #     sep=r"\s+",
+            #     nrows=grid_points,
+            #     names=["grid", "density"],
+            #     skip_blank_lines=False)
+
+            if dof not in dofs:
+                dofs.append(dof)
+                grids[dof] = data["grid"].as_matrix()
+                densities[dof] = [data["density"].as_matrix()]
+            else:
+                densities[dof].append(data["density"])
+
+            # read the empty line after the block
+            fhandle.readline()
+
+            # check next line
+            position = fhandle.tell()
+            line = fhandle.readline()
+            if not line:
+                # end of file reached
                 break
 
-            spl = line.split()
+            match = regex_time_stamp.match(line)
+            if match:
+                # new time stamp
+                times.append(float(match.group(1)))
+                continue
 
-            if not new_block:
-                if spl == []:
-                    # found a blank line, a new block will start
-                    new_block = True
-                    continue
-                if spl[0] == "#":
-                    # found a time stamp, a new block will start
-                    # extract time
-                    t.append(float(spl[1]))
-                    new_block = True
-                    continue
-                raise ValueError("Expected either a blank line or a time stamp")
+            # new dof
+            fhandle.seek(position)
 
-            # read a new block of data
-            dof = int(spl[0]) - 1
-            grid_size = int(spl[1])
+    # convert densities to numpy arrays
+    for dof in densities:
+        densities[dof] = numpy.array(densities[dof])
 
-            x = []
-            density = [t[-1]]
-            for i in range(0, grid_size):
-                spl = fh.readline().split()
-                x.append(float(spl[0]))
-                density.append(float(spl[1]))
-
-            if dof >= len(values):
-                # new dof
-                values.append({
-                    "dof": dof,
-                    "grid_size": grid_size,
-                    "grid": x,
-                    "densities": [density]
-                })
-            else:
-                # know dof
-                values[dof]["densities"].append(density)
-
-            new_block = False
-            fh.readline()
-
-    for v in values:
-        names = ["time"] + [
-            "x_{}".format(i) for i in range(0, len(v["densities"][1]) - 1)
-        ]
-        v["grid"] = pandas.DataFrame(v["grid"], columns=["x"])
-        v["densities"] = pandas.DataFrame(v["densities"], columns=names)
-
-    return values
-
-
-def write(values, output_dir):
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-
-    for dataset in values:
-        grid_file = os.path.join(output_dir,
-                                 "grid_{}.gz".format(dataset["dof"]))
-        density_file = os.path.join(output_dir,
-                                    "density_{}.gz".format(dataset["dof"]))
-
-        dataset["grid"].to_csv(grid_file, index=False, compression="gzip")
-        dataset["densities"].to_csv(
-            density_file, index=False, compression="gzip")
-
-
-def read(dir, dof):
-    grid_file = os.path.join(dir, "grid_{}.gz".format(dof))
-    density_file = os.path.join(dir, "density_{}.gz".format(dof))
-
-    grid = pandas.read_csv(grid_file, compression="gzip")
-    density = pandas.read_csv(density_file, compression="gzip")
-
-    return grid, density
+    return numpy.array(times), grids, densities

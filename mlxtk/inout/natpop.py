@@ -61,7 +61,7 @@ def read_natpop(path):
     # create DataFrames
     data = {}
     for node in node_content:
-        data[node] = {}
+        data[node + 1] = {}
         for orbitals in node_content[node]:
             # obtain number of orbitals
             num_orbitals = len(node_content[node][orbitals][0].split())
@@ -78,6 +78,6 @@ def read_natpop(path):
 
             # create DataFrame
             sio = StringIO(header + "\n".join(node_content[node][orbitals]))
-            data[node][orbitals] = pandas.read_csv(sio, sep="\s+")
+            data[node + 1][orbitals + 1] = pandas.read_csv(sio, sep="\s+")
 
     return data

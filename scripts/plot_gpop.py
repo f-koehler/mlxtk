@@ -13,7 +13,7 @@ def main():
         type=str,
         dest="input_file",
         default="gpop",
-        help="input_file (defaults to \"output\")")
+        help="input_file (defaults to \"gpop\")")
     parser.add_argument(
         "--dof",
         type=int,

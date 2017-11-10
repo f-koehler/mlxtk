@@ -1,29 +1,33 @@
 #!/usr/bin/env python
+from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
 from mlxtk.inout.natpop import read_natpop
-from mlxtk.plot.natpop import plot_natpop
-import argparse
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Plot natural populations")
+    parser = create_argparser(
+        "Plot evolution of energy expectation value over time")
     parser.add_argument(
-        "-o",
-        nargs="?",
-        default=None,
-        metavar="plot_file",
-        help="file name of the generated plot")
-    parser.add_argument(
-        "data",
-        nargs="?",
+        "--in",
+        type=str,
+        dest="input_file",
         default="natpop",
-        help="file containing the output of a qdtk_*.x program")
+        help="input_file (defaults to \"natpop\")")
+    parser.add_argument(
+        "--dof",
+        type=int,
+        default=1,
+        help="degree of freedom for which to plot the natural populations")
     args = parser.parse_args()
 
-    data = read_natpop(args.data)
-    if args.o:
-        plot_natpop(data).save(args.o)
-    else:
-        plot_natpop(data).show()
+    def init_plot(plot):
+        data = read_natpop(args.input_file)[1][1]
+        for column in data.columns[1:]:
+            plot.axes.plot(data["time"], data[column]/1000.)
+        plot.axes.set_xlabel("$t$")
+        plot.axes.set_ylabel(r"$\lambda_i$")
+
+    program = SimplePlotProgram("Energy", init_plot)
+    program.main(args)
 
 
 if __name__ == "__main__":

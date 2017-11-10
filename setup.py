@@ -11,11 +11,12 @@ setup(
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [
-            # "plot_dmat1=scripts.plot_dmat1:main",
-            # "plot_dmat2=scripts.plot_dmat2:main",
             "plot_energy=scripts.plot_energy:main",
+            "plot_gpop=scripts.plot_gpop:main",
             "plot_natpop=scripts.plot_natpop:main",
             "plot_norm=scripts.plot_norm:main",
-            "plot_gpop=scripts.plot_gpop:main",
+            "plot_overlap=scripts.plot_overlap:main",
+            # "plot_dmat1=scripts.plot_dmat1:main",
+            # "plot_dmat2=scripts.plot_dmat2:main",
         ]
     })

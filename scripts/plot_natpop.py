@@ -26,7 +26,7 @@ def main():
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel(r"$\lambda_i$")
 
-    program = SimplePlotProgram("Energy", init_plot)
+    program = SimplePlotProgram("Natural Populations", init_plot)
     program.main(args)
 
 

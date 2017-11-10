@@ -25,9 +25,10 @@ def main():
         times, grids, densities = read_gpop(args.input_file)
         density = numpy.transpose(densities[1])
         t, x = numpy.meshgrid(times, grids[1])
-        plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
+        cbar = plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
+        plot.figure.colorbar(cbar)
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

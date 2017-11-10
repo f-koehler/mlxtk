@@ -23,12 +23,13 @@ def main():
 
     def init_plot(plot):
         times, grids, densities = read_gpop(args.input_file)
-        density = numpy.transpose(densities[1])
-        t, x = numpy.meshgrid(times, grids[1])
-        cbar = plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
+        density = numpy.transpose(densities[args.dof])
+        t, x = numpy.meshgrid(times, grids[args.dof])
+        heatmap = plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
-        plot.figure.colorbar(cbar)
+        cbar = plot.figure.colorbar(heatmap)
+        cbar.ax.set_ylabel("density")
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

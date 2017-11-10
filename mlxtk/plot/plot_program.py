@@ -5,7 +5,7 @@ import sys
 from mlxtk.plot.plot import Plot
 
 try:
-    from PyQt5 import QtCore, QtWidgets
+    from PyQt5 import QtCore, QtGui, QtWidgets
     from mlxtk.plot.qt5_plot import Qt5Plot
     from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 except ImportError:
@@ -13,15 +13,15 @@ except ImportError:
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
-    def __init__(self, title, init_plot, update_plot=None):
+    def __init__(self, title, **kwargs):
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle(title)
 
         self.main_widget = QtWidgets.QWidget()
 
-        self.plot = Qt5Plot(self.main_widget)
-        init_plot(self.plot)
+        self.plot = Qt5Plot(
+            self.main_widget, projection=kwargs.get("projection", None))
 
         self.plot.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.plot.setFocus()
@@ -39,23 +39,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
 class SimplePlotProgram(object):
-    def __init__(self, title, init_plot, update_plot=None):
+    def __init__(self, title, init_plot, update_plot=None, **plot_args):
         self.title = title
         self.init_plot = init_plot
         self.update_plot = update_plot
+        self.plot_args = plot_args
 
     def main(self, args):
         if args.output_file is None:
             matplotlib.use("Qt5Agg")
 
             application = QtWidgets.QApplication(sys.argv)
-            window = ApplicationWindow(self.title, self.init_plot,
-                                       self.update_plot)
+            window = ApplicationWindow(self.title, **self.plot_args)
+            self.init_plot(window.plot)
             apply_plot_parameters(window.plot, args)
             window.show()
             sys.exit(application.exec_())
         else:
-            plot = Plot()
+            plot = Plot(**self.plot_args)
             self.init_plot(plot)
             apply_plot_parameters(plot, args)
             plot.tight_layout()

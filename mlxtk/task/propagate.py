@@ -19,26 +19,26 @@ class PropagationTask(task.Task):
         self.relax = kwargs.get("relax", False)
         self.improved_relax = kwargs.get("improved_relax", False)
         self.cont = kwargs.get("cont", False)
-        self.rstzero = kwargs.get("rstzero", False)
+        self.rstzero = kwargs.get("rstzero", True)
         self.transMat = kwargs.get("transMat", False)
         self.MBop_apply = kwargs.get("MBop_apply", False)
         self.itg = kwargs.get("itg", "zvode")
         self.zvode_mf = kwargs.get("zvode_mf", 10)
         self.atol = kwargs.get("atol", 1e-10)
         self.rtol = kwargs.get("rtol", 1e-10)
-        self.reg = kwargs.get("reg", 1e-12)
+        self.reg = kwargs.get("reg", 1e-8)
         self.exproj = kwargs.get("exproj", False)
         self.resetnorm = kwargs.get("resetnorm", False)
         self.gramschmidt = kwargs.get("gramschmidt", False)
         self.statsteps = kwargs.get("statsteps", 0)
-        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-9)
-        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-9)
+        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-8)
+        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-8)
 
         if self.relax:
             kwargs["task_type"] = "RelaxationTask"
             name = "relax_" + name
             if self.statsteps == 0:
-                self.statsteps = 30
+                self.statsteps = 50
         elif self.improved_relax:
             name = "improved_relax_" + name
             kwargs["task_type"] = "ImprovedRelaxationTask"
@@ -61,7 +61,8 @@ class PropagationTask(task.Task):
         out_gpop = task.FileOutput("global_population",
                                    os.path.join(self.propagation_name, "gpop"))
         out_npop = task.FileOutput("natural_population",
-                                   os.path.join(self.propagation_name, "npop"))
+                                   os.path.join(self.propagation_name,
+                                                "natpop"))
         out_output = task.FileOutput("qdtk_output",
                                      os.path.join(self.propagation_name,
                                                   "output"))
@@ -111,8 +112,7 @@ class PropagationTask(task.Task):
                 cmd += ["-" + name, str(parameters[name])]
 
         cmd += [
-            "-opr", self.operator + ".operator", "-rst",
-            self.initial_wave_function + ".wave_function"
+            "-opr", "hamiltonian.operator", "-rst", "initial.wave_function"
         ]
         return cmd
 
@@ -140,8 +140,15 @@ class PropagationTask(task.Task):
         if process.wait():
             raise subprocess.CalledProcessError(command, process.returncode)
 
+        self.logger.info("create symlink to final wave function")
+        olddir = os.getcwd()
+        os.chdir(os.path.join(self.cwd, self.propagation_name))
+        if not os.path.islink("final.wave_function"):
+            os.symlink("restart", "final.wave_function")
+        os.chdir(olddir)
+
     def write_propagation_parameters(self):
         with open(
                 os.path.join(self.cwd, self.propagation_name,
-                             self.propagation_name), "w") as fhandle:
+                             "parameters.json"), "w") as fhandle:
             json.dump(self.get_parameter_dict(), fhandle)

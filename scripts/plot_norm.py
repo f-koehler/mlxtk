@@ -1,33 +1,27 @@
 #!/usr/bin/env python
+from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
 from mlxtk.inout.output import read_output
-from mlxtk.plot.norm import plot_norm
-import argparse
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Plot norm")
+    parser = create_argparser("Plot norm of wave function over time")
     parser.add_argument(
-        "-o",
-        nargs="?",
-        default=None,
-        metavar="plot_file",
-        help="file name of the generated plot")
-    parser.add_argument(
-        "--abs",
-        action="store_true",
-        help="whether to use abs(deviation) or not")
-    parser.add_argument(
-        "data",
-        nargs="?",
+        "--in",
+        type=str,
+        dest="input_file",
         default="output",
-        help="file containing the output of a qdtk_*.x program")
+        help="input_file (defaults to \"output\")")
     args = parser.parse_args()
 
-    data = read_output(args.data)
-    if args.o:
-        plot_norm(data, absolute=args.abs).save(args.o)
-    else:
-        plot_norm(data, absolute=args.abs).show()
+    def init_plot(plot):
+        data = read_output(args.input_file)
+        plot.axes.plot(data.time, data.norm - 1, marker=".")
+        plot.axes.set_xlabel("$t$")
+        plot.axes.set_ylabel(
+            r"$\left< \Psi(t) \right|\left. \Psi(t)\right>-1$")
+
+    program = SimplePlotProgram("Norm", init_plot)
+    program.main(args)
 
 
 if __name__ == "__main__":

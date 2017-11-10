@@ -127,11 +127,15 @@ class Task(object):
                 return False
 
         for out in self.outputs:
-            if self.output_states[out.name] != self.stored_output_states[out.
-                                                                         name]:
-                self.logger.info("not up-to-date, input \"%s\" changed",
-                                 out.name)
+            if self.output_states[out.name] is None:
+                self.logger.info(
+                    "not up-to-date, output \"%s\" does not exist", out.name)
                 return False
+            # if self.output_states[out.name] != self.stored_output_states[out.
+            #                                                              name]:
+            #     self.logger.info("not up-to-date, input \"%s\" changed",
+            #                      out.name)
+            #     return False
 
         return True
 

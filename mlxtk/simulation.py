@@ -46,6 +46,10 @@ class Simulation(object):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
+        state_dir = os.path.join(self.cwd, "states")
+        if not os.path.exists(state_dir):
+            os.makedirs(state_dir)
+
         olddir = os.getcwd()
         os.chdir(self.cwd)
 

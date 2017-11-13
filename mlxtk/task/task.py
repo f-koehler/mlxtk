@@ -52,7 +52,7 @@ class Task(object):
         self.inputs = kwargs.get("inputs", [])
         self.outputs = kwargs.get("outputs", [])
         self.task_type = kwargs.get("task_type", "Task")
-        self.state_file = kwargs.get("state_file", name + ".state")
+        self.state_file = os.path.join("states", name + ".json")
         self.preprocess_steps = []
         self.input_states = None
         self.output_states = None
@@ -115,11 +115,6 @@ class Task(object):
                 self.logger.info(
                     "not up-to-date, output \"%s\" does not exist", out.name)
                 return False
-            # if self.output_states[out.name] != self.stored_output_states[out.
-            #                                                              name]:
-            #     self.logger.info("not up-to-date, input \"%s\" changed",
-            #                      out.name)
-            #     return False
 
         return True
 

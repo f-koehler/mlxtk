@@ -58,6 +58,7 @@ class Task(object):
         self.output_states = None
         self.stored_input_states = None
         self.stored_output_states = None
+        self.parameters = None
 
         self.logger = log.getLogger(self.task_type)
 

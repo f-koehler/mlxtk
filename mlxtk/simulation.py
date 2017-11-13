@@ -11,6 +11,7 @@ class Simulation(object):
         self.name = name
         self.cwd = kwargs.get("cwd", name)
         self.tasks = []
+        self.parameters = kwargs.get("parameters", None)
 
         self.propagation_counter = 0
         self.relaxation_counter = 0
@@ -57,6 +58,7 @@ class Simulation(object):
         os.chdir(self.cwd)
 
         for tsk in self.tasks:
+            tsk.parameters = self.parameters
             tsk.run()
 
         os.chdir(olddir)

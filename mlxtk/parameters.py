@@ -1,0 +1,25 @@
+class Parameters(object):
+    def __init__(self):
+        self.parameter_names = []
+
+    @staticmethod
+    def init_from_dict(dictionary):
+        parameters = Parameters()
+        for key in dictionary:
+            parameters.add_parameter(key, dictionary[key])
+        return parameters
+
+    def add_parameter(self, name, value):
+        if name not in self.parameter_names:
+            self.parameter_names.append(name)
+        setattr(self, name, value)
+
+    def __str__(self):
+        string = "Parameters {"
+        max_length = len(max(self.parameter_names, key=lambda name: len(name)))
+        for name in self.parameter_names:
+            length = len(name)
+            fill = ""
+            if length < max_length:
+                fill = " " * (max_length - length)
+            string += "\n\t{}: {}{}".format(name, fill, getattr(self, name))

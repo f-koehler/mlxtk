@@ -23,13 +23,13 @@ class WaveFunctionCreationTask(task.Task):
             **kwargs)
 
     def get_wave_function_string(self):
-        wave_function = self.wave_function_creator()
+        wave_function = self.wave_function_creator(self.parameters)
         sio = StringIO()
         wave_function.createWfnFile(sio)
         return sio.getvalue()
 
     def write_wave_function_file(self):
-        wave_function = self.wave_function_creator()
+        wave_function = self.wave_function_creator(self.parameters)
         path = self.wave_function_name + ".wave_function"
         with open(path, "w") as fhandle:
             wave_function.createWfnFile(fhandle)

@@ -39,7 +39,7 @@ class OperatorCreationTask(task.Task):
 
     def write_operator_file(self):
         operator = self.operator_creator()
-        path = os.path.join(self.cwd, self.operator_name + ".operator")
+        path = self.operator_name + ".operator"
         with open(path, "w") as fhandle:
             if isinstance(operator, Operator):
                 operator.createOperatorFile(fhandle)

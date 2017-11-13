@@ -118,22 +118,19 @@ class PropagationTask(task.Task):
 
     def run_propagation(self):
         self.logger.info("copy initial wave function")
-        shutil.copy2(
-            os.path.join(self.cwd,
-                         self.initial_wave_function + ".wave_function"),
-            os.path.join(self.cwd, self.propagation_name,
-                         "initial.wave_function"))
+        shutil.copy2(self.initial_wave_function + ".wave_function",
+                     os.path.join(self.propagation_name,
+                                  "initial.wave_function"))
 
         self.logger.info("copy operator")
-        shutil.copy2(
-            os.path.join(self.cwd, self.operator + ".operator"),
-            os.path.join(self.cwd, self.propagation_name,
-                         "hamiltonian.operator"))
+        shutil.copy2(self.operator + ".operator",
+                     os.path.join(self.propagation_name,
+                                  "hamiltonian.operator"))
 
         self.logger.info("run qdtk_propagate.x")
         command = self.get_command()
         self.logger.debug("command: %s", " ".join(command))
-        working_dir = os.path.join(self.cwd, self.propagation_name)
+        working_dir = self.propagation_name
         self.logger.debug("working directory: %s", working_dir)
         process = subprocess.Popen(
             command, cwd=working_dir, stdout=sys.stdout, stderr=sys.stderr)
@@ -141,14 +138,12 @@ class PropagationTask(task.Task):
             raise subprocess.CalledProcessError(command, process.returncode)
 
         self.logger.info("create symlink to final wave function")
-        olddir = os.getcwd()
-        os.chdir(os.path.join(self.cwd, self.propagation_name))
-        if not os.path.islink("final.wave_function"):
-            os.symlink("restart", "final.wave_function")
-        os.chdir(olddir)
+        src = os.path.join(self.propagation_name, "restart")
+        dst = os.path.join(self.propagation_name, "final.wave_function")
+        self.logger.debug("%s -> %s", src, dst)
+        subprocess.check_output(["ln", "-srf", src, dst])
 
     def write_propagation_parameters(self):
-        with open(
-                os.path.join(self.cwd, self.propagation_name,
-                             "parameters.json"), "w") as fhandle:
+        with open(os.path.join(self.propagation_name, "parameters.json"),
+                  "w") as fhandle:
             json.dump(self.get_parameter_dict(), fhandle)

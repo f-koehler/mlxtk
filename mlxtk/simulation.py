@@ -14,12 +14,10 @@ class Simulation(object):
 
     def create_operator(self, name, function, **kwargs):
         self.tasks.append(task.OperatorCreationTask(name, function, **kwargs))
-        self.tasks[-1].cwd = self.cwd
 
     def create_wave_function(self, name, function, **kwargs):
         self.tasks.append(
             task.WaveFunctionCreationTask(name, function, **kwargs))
-        self.tasks[-1].cwd = self.cwd
 
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
@@ -31,7 +29,6 @@ class Simulation(object):
 
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
-        self.tasks[-1].cwd = self.cwd
 
     def relax(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
@@ -44,11 +41,15 @@ class Simulation(object):
         kwargs["relax"] = True
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
-        self.tasks[-1].cwd = self.cwd
 
     def run(self):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
-        for task in self.tasks:
-            task.run()
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        for tsk in self.tasks:
+            tsk.run()
+
+        os.chdir(olddir)

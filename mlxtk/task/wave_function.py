@@ -30,7 +30,6 @@ class WaveFunctionCreationTask(task.Task):
 
     def write_wave_function_file(self):
         wave_function = self.wave_function_creator()
-        path = os.path.join(self.cwd,
-                            self.wave_function_name + ".wave_function")
+        path = self.wave_function_name + ".wave_function"
         with open(path, "w") as fhandle:
             wave_function.createWfnFile(fhandle)

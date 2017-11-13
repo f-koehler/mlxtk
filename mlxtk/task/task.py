@@ -9,10 +9,9 @@ class FileInput(object):
     def __init__(self, name, filename):
         self.name = name
         self.filename = filename
-        self.cwd = None
 
     def get_state(self):
-        path = os.path.join(self.cwd, self.filename)
+        path = self.filename
         if not os.path.exists(path):
             return None
         return hashing.hash_file(path)
@@ -22,7 +21,6 @@ class FunctionInput(object):
     def __init__(self, name, function):
         self.name = name
         self.function = function
-        self.cwd = None
 
     def get_state(self):
         return hashing.hash_values(self.function())
@@ -32,16 +30,15 @@ class FileOutput(object):
     def __init__(self, name, filename):
         self.name = name
         self.filename = filename
-        self.cwd = None
 
     def get_state(self):
-        path = os.path.join(self.cwd, self.filename)
+        path = self.filename
         if not os.path.exists(path):
             return None
         return hashing.hash_file(path)
 
     def make_directories(self):
-        dirname = os.path.dirname(os.path.join(self.cwd, self.filename))
+        dirname = os.path.dirname(self.filename)
         if dirname:
             if os.path.exists(dirname):
                 return
@@ -54,10 +51,8 @@ class Task(object):
         self.function = function
         self.inputs = kwargs.get("inputs", [])
         self.outputs = kwargs.get("outputs", [])
-        self.cwd = "."
         self.task_type = kwargs.get("task_type", "Task")
-        self.state_file = kwargs.get("state_file",
-                                     os.path.join(self.cwd, name + ".state"))
+        self.state_file = kwargs.get("state_file", name + ".state")
         self.preprocess_steps = []
         self.input_states = None
         self.output_states = None
@@ -66,19 +61,11 @@ class Task(object):
 
         self.logger = log.getLogger(self.task_type)
 
-    def set_cwds(self):
-        for inp in self.inputs:
-            inp.cwd = self.cwd
-
-        for out in self.outputs:
-            out.cwd = self.cwd
-
     def get_current_state(self):
         for i, step in enumerate(self.preprocess_steps):
             self.logger.info("run preprocessing step %d", i)
             step()
 
-        self.set_cwds()
         self.input_states = {inp.name: inp.get_state() for inp in self.inputs}
         self.output_states = {
             out.name: out.get_state()
@@ -86,25 +73,22 @@ class Task(object):
         }
 
     def write_state_file(self):
-        self.set_cwds()
-        with open(os.path.join(self.cwd, self.state_file), "w") as fhandle:
+        with open(self.state_file, "w") as fhandle:
             json.dump({
                 "inputs": self.input_states,
                 "outputs": self.output_states
             }, fhandle)
 
     def read_state_file(self):
-        self.set_cwds()
-        with open(os.path.join(self.cwd, self.state_file), "r") as fhandle:
+        with open(self.state_file, "r") as fhandle:
             json_src = json.load(fhandle)
 
         self.stored_input_states = json_src["inputs"]
         self.stored_output_states = json_src["outputs"]
 
     def is_up_to_date(self):
-        self.set_cwds()
 
-        if not os.path.exists(os.path.join(self.cwd, self.state_file)):
+        if not os.path.exists(self.state_file):
             self.logger.info("not up-to-date, state file does not exist")
             return False
 

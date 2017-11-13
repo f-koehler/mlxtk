@@ -1,6 +1,9 @@
+import argparse
 import os
+import sys
 
 from mlxtk import task
+from mlxtk import sge
 
 
 class Simulation(object):
@@ -57,3 +60,34 @@ class Simulation(object):
             tsk.run()
 
         os.chdir(olddir)
+
+    def qsub(self, args):
+        script_path = os.path.abspath(sys.argv[0])
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        cmd = " ".join(["python", os.path.relpath(script_path), "run"])
+        job_file = os.path.join(self.cwd, "job_{}.sh".format(self.name))
+        sge.write_job_file(job_file, self.name, cmd, args)
+        jobid = sge.submit_job(job_file)
+        sge.write_stop_script(
+            os.path.join(self.cwd, "stop_{}.sh".format(jobid)), [jobid])
+        sge.write_epilogue_script(
+            os.path.join(self.cwd, "epilogue_{}.sh".format(jobid)), jobid)
+
+    def main(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "action",
+            metavar="action",
+            type=str,
+            choices=["run", "qsub"],
+            help="{run, qsub}")
+        sge.add_parser_arguments(parser)
+
+        args = parser.parse_args()
+
+        if args.action == "run":
+            self.run()
+        elif args.action == "qsub":
+            self.qsub(args)

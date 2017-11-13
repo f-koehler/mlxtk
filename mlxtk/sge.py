@@ -3,6 +3,8 @@ import re
 import subprocess
 import sys
 
+from mlxtk import log
+
 
 def add_parser_arguments(parser):
     """Add SGE related command line options to an :py:class:`argparse.ArgumentParser`
@@ -14,7 +16,7 @@ def add_parser_arguments(parser):
         "--queue", default="quantix.q", help="queue of the SGE batch system")
     parser.add_argument(
         "--memory",
-        default="8G",
+        default="2G",
         help="amount of memory available to the job(s)")
     parser.add_argument(
         "--time",
@@ -33,9 +35,10 @@ def submit_job(jobfile):
     Returns:
         int: Id of the newly created job
     """
+    log.getLogger("SGE").info("submit job script \"%s\"", jobfile)
     regex = re.compile(r"^Your job (\d+)")
-    output = subprocess.check_output(["qsub", jobfile], stderr=sys.stderr)
-    m = regex.match(output)
+    output = subprocess.check_output(["qsub", jobfile])
+    m = regex.match(output.decode())
 
     if not m:
         raise RuntimeError("failed to extract jobid from qsub output")
@@ -49,6 +52,7 @@ def mark_file_executable(path):
     Args:
         path (str): Path to the file
     """
+    log.getLogger("SGE").info("make file executable \"%s\"", path)
     os.chmod(path, 0o755)
 
 
@@ -63,13 +67,14 @@ def write_epilogue_script(path, jobid):
     """
     script = ("#!/bin/bash\n" "qacct -j {jobid}\n").format(jobid=jobid)
 
+    log.getLogger("SGE").info("write epilogue script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
     mark_file_executable(path)
 
 
-def write_job_file(path, name, cmd, args, output=None):
+def write_job_file(path, name, cmd, args):
     """Create a job file
 
     Args:
@@ -77,7 +82,6 @@ def write_job_file(path, name, cmd, args, output=None):
         name (str): Name of the job
         cmd (str): Job command
         args (argparse.Namespace): Namespace containing the SGE related command line arguments
-        output (str): Path where the stdout should be written, `None` if not desired
     """
     script = [
         # yapf: disable
@@ -90,12 +94,11 @@ def write_job_file(path, name, cmd, args, output=None):
         "#$ -V",
         "#$ -l h_vmem={memory}",
         "#$ -l h_cpu={time}",
-        "#$ -pe smp {cpus}"
+        "#$ -pe smp {cpus}",
+        "export OMP_NUM_THREADS={cpus}",
+        "{cmd}\n"
         # yapf: enable
     ]
-    if output:
-        script.append("#$ -o " + output)
-    script.append("{cmd}")
 
     script = "\n".join(script).format(
         name=name,
@@ -103,9 +106,9 @@ def write_job_file(path, name, cmd, args, output=None):
         memory=args.memory,
         time=args.time,
         cpus=args.cpus,
-        cmd=cmd,
-        output=output)
+        cmd=cmd)
 
+    log.getLogger("SGE").info("write job script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
@@ -120,9 +123,10 @@ def write_stop_script(path, jobids):
         jobids (list): List of job ids to abort
     """
     script = ["#!/bin/bash", "qdel {jobids}"]
-    script = "\n".join(script).format(jobids=" ".join(
-        [str(jobid) for jobid in jobids]))
+    script = "\n".join(script).format(
+        jobids=" ".join([str(jobid) for jobid in jobids]))
 
+    log.getLogger("SGE").info("write stop script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 

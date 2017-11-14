@@ -1,5 +1,7 @@
 import argparse
+import json
 import os
+import pickle
 import sys
 
 from mlxtk import task
@@ -46,6 +48,26 @@ class Simulation(object):
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
 
+    def is_up_to_date(self):
+        if not os.path.exists(self.cwd):
+            return False
+
+        state_dir = os.path.join(self.cwd, "states")
+        if not os.path.exists(state_dir):
+            return False
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        for tsk in self.tasks:
+            tsk.parameters = self.parameters
+            if tsk.is_not_up_to_date():
+                return False
+
+        os.chdir(olddir)
+
+        return True
+
     def run(self):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
@@ -56,6 +78,16 @@ class Simulation(object):
 
         olddir = os.getcwd()
         os.chdir(self.cwd)
+
+        parameter_dict = {
+            name: self.parameters[name]
+            for name in self.parameters.parameter_names
+        }
+        with open("parameters.pickle", "wb") as fhandle:
+            pickle.dump(parameter_dict, fhandle)
+
+        with open("parameters.json", "w") as fhandle:
+            json.dump(parameter_dict, fhandle)
 
         for tsk in self.tasks:
             tsk.parameters = self.parameters

@@ -14,6 +14,19 @@ class Parameters(object):
             self.parameter_names.append(name)
         setattr(self, name, value)
 
+    def set_all(self, *args):
+        if len(args) != len(self.parameter_names):
+            raise RuntimeError("Not all parameters specified")
+
+        for i, name in enumerate(self.parameter_names):
+            setattr(self, name, args[i])
+
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
+
     def __str__(self):
         string = "Parameters {"
         max_length = len(max(self.parameter_names, key=lambda name: len(name)))

@@ -1,3 +1,4 @@
+import argparse
 import copy
 import itertools
 import os
@@ -7,6 +8,7 @@ import shutil
 from tabulate import tabulate
 
 from mlxtk import log
+from mlxtk import sge
 
 
 class ParameterScan(object):
@@ -188,12 +190,12 @@ class ParameterScan(object):
 
         self.write_table()
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
-
         if not self.simulations:
             self.logger.info("all simulations are up-to-date")
             return
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
 
         self.logger.info("found %d simulations that are not up-to-date",
                          len(self.simulations))
@@ -202,3 +204,48 @@ class ParameterScan(object):
             simulation.run()
 
         os.chdir(olddir)
+
+    def qsub(self, args):
+        self.generate_simulations()
+
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        if os.path.exists(os.path.join(self.cwd, "parameters.pickle")):
+            if self.parameters_changed():
+                # TODO: check for still usable data
+                self.logger.info(
+                    "scan parameters changed, remove all the data")
+                shutil.rmtree(self.cwd)
+                os.makedirs(self.cwd)
+
+        self.write_table()
+
+        if not self.simulations:
+            self.logger.info("all simulations are up-to-date")
+            return
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        for simulation in self.simulations:
+            simulation.qsub(args)
+
+        os.chdir(olddir)
+
+    def main(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "action",
+            metavar="action",
+            type=str,
+            choices=["run", "qsub"],
+            help="{run, qsub}")
+        sge.add_parser_arguments(parser)
+
+        args = parser.parse_args()
+
+        if args.action == "run":
+            self.run()
+        elif args.action == "qsub":
+            self.qsub(args)

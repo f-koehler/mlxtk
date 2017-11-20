@@ -61,7 +61,7 @@ class Simulation(object):
 
         for tsk in self.tasks:
             tsk.parameters = self.parameters
-            if tsk.is_not_up_to_date():
+            if not tsk.is_up_to_date():
                 return False
 
         os.chdir(olddir)

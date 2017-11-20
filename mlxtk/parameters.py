@@ -36,3 +36,4 @@ class Parameters(object):
             if length < max_length:
                 fill = " " * (max_length - length)
             string += "\n\t{}: {}{}".format(name, fill, getattr(self, name))
+        return string + "\n}"

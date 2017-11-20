@@ -1,8 +1,10 @@
-from tabulate import tabulate
+import copy
 import itertools
 import os
 import pickle
 import shutil
+
+from tabulate import tabulate
 
 from mlxtk import log
 
@@ -138,20 +140,6 @@ class ParameterScan(object):
             fhandle.write(table_indices)
             fhandle.write("\n\n\n")
 
-            fhandle.write("** Value Ranges\n\n")
-            for i, name in enumerate(parameter_names):
-                fhandle.write("*** Parameter: " + name + "\n\n")
-
-                # print values in groups of 5
-                for j in range(len(self.parameter_values[i])):
-                    fhandle.write(str(self.parameter_values[i][j]))
-                    if j % 5 != 0:
-                        fhandle.write("  ")
-                    else:
-                        fhandle.write("\n")
-
-                fhandle.write("\n\n\n")
-
     def parameters_changed(self):
         self.init_tables()
 
@@ -178,6 +166,7 @@ class ParameterScan(object):
             index = self.table_values.index(values)
             simulation.name = "sim_{}".format(index)
             simulation.cwd = "sim_{}".format(index)
+            simulation.parameters = copy.copy(self.parameters)
 
             if not simulation.is_up_to_date():
                 self.simulations.append(simulation)
@@ -201,11 +190,6 @@ class ParameterScan(object):
 
         olddir = os.getcwd()
         os.chdir(self.cwd)
-
-        self.simulations = [
-            simulation for simulation in self.simulations
-            if simulation.is_up_to_date
-        ]
 
         if not self.simulations:
             self.logger.info("all simulations are up-to-date")

@@ -220,20 +220,12 @@ class ParameterScan(object):
     def run_index(self, index):
         self.generate_simulation(index)
 
-        if not os.path.exists(self.cwd):
-            os.makedirs(self.cwd)
-
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
-
-        if self.simulation[0].is_up_to_date():
+        if self.simulations[0].is_up_to_date():
             self.logger.info("simulation %d is already up-to-date", index)
             return
 
         self.logger.info("run simulation with index %d", index)
         self.simulations[0].run()
-
-        os.chdir(olddir)
 
     def qsub(self, args):
         self.generate_simulations()
@@ -263,7 +255,7 @@ class ParameterScan(object):
         for simulation in self.simulations:
             index = self.table_values.index(simulation.parameters.to_list())
 
-            cmd = "".join([
+            cmd = " ".join([
                 "python",
                 os.path.relpath(script_path), "--index",
                 str(index), "run-index"

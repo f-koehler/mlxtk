@@ -4,6 +4,7 @@ import itertools
 import os
 import pickle
 import shutil
+import sys
 
 from tabulate import tabulate
 
@@ -173,6 +174,17 @@ class ParameterScan(object):
             if not simulation.is_up_to_date():
                 self.simulations.append(simulation)
 
+    def generate_simulation(self, index):
+        self.init_tables()
+
+        self.parameters.set_all(*self.table_values[index])
+        simulation = self.simulation_generator(self.parameters)
+        simulation.name = "sim_{}".format(index)
+        simulation.cwd = "sim_{}".format(index)
+        simulation.parameters = copy.copy(self.parameters)
+
+        self.simulations = [simulation]
+
     def run(self):
         self.generate_simulations()
 
@@ -205,6 +217,24 @@ class ParameterScan(object):
 
         os.chdir(olddir)
 
+    def run_index(self, index):
+        self.generate_simulation(index)
+
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        if self.simulation[0].is_up_to_date():
+            self.logger.info("simulation %d is already up-to-date", index)
+            return
+
+        self.logger.info("run simulation with index %d", index)
+        self.simulations[0].run()
+
+        os.chdir(olddir)
+
     def qsub(self, args):
         self.generate_simulations()
 
@@ -225,11 +255,26 @@ class ParameterScan(object):
             self.logger.info("all simulations are up-to-date")
             return
 
+        script_path = os.path.abspath(sys.argv[0])
+
         olddir = os.getcwd()
         os.chdir(self.cwd)
 
         for simulation in self.simulations:
-            simulation.qsub(args)
+            index = self.table_values.index(simulation.parameters.to_list())
+
+            cmd = "".join([
+                "python",
+                os.path.relpath(script_path), "--index",
+                str(index), "run-index"
+            ])
+            job_file = "job_{}".format(simulation.name)
+            sge.write_job_file(job_file, simulation.name, cmd, args)
+
+            jobid = sge.submit_job(job_file)
+
+            sge.write_stop_script("stop_{}.sh".format(jobid), [jobid])
+            sge.write_epilogue_script("epilogue_{}.sh".format(jobid), [jobid])
 
         os.chdir(olddir)
 
@@ -239,13 +284,19 @@ class ParameterScan(object):
             "action",
             metavar="action",
             type=str,
-            choices=["run", "qsub"],
-            help="{run, qsub}")
+            choices=["run", "run-index", "qsub"],
+            help="{run, run-index, qsub}")
+        parser.add_argument(
+            "--index",
+            type=int,
+            help="index of the simulation to run when using \"run-index\"")
         sge.add_parser_arguments(parser)
 
         args = parser.parse_args()
 
         if args.action == "run":
             self.run()
+        elif args.action == "run-index":
+            self.run_index(args.index)
         elif args.action == "qsub":
             self.qsub(args)

@@ -21,6 +21,12 @@ class Parameters(object):
         for i, name in enumerate(self.parameter_names):
             setattr(self, name, args[i])
 
+    def to_list(self):
+        result = []
+        for name in self.parameter_names:
+            result.append(getattr(self, name))
+        return result
+
     def __getitem__(self, name):
         return getattr(self, name)
 

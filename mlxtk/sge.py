@@ -13,7 +13,11 @@ def add_parser_arguments(parser):
         parser (argparse.ArgumentParser): parser to modify
     """
     parser.add_argument(
-        "--queue", default="quantix.q", help="queue of the SGE batch system")
+        "--queue",
+        default="none",
+        help=
+        "queue of the SGE batch system, \"none\" if you do not want to specify a queue"
+    )
     parser.add_argument(
         "--memory",
         default="2G",
@@ -86,17 +90,14 @@ def write_job_file(path, name, cmd, args):
     script = [
         # yapf: disable
         "#!/bin/bash",
-        "#$ -N {name}",
-        "#$ -q {queue}",
-        "#$ -S /bin/bash",
-        "#$ -cwd",
-        "#$ -j y",
-        "#$ -V",
-        "#$ -l h_vmem={memory}",
-        "#$ -l h_cpu={time}",
-        "#$ -pe smp {cpus}",
-        "export OMP_NUM_THREADS={cpus}",
-        "{cmd}\n"
+        "#$ -N {name}"
+    ]
+    if args.queue.upper() == "NONE":
+        script.append("#$ -q {queue}")
+    script += [
+        "#$ -S /bin/bash", "#$ -cwd", "#$ -j y", "#$ -V",
+        "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}", "#$ -pe smp {cpus}",
+        "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
         # yapf: enable
     ]
 

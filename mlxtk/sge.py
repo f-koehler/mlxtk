@@ -92,7 +92,7 @@ def write_job_file(path, name, cmd, args):
         "#!/bin/bash",
         "#$ -N {name}"
     ]
-    if args.queue.upper() == "NONE":
+    if args.queue.upper() != "NONE":
         script.append("#$ -q {queue}")
     script += [
         "#$ -S /bin/bash", "#$ -cwd", "#$ -j y", "#$ -V",

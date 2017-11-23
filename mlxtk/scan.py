@@ -260,7 +260,7 @@ class ParameterScan(object):
                 os.path.relpath(script_path), "--index",
                 str(index), "run-index"
             ])
-            job_file = "job_{}".format(simulation.name)
+            job_file = "job_{}.sh".format(simulation.name)
             sge.write_job_file(job_file, simulation.name, cmd, args)
 
             jobid = sge.submit_job(job_file)

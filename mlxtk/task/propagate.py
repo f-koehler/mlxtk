@@ -1,10 +1,12 @@
 import json
 import os
+import pickle
 import shutil
 import subprocess
 import sys
 
 from mlxtk.task import task
+from mlxtk.process import watch_process
 
 
 class PropagationTask(task.Task):
@@ -48,7 +50,7 @@ class PropagationTask(task.Task):
 
         inp_parameters = task.FileInput("parameters",
                                         os.path.join(self.propagation_name,
-                                                     "parameters.json"))
+                                                     "parameters.pickle"))
         inp_wave_function = task.FileInput(
             "initial_wave_function",
             self.initial_wave_function + ".wave_function")
@@ -84,7 +86,6 @@ class PropagationTask(task.Task):
             "psi": self.psi,
             "relax": self.relax,
             "improved_relax": self.improved_relax,
-            "cont": self.cont,
             "rstzero": self.rstzero,
             "transMat": self.transMat,
             "MBop_apply": self.MBop_apply,
@@ -103,6 +104,7 @@ class PropagationTask(task.Task):
 
     def get_command(self):
         parameters = self.get_parameter_dict()
+        parameters["cont"] = self.cont
         cmd = ["qdtk_propagate.x"]
         for name in parameters:
             if isinstance(parameters[name], bool):
@@ -132,18 +134,33 @@ class PropagationTask(task.Task):
         self.logger.debug("command: %s", " ".join(command))
         working_dir = self.propagation_name
         self.logger.debug("working directory: %s", working_dir)
-        process = subprocess.Popen(
-            command, cwd=working_dir, stdout=sys.stdout, stderr=sys.stderr)
-        if process.wait():
-            raise subprocess.CalledProcessError(command, process.returncode)
+
+        watch_process(
+            command,
+            self.logger.info,
+            self.logger.warn,
+            cwd=working_dir,
+            stdout=sys.stdout,
+            stderr=sys.stderr)
 
         self.logger.info("create symlink to final wave function")
         src = os.path.join(self.propagation_name, "restart")
         dst = os.path.join(self.propagation_name, "final.wave_function")
         self.logger.debug("%s -> %s", src, dst)
+
         subprocess.check_output(["ln", "-srf", src, dst])
 
     def write_propagation_parameters(self):
-        with open(os.path.join(self.propagation_name, "parameters.json"),
-                  "w") as fhandle:
+        """Write the propagation parameters to disk
+
+        The propagation parameters are writen to a human-readable JSON file
+        (``parameters.json``) and to a machine-readable pickle file
+        (``parameters.pickle``) within the task directory
+        """
+        json_file = os.path.join(self.propagation_name, "parameters.json")
+        pickle_file = os.path.join(self.propagation_name, "parameters.pickle")
+        with open(json_file, "w") as fhandle:
             json.dump(self.get_parameter_dict(), fhandle)
+
+        with open(pickle_file, "wb") as fhandle:
+            pickle.dump(self.get_parameter_dict(), fhandle)

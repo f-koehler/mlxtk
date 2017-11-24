@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from mlxtk import hashing
 from mlxtk import log
@@ -88,6 +89,8 @@ class Task(object):
         self.stored_output_states = json_src["outputs"]
 
     def is_up_to_date(self):
+        """Check if the task is up-to-date.
+        """
 
         if not os.path.exists(self.state_file):
             self.logger.info("not up-to-date, state file does not exist")
@@ -120,6 +123,8 @@ class Task(object):
         return True
 
     def run(self):
+        """Execute the task.
+        """
         self.logger.info("enter task \"%s\"", self.name)
 
         if self.is_up_to_date():
@@ -131,7 +136,10 @@ class Task(object):
             out.make_directories()
 
         self.logger.info("run task")
+        start = time.perf_counter()
         self.function()
+        stop = time.perf_counter()
+        self.logger.info("execution took %fs", stop - start)
 
         self.logger.info("write state file")
         self.get_current_state()

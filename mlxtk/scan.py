@@ -1,5 +1,6 @@
 import argparse
 import copy
+import datetime
 import itertools
 import os
 import pickle
@@ -13,6 +14,27 @@ from mlxtk import sge
 
 
 class ParameterScan(object):
+    """Scan over ranges of parameters
+
+    Args:
+        name (str): name for the parameter scan
+        parameters (mlxtk.parameters.Parameters): parameters of this scan (the values are takes as initial values)
+        simulation_generator: function that returns a simulation given a parameter set
+
+    Attributes:
+        name (str): name for the parameter scan
+        simulation_generator: function that returns a simulation given a parameter set
+        parameters (mlxtk.parameters.Parameters): the set of parameters
+        parameter_values (list): a list of the parameter value lists
+        parameter_indices (list): a list of index ranges for the individual parameters
+        table_indices (list): list of all parameter multi indices (as lists)
+        table_values (list): list of all parameter sets (as lists)
+        scan_indices (list): list of the indices of all simulations
+        filters (list): filters that will be applied to remove parameter configurations from the cartesian product
+        simulations (list): a list of all currently generated simulations
+        logger: the logger used by parameter scans
+    """
+
     def __init__(self, name, parameters, simulation_generator, **kwargs):
         self.name = name
         self.simulation_generator = simulation_generator
@@ -33,6 +55,14 @@ class ParameterScan(object):
         self.logger = log.getLogger("Scan")
 
     def set_values(self, name, values):
+        """Specify the values a certain parameter can take
+
+        The values will be converted to a list
+
+        Args:
+            name (str): name of the parameter
+            values: parameter values as some kind of iterable
+        """
         index = self.parameters.parameter_names.index(name)
         self.parameter_values[index] = [val for val in values]
         self.parameter_indices[index] = [i for i, _ in enumerate(values)]
@@ -82,8 +112,7 @@ class ParameterScan(object):
             "indices": self.parameter_indices,
             "values": self.parameter_values,
             "table_indices": self.table_indices,
-            "table_values": self.table_values,
-            "number_filter": len(self.filters)
+            "table_values": self.table_values
         }
 
     def write_table(self):
@@ -143,20 +172,84 @@ class ParameterScan(object):
             fhandle.write(table_indices)
             fhandle.write("\n\n\n")
 
-    def parameters_changed(self):
+    def check_parameters(self):
         self.init_tables()
 
-        current = self.get_pickle_input()
+        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        shelf_dir = os.path.join(self.cwd, "shelf_" + time_stamp)
 
+        # generate current pickle
+        current_pickle = self.get_pickle_input()
+
+        # read stored pickle if available
         pickle_file = os.path.join(self.cwd, "parameters.pickle")
+        if not os.path.exists(pickle_file):
+            # new run of scan -> no incompatibility of parameters
+            self.logger.info("pickle file does not exist, no action required")
+            return
 
         with open(pickle_file, "rb") as fhandle:
-            stored = pickle.load(fhandle)
+            stored_pickle = pickle.load(fhandle)
 
-        if stored != current:
-            return True
+        # check if nothing changed at all
+        if stored_pickle == current_pickle:
+            self.logger.info(
+                "parameter pickle is unchanged, no action required")
+            return
 
-        return False
+        # check if names/number of parameters changed
+        if stored_pickle["names"] != current_pickle["names"]:
+            # back up all generated data
+            self.logger.warn("number/names/order of parameters changed")
+            self.logger.debug("old: %s", str(stored_pickle["names"]))
+            self.logger.debug("new: %s", str(current_pickle["names"]))
+            if not os.path.exists(shelf_dir):
+                os.makedirs(shelf_dir)
+            for index in self.scan_indices:
+                src = os.path.join(self.cwd, "sim_" + str(index))
+                if not os.path.exists(src):
+                    continue
+                dst = os.path.join(shelf_dir, "sim_" + str(index))
+                self.logger.debug("move %s -> %s", src, dst)
+                shutil.move(src, dst)
+            shutil.copy2(
+                os.path.join(self.cwd, "parameters.pickle"),
+                os.path.join(shelf_dir, "parameters.pickle"))
+            shutil.copy2(
+                os.path.join(self.cwd, "parameters.org"),
+                os.path.join(shelf_dir, "parameters.org"))
+            return
+
+        # go through all simulations and check if they are still contained in
+        # the scan and rename them accordingly
+        # move all other data to the shelf
+        stored_scan_indices = list(range(len(stored_pickle["table_values"])))
+        for index in stored_scan_indices:
+            sim = "sim_"+str(index)
+            src = os.path.join(self.cwd, sim)
+            if not os.path.exists(src):
+                # no data for this simulation does exist
+                continue
+
+            values = stored_pickle["table_values"][index]
+            if values not in current_pickle["table_values"]:
+                # this set of parameters is not present in the scan anymore
+                self.warn("%s is not contained in the scan anymore, shelving it", sim)
+                dst = os.path.join(shelf_dir, sim)
+                self.logger.debug("move %s -> %s", src, dst)
+                shutil.move(src, dst)
+                continue
+
+            current_index = current_pickle["table_values"].index(values)
+            if current_index == index:
+                # this set of parameters still has the same index
+                continue
+
+            # the index of the parameter set changed
+            dst = os.path.join(self.cwd, sim)
+            self.warn("%s has now a different index, moving it", sim)
+            self.logger.debug("move %s -> %s", src, dst)
+            shutil.move(src, dst)
 
     def generate_simulations(self):
         self.init_tables()
@@ -191,14 +284,7 @@ class ParameterScan(object):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
-        if os.path.exists(os.path.join(self.cwd, "parameters.pickle")):
-            if self.parameters_changed():
-                # TODO: handle this properly, i.e. check which data is still
-                # good
-                self.logger.info(
-                    "scan parameters changed, remove all the data")
-                shutil.rmtree(self.cwd)
-                os.makedirs(self.cwd)
+        self.check_parameters()
 
         self.write_table()
 
@@ -233,13 +319,7 @@ class ParameterScan(object):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
-        if os.path.exists(os.path.join(self.cwd, "parameters.pickle")):
-            if self.parameters_changed():
-                # TODO: check for still usable data
-                self.logger.info(
-                    "scan parameters changed, remove all the data")
-                shutil.rmtree(self.cwd)
-                os.makedirs(self.cwd)
+        self.check_parameters()
 
         self.write_table()
 

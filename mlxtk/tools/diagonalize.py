@@ -6,6 +6,16 @@ import QDTK.Wavefunction
 
 def diagonalize_1b_hamiltonian(hamiltonian, number_eigenfunctions,
                                grid_points):
+    """Diagonalize the supplied one-dimensional one-body hamiltonian
+
+    Args:
+        hamiltonian (QDTK.Operator): operator to diagonalize
+        number_eigenfunctions (int): number of eigenvalues/eigenvectors to compute
+        grid_points (int): the number of grid points
+
+    Returns:
+        A tuple with the list of eigenvalues as the first element followed by the eigenvectors
+    """
     eigenvalues, eigenvectors = hamiltonian.diag_1b_hamiltonian1d(grid_points)
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
         number_eigenfunctions, eigenvectors)
@@ -15,4 +25,10 @@ def diagonalize_1b_hamiltonian(hamiltonian, number_eigenfunctions,
 
 
 def store_eigen_vectors(path, eigenvectors):
+    """Write eigenvectors to a file
+
+    Args:
+        path (str): path of the file
+        eigenvectors: the eigenvectors to save
+    """
     numpy.savetxt(path, eigenvectors)

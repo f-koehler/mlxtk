@@ -25,6 +25,8 @@ class OperatorCreationTask(task.Task):
             **kwargs)
 
     def get_operator_string(self):
+        """Create the operator using the supplied function and return it as a string
+        """
         operator = self.operator_creator(self.parameters)
         sio = StringIO()
         if isinstance(operator, Operator):
@@ -38,6 +40,10 @@ class OperatorCreationTask(task.Task):
         return sio.getvalue()
 
     def write_operator_file(self):
+        """Create the operator and write it to a file
+
+        The filename is composed by appending the ``.operator`` extension to the operator name
+        """
         operator = self.operator_creator(self.parameters)
         path = self.operator_name + ".operator"
         with open(path, "w") as fhandle:

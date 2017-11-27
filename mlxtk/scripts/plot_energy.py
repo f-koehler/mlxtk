@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+
 from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
 from mlxtk.inout.output import read_output
 

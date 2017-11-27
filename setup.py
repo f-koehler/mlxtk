@@ -19,5 +19,6 @@ setup(
             "plot_overlap=mlxtk.scripts.plot_overlap:main",
             # "plot_dmat1=mlxtk.scripts.plot_dmat1:main",
             # "plot_dmat2=mlxtk.scripts.plot_dmat2:main",
+            "scan_view=mlxtk.scripts.scan_view:main",
         ]
     })

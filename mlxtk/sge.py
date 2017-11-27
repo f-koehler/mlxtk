@@ -28,6 +28,11 @@ def add_parser_arguments(parser):
         help="maximum computation time for the job(s)")
     parser.add_argument(
         "--cpus", default="1", help="number of cpus to use for SMP")
+    parser.add_argument(
+        "--email",
+        default="none",
+        help=
+        "email address to notify about finished, aborted and suspended jobs")
 
 
 def submit_job(jobfile):
@@ -87,18 +92,15 @@ def write_job_file(path, name, cmd, args):
         cmd (str): Job command
         args (argparse.Namespace): Namespace containing the SGE related command line arguments
     """
-    script = [
-        # yapf: disable
-        "#!/bin/bash",
-        "#$ -N {name}"
-    ]
+    script = ["#!/bin/bash", "#$ -N {name}"]
     if args.queue.upper() != "NONE":
         script.append("#$ -q {queue}")
+    if args.email.upper() != "NONE":
+        script.append("#$ -M {email} -m aes")
     script += [
         "#$ -S /bin/bash", "#$ -cwd", "#$ -j y", "#$ -V",
         "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}", "#$ -pe smp {cpus}",
         "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
-        # yapf: enable
     ]
 
     script = "\n".join(script).format(
@@ -107,7 +109,8 @@ def write_job_file(path, name, cmd, args):
         memory=args.memory,
         time=args.time,
         cpus=args.cpus,
-        cmd=cmd)
+        cmd=cmd,
+        email=args.email)
 
     log.getLogger("SGE").info("write job script \"%s\"", path)
     with open(path, "w") as fhandle:

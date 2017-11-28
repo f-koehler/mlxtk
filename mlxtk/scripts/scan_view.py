@@ -109,8 +109,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.tool_bar = self.addToolBar("main")
 
-        self.tool_bar.addWidget(QtWidgets.QLabel("Plot Type:"))
-
         self.main_widget = QtWidgets.QWidget()
         self.setCentralWidget(self.main_widget)
         self.tabs = QtWidgets.QTabWidget()
@@ -124,6 +122,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout_main.addWidget(self.tabs)
         self.main_widget.setLayout(self.layout_main)
 
+        self.label_plot_type = QtWidgets.QLabel("Plot Type: ")
+        self.tool_bar.addWidget(self.label_plot_type)
         self.combo_plot_type = QtWidgets.QComboBox()
         self.combo_plot_type.addItem("energy", "energy")
         self.combo_plot_type.addItem("gpop", "gpop")
@@ -132,7 +132,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type.addItem("overlap", "overlap")
         self.tool_bar.addWidget(self.combo_plot_type)
 
-        self.tool_bar.addWidget(QtWidgets.QLabel("Subdirectory:"))
+        self.label_subdir = QtWidgets.QLabel("    Subdirectory: ")
+        self.tool_bar.addWidget(self.label_subdir)
         self.combo_subdir = QtWidgets.QComboBox()
         for subdir in self.subdirectories:
             self.combo_subdir.addItem(subdir, subdir)

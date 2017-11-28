@@ -7,7 +7,7 @@ import sys
 from PyQt5 import QtCore, QtWidgets
 
 
-class DataModel(QtCore.QAbstractTableModel):
+class DataModelVariables(QtCore.QAbstractTableModel):
     def __init__(self, scan_directory, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
 
@@ -18,18 +18,24 @@ class DataModel(QtCore.QAbstractTableModel):
         self.table_values = list(
             itertools.product(*self.parameter_pickle["values"]))
 
+        self.variable_indices = [
+            i for i, _ in enumerate(self.parameter_pickle["values"])
+            if len(self.parameter_pickle["values"][i]) > 1
+        ]
+
     def rowCount(self, parent=QtCore.QModelIndex()):
         return len(self.table_values)
 
     def columnCount(self, parent=QtCore.QModelIndex()):
-        return len(self.parameter_pickle["names"]) + 1
+        return len(self.variable_indices) + 1
 
     def headerData(self, section, orientation, role):
         if role == QtCore.Qt.DisplayRole:
             if orientation == QtCore.Qt.Horizontal:
                 if section == 0:
                     return "Index"
-                return self.parameter_pickle["names"][section - 1]
+                return self.parameter_pickle["names"][self.variable_indices[
+                    section - 1]]
 
         return QtCore.QVariant()
 
@@ -41,7 +47,48 @@ class DataModel(QtCore.QAbstractTableModel):
             if col == 0:
                 return row
 
-            return self.table_values[row][col - 1]
+            return self.table_values[row][self.variable_indices[col - 1]]
+
+        return QtCore.QVariant()
+
+
+class DataModelConstants(QtCore.QAbstractTableModel):
+    def __init__(self, scan_directory, parent=None):
+        QtCore.QAbstractTableModel.__init__(self, parent)
+
+        with open(os.path.join(scan_directory, "parameters.pickle"),
+                  "rb") as fhandle:
+            self.parameter_pickle = pickle.load(fhandle)
+
+        self.constant_indices = [
+            i for i, _ in enumerate(self.parameter_pickle["values"])
+            if len(self.parameter_pickle["values"][i]) == 1
+        ]
+
+    def rowCount(self, parent=QtCore.QModelIndex()):
+        return len(self.constant_indices)
+
+    def columnCount(self, parent=QtCore.QModelIndex()):
+        return 1
+
+    def headerData(self, section, orientation, role):
+        if role == QtCore.Qt.DisplayRole:
+            if orientation == QtCore.Qt.Horizontal:
+                if section == 0:
+                    return "Value"
+
+            else:
+                return self.parameter_pickle["names"][self.constant_indices[
+                    section]]
+
+        return QtCore.QVariant()
+
+    def data(self, index, role):
+        row = index.row()
+
+        if role == QtCore.Qt.DisplayRole:
+            return self.parameter_pickle["values"][self.constant_indices[row]][
+                0]
 
         return QtCore.QVariant()
 
@@ -60,11 +107,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.setWindowTitle("ScanView")
 
-        self.main_widget = QtWidgets.QWidget()
-
         self.tool_bar = self.addToolBar("main")
 
         self.tool_bar.addWidget(QtWidgets.QLabel("Plot Type:"))
+
+        self.main_widget = QtWidgets.QWidget()
+        self.setCentralWidget(self.main_widget)
+        self.tabs = QtWidgets.QTabWidget()
+        self.tab_variables = QtWidgets.QWidget()
+        self.tab_constants = QtWidgets.QWidget()
+        self.tabs.addTab(self.tab_variables, "Variables")
+        self.tabs.addTab(self.tab_constants, "Constants")
+
+        self.layout_main = QtWidgets.QVBoxLayout()
+        self.layout_main.addWidget(self.tool_bar)
+        self.layout_main.addWidget(self.tabs)
+        self.main_widget.setLayout(self.layout_main)
 
         self.combo_plot_type = QtWidgets.QComboBox()
         self.combo_plot_type.addItem("energy", "energy")
@@ -80,17 +138,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.combo_subdir.addItem(subdir, subdir)
         self.tool_bar.addWidget(self.combo_subdir)
 
-        self.model = DataModel(scan_directory)
+        self.model_variables = DataModelVariables(scan_directory)
+        self.table_variables = QtWidgets.QTableView(self.tab_variables)
+        self.table_variables.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.table_variables.setFocus()
+        self.table_variables.setModel(self.model_variables)
+        self.table_variables.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectRows)
+        self.table_variables.doubleClicked.connect(self.open_plot)
 
-        self.table = QtWidgets.QTableView(self.main_widget)
-        self.table.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.table.setFocus()
-        self.setCentralWidget(self.table)
+        self.model_constants = DataModelConstants(scan_directory)
+        self.table_constants = QtWidgets.QTableView(self.tab_constants)
+        self.table_constants.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.table_constants.setModel(self.model_constants)
 
-        self.table.setModel(self.model)
-        self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.layout_variables = QtWidgets.QVBoxLayout()
+        self.layout_variables.addWidget(self.table_variables)
+        self.tab_variables.setLayout(self.layout_variables)
 
-        self.table.doubleClicked.connect(self.open_plot)
+        self.layout_constants = QtWidgets.QVBoxLayout()
+        self.layout_constants.addWidget(self.table_constants)
+        self.tab_constants.setLayout(self.layout_constants)
 
     def open_plot(self, index):
         which = self.combo_plot_type.itemData(

@@ -7,6 +7,7 @@ import pickle
 import shutil
 import sys
 
+import h5py
 from tabulate import tabulate
 
 from mlxtk import log
@@ -225,7 +226,7 @@ class ParameterScan(object):
         # move all other data to the shelf
         stored_scan_indices = list(range(len(stored_pickle["table_values"])))
         for index in stored_scan_indices:
-            sim = "sim_"+str(index)
+            sim = "sim_" + str(index)
             src = os.path.join(self.cwd, sim)
             if not os.path.exists(src):
                 # no data for this simulation does exist
@@ -234,7 +235,9 @@ class ParameterScan(object):
             values = stored_pickle["table_values"][index]
             if values not in current_pickle["table_values"]:
                 # this set of parameters is not present in the scan anymore
-                self.warn("%s is not contained in the scan anymore, shelving it", sim)
+                self.warn(
+                    "%s is not contained in the scan anymore, shelving it",
+                    sim)
                 dst = os.path.join(shelf_dir, sim)
                 self.logger.debug("move %s -> %s", src, dst)
                 shutil.move(src, dst)
@@ -350,14 +353,38 @@ class ParameterScan(object):
 
         os.chdir(olddir)
 
+    def create_hdf5(self, group=None):
+        self.generate_simulations()
+
+        opened_file = group is None
+        if opened_file:
+            self.logger.info("create new hdf5 file")
+            group = h5py.File(os.path.join(self.cwd, self.name + ".hdf5"), "w")
+        else:
+            self.logger.info("create hdf5 group %s", self.name)
+            group = h5py.create_group(self.name)
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        for i, simulation in enumerate(self.simulations):
+            simulation.create_hdf5(group)
+            self.logger.info("%d/%d simulations processed", i + 1, len(
+                self.simulations))
+
+        os.chdir(olddir)
+
+        if opened_file:
+            group.close()
+
     def main(self):
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "action",
             metavar="action",
             type=str,
-            choices=["run", "run-index", "qsub"],
-            help="{run, run-index, qsub}")
+            choices=["run", "run-index", "qsub", "hdf5"],
+            help="{run, run-index, qsub, hdf5}")
         parser.add_argument(
             "--index",
             type=int,
@@ -372,3 +399,5 @@ class ParameterScan(object):
             self.run_index(args.index)
         elif args.action == "qsub":
             self.qsub(args)
+        elif args.action == "hdf5":
+            self.create_hdf5()

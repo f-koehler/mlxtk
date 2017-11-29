@@ -1,8 +1,11 @@
 import re
 
+import numpy
 import pandas
+import h5py
 
 from mlxtk.stringio import StringIO
+from mlxtk import log
 
 
 def read_natpop(path):
@@ -81,3 +84,31 @@ def read_natpop(path):
             data[node + 1][orbitals + 1] = pandas.read_csv(sio, sep="\s+")
 
     return data
+
+
+def add_natpop_to_hdf5(group, natpop_path):
+    logger = log.getLogger("h5py")
+
+    opened_file = isinstance(group, str)
+    if opened_file:
+        logger.info("open new hdf5 file %s", group)
+        group = h5py.File(group, "w")
+
+    group_natpop = group.create_group("natpop")
+
+    data = read_natpop(natpop_path)
+    for node in data:
+        group_node = group_natpop.create_group("node" + str(node))
+        for layer in data[node]:
+            logger.info("add natpop data (node: %d, layer: %d)", node, layer)
+            current_data = data[node][layer]
+            dataset_layer = group_node.create_dataset(
+                "layer" + str(layer),
+                (current_data.shape[0], current_data.shape[1] - 1),
+                dtype=numpy.float64,
+                compression="gzip")
+            dataset_layer[:, :] = current_data.as_matrix()[:, 1:]
+
+    if opened_file:
+        logger.info("close hdf5 file")
+        group.close()

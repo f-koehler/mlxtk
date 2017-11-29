@@ -1,10 +1,23 @@
+import h5py
 import numpy
+import os
 import pandas
 import re
+
+from mlxtk import log
 from mlxtk.stringio import StringIO
+from mlxtk.inout import hdf5
 
 
 def read_gpop(path):
+    parsed = hdf5.parse_hdf5_path(path)
+    if parsed is None:
+        return read_gpop_ascii(path)
+    else:
+        return read_gpop_hdf5(parsed)
+
+
+def read_gpop_ascii(path):
     regex_time_stamp = re.compile(r"^#\s+(.+)\s+\[au\]$")
     times = []
     dofs = []
@@ -68,3 +81,79 @@ def read_gpop(path):
         densities[dof] = numpy.array(densities[dof])
 
     return numpy.array(times), grids, densities
+
+
+def read_gpop_hdf5(parsed_path):
+    path, path_inside = parsed_path
+    if not hdf5.is_hdf5_group(path, path_inside):
+        raise RuntimeError("Expected a group containing the densities")
+
+    fhandle = h5py.File(path, "r")
+
+    times = fhandle[os.path.join(path_inside, "times")][:]
+
+    regex_grid_name = re.compile(r"^grid(\d+)$")
+    regex_density_name = re.compile(r"^density(\d+)$")
+    group_grids = fhandle[os.path.join(path_inside, "grids")]
+    group_densities = fhandle[os.path.join(path_inside, "densities")]
+
+    grids = {}
+    for grid in group_grids:
+        m = regex_grid_name.match(grid)
+        if not m:
+            raise RuntimeError("Invalid grid name \"%s\"", grid)
+        i = int(m.group(1))
+        grids[i] = group_grids[grid][:]
+
+    densities = {}
+    for density in group_densities:
+        m = regex_density_name.match(density)
+        if not m:
+            raise RuntimeError("Invalid density name \"%s\"", density)
+        i = int(m.group(1))
+        densities[i] = group_densities[density][:]
+
+    fhandle.close()
+
+    return times, grids, densities
+
+
+def add_gpop_to_hdf5(group, gpop_path):
+    logger = log.getLogger("h5py")
+
+    opened_file = isinstance(group, str)
+    if opened_file:
+        logger.info("open new hdf5 file %s", group)
+        group = h5py.File(group, "w")
+    else:
+        group = group.create_group("gpop")
+
+    times, grids, densities = read_gpop(gpop_path)
+
+    group_grids = group.create_group("grids")
+    group_densities = group.create_group("densities")
+
+    logger.info("add times")
+    dset_times = group.create_dataset(
+        "times", times.shape, dtype=numpy.float64, compression="gzip")
+    dset_times[:] = times
+
+    for dof in grids:
+        logger.info("add grid %d", dof)
+        dset_grid = group_grids.create_dataset(
+            "grid" + str(dof), (len(grids[dof]), ),
+            dtype=numpy.float64,
+            compression="gzip")
+        dset_grid[:] = grids[dof]
+
+        logger.info("add density %d", dof)
+        dset_density = group_densities.create_dataset(
+            "density" + str(dof),
+            densities[dof].shape,
+            dtype=numpy.float64,
+            compression="gzip")
+        dset_density[:] = densities[dof]
+
+    if opened_file:
+        logger.info("close hdf5 file")
+        group.close()

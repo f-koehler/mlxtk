@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from distutils.core import setup
+# from distutils.core import setup
+from setuptools import setup
 
 setup(
     name="mlxtk",
@@ -8,6 +9,15 @@ setup(
     author="Fabian Köhler",
     author_email="fkoehler@physnet.uni-hamburg.de",
     url="https://github.com/f-koehler/mlxtk",
+    license="MIT",
+    install_requires=[
+        "colorama==0.3.9",
+        "h5py==2.7.1",
+        "matplotlib==2.1.0",
+        "numpy==1.13.3",
+        "pandas==0.20.3",
+        "scipy==1.0.0",
+    ],
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [

@@ -5,8 +5,14 @@ import shutil
 import subprocess
 import sys
 
+import h5py
+
 from mlxtk.task import task
 from mlxtk.process import watch_process
+
+from mlxtk.inout.gpop import add_gpop_to_hdf5
+from mlxtk.inout.natpop import add_natpop_to_hdf5
+from mlxtk.inout.output import add_output_to_hdf5
 
 
 class PropagationTask(task.Task):
@@ -164,3 +170,32 @@ class PropagationTask(task.Task):
 
         with open(pickle_file, "wb") as fhandle:
             pickle.dump(self.get_parameter_dict(), fhandle)
+
+    def create_hdf5(self, group=None):
+        opened_file = group is None
+        if opened_file:
+            self.logger.info("create new hdf5 file")
+            group = h5py.File(self.propagation_name + ".hdf5", "w")
+        else:
+            group = group.create_group(self.propagation_name)
+
+        gpop = os.path.join(self.propagation_name, "gpop")
+        if os.path.exists(gpop):
+            add_gpop_to_hdf5(group, gpop)
+        else:
+            self.logger.warn("gpop file does not exist, incomplete dataset")
+
+        natpop = os.path.join(self.propagation_name, "natpop")
+        if os.path.exists(natpop):
+            add_natpop_to_hdf5(group, natpop)
+        else:
+            self.logger.warn("natpop file does not exist, incomplete dataset")
+
+        output = os.path.join(self.propagation_name, "output")
+        if os.path.exists(natpop):
+            add_output_to_hdf5(group, output)
+        else:
+            self.logger.warn("output file does not exist, incomplete dataset")
+
+        if opened_file:
+            group.close()

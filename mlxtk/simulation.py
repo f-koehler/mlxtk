@@ -4,6 +4,8 @@ import os
 import pickle
 import sys
 
+import h5py
+
 from mlxtk import task
 from mlxtk import sge
 
@@ -108,6 +110,26 @@ class Simulation(object):
             os.path.join(self.cwd, "stop_{}.sh".format(jobid)), [jobid])
         sge.write_epilogue_script(
             os.path.join(self.cwd, "epilogue_{}.sh".format(jobid)), jobid)
+
+    def create_hdf5(self, group=None):
+        opened_file = group is None
+        if opened_file:
+            self.logger.info("create new hdf5 file")
+            group = h5py.File(self.name + ".hdf5")
+        else:
+            group = group.create_group(self.name)
+
+        olddir = os.getcwd()
+        os.chdir(self.cwd)
+
+        for tsk in self.tasks:
+            if getattr(tsk, "create_hdf5", None) is not None:
+                tsk.create_hdf5(group)
+
+        os.chdir(olddir)
+
+        if opened_file:
+            group.close()
 
     def main(self):
         parser = argparse.ArgumentParser()

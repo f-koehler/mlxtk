@@ -5,10 +5,19 @@ import pandas
 import h5py
 
 from mlxtk.stringio import StringIO
+from mlxtk.inout import hdf5
 from mlxtk import log
 
 
 def read_natpop(path):
+    parsed = hdf5.parse_hdf5_path(path)
+    if parsed is None:
+        return read_natpop_ascii(path)
+    else:
+        return read_natpop_hdf5(parsed)
+
+
+def read_natpop_ascii(path):
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
     re_node_info = re.compile(r"^node:\s+(\d+)\s+layer:\s+(\d+)$")
@@ -86,6 +95,46 @@ def read_natpop(path):
     return data
 
 
+def read_natpop_hdf5(parsed_path):
+    path, path_inside = parsed_path
+    if not hdf5.is_hdf5_group(path, path_inside):
+        raise RuntimeError(
+            "Expected a group containing the natural populations")
+
+    fhandle = h5py.File(path, "r")
+    group_natpop = fhandle[path_inside]
+
+    regex_node_name = re.compile(r"^node(\d+)$")
+    regex_layer_name = re.compile(r"^layer(\d+)$")
+
+    data = {}
+
+    for node in fhandle[path_inside]:
+        group_node = group_natpop[node]
+        m = regex_node_name.match(node)
+        if not m:
+            raise RuntimeError("Invalid node name \"%s\"".format(node))
+        i = int(m.group(1))
+        data[i] = {}
+
+        for layer in group_node:
+            dataset_layer = group_node[layer]
+            m = regex_layer_name.match(layer)
+            if not m:
+                raise RuntimeError("Invalid layer name \"%s\"".format(node))
+            j = int(m.group(1))
+
+            local_data = dataset_layer[:, :]
+            headers = ["time"] + [
+                "orbital" + str(k) for k in range(local_data.shape[1] - 1)
+            ]
+            data[i][j] = pandas.DataFrame(dataset_layer[:, :], columns=headers)
+
+    fhandle.close()
+
+    return data
+
+
 def add_natpop_to_hdf5(group, natpop_path):
     logger = log.getLogger("h5py")
 
@@ -104,10 +153,10 @@ def add_natpop_to_hdf5(group, natpop_path):
             current_data = data[node][layer]
             dataset_layer = group_node.create_dataset(
                 "layer" + str(layer),
-                (current_data.shape[0], current_data.shape[1] - 1),
+                current_data.shape,
                 dtype=numpy.float64,
                 compression="gzip")
-            dataset_layer[:, :] = current_data.as_matrix()[:, 1:]
+            dataset_layer[:, :] = current_data.as_matrix()[:, :]
 
     if opened_file:
         logger.info("close hdf5 file")

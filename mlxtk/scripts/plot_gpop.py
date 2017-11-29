@@ -1,13 +1,18 @@
 #!/usr/bin/env python
+import argparse
 import numpy
 
-from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
+import mlxtk.plot.argparser
+from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.gpop import read_gpop
 
 
 def main():
-    parser = create_argparser(
+    defaults = mlxtk.plot.argparser.get_defaults()
+    defaults["grid"] = False
+    parser = argparse.ArgumentParser(
         "Plot the evolution of the density of a degree of freedom")
+    mlxtk.plot.argparser.add_plotting_arguments(parser, defaults)
     parser.add_argument(
         "--in",
         type=str,

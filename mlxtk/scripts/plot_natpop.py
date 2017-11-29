@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
+import argparse
+
+import mlxtk.plot.argparser
+from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.natpop import read_natpop
 
 
 def main():
-    parser = create_argparser(
-        "Plot evolution of energy expectation value over time")
+    parser = argparse.ArgumentParser(
+        description="Plot evolution of energy expectation value over time")
+    mlxtk.plot.argparser.add_plotting_arguments(parser)
     parser.add_argument(
         "--in",
         type=str,
@@ -22,7 +26,7 @@ def main():
     def init_plot(plot):
         data = read_natpop(args.input_file)[1][1]
         for column in data.columns[1:]:
-            plot.axes.plot(data["time"], data[column]/1000.)
+            plot.axes.plot(data["time"], data[column] / 1000.)
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel(r"$\lambda_i$")
 

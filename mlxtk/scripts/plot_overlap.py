@@ -1,11 +1,15 @@
 #!/usr/bin/env python
-from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
+import argparse
+
+import mlxtk.plot.argparser
+from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.output import read_output
 
 
 def main():
-    parser = create_argparser(
-        "Plot maximum overlap over time")
+    parser = argparse.ArgumentParser(
+        description="Plot maximum overlap over time")
+    mlxtk.plot.argparser.add_plotting_arguments(parser)
     parser.add_argument(
         "--in",
         type=str,

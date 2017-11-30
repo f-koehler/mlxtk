@@ -110,13 +110,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                       "rb") as fhandle:
                 self.scan_parameters = pickle.load(fhandle)
 
-            sim_dir = os.path.join(self.path, "sim_0")
-            self.subdirectories = [
-                subdir for subdir in os.listdir(sim_dir)
-                if os.path.isdir(os.path.join(sim_dir, subdir))
-                and subdir not in ["states"]
-            ]
-
             self.hdf5_mode = False
 
         QtWidgets.QMainWindow.__init__(self)
@@ -151,8 +144,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.label_subdir = QtWidgets.QLabel("    Subdirectory: ")
         self.tool_bar.addWidget(self.label_subdir)
         self.combo_subdir = QtWidgets.QComboBox()
-        for subdir in self.subdirectories:
-            self.combo_subdir.addItem(subdir, subdir)
+        # for subdir in self.subdirectories:
+        #     self.combo_subdir.addItem(subdir, subdir)
+        self.combo_subdir.setEnabled(False)
         self.tool_bar.addWidget(self.combo_subdir)
 
         self.model_variables = DataModelVariables(self.scan_parameters)
@@ -162,7 +156,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.table_variables.setModel(self.model_variables)
         self.table_variables.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectRows)
+        self.table_variables.setSelectionMode(
+            QtWidgets.QAbstractItemView.SingleSelection)
         self.table_variables.doubleClicked.connect(self.open_plot)
+        self.table_variables.clicked.connect(self.update_subdirs)
 
         self.model_constants = DataModelConstants(self.scan_parameters)
         self.table_constants = QtWidgets.QTableView(self.tab_constants)
@@ -176,6 +173,35 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout_constants = QtWidgets.QVBoxLayout()
         self.layout_constants.addWidget(self.table_constants)
         self.tab_constants.setLayout(self.layout_constants)
+
+    def update_subdirs(self, index):
+        if self.combo_subdir.isEnabled():
+            old_selection = self.combo_subdir.itemData(
+                self.combo_subdir.currentIndex())
+        else:
+            old_selection = None
+            self.combo_subdir.setEnabled(True)
+
+        if self.hdf5_mode:
+            with h5py.File(self.path, "r") as fhandle:
+                subdirectories = [sim for sim in fhandle["sim_0"]]
+        else:
+            sim_dir = os.path.join(self.path, "sim_" + str(index.row()))
+            subdirectories = [
+                subdir for subdir in os.listdir(sim_dir)
+                if os.path.isdir(os.path.join(sim_dir, subdir))
+                and subdir not in ["states"]
+            ]
+
+        while self.combo_subdir.count() > 0:
+            self.combo_subdir.removeItem(0)
+
+        for subdir in subdirectories:
+            self.combo_subdir.addItem(subdir, subdir)
+
+        if old_selection in subdirectories:
+            self.combo_subdir.setCurrentIndex(
+                subdirectories.index(old_selection))
 
     def open_plot(self, index):
         which = self.combo_plot_type.itemData(
@@ -194,32 +220,32 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def plot_energy(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path,
-                                   "sim_" + str(index.row()), subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "output")
         subprocess.Popen(["plot_energy", "--in", output_file])
 
     def plot_gpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path,
-                                   "sim_" + str(index.row()), subdir, "gpop")
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
 
     def plot_natpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path,
-                                   "sim_" + str(index.row()), subdir, "natpop")
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "natpop")
         subprocess.Popen(["plot_natpop", "--in", output_file])
 
     def plot_norm(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path,
-                                   "sim_" + str(index.row()), subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "output")
         subprocess.Popen(["plot_norm", "--in", output_file])
 
     def plot_overlap(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path,
-                                   "sim_" + str(index.row()), subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "output")
         subprocess.Popen(["plot_overlap", "--in", output_file])
 
 

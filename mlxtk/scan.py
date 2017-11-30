@@ -8,6 +8,7 @@ import shutil
 import sys
 
 import h5py
+import numpy
 from tabulate import tabulate
 
 from mlxtk import log
@@ -364,13 +365,16 @@ class ParameterScan(object):
             self.logger.info("create hdf5 group %s", self.name)
             group = h5py.create_group(self.name)
 
+        group.attrs["scan_parameters"] = numpy.void(
+            pickle.dumps(self.get_pickle_input()))
+
         olddir = os.getcwd()
         os.chdir(self.cwd)
 
         for i, simulation in enumerate(self.simulations):
             simulation.create_hdf5(group)
-            self.logger.info("%d/%d simulations processed", i + 1, len(
-                self.simulations))
+            self.logger.info("%d/%d simulations processed", i + 1,
+                             len(self.simulations))
 
         os.chdir(olddir)
 

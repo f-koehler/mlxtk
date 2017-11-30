@@ -1,3 +1,4 @@
+import argparse
 import itertools
 import os
 import pickle
@@ -5,22 +6,23 @@ import subprocess
 import sys
 
 from PyQt5 import QtCore, QtWidgets
+import h5py
+
+from mlxtk.inout import hdf5
 
 
 class DataModelVariables(QtCore.QAbstractTableModel):
-    def __init__(self, scan_directory, parent=None):
+    def __init__(self, scan_parameters, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
 
-        with open(os.path.join(scan_directory, "parameters.pickle"),
-                  "rb") as fhandle:
-            self.parameter_pickle = pickle.load(fhandle)
+        self.scan_parameters = scan_parameters
 
         self.table_values = list(
-            itertools.product(*self.parameter_pickle["values"]))
+            itertools.product(*self.scan_parameters["values"]))
 
         self.variable_indices = [
-            i for i, _ in enumerate(self.parameter_pickle["values"])
-            if len(self.parameter_pickle["values"][i]) > 1
+            i for i, _ in enumerate(self.scan_parameters["values"])
+            if len(self.scan_parameters["values"][i]) > 1
         ]
 
     def rowCount(self, parent=QtCore.QModelIndex()):
@@ -34,7 +36,7 @@ class DataModelVariables(QtCore.QAbstractTableModel):
             if orientation == QtCore.Qt.Horizontal:
                 if section == 0:
                     return "Index"
-                return self.parameter_pickle["names"][self.variable_indices[
+                return self.scan_parameters["names"][self.variable_indices[
                     section - 1]]
 
         return QtCore.QVariant()
@@ -53,16 +55,14 @@ class DataModelVariables(QtCore.QAbstractTableModel):
 
 
 class DataModelConstants(QtCore.QAbstractTableModel):
-    def __init__(self, scan_directory, parent=None):
+    def __init__(self, scan_parameters, parent=None):
         QtCore.QAbstractTableModel.__init__(self, parent)
 
-        with open(os.path.join(scan_directory, "parameters.pickle"),
-                  "rb") as fhandle:
-            self.parameter_pickle = pickle.load(fhandle)
+        self.scan_parameters = scan_parameters
 
         self.constant_indices = [
-            i for i, _ in enumerate(self.parameter_pickle["values"])
-            if len(self.parameter_pickle["values"][i]) == 1
+            i for i, _ in enumerate(self.scan_parameters["values"])
+            if len(self.scan_parameters["values"][i]) == 1
         ]
 
     def rowCount(self, parent=QtCore.QModelIndex()):
@@ -78,7 +78,7 @@ class DataModelConstants(QtCore.QAbstractTableModel):
                     return "Value"
 
             else:
-                return self.parameter_pickle["names"][self.constant_indices[
+                return self.scan_parameters["names"][self.constant_indices[
                     section]]
 
         return QtCore.QVariant()
@@ -87,21 +87,37 @@ class DataModelConstants(QtCore.QAbstractTableModel):
         row = index.row()
 
         if role == QtCore.Qt.DisplayRole:
-            return self.parameter_pickle["values"][self.constant_indices[row]][
+            return self.scan_parameters["values"][self.constant_indices[row]][
                 0]
 
         return QtCore.QVariant()
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
-    def __init__(self, scan_directory):
-        self.scan_directory = scan_directory
-        sim_dir = os.path.join(self.scan_directory, "sim_0")
-        self.subdirectories = [
-            subdir for subdir in os.listdir(sim_dir)
-            if os.path.isdir(os.path.join(sim_dir, subdir))
-            and subdir not in ["states"]
-        ]
+    def __init__(self, path):
+        self.path = path
+
+        if hdf5.is_hdf5_file(path):
+            with h5py.File(path, "r") as fhandle:
+                self.scan_parameters = pickle.loads(
+                    bytes(fhandle.attrs["scan_parameters"]))
+
+                self.subdirectories = [sim for sim in fhandle["sim_0"]]
+
+            self.hdf5_mode = True
+        else:
+            with open(os.path.join(self.path, "parameters.pickle"),
+                      "rb") as fhandle:
+                self.scan_parameters = pickle.load(fhandle)
+
+            sim_dir = os.path.join(self.path, "sim_0")
+            self.subdirectories = [
+                subdir for subdir in os.listdir(sim_dir)
+                if os.path.isdir(os.path.join(sim_dir, subdir))
+                and subdir not in ["states"]
+            ]
+
+            self.hdf5_mode = False
 
         QtWidgets.QMainWindow.__init__(self)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -139,7 +155,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.combo_subdir.addItem(subdir, subdir)
         self.tool_bar.addWidget(self.combo_subdir)
 
-        self.model_variables = DataModelVariables(scan_directory)
+        self.model_variables = DataModelVariables(self.scan_parameters)
         self.table_variables = QtWidgets.QTableView(self.tab_variables)
         self.table_variables.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.table_variables.setFocus()
@@ -148,7 +164,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             QtWidgets.QAbstractItemView.SelectRows)
         self.table_variables.doubleClicked.connect(self.open_plot)
 
-        self.model_constants = DataModelConstants(scan_directory)
+        self.model_constants = DataModelConstants(self.scan_parameters)
         self.table_constants = QtWidgets.QTableView(self.tab_constants)
         self.table_constants.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.table_constants.setModel(self.model_constants)
@@ -178,37 +194,46 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def plot_energy(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.scan_directory,
+        output_file = os.path.join(self.path,
                                    "sim_" + str(index.row()), subdir, "output")
         subprocess.Popen(["plot_energy", "--in", output_file])
 
     def plot_gpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.scan_directory,
+        output_file = os.path.join(self.path,
                                    "sim_" + str(index.row()), subdir, "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
 
     def plot_natpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.scan_directory,
+        output_file = os.path.join(self.path,
                                    "sim_" + str(index.row()), subdir, "natpop")
         subprocess.Popen(["plot_natpop", "--in", output_file])
 
     def plot_norm(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.scan_directory,
+        output_file = os.path.join(self.path,
                                    "sim_" + str(index.row()), subdir, "output")
         subprocess.Popen(["plot_norm", "--in", output_file])
 
     def plot_overlap(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.scan_directory,
+        output_file = os.path.join(self.path,
                                    "sim_" + str(index.row()), subdir, "output")
         subprocess.Popen(["plot_overlap", "--in", output_file])
 
 
 def main():
+    parser = argparse.ArgumentParser(
+        description="Explore the results of a parameter scan interactively")
+    parser.add_argument(
+        "path",
+        type=str,
+        help="path to a scan directory or a HDF5 file",
+        default=".")
+    args = parser.parse_args()
+
     application = QtWidgets.QApplication(sys.argv)
-    window = ApplicationWindow(".")
+    window = ApplicationWindow(args.path)
     window.show()
     sys.exit(application.exec_())

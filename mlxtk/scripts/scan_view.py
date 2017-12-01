@@ -136,6 +136,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type = QtWidgets.QComboBox()
         self.combo_plot_type.addItem("energy", "energy")
         self.combo_plot_type.addItem("gpop", "gpop")
+        self.combo_plot_type.addItem("gpop_slider", "gpop_slider")
         self.combo_plot_type.addItem("natpop", "natpop")
         self.combo_plot_type.addItem("norm", "norm")
         self.combo_plot_type.addItem("overlap", "overlap")
@@ -211,6 +212,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.plot_energy(index)
         elif which == "gpop":
             self.plot_gpop(index)
+        elif which == "gpop_slider":
+            self.plot_gpop_slider(index)
         elif which == "natpop":
             self.plot_natpop(index)
         elif which == "norm":
@@ -229,6 +232,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         output_file = os.path.join(self.path, "sim_" + str(index.row()),
                                    subdir, "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
+
+    def plot_gpop_slider(self, index):
+        subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
+        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+                                   subdir, "gpop")
+        subprocess.Popen(["plot_gpop_slider", "--in", output_file])
 
     def plot_natpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())

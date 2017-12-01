@@ -15,7 +15,7 @@ setup(
         "h5py==2.7.1",
         "matplotlib==2.1.0",
         "numpy==1.13.3",
-        "pandas==0.20.3",
+        "pandas==0.21.0",
         "scipy==1.0.0",
     ],
     packages=["mlxtk"],
@@ -23,6 +23,7 @@ setup(
         "console_scripts": [
             "plot_energy=mlxtk.scripts.plot_energy:main",
             "plot_gpop=mlxtk.scripts.plot_gpop:main",
+            "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",
             "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
             "plot_natpop=mlxtk.scripts.plot_natpop:main",
             "plot_norm=mlxtk.scripts.plot_norm:main",

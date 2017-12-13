@@ -13,6 +13,7 @@ from tabulate import tabulate
 
 from mlxtk import log
 from mlxtk import sge
+from mlxtk.inout import InOutError
 
 
 class ParameterScan(object):
@@ -236,7 +237,7 @@ class ParameterScan(object):
             values = stored_pickle["table_values"][index]
             if values not in current_pickle["table_values"]:
                 # this set of parameters is not present in the scan anymore
-                self.warn(
+                self.logger.warn(
                     "%s is not contained in the scan anymore, shelving it",
                     sim)
                 dst = os.path.join(shelf_dir, sim)
@@ -251,7 +252,7 @@ class ParameterScan(object):
 
             # the index of the parameter set changed
             dst = os.path.join(self.cwd, sim)
-            self.warn("%s has now a different index, moving it", sim)
+            self.logger.warn("%s has now a different index, moving it", sim)
             self.logger.debug("move %s -> %s", src, dst)
             shutil.move(src, dst)
 
@@ -372,7 +373,15 @@ class ParameterScan(object):
         os.chdir(self.cwd)
 
         for i, simulation in enumerate(self.simulations):
-            simulation.create_hdf5(group)
+            try:
+                simulation.create_hdf5(group)
+            except InOutError:
+                self.logger.error(
+                    "failed to create complete HDF5 group for simulation \"%s\"",
+                    simulation.name)
+                self.logger.error("the data is probably incomplete")
+                os.chdir(olddir)
+                os.chdir(self.cwd)
             self.logger.info("%d/%d simulations processed", i + 1,
                              len(self.simulations))
 

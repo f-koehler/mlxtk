@@ -7,6 +7,7 @@ import re
 from mlxtk import log
 from mlxtk.stringio import StringIO
 from mlxtk.inout import hdf5
+from . import InOutError
 
 
 def read_gpop(path):
@@ -30,7 +31,11 @@ def read_gpop_ascii(path):
             times.append(float(match.group(1)))
 
         while True:
-            dof, grid_points = fhandle.readline().split()
+            try:
+                dof, grid_points = fhandle.readline().split()
+            except ValueError:
+                raise InOutError(
+                    "Failed to determine DOF and number of grid points")
             dof = int(dof)
             grid_points = int(grid_points)
 

@@ -251,7 +251,7 @@ class ParameterScan(object):
                 continue
 
             # the index of the parameter set changed
-            dst = os.path.join(self.cwd, sim)
+            dst = os.path.join(self.cwd, "sim_" + str(current_index))
             self.logger.warn("%s has now a different index, moving it", sim)
             self.logger.debug("move %s -> %s", src, dst)
             shutil.move(src, dst)

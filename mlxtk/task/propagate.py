@@ -111,7 +111,17 @@ class PropagationTask(task.Task):
     def get_command(self):
         parameters = self.get_parameter_dict()
         parameters["cont"] = self.cont
-        cmd = ["qdtk_propagate.x"]
+
+        if "QDTK_PREFIX" in os.environ:
+            program_path = os.path.join(os.environ["QDTK_PREFIX"], "bin",
+                                        "qdtk_propagate.x")
+            if not os.path.exists(program_path):
+                raise RuntimeError(
+                    "QDTK executable \"{}\" not found".format(program_path))
+        else:
+            program_path = "qdtk_propagate.x"
+
+        cmd = [program_path]
         for name in parameters:
             if isinstance(parameters[name], bool):
                 if parameters[name]:

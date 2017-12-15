@@ -11,12 +11,12 @@ setup(
     url="https://github.com/f-koehler/mlxtk",
     license="MIT",
     install_requires=[
-        "colorama==0.3.9",
-        "h5py==2.7.1",
-        "matplotlib==2.1.0",
-        "numpy==1.13.3",
-        "pandas==0.21.0",
-        "scipy==1.0.0",
+        "colorama>=0.3.9",
+        "h5py>=2.7.1",
+        "matplotlib>=2.1.0",
+        "numpy>=1.13.3",
+        "pandas>=0.21.0",
+        "scipy>=1.0.0",
     ],
     packages=["mlxtk"],
     entry_points={

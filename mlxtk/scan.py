@@ -142,7 +142,7 @@ class ParameterScan(object):
                 self.simulations.append(simulation)
 
     def generate_simulation(self, index):
-        parameters = self.table.create_parameters(self.table[index])
+        parameters = self.table.create_parameters(self.table.table[index])
         simulation = self.simulation_generator(parameters)
         simulation.name = "sim_{}".format(index)
         simulation.cwd = "sim_{}".format(index)
@@ -205,7 +205,7 @@ class ParameterScan(object):
         os.chdir(self.cwd)
 
         for simulation in self.simulations:
-            index = self.table_values.index(simulation.parameters.to_list())
+            index = self.table.get_index(simulation.parameters.to_tuple())
 
             cmd = " ".join([
                 "python",

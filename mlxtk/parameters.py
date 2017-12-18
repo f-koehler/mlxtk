@@ -1,31 +1,67 @@
-class Parameters(object):
-    def __init__(self):
-        self.parameter_names = []
+import functools
+import itertools
+import json
+import os
+import pickle
 
-    @staticmethod
-    def init_from_dict(dictionary):
-        parameters = Parameters()
-        for key in dictionary:
-            parameters.add_parameter(key, dictionary[key])
-        return parameters
+
+class Parameters(object):
+    """A set of parameters for simulations and parameter scans
+
+    If no dictionary is given in the construction, the parameter set will not
+    contain any parameters initially.
+    Parameters can be added using the ``add_parameter`` method.
+
+    Parameters are exposed as atrributes of the ``Parameters``-object. This
+    allows changing the values.
+
+    Args:
+        dictionary (dict): A dictionary with initial paramters and their
+            associated values.
+    """
+
+    def __init__(self, dictionary=None):
+        self.names = []
+        if dictionary is not None:
+            for key in dictionary:
+                self.add_parameter(key, dictionary[key])
 
     def add_parameter(self, name, value):
-        if name not in self.parameter_names:
-            self.parameter_names.append(name)
+        """Add a new parameter
+
+        The new parameter will be available as an attribute of the object.
+
+        Args:
+            name (str): name of the new parameter
+            value: value of the new parameter
+        """
+        if name not in self.names:
+            self.names.append(name)
         setattr(self, name, value)
 
     def set_all(self, *args):
-        if len(args) != len(self.parameter_names):
-            raise RuntimeError("Not all parameters specified")
+        """Set the value of all parameters at once.
 
-        for i, name in enumerate(self.parameter_names):
+        Args:
+            args: list containing the values for all parameters
+
+        Raises:
+            ValueError: If an incorrect number of values is supplied.
+        """
+        if len(args) != len(self.names):
+            raise ValueError("Not all parameters specified")
+
+        for i, name in enumerate(self.names):
             setattr(self, name, args[i])
 
-    def to_list(self):
-        result = []
-        for name in self.parameter_names:
-            result.append(getattr(self, name))
-        return result
+    def to_tuple(self):
+        """Create a tuple of the parameter values
+
+        Returns:
+            tuple: Tuple of current parameter values in the order the
+                parameters were added
+        """
+        return tuple(getattr(self, name) for name in self.names)
 
     def __getitem__(self, name):
         return getattr(self, name)
@@ -34,12 +70,157 @@ class Parameters(object):
         setattr(self, name, value)
 
     def __str__(self):
-        string = "Parameters {"
-        max_length = len(max(self.parameter_names, key=lambda name: len(name)))
-        for name in self.parameter_names:
-            length = len(name)
-            fill = ""
-            if length < max_length:
-                fill = " " * (max_length - length)
-            string += "\n\t{}: {}{}".format(name, fill, getattr(self, name))
-        return string + "\n}"
+        return "Parameters " + str(
+            {name: getattr(self, name)
+             for name in self.names})
+
+
+class ParameterTable(object):
+    """A table of parameter values (for parameter scans)
+
+    Args:
+        parameters (Parameters): Initial parameter values
+    """
+
+    def __init__(self, parameters):
+        self.names = parameters.names
+        self.values = [[parameters[name]] for name in parameters.names]
+        self.table = None
+        self.filters = []
+        self.constants = [i for i, _ in enumerate(self.names)]
+        self.variables = []
+
+    def set_values(self, name, values):
+        """Set the value range for a certain parameter
+
+        Args:
+            name (str): name of the parameter to change
+            values: iterable containing the new values for the specified
+                parameter
+        """
+        self.values[self.names.index(name)] = [value for value in values]
+        self.recalculate()
+
+    def create_parameters(self, row):
+        parameters = Parameters()
+        for name, value in zip(self.names, row):
+            parameters.add_parameter(name, value)
+        return parameters
+
+    def get_index(self, row):
+        return self.table.index(row)
+
+    def recalculate(self):
+        """Recalculate all value combinations
+        """
+        self.table = list(itertools.product(*self.values))
+
+        for filt in self.filters:
+            new_table = list()
+            for row in self.table:
+                parameters = self.create_parameters(row)
+                if filt(parameters):
+                    new_table.append(row)
+            self.table = new_table
+
+        self.constants = [
+            i for i, _ in enumerate(self.names) if len(self.values[i]) == 1
+        ]
+        self.variables = [
+            i for i, _ in enumerate(self.names) if len(self.values[i]) > 1
+        ]
+
+    def dump(self, path):
+        """Write this ``ParameterTable`` to a JSON and a pickle file
+
+        Args:
+            path (str): path to the pickle file. The ``.pickle`` extension will
+                be appended if not present.
+        """
+        if os.path.splitext(path)[1] == ".pickle":
+            path = os.path.splitext(path)[0]
+
+        json_path = path + ".json"
+        pickle_path = path + ".pickle"
+
+        data = {
+            "names": self.names,
+            "values": self.values,
+            "table": self.table
+        }
+
+        with open(json_path, "w") as fhandle:
+            json.dump(data, fhandle)
+
+        with open(pickle_path, "wb") as fhandle:
+            pickle.dump(data, fhandle)
+
+    @staticmethod
+    def load(path):
+        """Load the ``ParameterTable`` from a pickle file
+
+        Args:
+            path (str): path of the pickle file
+        """
+        if os.path.splitext(path)[1] == ".pickle":
+            path = os.path.splitext(path)[0]
+        pickle_path = path + ".pickle"
+
+        with open(pickle_path, "rb") as fhandle:
+            data = pickle.load(fhandle)
+
+        parameters = Parameters()
+        for name in data["names"]:
+            parameters.add_parameter(name, 0.)
+
+        def pseudo_filter(parameters, initial_table):
+            return parameters.to_tuple() in initial_table
+
+        table = ParameterTable(parameters)
+        table.names = data["names"]
+        table.values = data["values"]
+        table.table = data["table"]
+        table.filters.append(
+            functools.partial(pseudo_filter, initial_table=data["table"]))
+        table.recalculate()
+
+        return table
+
+    def compare(self, other):
+        """Compare this ParameterTable to another one
+
+        Args:
+            other (ParameterTable): The other parameter table
+
+        Returns:
+            NoneType: If the parameter tables are incompatible, ``None`` is
+                returned
+            dict: A dictionary that describes between the tables is returned.
+                The key ``missing_rows`` yields a list of value combinations
+                that are not contained in this ``ParameterTable`` compared to
+                the other. ``extra_rows`` gives the value combinations that are
+                only present in this table. ``moved_rows`` contains a list of
+                tuples of common rows that have different indices in the two
+                tables. The first number is the index in ``self``, the second
+                is the index in ```other``.
+        """
+        if self.names != other.names:
+            return None
+
+        print(self.table, other.table)
+        common_rows = set(self.table) & set(other.table)
+        missing_rows = set(other.table) - set(self.table)
+        extra_rows = set(self.table) - set(other.table)
+
+        moved_rows = []
+        for row in common_rows:
+            i = self.table.index(row)
+            j = other.table.index(row)
+            if i != j:
+                moved_rows.append((i, j))
+
+        return {
+            "missing_rows": missing_rows,
+            "extra_rows": extra_rows,
+            "moved_rows": moved_rows
+        }

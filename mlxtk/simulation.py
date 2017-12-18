@@ -8,6 +8,7 @@ import h5py
 
 from mlxtk import task
 from mlxtk import sge
+from mlxtk import log
 
 
 class Simulation(object):
@@ -16,6 +17,7 @@ class Simulation(object):
         self.cwd = kwargs.get("cwd", name)
         self.tasks = []
         self.parameters = kwargs.get("parameters", None)
+        self.logger = log.getLogger("Simulation")
 
         self.propagation_counter = 0
         self.relaxation_counter = 0
@@ -71,6 +73,9 @@ class Simulation(object):
         return True
 
     def run(self):
+        self.logger.info("enter simulation %s", self.name)
+        if self.parameters is not None:
+            self.logger.info("parameters: %s", str(self.parameters))
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
@@ -83,7 +88,7 @@ class Simulation(object):
 
         parameter_dict = {
             name: self.parameters[name]
-            for name in self.parameters.parameter_names
+            for name in self.parameters.names
         }
         with open("parameters.pickle", "wb") as fhandle:
             pickle.dump(parameter_dict, fhandle)

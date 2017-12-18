@@ -15,7 +15,7 @@ setup(
         "h5py>=2.7.1",
         "matplotlib>=2.1.0",
         "numpy>=1.13.3",
-        "pandas>=0.21.0",
+        "pandas>=0.20.3",
         "scipy>=1.0.0",
     ],
     packages=["mlxtk"],

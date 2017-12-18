@@ -9,6 +9,7 @@ import h5py
 from mlxtk import task
 from mlxtk import sge
 from mlxtk import log
+from .inout.hdf5 import HDF5Error
 
 
 class Simulation(object):
@@ -117,6 +118,9 @@ class Simulation(object):
             os.path.join(self.cwd, "epilogue_{}.sh".format(jobid)), jobid)
 
     def create_hdf5(self, group=None):
+        if not os.path.exists(self.cwd):
+            raise HDF5Error("simulation dir is not present")
+
         opened_file = group is None
         if opened_file:
             self.logger.info("create new hdf5 file")
@@ -129,7 +133,14 @@ class Simulation(object):
 
         for tsk in self.tasks:
             if getattr(tsk, "create_hdf5", None) is not None:
-                tsk.create_hdf5(group)
+                try:
+                    tsk.create_hdf5(group)
+                except HDF5Error as e:
+                    self.logger.error(
+                        "failed to create hdf5 group for task \"%s\"",
+                        tsk.name)
+                    self.logger.error("exception: %s", str(e))
+                    self.logger.error("the data is incomplete")
 
         os.chdir(olddir)
 

@@ -240,15 +240,7 @@ class ParameterScan(object):
         os.chdir(self.cwd)
 
         for i, simulation in enumerate(self.simulations):
-            try:
-                simulation.create_hdf5(group)
-            except InOutError:
-                self.logger.error(
-                    "failed to create complete HDF5 group for simulation \"%s\"",
-                    simulation.name)
-                self.logger.error("the data is probably incomplete")
-                os.chdir(olddir)
-                os.chdir(self.cwd)
+            simulation.create_hdf5(group)
             self.logger.info("%d/%d simulations processed", i + 1,
                              len(self.simulations))
 

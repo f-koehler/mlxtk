@@ -91,7 +91,7 @@ def read_gpop_ascii(path):
 def read_gpop_hdf5(parsed_path):
     path, path_inside = parsed_path
     if not hdf5.is_hdf5_group(path, path_inside):
-        raise RuntimeError("Expected a group containing the densities")
+        raise hdf5.HDF5Error("Expected a group containing the densities")
 
     fhandle = h5py.File(path, "r")
 
@@ -106,7 +106,7 @@ def read_gpop_hdf5(parsed_path):
     for grid in group_grids:
         m = regex_grid_name.match(grid)
         if not m:
-            raise RuntimeError("Invalid grid name \"%s\"".format(grid))
+            raise hdf5.HDF5Error("Invalid grid name \"%s\"".format(grid))
         i = int(m.group(1))
         grids[i] = group_grids[grid][:]
 
@@ -114,7 +114,7 @@ def read_gpop_hdf5(parsed_path):
     for density in group_densities:
         m = regex_density_name.match(density)
         if not m:
-            raise RuntimeError("Invalid density name \"%s\"".format(density))
+            raise hdf5.HDF5Error("Invalid density name \"%s\"".format(density))
         i = int(m.group(1))
         densities[i] = group_densities[density][:]
 

@@ -2,6 +2,11 @@ import os.path
 import h5py
 
 
+class HDF5Error(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
 def parse_hdf5_path(path):
     path_inside = None
 

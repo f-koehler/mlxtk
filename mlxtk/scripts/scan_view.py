@@ -145,16 +145,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.label_subdir = QtWidgets.QLabel("    Subdirectory: ")
         self.tool_bar.addWidget(self.label_subdir)
         self.combo_subdir = QtWidgets.QComboBox()
-        # for subdir in self.subdirectories:
-        #     self.combo_subdir.addItem(subdir, subdir)
         self.combo_subdir.setEnabled(False)
         self.tool_bar.addWidget(self.combo_subdir)
 
         self.model_variables = DataModelVariables(self.scan_parameters)
+        self.model_variables_proxy = QtCore.QSortFilterProxyModel()
+        self.model_variables_proxy.setSourceModel(self.model_variables)
+
         self.table_variables = QtWidgets.QTableView(self.tab_variables)
+        self.table_variables.setSortingEnabled(True)
         self.table_variables.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.table_variables.setFocus()
-        self.table_variables.setModel(self.model_variables)
+        self.table_variables.setModel(self.model_variables_proxy)
         self.table_variables.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectRows)
         self.table_variables.setSelectionMode(

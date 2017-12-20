@@ -148,6 +148,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_subdir.setEnabled(False)
         self.tool_bar.addWidget(self.combo_subdir)
 
+        self.button_plot = QtWidgets.QPushButton("Plot")
+        self.button_plot.pressed.connect(self.open_plot)
+        self.tool_bar.addWidget(QtWidgets.QLabel("    "))
+        self.tool_bar.addWidget(self.button_plot)
+
         self.model_variables = DataModelVariables(self.scan_parameters)
         self.model_variables_proxy = QtCore.QSortFilterProxyModel()
         self.model_variables_proxy.setSourceModel(self.model_variables)
@@ -159,10 +164,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.table_variables.setModel(self.model_variables_proxy)
         self.table_variables.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectRows)
-        self.table_variables.setSelectionMode(
-            QtWidgets.QAbstractItemView.SingleSelection)
         self.table_variables.doubleClicked.connect(self.open_plot)
         self.table_variables.clicked.connect(self.update_subdirs)
+        self.table_variables.selectRow(0)
 
         self.model_constants = DataModelConstants(self.scan_parameters)
         self.table_constants = QtWidgets.QTableView(self.tab_constants)
@@ -176,6 +180,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout_constants = QtWidgets.QVBoxLayout()
         self.layout_constants.addWidget(self.table_constants)
         self.tab_constants.setLayout(self.layout_constants)
+
+        self.update_subdirs(0)
 
     def update_subdirs(self, index):
         if self.combo_subdir.isEnabled():
@@ -206,56 +212,61 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.combo_subdir.setCurrentIndex(
                 subdirectories.index(old_selection))
 
-    def open_plot(self, index):
+    def open_plot(self, index=None):
+        if index is not None:
+            indices = [index]
+        else:
+            indices = self.table_variables.selectionModel().selectedRows()
+
         which = self.combo_plot_type.itemData(
             self.combo_plot_type.currentIndex())
 
         if which == "energy":
-            self.plot_energy(index)
+            self.plot_energy(indices[0])
         elif which == "gpop":
-            self.plot_gpop(index)
+            self.plot_gpop(indices[0])
         elif which == "gpop_slider":
-            self.plot_gpop_slider(index)
+            self.plot_gpop_slider(indices[0])
         elif which == "natpop":
-            self.plot_natpop(index)
+            self.plot_natpop(indices[0])
         elif which == "norm":
-            self.plot_norm(index)
+            self.plot_norm(indices[0])
         elif which == "overlap":
-            self.plot_overlap(index)
+            self.plot_overlap(indices[0])
 
-    def plot_energy(self, index):
+    def plot_energy(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "output")
         subprocess.Popen(["plot_energy", "--in", output_file])
 
-    def plot_gpop(self, index):
+    def plot_gpop(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
 
-    def plot_gpop_slider(self, index):
+    def plot_gpop_slider(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "gpop")
         subprocess.Popen(["plot_gpop_slider", "--in", output_file])
 
-    def plot_natpop(self, index):
+    def plot_natpop(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "natpop")
         subprocess.Popen(["plot_natpop", "--in", output_file])
 
-    def plot_norm(self, index):
+    def plot_norm(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "output")
         subprocess.Popen(["plot_norm", "--in", output_file])
 
-    def plot_overlap(self, index):
+    def plot_overlap(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(index.row()),
+        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "output")
         subprocess.Popen(["plot_overlap", "--in", output_file])
 

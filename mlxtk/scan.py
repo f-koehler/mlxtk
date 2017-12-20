@@ -204,6 +204,7 @@ class ParameterScan(object):
         olddir = os.getcwd()
         os.chdir(self.cwd)
 
+        jobids = []
         for simulation in self.simulations:
             index = self.table.get_index(simulation.parameters.to_tuple())
 
@@ -216,9 +217,12 @@ class ParameterScan(object):
             sge.write_job_file(job_file, simulation.name, cmd, args)
 
             jobid = sge.submit_job(job_file)
+            jobids.append(jobid)
 
             sge.write_stop_script("stop_{}.sh".format(jobid), [jobid])
             sge.write_epilogue_script("epilogue_{}.sh".format(jobid), [jobid])
+
+        sge.write_stop_script("stop_all.sh", jobids)
 
         os.chdir(olddir)
 

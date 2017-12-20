@@ -136,6 +136,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type = QtWidgets.QComboBox()
         self.combo_plot_type.addItem("energy", "energy")
         self.combo_plot_type.addItem("gpop", "gpop")
+        self.combo_plot_type.addItem("gpop_diff", "gpop_diff")
         self.combo_plot_type.addItem("gpop_slider", "gpop_slider")
         self.combo_plot_type.addItem("natpop", "natpop")
         self.combo_plot_type.addItem("norm", "norm")
@@ -225,6 +226,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.plot_energy(indices[0])
         elif which == "gpop":
             self.plot_gpop(indices[0])
+        elif which == "gpop_diff":
+            if len(indices) != 2:
+                msg = QtWidgets.QErrorMessage()
+                msg.showMessage("Please select exactly two simulations")
+            else:
+                self.plot_gpop_diff(indices[0], indices[1])
         elif which == "gpop_slider":
             self.plot_gpop_slider(indices[0])
         elif which == "natpop":
@@ -245,6 +252,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         output_file = os.path.join(self.path, "sim_" + str(indices.row()),
                                    subdir, "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
+
+    def plot_gpop_diff(self, index1, index2):
+        subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
+        output_file1 = os.path.join(self.path, "sim_" + str(index1.row()),
+                                    subdir, "gpop")
+        output_file2 = os.path.join(self.path, "sim_" + str(index2.row()),
+                                    subdir, "gpop")
+        subprocess.Popen(
+            ["plot_gpop_diff", "--in1", output_file1, "--in2", output_file2])
 
     def plot_gpop_slider(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())

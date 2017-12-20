@@ -222,24 +222,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         which = self.combo_plot_type.itemData(
             self.combo_plot_type.currentIndex())
 
-        if which == "energy":
-            self.plot_energy(indices[0])
-        elif which == "gpop":
-            self.plot_gpop(indices[0])
-        elif which == "gpop_diff":
+        if which == "gpop_diff":
             if len(indices) != 2:
                 msg = QtWidgets.QErrorMessage()
                 msg.showMessage("Please select exactly two simulations")
             else:
                 self.plot_gpop_diff(indices[0], indices[1])
-        elif which == "gpop_slider":
-            self.plot_gpop_slider(indices[0])
-        elif which == "natpop":
-            self.plot_natpop(indices[0])
-        elif which == "norm":
-            self.plot_norm(indices[0])
-        elif which == "overlap":
-            self.plot_overlap(indices[0])
+            return
+
+        for index in indices:
+            if which == "energy":
+                self.plot_energy(index)
+            elif which == "gpop":
+                self.plot_gpop(index)
+            elif which == "gpop_slider":
+                self.plot_gpop_slider(index)
+            elif which == "natpop":
+                self.plot_natpop(index)
+            elif which == "norm":
+                self.plot_norm(index)
+            elif which == "overlap":
+                self.plot_overlap(index)
 
     def plot_energy(self, indices):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())

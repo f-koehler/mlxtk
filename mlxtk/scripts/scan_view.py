@@ -182,7 +182,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout_constants.addWidget(self.table_constants)
         self.tab_constants.setLayout(self.layout_constants)
 
-        self.update_subdirs(0)
+        self.update_subdirs(
+            self.table_variables.selectionModel().selectedRows()[0])
 
     def update_subdirs(self, index):
         if self.combo_subdir.isEnabled():

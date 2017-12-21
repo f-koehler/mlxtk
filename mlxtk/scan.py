@@ -237,9 +237,6 @@ class ParameterScan(object):
             self.logger.info("create hdf5 group %s", self.name)
             group = h5py.create_group(self.name)
 
-        group.attrs["scan_parameters"] = numpy.void(
-            pickle.dumps(self.get_pickle_input()))
-
         olddir = os.getcwd()
         os.chdir(self.cwd)
 

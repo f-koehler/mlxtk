@@ -25,10 +25,17 @@ class Simulation(object):
 
     def create_operator(self, name, function, **kwargs):
         self.tasks.append(task.OperatorCreationTask(name, function, **kwargs))
+        return self.tasks[-1]
 
     def create_wave_function(self, name, function, **kwargs):
         self.tasks.append(
             task.WaveFunctionCreationTask(name, function, **kwargs))
+        return self.tasks[-1]
+
+    def compute_expval(self, propagation, operator, **kwargs):
+        self.tasks.append(
+            task.ExpectationValueTask(propagation, operator, **kwargs))
+        return self.tasks[-1]
 
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
@@ -40,6 +47,7 @@ class Simulation(object):
 
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
+        return self.tasks[-1]
 
     def relax(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
@@ -52,6 +60,8 @@ class Simulation(object):
         kwargs["relax"] = True
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
+
+        return self.tasks[-1]
 
     def is_up_to_date(self):
         if not os.path.exists(self.cwd):

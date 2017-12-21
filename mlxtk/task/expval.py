@@ -1,0 +1,97 @@
+import os
+import shutil
+import sys
+
+import h5py
+
+from mlxtk.task import task
+from mlxtk.process import watch_process
+from mlxtk.inout.expval import add_expval_to_hdf5
+
+
+class ExpectationValueTask(task.Task):
+    def __init__(self, propagation, operator, **kwargs):
+        kwargs["task_type"] = "ExpectationValueTask"
+
+        self.operator = operator
+        self.propagation = propagation
+
+        if not propagation.psi:
+            self.logger.warn("propagation does not seem to create a psi file")
+
+        inp_wave_function = task.FileInput(
+            "initial_wave_function",
+            propagation.initial_wave_function + ".wave_function")
+        inp_operator = task.FileInput("operator",
+                                      propagation.operator + ".operator")
+        inp_psi_file = task.FileInput("psi_file",
+                                      os.path.join(
+                                          propagation.propagation_name, "psi"))
+
+        out_expval = task.FileOutput("expval_" + operator,
+                                     os.path.join(propagation.propagation_name,
+                                                  operator + ".expval"))
+
+        task.Task.__init__(
+            self,
+            propagation.propagation_name + "_expval_" + operator,
+            self.compute_expectation_value,
+            inputs=[inp_wave_function, inp_operator, inp_psi_file],
+            outputs=[out_expval],
+            **kwargs)
+
+    def get_command(self):
+        if "QDTK_PREFIX" in os.environ:
+            program_path = os.path.join(os.environ["QDTK_PREFIX"], "bin",
+                                        "qdtk_expect.x")
+            if not os.path.exists(program_path):
+                raise RuntimeError(
+                    "QDTK executable \"{}\" not found".format(program_path))
+        else:
+            program_path = "qdtk_expect.x"
+
+        return [
+            program_path, "-psi", "psi", "-rst", "restart", "-opr",
+            self.operator + ".operator", "-save", self.operator + ".expval"
+        ]
+
+    def compute_expectation_value(self):
+        self.logger.info("copy operator")
+        shutil.copy2(self.operator + ".operator",
+                     os.path.join(self.propagation.propagation_name,
+                                  self.operator + ".operator"))
+
+        self.logger.info("run qdtk_expect.x")
+        command = self.get_command()
+        self.logger.debug("command: %s", " ".join(command))
+        working_dir = self.propagation.propagation_name
+        self.logger.debug("working directory: %s", working_dir)
+
+        watch_process(
+            command,
+            self.logger.info,
+            self.logger.warn,
+            cwd=working_dir,
+            stdout=sys.stdout,
+            stderr=sys.stderr)
+
+    def create_hdf5(self, group=None):
+        opened_file = group is None
+        if opened_file:
+            self.logger.info("create new hdf5 file")
+            group = h5py.File(self.propagation.propagation_name + ".hdf5", "w")
+        else:
+            if self.propagation.propagation_name not in group:
+                group = group.create_group(self.propagation.propagation_name)
+            else:
+                group = group[self.propagation.propagation_name]
+
+        expval = os.path.join(self.propagation.propagation_name,
+                              self.operator + ".expval")
+        if not os.path.exists(expval):
+            raise RuntimeError(
+                "Expectation value \"{}\" does not exist".format(expval))
+        add_expval_to_hdf5(group, expval)
+
+        if opened_file:
+            group.close()

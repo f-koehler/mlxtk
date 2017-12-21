@@ -36,15 +36,14 @@ def read_output_hdf5(parsed_path):
     if not hdf5.is_hdf5_group(path, path_inside):
         raise RuntimeError("Expected a group containing the output")
 
-    fhandle = h5py.File(path, "r")
-    data = pandas.DataFrame(
-        data={
-            "time": fhandle[os.path.join(path_inside, "time")][:],
-            "norm": fhandle[os.path.join(path_inside, "norm")][:],
-            "energy": fhandle[os.path.join(path_inside, "energy")][:],
-            "overlap": fhandle[os.path.join(path_inside, "overlap")][:]
-        })
-    fhandle.close()
+    with h5py.File(path, "r") as fhandle:
+        data = pandas.DataFrame(
+            data={
+                "time": fhandle[os.path.join(path_inside, "time")][:],
+                "norm": fhandle[os.path.join(path_inside, "norm")][:],
+                "energy": fhandle[os.path.join(path_inside, "energy")][:],
+                "overlap": fhandle[os.path.join(path_inside, "overlap")][:]
+            })
 
     return data
 

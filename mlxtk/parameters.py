@@ -207,7 +207,6 @@ class ParameterTable(object):
         if self.names != other.names:
             return None
 
-        print(self.table, other.table)
         common_rows = set(self.table) & set(other.table)
         missing_rows = set(other.table) - set(self.table)
         extra_rows = set(self.table) - set(other.table)

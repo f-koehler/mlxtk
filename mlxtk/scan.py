@@ -2,17 +2,15 @@ import argparse
 import copy
 import datetime
 import os
-import pickle
 import shutil
 import sys
 
 import h5py
-import numpy
 
-from mlxtk import log
-from mlxtk import sge
-from mlxtk.inout import InOutError
-from mlxtk.parameters import ParameterTable
+from . import log
+from . import sge
+from .parameters import ParameterTable
+from . import cwd
 
 
 class ParameterScan(object):
@@ -164,8 +162,7 @@ class ParameterScan(object):
             self.logger.info("all simulations are up-to-date")
             return
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         self.logger.info("found %d simulations that are not up-to-date",
                          len(self.simulations))
@@ -173,7 +170,7 @@ class ParameterScan(object):
         for simulation in self.simulations:
             simulation.run()
 
-        os.chdir(olddir)
+        cwd.go_back()
 
     def run_index(self, index):
         self.generate_simulation(index)
@@ -201,8 +198,7 @@ class ParameterScan(object):
 
         script_path = os.path.abspath(sys.argv[0])
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         jobids = []
         for simulation in self.simulations:
@@ -224,7 +220,7 @@ class ParameterScan(object):
 
         sge.write_stop_script("stop_all.sh", jobids)
 
-        os.chdir(olddir)
+        cwd.go_back()
 
     def create_hdf5(self, group=None):
         self.generate_simulations()
@@ -237,20 +233,21 @@ class ParameterScan(object):
             self.logger.info("create hdf5 group %s", self.name)
             group = h5py.create_group(self.name)
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         for i, simulation in enumerate(self.simulations):
             simulation.create_hdf5(group)
             self.logger.info("%d/%d simulations processed", i + 1,
                              len(self.simulations))
 
-        os.chdir(olddir)
+        cwd.go_back()
 
         if opened_file:
             group.close()
 
     def main(self):
+        self.logger.info("start parameter scan")
+
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "action",

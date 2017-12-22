@@ -10,6 +10,7 @@ from mlxtk import task
 from mlxtk import sge
 from mlxtk import log
 from .inout.hdf5 import HDF5Error
+from . import cwd
 
 
 class Simulation(object):
@@ -71,15 +72,15 @@ class Simulation(object):
         if not os.path.exists(state_dir):
             return False
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         for tsk in self.tasks:
             tsk.parameters = self.parameters
             if not tsk.is_up_to_date():
+                cwd.go_back()
                 return False
 
-        os.chdir(olddir)
+        cwd.go_back()
 
         return True
 
@@ -94,8 +95,7 @@ class Simulation(object):
         if not os.path.exists(state_dir):
             os.makedirs(state_dir)
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         parameter_dict = {
             name: self.parameters[name]
@@ -111,7 +111,7 @@ class Simulation(object):
             tsk.parameters = self.parameters
             tsk.run()
 
-        os.chdir(olddir)
+        cwd.go_back()
 
     def qsub(self, args):
         script_path = os.path.abspath(sys.argv[0])
@@ -138,8 +138,7 @@ class Simulation(object):
         else:
             group = group.create_group(self.name)
 
-        olddir = os.getcwd()
-        os.chdir(self.cwd)
+        cwd.change_dir(self.cwd)
 
         for tsk in self.tasks:
             if getattr(tsk, "create_hdf5", None) is not None:
@@ -152,7 +151,7 @@ class Simulation(object):
                     self.logger.error("exception: %s", str(e))
                     self.logger.error("the data is incomplete")
 
-        os.chdir(olddir)
+        cwd.go_back()
 
         if opened_file:
             group.close()

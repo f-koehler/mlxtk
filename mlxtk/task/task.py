@@ -94,8 +94,6 @@ class Task(object):
 
         if not os.path.exists(self.state_file):
             self.logger.info("not up-to-date, state file does not exist")
-            self.logger.debug("state file path: %s",
-                              os.path.abspath(self.state_file))
             return False
 
         self.get_current_state()

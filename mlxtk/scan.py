@@ -6,6 +6,7 @@ import shutil
 import sys
 
 import h5py
+import numpy
 
 from . import log
 from . import sge
@@ -232,6 +233,8 @@ class ParameterScan(object):
         else:
             self.logger.info("create hdf5 group %s", self.name)
             group = h5py.create_group(self.name)
+
+        group.attrs["scan_parameters"] = numpy.void(self.table.dumps())
 
         cwd.change_dir(self.cwd)
 

@@ -155,6 +155,14 @@ class ParameterTable(object):
         with open(pickle_path, "wb") as fhandle:
             pickle.dump(data, fhandle)
 
+    def dumps(self):
+        data = {
+            "names": self.names,
+            "values": self.values,
+            "table": self.table
+        }
+        return pickle.dumps(data)
+
     @staticmethod
     def load(path):
         """Load the ``ParameterTable`` from a pickle file

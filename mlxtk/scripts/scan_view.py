@@ -223,6 +223,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         which = self.combo_plot_type.itemData(
             self.combo_plot_type.currentIndex())
 
+        indices = [
+            int(self.table_variables.model().data(
+                self.table_variables.model().index(index.row(), 0)))
+            for index in indices
+        ]
+
         if which == "gpop_diff":
             if len(indices) != 2:
                 msg = QtWidgets.QErrorMessage()
@@ -245,49 +251,50 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             elif which == "overlap":
                 self.plot_overlap(index)
 
-    def plot_energy(self, indices):
+    def plot_energy(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "output")
+        print(output_file)
         subprocess.Popen(["plot_energy", "--in", output_file])
 
-    def plot_gpop(self, indices):
+    def plot_gpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "gpop")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "gpop")
         subprocess.Popen(["plot_gpop", "--in", output_file])
 
     def plot_gpop_diff(self, index1, index2):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file1 = os.path.join(self.path, "sim_" + str(index1.row()),
-                                    subdir, "gpop")
-        output_file2 = os.path.join(self.path, "sim_" + str(index2.row()),
-                                    subdir, "gpop")
+        output_file1 = os.path.join(self.path, "sim_" + str(index1), subdir,
+                                    "gpop")
+        output_file2 = os.path.join(self.path, "sim_" + str(index2), subdir,
+                                    "gpop")
         subprocess.Popen(
             ["plot_gpop_diff", "--in1", output_file1, "--in2", output_file2])
 
-    def plot_gpop_slider(self, indices):
+    def plot_gpop_slider(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "gpop")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "gpop")
         subprocess.Popen(["plot_gpop_slider", "--in", output_file])
 
-    def plot_natpop(self, indices):
+    def plot_natpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "natpop")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "natpop")
         subprocess.Popen(["plot_natpop", "--in", output_file])
 
-    def plot_norm(self, indices):
+    def plot_norm(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "output")
         subprocess.Popen(["plot_norm", "--in", output_file])
 
-    def plot_overlap(self, indices):
+    def plot_overlap(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
-        output_file = os.path.join(self.path, "sim_" + str(indices.row()),
-                                   subdir, "output")
+        output_file = os.path.join(self.path, "sim_" + str(index), subdir,
+                                   "output")
         subprocess.Popen(["plot_overlap", "--in", output_file])
 
 

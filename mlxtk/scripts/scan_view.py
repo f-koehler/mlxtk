@@ -10,6 +10,19 @@ import h5py
 
 from mlxtk.inout import hdf5
 
+class TableVariables(QtWidgets.QTableView):
+    def __init__(self, parent=None):
+        QtWidgets.QTableView.__init__(self, parent)
+
+        self.open_plot_function = lambda: None
+
+    def keyPressEvent(self, event):
+        key = event.key()
+        if (key == QtCore.Qt.Key_Enter) or (key == QtCore.Qt.Key_Return):
+            self.open_plot_function()
+        else:
+            QtWidgets.QTableView.keyPressEvent(self, event)
+
 
 class DataModelVariables(QtCore.QAbstractTableModel):
     def __init__(self, scan_parameters, parent=None):
@@ -158,7 +171,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.model_variables_proxy = QtCore.QSortFilterProxyModel()
         self.model_variables_proxy.setSourceModel(self.model_variables)
 
-        self.table_variables = QtWidgets.QTableView(self.tab_variables)
+        self.table_variables = TableVariables(self.tab_variables)
         self.table_variables.setSortingEnabled(True)
         self.table_variables.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.table_variables.setFocus()
@@ -168,6 +181,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.table_variables.doubleClicked.connect(self.open_plot)
         self.table_variables.clicked.connect(self.update_subdirs)
         self.table_variables.selectRow(0)
+        self.table_variables.open_plot_function = self.open_plot
 
         self.model_constants = DataModelConstants(self.scan_parameters)
         self.table_constants = QtWidgets.QTableView(self.tab_constants)

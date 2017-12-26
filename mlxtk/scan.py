@@ -4,6 +4,7 @@ import datetime
 import os
 import shutil
 import sys
+import time
 
 import h5py
 import numpy
@@ -202,6 +203,7 @@ class ParameterScan(object):
         cwd.change_dir(self.cwd)
 
         jobids = []
+        counter = 0
         for simulation in self.simulations:
             index = self.table.get_index(simulation.parameters.to_tuple())
 
@@ -218,6 +220,12 @@ class ParameterScan(object):
 
             sge.write_stop_script("stop_{}.sh".format(jobid), [jobid])
             sge.write_epilogue_script("epilogue_{}.sh".format(jobid), [jobid])
+
+            if counter % 80 == 0:
+                self.logger.info("submitted 80 jobs, waiting for 20s")
+                time.sleep(20)
+
+            counter += 1
 
         sge.write_stop_script("stop_all.sh", jobids)
 

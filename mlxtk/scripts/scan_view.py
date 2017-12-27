@@ -10,6 +10,7 @@ import h5py
 
 from mlxtk.inout import hdf5
 
+
 class TableVariables(QtWidgets.QTableView):
     def __init__(self, parent=None):
         QtWidgets.QTableView.__init__(self, parent)
@@ -155,6 +156,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type.addItem("natpop", "natpop")
         self.combo_plot_type.addItem("norm", "norm")
         self.combo_plot_type.addItem("overlap", "overlap")
+        self.combo_plot_type.addItem("overlap_diff", "overlap_diff")
         self.tool_bar.addWidget(self.combo_plot_type)
 
         self.label_subdir = QtWidgets.QLabel("    Subdirectory: ")
@@ -258,6 +260,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             else:
                 self.plot_energy_diff(indices[0], indices[1])
             return
+        elif which == "overlap_diff":
+            if len(indices) != 2:
+                msg = QtWidgets.QErrorMessage()
+                msg.showMessage("Please select exactly two simulations")
+            else:
+                self.plot_energy_diff(indices[0], indices[1])
+            return
 
         for index in indices:
             if which == "energy":
@@ -327,6 +336,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         output_file = os.path.join(self.path, "sim_" + str(index), subdir,
                                    "output")
         subprocess.Popen(["plot_overlap", "--in", output_file])
+
+    def plot_overlap_diff(self, index1, index2):
+        subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
+        output_file1 = os.path.join(self.path, "sim_" + str(index1), subdir,
+                                    "output")
+        output_file2 = os.path.join(self.path, "sim_" + str(index2), subdir,
+                                    "output")
+        subprocess.Popen([
+            "plot_overlap_diff", "--in1", output_file1, "--in2", output_file2
+        ])
 
 
 def main():

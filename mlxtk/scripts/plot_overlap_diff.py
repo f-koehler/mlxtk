@@ -12,7 +12,7 @@ from mlxtk import log
 def main():
     parser = argparse.ArgumentParser(
         description=
-        "Plot the difference in evolution of energy between two simulations")
+        "Plot the difference in maximum overlap between two simulations")
     mlxtk.plot.argparser.add_plotting_arguments(parser)
     parser.add_argument(
         "--in1", type=str, dest="input_file1", help="first input_file")
@@ -28,35 +28,33 @@ def main():
     n_t = max(len(data1.time), len(data2.time))
 
     def init_plot(plot):
-        plot.axes.plot(data1.time, data1.energy - data2.energy, marker=".")
+        plot.axes.plot(data1.time, data1.overlap - data2.overlap, marker=".")
         plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(
-            r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$")
+        plot.axes.set_ylabel(r"max overlap difference")
 
     def init_plot_interpolate(plot):
         t = numpy.linspace(t_min, t_max, n_t)
         interp1 = scipy.interpolate.interp1d(
             data1.time,
-            data1.energy,
+            data1.overlap,
             kind=5,
             bounds_error=True,
             assume_sorted=True)
         interp2 = scipy.interpolate.interp1d(
             data2.time,
-            data2.energy,
+            data2.overlap,
             kind=5,
             bounds_error=True,
             assume_sorted=True)
         plot.axes.plot(t, interp1(t) - interp2(t), marker=".")
         plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(
-            r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$ (interpolated)")
+        plot.axes.set_ylabel(r"max overlap difference")
 
     if numpy.any(data1.time != data2.time):
         log.warn("incompatible times, interpolating")
-        program = SimplePlotProgram("Energy Diff", init_plot_interpolate)
+        program = SimplePlotProgram("Overlap Diff", init_plot_interpolate)
     else:
-        program = SimplePlotProgram("Energy Diff", init_plot)
+        program = SimplePlotProgram("Overlap Diff", init_plot)
 
     program.main(args)
 

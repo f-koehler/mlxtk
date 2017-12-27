@@ -155,6 +155,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type.addItem("gpop_slider", "gpop_slider")
         self.combo_plot_type.addItem("natpop", "natpop")
         self.combo_plot_type.addItem("norm", "norm")
+        self.combo_plot_type.addItem("norm_diff", "norm_diff")
         self.combo_plot_type.addItem("overlap", "overlap")
         self.combo_plot_type.addItem("overlap_diff", "overlap_diff")
         self.tool_bar.addWidget(self.combo_plot_type)
@@ -260,6 +261,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             else:
                 self.plot_energy_diff(indices[0], indices[1])
             return
+        elif which == "norm_diff":
+            if len(indices) != 2:
+                msg = QtWidgets.QErrorMessage()
+                msg.showMessage("Please select exactly two simulations")
+            else:
+                self.plot_norm_diff(indices[0], indices[1])
+            return
         elif which == "overlap_diff":
             if len(indices) != 2:
                 msg = QtWidgets.QErrorMessage()
@@ -330,6 +338,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         output_file = os.path.join(self.path, "sim_" + str(index), subdir,
                                    "output")
         subprocess.Popen(["plot_norm", "--in", output_file])
+
+    def plot_norm_diff(self, index1, index2):
+        subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
+        output_file1 = os.path.join(self.path, "sim_" + str(index1), subdir,
+                                    "output")
+        output_file2 = os.path.join(self.path, "sim_" + str(index2), subdir,
+                                    "output")
+        subprocess.Popen(
+            ["plot_norm_diff", "--in1", output_file1, "--in2", output_file2])
 
     def plot_overlap(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())

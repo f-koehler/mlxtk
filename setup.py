@@ -29,6 +29,7 @@ setup(
             "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
             "plot_natpop=mlxtk.scripts.plot_natpop:main",
             "plot_norm=mlxtk.scripts.plot_norm:main",
+            "plot_norm_diff=mlxtk.scripts.plot_norm_diff:main",
             "plot_overlap=mlxtk.scripts.plot_overlap:main",
             "plot_overlap_diff=mlxtk.scripts.plot_overlap_diff:main",
             # "plot_dmat1=mlxtk.scripts.plot_dmat1:main",

@@ -12,7 +12,7 @@ def read_expval(path):
     if parsed is None:
         return read_expval_ascii(path)
     else:
-        return read_expval_hdf5(path)
+        return read_expval_hdf5(parsed)
 
 
 def read_expval_ascii(path):

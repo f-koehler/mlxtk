@@ -150,6 +150,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.combo_plot_type = QtWidgets.QComboBox()
         self.combo_plot_type.addItem("energy", "energy")
         self.combo_plot_type.addItem("energy_diff", "energy_diff")
+        self.combo_plot_type.addItem("expvals", "expvals")
         self.combo_plot_type.addItem("gpop", "gpop")
         self.combo_plot_type.addItem("gpop_diff", "gpop_diff")
         self.combo_plot_type.addItem("gpop_slider", "gpop_slider")
@@ -242,8 +243,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.combo_plot_type.currentIndex())
 
         indices = [
-            int(self.table_variables.model().data(
-                self.table_variables.model().index(index.row(), 0)))
+            int(self.table_variables.model().data(self.table_variables.model()
+                                                  .index(index.row(), 0)))
             for index in indices
         ]
 
@@ -279,6 +280,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         for index in indices:
             if which == "energy":
                 self.plot_energy(index)
+            elif which == "expvals":
+                self.plot_expvals(index)
             elif which == "gpop":
                 self.plot_gpop(index)
             elif which == "gpop_slider":
@@ -294,7 +297,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
         output_file = os.path.join(self.path, "sim_" + str(index), subdir,
                                    "output")
-        print(output_file)
         subprocess.Popen(["plot_energy", "--in", output_file])
 
     def plot_energy_diff(self, index1, index2):
@@ -305,6 +307,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                                     "output")
         subprocess.Popen(
             ["plot_energy_diff", "--in1", output_file1, "--in2", output_file2])
+
+    def plot_expvals(self, index):
+        subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())
+        directory = os.path.join(self.path, "sim_" + str(index), subdir)
+        subprocess.Popen(["plot_expvals", directory])
 
     def plot_gpop(self, index):
         subdir = self.combo_subdir.itemData(self.combo_subdir.currentIndex())

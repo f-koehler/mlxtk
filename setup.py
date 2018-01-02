@@ -23,6 +23,7 @@ setup(
         "console_scripts": [
             "plot_energy=mlxtk.scripts.plot_energy:main",
             "plot_energy_diff=mlxtk.scripts.plot_energy_diff:main",
+            "plot_expvals=mlxtk.scripts.plot_expvals:main",
             "plot_gpop=mlxtk.scripts.plot_gpop:main",
             "plot_gpop_diff=mlxtk.scripts.plot_gpop_diff:main",
             "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",

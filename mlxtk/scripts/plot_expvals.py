@@ -51,24 +51,28 @@ def get_expval_name(path):
 def plot_expval(path, plot, real=True, imaginary=False):
     data = expval.read_expval(path)
 
+    lines = []
+
     if real:
-        plot.axes.plot(
+        lines += plot.axes.plot(
             data.time,
             data.real,
             color="C0",
             label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
+        plot.axes.set_ylabel(r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
 
     if imaginary:
-        plot.axes.plot(
+        ax = plot.axes.twinx() if real else plot.axes
+        lines += ax.plot(
             data.time,
             data.imaginary,
             color="C1",
             label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
+        ax.set_ylabel(r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
 
     plot.axes.set_xlabel("$t$")
-    plot.axes.set_ylabel(r"$\left<O\right>(t)$")
-    if real or imaginary:
-        plot.axes.legend()
+    if lines:
+        plot.axes.legend(lines, [l.get_label() for l in lines])
     plot.figure.tight_layout()
     plot.updateGeometry()
 
@@ -81,6 +85,8 @@ class ExpvalTab(QtWidgets.QWidget):
 
         self.plot = Qt5Plot(self)
         plot_expval(path, self.plot)
+
+        self.toolbar = NavigationToolbar(self.plot, self)
 
         self.widget_controls = QtWidgets.QWidget(self)
 
@@ -96,8 +102,13 @@ class ExpvalTab(QtWidgets.QWidget):
         self.widget_controls.setLayout(self.layout_controls)
 
         def replot(dummy):
+            self.layout.removeWidget(self.toolbar)
+            self.layout.removeWidget(self.widget_controls)
             self.layout.removeWidget(self.plot)
             self.plot = Qt5Plot(self)
+            self.toolbar = NavigationToolbar(self.plot, self)
+            self.layout.addWidget(self.toolbar)
+            self.layout.addWidget(self.widget_controls)
             self.layout.addWidget(self.plot)
             plot_expval(self.path, self.plot,
                         self.check_real.isChecked(),
@@ -107,6 +118,7 @@ class ExpvalTab(QtWidgets.QWidget):
         self.check_imaginary.stateChanged.connect(replot)
 
         self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.toolbar)
         self.layout.addWidget(self.widget_controls)
         self.layout.addWidget(self.plot)
         self.setLayout(self.layout)

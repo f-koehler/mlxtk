@@ -123,7 +123,8 @@ class ExpvalTab(QtWidgets.QWidget):
         self.layout.addWidget(self.plot)
         self.setLayout(self.layout)
 
-        parent.addTab(self, get_expval_name(path))
+        if hasattr(parent, "addTab"):
+            parent.addTab(self, get_expval_name(path))
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -132,15 +133,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.main_widget = QtWidgets.QWidget()
-        self.tab_widget = QtWidgets.QTabWidget(self.main_widget)
 
         self.expvals = list_expvals(path)
-        self.tabs = [
-            ExpvalTab(expval, self.tab_widget) for expval in self.expvals
-        ]
+        if len(self.expvals) == 1:
+            self.tab_widget = None
+            self.tabs = [ExpvalTab(self.expvals[0], self.main_widget)]
+        else:
+            self.tab_widget = QtWidgets.QTabWidget(self.main_widget)
+            self.tabs = [
+                ExpvalTab(expval, self.tab_widget) for expval in self.expvals
+            ]
 
         self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(self.tab_widget)
+        if len(self.expvals) == 1:
+            self.layout.addWidget(self.tabs[0])
+        else:
+            self.layout.addWidget(self.tab_widget)
         self.main_widget.setLayout(self.layout)
         self.setCentralWidget(self.main_widget)
 

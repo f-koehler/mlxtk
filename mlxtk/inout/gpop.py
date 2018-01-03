@@ -124,7 +124,7 @@ def read_gpop_hdf5(parsed_path):
 
 
 def add_gpop_to_hdf5(group, gpop_path):
-    logger = log.getLogger("h5py")
+    logger = log.get_logger(__name__)
 
     opened_file = isinstance(group, str)
     if opened_file:

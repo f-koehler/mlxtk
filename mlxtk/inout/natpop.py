@@ -136,7 +136,7 @@ def read_natpop_hdf5(parsed_path):
 
 
 def add_natpop_to_hdf5(group, natpop_path):
-    logger = log.getLogger("h5py")
+    logger = log.get_logger(__name__)
 
     opened_file = isinstance(group, str)
     if opened_file:

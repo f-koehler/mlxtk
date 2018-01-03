@@ -4,7 +4,6 @@ import datetime
 import os
 import shutil
 import sys
-import time
 
 import h5py
 import numpy
@@ -44,7 +43,7 @@ class ParameterScan(object):
 
         self.simulations = []
 
-        self.logger = log.getLogger("Scan")
+        self.logger = log.get_logger(__name__)
 
     def set_values(self, name, values):
         """Specify the values a certain parameter can take
@@ -106,7 +105,7 @@ class ParameterScan(object):
                 index = stored_table.get_index(miss)
                 shelve(index)
 
-        # move simulations to their new isdex
+        # move simulations to their new index
         # first all these simulations are moved to a temporary dir
         tmp_dir = os.path.join(self.cwd, "tmp")
         if not os.path.exists(tmp_dir):
@@ -151,6 +150,8 @@ class ParameterScan(object):
         self.simulations = [simulation]
 
     def run(self):
+        log.open_log_file(os.path.join(self.cwd, "run.log"))
+
         self.generate_simulations()
 
         if not os.path.exists(self.cwd):
@@ -174,7 +175,11 @@ class ParameterScan(object):
 
         cwd.go_back()
 
+        log.close_log_file()
+
     def run_index(self, index):
+        log.open_log_file(os.path.join("sim_" + str(index), "sim.log"))
+
         self.generate_simulation(index)
 
         if self.simulations[0].is_up_to_date():
@@ -184,7 +189,11 @@ class ParameterScan(object):
         self.logger.info("run simulation with index %d", index)
         self.simulations[0].run()
 
+        log.close_log_file()
+
     def qsub(self, args):
+        log.open_log_file(os.path.join(self.cwd, "qsub.log"))
+
         self.generate_simulations()
 
         if not os.path.exists(self.cwd):
@@ -202,8 +211,16 @@ class ParameterScan(object):
 
         cwd.change_dir(self.cwd)
 
+        if not os.path.exists("job"):
+            os.makedirs("job")
+
+        if not os.path.exists("epilogue"):
+            os.makedirs("epilogue")
+
+        if not os.path.exists("stop"):
+            os.makedirs("stop")
+
         jobids = []
-        counter = 0
         for simulation in self.simulations:
             index = self.table.get_index(simulation.parameters.to_tuple())
 
@@ -212,26 +229,26 @@ class ParameterScan(object):
                 os.path.relpath(script_path), "--index",
                 str(index), "run-index"
             ])
-            job_file = "job_{}.sh".format(simulation.name)
+            job_file = os.path.join("job", "{}.sh".format(simulation.name))
             sge.write_job_file(job_file, simulation.name, cmd, args)
 
             jobid = sge.submit_job(job_file)
             jobids.append(jobid)
 
-            sge.write_stop_script("stop_{}.sh".format(jobid), [jobid])
-            sge.write_epilogue_script("epilogue_{}.sh".format(jobid), [jobid])
-
-            if counter % 80 == 0:
-                self.logger.info("submitted 80 jobs, waiting for 20s")
-                time.sleep(20)
-
-            counter += 1
+            sge.write_stop_script(
+                os.path.join("epilogue", "{}.sh".format(jobid)), [jobid])
+            sge.write_epilogue_script(
+                os.path.join("stop", "{}.sh".format(jobid)), [jobid])
 
         sge.write_stop_script("stop_all.sh", jobids)
 
         cwd.go_back()
 
+        log.close_log_file()
+
     def create_hdf5(self, group=None):
+        log.open_log_file(os.path.join(self.cwd, "hdf5.log"))
+
         self.generate_simulations()
 
         opened_file = group is None
@@ -255,6 +272,8 @@ class ParameterScan(object):
 
         if opened_file:
             group.close()
+
+        log.close_log_file()
 
     def main(self):
         self.logger.info("start parameter scan")

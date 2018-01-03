@@ -39,7 +39,7 @@ def read_expval_hdf5(parsed_path):
 
 
 def add_expval_to_hdf5(group, expval_path):
-    logger = log.getLogger("h5py")
+    logger = log.get_logger(__name__)
 
     data = read_expval(expval_path)
 

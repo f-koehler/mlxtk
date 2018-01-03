@@ -61,7 +61,7 @@ class Task(object):
         self.stored_output_states = None
         self.parameters = None
 
-        self.logger = log.getLogger(self.task_type)
+        self.logger = log.get_logger(__name__ + "(" + self.task_type + ")")
 
     def get_current_state(self):
         for i, step in enumerate(self.preprocess_steps):

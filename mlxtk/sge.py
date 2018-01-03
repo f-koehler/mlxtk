@@ -5,6 +5,8 @@ import sys
 
 from mlxtk import log
 
+logger = log.get_logger(__name__)
+
 
 def add_parser_arguments(parser):
     """Add SGE related command line options to an :py:class:`argparse.ArgumentParser`
@@ -44,7 +46,7 @@ def submit_job(jobfile):
     Returns:
         int: Id of the newly created job
     """
-    log.getLogger("SGE").info("submit job script \"%s\"", jobfile)
+    logger.info("submit job script \"%s\"", jobfile)
     regex = re.compile(r"^Your job (\d+)")
     output = subprocess.check_output(["qsub", jobfile])
     m = regex.match(output.decode())
@@ -61,7 +63,7 @@ def mark_file_executable(path):
     Args:
         path (str): Path to the file
     """
-    log.getLogger("SGE").info("make file executable \"%s\"", path)
+    logger.info("make file executable \"%s\"", path)
     os.chmod(path, 0o755)
 
 
@@ -76,7 +78,7 @@ def write_epilogue_script(path, jobid):
     """
     script = ("#!/bin/bash\n" "qacct -j {jobid}\n").format(jobid=jobid)
 
-    log.getLogger("SGE").info("write epilogue script \"%s\"", path)
+    logger.info("write epilogue script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
@@ -98,9 +100,9 @@ def write_job_file(path, name, cmd, args):
     if args.email.upper() != "NONE":
         script.append("#$ -M {email} -m aes")
     script += [
-        "#$ -S /bin/bash", "#$ -cwd", "#$ -j y", "#$ -V",
-        "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}", "#$ -pe smp {cpus}",
-        "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
+        "#$ -S /bin/bash", "#$ -cwd", "#$ -o /dev/null", "#$ -e /dev/null",
+        "#$ -V", "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}",
+        "#$ -pe smp {cpus}", "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
     ]
 
     script = "\n".join(script).format(
@@ -112,7 +114,7 @@ def write_job_file(path, name, cmd, args):
         cmd=cmd,
         email=args.email)
 
-    log.getLogger("SGE").info("write job script \"%s\"", path)
+    logger.info("write job script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
@@ -127,10 +129,10 @@ def write_stop_script(path, jobids):
         jobids (list): List of job ids to abort
     """
     script = ["#!/bin/bash", "qdel {jobids}"]
-    script = "\n".join(script).format(
-        jobids=" ".join([str(jobid) for jobid in jobids]))
+    script = "\n".join(script).format(jobids=" ".join(
+        [str(jobid) for jobid in jobids]))
 
-    log.getLogger("SGE").info("write stop script \"%s\"", path)
+    logger.info("write stop script \"%s\"", path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 

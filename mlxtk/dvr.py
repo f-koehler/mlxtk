@@ -14,7 +14,7 @@ from mlxtk import log
 REGISTERED_DVRS = {}
 DVRS = {}
 
-LOGGER = log.getLogger("DVR")
+LOGGER = log.get_logger(__name__)
 
 
 def remove_dvr(name):

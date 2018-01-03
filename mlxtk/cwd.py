@@ -2,7 +2,7 @@ import os
 
 from . import log
 
-logger = log.getLogger("CWD")
+logger = log.get_logger(__name__)
 previous_directories = []
 
 

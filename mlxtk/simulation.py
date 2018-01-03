@@ -19,7 +19,7 @@ class Simulation(object):
         self.cwd = kwargs.get("cwd", name)
         self.tasks = []
         self.parameters = kwargs.get("parameters", None)
-        self.logger = log.getLogger("Simulation")
+        self.logger = log.get_logger(__name__)
 
         self.propagation_counter = 0
         self.relaxation_counter = 0

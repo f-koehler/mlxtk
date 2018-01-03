@@ -39,6 +39,7 @@ def list_expvals_hdf5(parsed_path):
                 expvals.append(path + os.path.join(path_inside, group))
     return sorted(expvals)
 
+
 def get_expval_name(path):
     tmp = os.path.basename(path)
     base, ext = os.path.splitext(path)
@@ -47,9 +48,71 @@ def get_expval_name(path):
     return tmp[7:]
 
 
-def plot_expval(path, plot):
+def plot_expval(path, plot, real=True, imaginary=False):
     data = expval.read_expval(path)
-    plot.axes.plot(data.time, data.real)
+
+    if real:
+        plot.axes.plot(
+            data.time,
+            data.real,
+            color="C0",
+            label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
+
+    if imaginary:
+        plot.axes.plot(
+            data.time,
+            data.imaginary,
+            color="C1",
+            label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
+
+    plot.axes.set_xlabel("$t$")
+    plot.axes.set_ylabel(r"$\left<O\right>(t)$")
+    if real or imaginary:
+        plot.axes.legend()
+    plot.figure.tight_layout()
+    plot.updateGeometry()
+
+
+class ExpvalTab(QtWidgets.QWidget):
+    def __init__(self, path, parent):
+        QtWidgets.QWidget.__init__(self)
+
+        self.path = path
+
+        self.plot = Qt5Plot(self)
+        plot_expval(path, self.plot)
+
+        self.widget_controls = QtWidgets.QWidget(self)
+
+        self.check_real = QtWidgets.QCheckBox("real part",
+                                              self.widget_controls)
+        self.check_real.setCheckState(2)
+        self.check_imaginary = QtWidgets.QCheckBox("imaginary part",
+                                                   self.widget_controls)
+
+        self.layout_controls = QtWidgets.QGridLayout(self.widget_controls)
+        self.layout_controls.addWidget(self.check_real, 0, 0)
+        self.layout_controls.addWidget(self.check_imaginary, 0, 1)
+        self.widget_controls.setLayout(self.layout_controls)
+
+        def replot(dummy):
+            self.layout.removeWidget(self.plot)
+            self.plot = Qt5Plot(self)
+            self.layout.addWidget(self.plot)
+            plot_expval(self.path, self.plot,
+                        self.check_real.isChecked(),
+                        self.check_imaginary.isChecked())
+
+        self.check_real.stateChanged.connect(replot)
+        self.check_imaginary.stateChanged.connect(replot)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.widget_controls)
+        self.layout.addWidget(self.plot)
+        self.setLayout(self.layout)
+
+        parent.addTab(self, get_expval_name(path))
+
 
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self, path, **kwargs):
@@ -60,21 +123,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.tab_widget = QtWidgets.QTabWidget(self.main_widget)
 
         self.expvals = list_expvals(path)
-        self.tabs = [QtWidgets.QWidget(self.tab_widget) for expval in self.expvals]
-        self.tab_layouts = []
-        self.plots = []
-        for expval, tab in zip(self.expvals, self.tabs):
-            self.tab_layouts.append(QtWidgets.QVBoxLayout())
-            self.tab_widget.addTab(tab, get_expval_name(expval))
-            self.plots.append(Qt5Plot(tab))
-
-            self.tab_layouts[-1].addWidget(self.plots[-1])
-            tab.setLayout(self.tab_layouts[-1])
-
-            plot_expval(expval, self.plots[-1])
-            self.plots[-1].figure.tight_layout()
-            self.plots[-1].updateGeometry()
-
+        self.tabs = [
+            ExpvalTab(expval, self.tab_widget) for expval in self.expvals
+        ]
 
         self.layout = QtWidgets.QVBoxLayout()
         self.layout.addWidget(self.tab_widget)

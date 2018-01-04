@@ -194,6 +194,27 @@ class ParameterTable(object):
 
         return table
 
+    @staticmethod
+    def loads(bytes_obj):
+        data = pickle.loads(bytes_obj)
+
+        parameters = Parameters()
+        for name in data["names"]:
+            parameters.add_parameter(name, 0.)
+
+        def pseudo_filter(parameters, initial_table):
+            return parameters.to_tuple() in initial_table
+
+        table = ParameterTable(parameters)
+        table.names = data["names"]
+        table.values = data["values"]
+        table.table = data["table"]
+        table.filters.append(
+            functools.partial(pseudo_filter, initial_table=data["table"]))
+        table.recalculate()
+
+        return table
+
     def compare(self, other):
         """Compare this ParameterTable to another one
 

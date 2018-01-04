@@ -82,12 +82,14 @@ def main():
         cbar = plot.figure.colorbar(heatmap)
         cbar.ax.set_ylabel("density1 - density2 (interpolated)")
 
-    if numpy.any(times1 != times2):
-        log.warn("incompatible time points, interpolating")
+    logger = log.get_logger(__name__)
+
+    if not numpy.array_equal(times1, times2):
+        logger.warn("incompatible time points, interpolating")
         program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                     init_plot_interpolate)
-    elif numpy.any(grids1[args.dof] != grids2[args.dof]):
-        log.warn("incompatible grid points, interpolating")
+    elif not numpy.array_equal(grids1[args.dof], grids2[args.dof]):
+        logger.warn("incompatible grid points, interpolating")
         program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                     init_plot_interpolate)
     else:

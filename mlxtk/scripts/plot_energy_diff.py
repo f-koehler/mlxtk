@@ -52,8 +52,8 @@ def main():
         plot.axes.set_ylabel(
             r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$ (interpolated)")
 
-    if numpy.any(data1.time != data2.time):
-        log.warn("incompatible times, interpolating")
+    if not numpy.array_equal(data1.time.as_matrix(), data2.time.as_matrix()):
+        log.get_logger(__name__).warn("incompatible times, interpolating")
         program = SimplePlotProgram("Energy Diff", init_plot_interpolate)
     else:
         program = SimplePlotProgram("Energy Diff", init_plot)

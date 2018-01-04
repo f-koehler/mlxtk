@@ -54,8 +54,8 @@ def main():
             r"${\left< \Psi(t) \right|\left. \Psi(t)\right>}_1-{\left< \Psi(t) \right|\left. \Psi(t)\right>}_2$"
         )
 
-    if numpy.any(data1.time != data2.time):
-        log.warn("incompatible times, interpolating")
+    if not numpy.array_equal(data1.time.as_matrix(), data2.time.as_matrix()):
+        log.get_logger(__name__).warn("incompatible times, interpolating")
         program = SimplePlotProgram("Norm Diff", init_plot_interpolate)
     else:
         program = SimplePlotProgram("Norm Diff", init_plot)

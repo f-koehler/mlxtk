@@ -4,6 +4,8 @@ import json
 import os
 import pickle
 
+from . import tabulate
+
 
 class Parameters(object):
     """A set of parameters for simulations and parameter scans
@@ -252,3 +254,22 @@ class ParameterTable(object):
             "extra_rows": extra_rows,
             "moved_rows": moved_rows
         }
+
+    def format_table(self, fmt="plain"):
+        table = [[i] + list(row) for i, row in enumerate(self.table)]
+        return tabulate.tabulate(
+            table, headers=["index"] + self.names, tablefmt=fmt)
+
+    def format_constants(self, fmt="plain"):
+        return tabulate.tabulate(
+            [[self.names[i], self.values[i][0]] for i in self.constants],
+            headers=["constant", "value"],
+            tablefmt=fmt)
+
+    def format_variables(self, fmt="plain"):
+        table = {self.names[i]: self.values[i] for i in self.variables}
+        max_len = len(table[max(table, key=lambda x: len(table[x]))])
+        for key in table:
+            while len(table[key]) < max_len:
+                table[key].append(None)
+        return tabulate.tabulate(table, tablefmt=fmt, headers="keys")

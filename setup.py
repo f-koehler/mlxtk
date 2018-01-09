@@ -17,6 +17,7 @@ setup(
         "numpy>=1.13.3",
         "pandas>=0.20.3",
         "scipy>=1.0.0",
+        "tabulate>=0.8.2"
     ],
     packages=["mlxtk"],
     entry_points={

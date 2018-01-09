@@ -12,6 +12,7 @@ from . import log
 from . import sge
 from .parameters import ParameterTable
 from . import cwd
+from . import tabulate
 
 
 class ParameterScan(object):
@@ -275,29 +276,84 @@ class ParameterScan(object):
 
         log.close_log_file()
 
+    def print_table(self, args=None):
+        self.generate_simulations()
+        if args is None:
+            print(self.table.format_table("orgtbl"))
+        else:
+            print(self.table.format_table(args.fmt))
+
+    def print_constants(self, args=None):
+        self.generate_simulations()
+        if args is None:
+            print(self.table.format_constants("orgtbl"))
+        else:
+            print(self.table.format_constants(args.fmt))
+
+    def print_variables(self, args=None):
+        self.generate_simulations()
+        if args is None:
+            print(self.table.format_variables("orgtbl"))
+        else:
+            print(self.table.format_variables(args.fmt))
+
+    def print_summary(self):
+        time_stamp = datetime.datetime.now().strftime("<%Y-%m-%d %a %H:%M>")
+        print("\n".join([
+            "#+TITLE: Parameter Scan Summary", "#+CREATOR: mlxtk",
+            "#+DATE: " + time_stamp, ""
+        ]))
+        print("\n\n* Constants\n")
+        self.print_constants()
+        print("\n\n* Variables\n")
+        self.print_variables()
+        print("\n\n* Parameter Table\n")
+        self.print_table()
+
     def main(self):
         self.logger.info("start parameter scan")
 
         parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "action",
-            metavar="action",
-            type=str,
-            choices=["run", "run-index", "qsub", "hdf5"],
-            help="{run, run-index, qsub, hdf5}")
-        parser.add_argument(
+        subparsers = parser.add_subparsers(dest="subcommand")
+
+        subparsers.add_parser("run")
+        parser_run_index = subparsers.add_parser("run-index")
+        parser_qsub = subparsers.add_parser("qsub")
+        subparsers.add_parser("hdf5")
+        parser_table = subparsers.add_parser("table")
+        parser_constants = subparsers.add_parser("constants")
+        parser_variables = subparsers.add_parser("variables")
+        subparsers.add_parser("summary")
+
+        parser_run_index.add_argument(
             "--index",
             type=int,
             help="index of the simulation to run when using \"run-index\"")
-        sge.add_parser_arguments(parser)
+
+        sge.add_parser_arguments(parser_qsub)
+
+        tabulate.create_tabulate_argument(parser_table, ["-f", "--format"],
+                                          "fmt")
+        tabulate.create_tabulate_argument(parser_constants, ["-f", "--format"],
+                                          "fmt")
+        tabulate.create_tabulate_argument(parser_variables, ["-f", "--format"],
+                                          "fmt")
 
         args = parser.parse_args()
 
-        if args.action == "run":
+        if args.subcommand == "run":
             self.run()
-        elif args.action == "run-index":
+        elif args.subcommand == "run-index":
             self.run_index(args.index)
-        elif args.action == "qsub":
+        elif args.subcommand == "qsub":
             self.qsub(args)
-        elif args.action == "hdf5":
+        elif args.subcommand == "hdf5":
             self.create_hdf5()
+        elif args.subcommand == "table":
+            self.print_table(args)
+        elif args.subcommand == "constants":
+            self.print_constants(args)
+        elif args.subcommand == "variables":
+            self.print_variables(args)
+        elif args.subcommand == "summary":
+            self.print_summary()

@@ -3,6 +3,7 @@ import argparse
 import numpy
 import scipy.interpolate
 
+from mlxtk import mpl
 import mlxtk.plot.argparser
 from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.output import read_output

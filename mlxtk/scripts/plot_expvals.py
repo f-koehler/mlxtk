@@ -5,6 +5,7 @@ import sys
 from mlxtk.inout import hdf5
 from mlxtk.inout import expval
 
+from mlxtk import mpl
 from PyQt5 import QtCore, QtGui, QtWidgets
 from mlxtk.plot.qt5_plot import Qt5Plot
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar

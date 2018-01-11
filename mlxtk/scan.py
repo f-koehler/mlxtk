@@ -298,7 +298,7 @@ class ParameterScan(object):
             print(self.table.format_variables(args.fmt))
 
     def print_summary(self):
-        time_stamp = datetime.datetime.now().strftime("<%Y-%m-%d %a %H:%M>")
+        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d %a %H:%M")
         print("\n".join([
             "#+TITLE: Parameter Scan Summary", "#+CREATOR: mlxtk",
             "#+DATE: " + time_stamp, ""

@@ -2,6 +2,7 @@
 import argparse
 import numpy
 
+from mlxtk import mpl
 import mlxtk.plot.argparser
 from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.gpop import read_gpop

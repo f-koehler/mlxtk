@@ -3,6 +3,7 @@ import argparse
 import matplotlib
 import sys
 
+from mlxtk import mpl
 import mlxtk.plot.argparser
 import mlxtk.plot.plot_program
 from mlxtk.plot.plot_program import QtWidgets, QtCore, apply_plot_parameters

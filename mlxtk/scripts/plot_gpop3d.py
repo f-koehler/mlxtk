@@ -3,6 +3,7 @@ from matplotlib.cm import get_cmap
 from matplotlib.colors import LightSource
 import numpy
 
+from mlxtk import mpl
 from mlxtk.plot.plot_program import SimplePlotProgram, create_argparser
 from mlxtk.inout.gpop import read_gpop
 

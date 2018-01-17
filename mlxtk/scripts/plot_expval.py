@@ -29,6 +29,7 @@ def main():
                 data.real,
                 color="C0",
                 label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
+            plot.axes.set_ylabel(r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
 
         if args.imaginary:
             ax = plot.axes.twinx() if args.real else plot.axes

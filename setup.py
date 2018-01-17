@@ -24,6 +24,7 @@ setup(
         "console_scripts": [
             "plot_energy=mlxtk.scripts.plot_energy:main",
             "plot_energy_diff=mlxtk.scripts.plot_energy_diff:main",
+            "plot_expval=mlxtk.scripts.plot_expval:main",
             "plot_expvals=mlxtk.scripts.plot_expvals:main",
             "plot_expvals_diff=mlxtk.scripts.plot_expvals_diff:main",
             "plot_gpop=mlxtk.scripts.plot_gpop:main",

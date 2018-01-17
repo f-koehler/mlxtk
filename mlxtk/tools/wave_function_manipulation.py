@@ -4,7 +4,7 @@ from QDTK.Wavefunction import Wavefunction
 
 
 def load_wave_function(path):
-    wfn = Wavefunction(wfn_file=path + ".wave_function")
+    wfn = Wavefunction(wfn_file=path)
     return wfn
 
 

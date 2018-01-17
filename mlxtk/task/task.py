@@ -10,6 +10,7 @@ class FileInput(object):
     def __init__(self, name, filename):
         self.name = name
         self.filename = filename
+        self.logger = log.get_logger(__name__)
 
     def get_state(self):
         path = self.filename
@@ -112,6 +113,10 @@ class Task(object):
                                                                        name]:
                 self.logger.info("not up-to-date, input \"%s\" changed",
                                  inp.name)
+                self.logger.debug("  current: <%s>",
+                                  self.input_states[inp.name])
+                self.logger.debug("  stored:  <%s>",
+                                  self.stored_input_states[inp.name])
                 return False
 
         for out in self.outputs:

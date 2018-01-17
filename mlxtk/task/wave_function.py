@@ -1,7 +1,9 @@
 import os
+import numpy
 
 from mlxtk.stringio import StringIO
 from mlxtk.task import task
+from mlxtk.tools.wave_function_manipulation import load_wave_function
 
 
 class WaveFunctionCreationTask(task.Task):
@@ -23,8 +25,34 @@ class WaveFunctionCreationTask(task.Task):
             **kwargs)
 
     def get_wave_function_string(self):
-        wave_function = self.wave_function_creator(self.parameters)
         sio = StringIO()
+
+        # generate current wave function
+        wave_function = self.wave_function_creator(self.parameters)
+
+        # Due to numerical issues the components can marginally differ even if
+        # the input did not change. If this is the case we pretend that the
+        # task has not changed.
+        path = self.wave_function_name + ".wave_function"
+        if os.path.exists(path):
+            stored_wave_function = load_wave_function(path)
+
+            max_diff = numpy.max(
+                numpy.abs(wave_function._psi - stored_wave_function._psi))
+
+            if max_diff < 1e-12:
+                self.logger.warn((
+                    "the maximal absolute difference to the stored wave "
+                    "function is %s < 1e-12, the wave functions are considered"
+                    " identical"), "{:e}".format(max_diff))
+                stored_wave_function.createWfnFile(sio)
+                return sio.getvalue()
+            else:
+                self.logger.warn(
+                    ("the maximal absolute difference to the stored wave "
+                     "function is %s >= 1e-12, the wave functions are not "
+                     "considered identical"), "{:e}".format(max_diff))
+
         wave_function.createWfnFile(sio)
         return sio.getvalue()
 

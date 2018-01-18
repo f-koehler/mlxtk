@@ -113,6 +113,20 @@ class Simulation(object):
 
         cwd.go_back()
 
+    def run_task(self, name):
+        for t in self.tasks:
+            if t.name == name:
+                tsk = t
+                break
+        else:
+            raise ValueError("task with name \"" + name + "\" does not exist")
+
+        self.logger.info("execute only task \"" + name + "\"")
+        cwd.change_dir(self.cwd)
+        tsk.parameters = self.parameters
+        tsk.run()
+        cwd.go_back()
+
     def qsub(self, args):
         script_path = os.path.abspath(sys.argv[0])
         if not os.path.exists(self.cwd):
@@ -155,6 +169,9 @@ class Simulation(object):
 
         if opened_file:
             group.close()
+
+    def list_tasks(self):
+        return [tsk.name for tsk in self.tasks]
 
     def main(self):
         parser = argparse.ArgumentParser()

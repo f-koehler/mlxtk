@@ -310,6 +310,10 @@ class ParameterScan(object):
         print("\n\n* Parameter Table\n")
         self.print_table()
 
+    def list_tasks(self):
+        self.generate_simulations()
+        print("tasks in sim_0:", self.simulations[0].list_tasks())
+
     def main(self):
         self.logger.info("start parameter scan")
 
@@ -324,6 +328,7 @@ class ParameterScan(object):
         parser_constants = subparsers.add_parser("constants")
         parser_variables = subparsers.add_parser("variables")
         subparsers.add_parser("summary")
+        subparsers.add_parser("list-tasks")
 
         parser_run_index.add_argument(
             "--index",
@@ -357,3 +362,7 @@ class ParameterScan(object):
             self.print_variables(args)
         elif args.subcommand == "summary":
             self.print_summary()
+        elif args.subcommand == "list-tasks":
+            self.list_tasks()
+        else:
+            raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")

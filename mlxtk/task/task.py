@@ -4,6 +4,7 @@ import time
 
 from mlxtk import hashing
 from mlxtk import log
+from mlxtk import pid_file
 
 
 class FileInput(object):
@@ -132,8 +133,12 @@ class Task(object):
         """
         self.logger.info("enter task \"%s\"", self.name)
 
+        pid = pid_file.PIDFile(self.name + ".pid")
+        pid.acquire()
+
         if self.is_up_to_date():
             self.logger.info("already up-to-date")
+            pid.release()
             return False
 
         self.logger.info("create directories")
@@ -149,3 +154,5 @@ class Task(object):
         self.logger.info("write state file")
         self.get_current_state()
         self.write_state_file()
+
+        pid.release()

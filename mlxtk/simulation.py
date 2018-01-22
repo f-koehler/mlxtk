@@ -113,6 +113,27 @@ class Simulation(object):
 
         cwd.go_back()
 
+    def dry_run(self):
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        state_dir = os.path.join(self.cwd, "states")
+        if not os.path.exists(state_dir):
+            os.makedirs(state_dir)
+
+        cwd.change_dir(self.cwd)
+
+        tasks_to_run = []
+        for tsk in self.tasks:
+            tsk.parameters = self.parameters
+            self.logger.info("task \"%s\" would be run", tsk.name)
+            if not tsk.is_up_to_date():
+                tasks_to_run.append(tsk.name)
+        self.logger.info("%d tasks would be run", len(tasks_to_run))
+
+        cwd.go_back()
+        return tasks_to_run
+
     def run_task(self, name):
         for t in self.tasks:
             if t.name == name:

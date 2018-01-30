@@ -273,3 +273,6 @@ class ParameterTable(object):
             while len(table[key]) < max_len:
                 table[key].append(None)
         return tabulate.tabulate(table, tablefmt=fmt, headers="keys")
+
+    def __getitem__(self, name):
+        return self.values[self.names.index(name)]

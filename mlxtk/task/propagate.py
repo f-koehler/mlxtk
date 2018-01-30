@@ -30,7 +30,7 @@ class PropagationTask(task.Task):
         self.rstzero = kwargs.get("rstzero", True)
         self.transMat = kwargs.get("transMat", False)
         self.MBop_apply = kwargs.get("MBop_apply", False)
-        self.itg = kwargs.get("itg", "zvode")
+        self.itg = kwargs.get("itg", "dp5")
         self.zvode_mf = kwargs.get("zvode_mf", 10)
         self.atol = kwargs.get("atol", 1e-10)
         self.rtol = kwargs.get("rtol", 1e-10)
@@ -39,14 +39,14 @@ class PropagationTask(task.Task):
         self.resetnorm = kwargs.get("resetnorm", False)
         self.gramschmidt = kwargs.get("gramschmidt", False)
         self.statsteps = kwargs.get("statsteps", 0)
-        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-8)
-        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-8)
+        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-10)
+        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-10)
 
         if self.relax:
             kwargs["task_type"] = "RelaxationTask"
             name = "relax_" + name
             if self.statsteps == 0:
-                self.statsteps = 50
+                self.statsteps = 100
         elif self.improved_relax:
             name = "improved_relax_" + name
             kwargs["task_type"] = "ImprovedRelaxationTask"
@@ -130,7 +130,8 @@ class PropagationTask(task.Task):
                 cmd += ["-" + name, str(parameters[name])]
 
         cmd += [
-            "-opr", "hamiltonian.operator", "-rst", "initial.wave_function"
+            "-opr", "hamiltonian.operator", "-rst", "initial.wave_function",
+            "-timing"
         ]
         return cmd
 

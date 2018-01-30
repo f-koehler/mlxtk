@@ -88,3 +88,28 @@ def get(name):
         LOGGER.info("execution took %fs", stop - start)
 
     return DVRS[name]
+
+
+def is_fft(name):
+    if name not in REGISTERED_DVRS:
+        raise RuntimeError("No DVR with name \"" + name + "\" present")
+
+    return REGISTERED_DVRS[name][0] == FFT
+
+
+def get_x(name):
+    return get(name).x
+
+
+def get_d1(name):
+    if is_fft(name):
+        return get(name).d1fft
+    else:
+        return get(name).d1dvr
+
+
+def get_d2(name):
+    if is_fft(name):
+        return get(name).d2fft
+    else:
+        return get(name).d2dvr

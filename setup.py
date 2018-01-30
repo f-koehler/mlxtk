@@ -22,22 +22,22 @@ setup(
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [
+            "plot_dmat2=mlxtk.scripts.plot_dmat2:main",
             "plot_energy=mlxtk.scripts.plot_energy:main",
             "plot_energy_diff=mlxtk.scripts.plot_energy_diff:main",
             "plot_expval=mlxtk.scripts.plot_expval:main",
             "plot_expvals=mlxtk.scripts.plot_expvals:main",
             "plot_expvals_diff=mlxtk.scripts.plot_expvals_diff:main",
+            "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
             "plot_gpop=mlxtk.scripts.plot_gpop:main",
             "plot_gpop_diff=mlxtk.scripts.plot_gpop_diff:main",
             "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",
-            "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
             "plot_natpop=mlxtk.scripts.plot_natpop:main",
             "plot_norm=mlxtk.scripts.plot_norm:main",
             "plot_norm_diff=mlxtk.scripts.plot_norm_diff:main",
             "plot_overlap=mlxtk.scripts.plot_overlap:main",
             "plot_overlap_diff=mlxtk.scripts.plot_overlap_diff:main",
-            # "plot_dmat1=mlxtk.scripts.plot_dmat1:main",
-            # "plot_dmat2=mlxtk.scripts.plot_dmat2:main",
             "scan_view=mlxtk.scripts.scan_view:main",
+            # "plot_dmat1=mlxtk.scripts.plot_dmat1:main",
         ]
     })

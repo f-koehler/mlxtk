@@ -127,6 +127,54 @@ class ParameterScan(object):
         self.logger.info("remove tmp dir %s", tmp_dir)
         shutil.rmtree(tmp_dir)
 
+    def check_parameters_dry_run(self):
+
+        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        shelf_dir = os.path.join(self.cwd, "shelf_" + time_stamp)
+
+        result = {}
+
+        def shelve(i):
+            src = os.path.join(self.cwd, "sim_" + str(i))
+            dst = os.path.join(shelf_dir, "sim_" + str(i))
+            if os.path.exists(src):
+                self.logger.info("would shelve %s to %s", src, dst)
+                result["shelf"] = result.get("shelf", [])
+                result["shelf"].append(i)
+
+        table_path = os.path.join(self.cwd, "parameters.pickle")
+        if not os.path.exists(table_path):
+            self.logger.info(
+                "no parameter table present, no rearranging required")
+            return result
+
+        stored_table = ParameterTable.load(table_path)
+        difference = self.table.compare(stored_table)
+
+        if difference is None:
+            self.logger.warn(
+                "parameter table incompatible, would shelve everything")
+            for i in enumerate(stored_table):
+                shelve(i)
+            return result
+
+        missing = difference["missing_rows"]
+        if missing:
+            self.logger.info(
+                "found extra simulations, they will be moved to the shelf")
+            for miss in missing:
+                index = stored_table.get_index(miss)
+                shelve(index)
+
+        if not difference:
+            return result
+
+        result["moves"] = []
+        for index_to, index_from in difference["moved_rows"]:
+            result["moves"].append((index_from, index_to))
+
+        return result
+
     def generate_simulations(self):
         self.simulations = []
 
@@ -177,6 +225,38 @@ class ParameterScan(object):
         cwd.go_back()
 
         log.close_log_file()
+
+    def dry_run(self):
+        self.generate_simulations()
+
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        changes = self.check_parameters_dry_run()
+        changes["simulations"] = {}
+
+        cwd.change_dir(self.cwd)
+
+        for simulation in self.simulations:
+            tasks = simulation.dry_run()
+            if tasks:
+                changes["simulations"][simulation.name] = tasks
+
+        cwd.go_back()
+
+        for sim_name in changes["simulations"]:
+            print("sim:", sim_name)
+            print(" ", changes["simulations"][sim_name], "\n")
+
+        if "moves" in changes:
+            print("\nmoves:")
+            for move in changes["moves"]:
+                print(" ", move[0], "->", move[1])
+
+        if "shelve" in changes:
+            print("\nshelf:")
+            for shelved in changes["shelve"]:
+                print(" ", shelved)
 
     def run_index(self, index):
         log.open_log_file(os.path.join("sim_" + str(index), "sim.log"))
@@ -329,6 +409,7 @@ class ParameterScan(object):
         parser_variables = subparsers.add_parser("variables")
         subparsers.add_parser("summary")
         subparsers.add_parser("list-tasks")
+        subparsers.add_parser("dry-run")
 
         parser_run_index.add_argument(
             "--index",
@@ -364,5 +445,7 @@ class ParameterScan(object):
             self.print_summary()
         elif args.subcommand == "list-tasks":
             self.list_tasks()
+        elif args.subcommand == "dry-run":
+            self.dry_run()
         else:
             raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")

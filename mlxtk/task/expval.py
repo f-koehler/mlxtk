@@ -16,9 +16,6 @@ class ExpectationValueTask(task.Task):
         self.operator = operator
         self.propagation = propagation
 
-        if not propagation.psi:
-            self.logger.warn("propagation does not seem to create a psi file")
-
         inp_wave_function = task.FileInput(
             "initial_wave_function",
             propagation.initial_wave_function + ".wave_function")
@@ -39,6 +36,9 @@ class ExpectationValueTask(task.Task):
             inputs=[inp_wave_function, inp_operator, inp_psi_file],
             outputs=[out_expval],
             **kwargs)
+
+        if not propagation.psi:
+            self.logger.warn("propagation does not seem to create a psi file")
 
     def get_command(self):
         if "QDTK_PREFIX" in os.environ:

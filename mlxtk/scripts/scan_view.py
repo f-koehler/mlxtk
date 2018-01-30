@@ -275,7 +275,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 msg = QtWidgets.QErrorMessage()
                 msg.showMessage("Please select exactly two simulations")
             else:
-                self.plot_energy_diff(indices[0], indices[1])
+                self.plot_overlap_diff(indices[0], indices[1])
             return
         elif which == "expvals_diff":
             if len(indices) != 2:

@@ -1,3 +1,4 @@
+import colorama
 import re
 import shutil
 import subprocess
@@ -28,7 +29,11 @@ def main():
                 "sshpass", "-p", password, "ssh", "-oStrictHostKeyChecking=no",
                 node, "uptime"
             ]
-            subprocess.check_output(cmd)
+            try:
+                subprocess.check_output(cmd)
+            except subprocess.CalledProcessError:
+                print(colorama.Fore.RED + "failed node: " + node +
+                      colorama.Style.RESET_ALL)
 
 
 if __name__ == "__main__":

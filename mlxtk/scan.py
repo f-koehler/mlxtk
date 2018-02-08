@@ -327,7 +327,7 @@ class ParameterScan(object):
 
         with open("jobids.txt", "w") as fhandle:
             for id_, idx in zip(jobids, jobid_pindices):
-                fhandle.write("{} -> {}".format(idx, id_))
+                fhandle.write("{} -> {} \n".format(idx, id_))
 
         cwd.go_back()
 

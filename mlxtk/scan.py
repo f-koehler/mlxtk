@@ -8,11 +8,11 @@ import sys
 import h5py
 import numpy
 
+from . import cwd
 from . import log
 from . import sge
-from .parameters import ParameterTable
-from . import cwd
 from . import tabulate
+from .parameters import ParameterTable
 
 
 class ParameterScan(object):
@@ -323,6 +323,10 @@ class ParameterScan(object):
 
         sge.write_stop_script("stop_all.sh", jobids)
 
+        with open("jobids.txt", "w") as fhandle:
+            for id_ in jobids:
+                fhandle.write(str(id_) + "\n")
+
         cwd.go_back()
 
         log.close_log_file()
@@ -410,6 +414,7 @@ class ParameterScan(object):
         subparsers.add_parser("summary")
         subparsers.add_parser("list-tasks")
         subparsers.add_parser("dry-run")
+        subparsers.add_parser("sync-nodes")
 
         parser_run_index.add_argument(
             "--index",

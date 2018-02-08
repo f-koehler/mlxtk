@@ -22,6 +22,7 @@ setup(
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [
+            "accept_cluster_keys=mlxtk.scripts.accept_cluster_keys:main",
             "plot_dmat2=mlxtk.scripts.plot_dmat2:main",
             "plot_energy=mlxtk.scripts.plot_energy:main",
             "plot_energy_diff=mlxtk.scripts.plot_energy_diff:main",

@@ -302,6 +302,7 @@ class ParameterScan(object):
             os.makedirs("stop")
 
         jobids = []
+        jobid_pindices = []
         for simulation in self.simulations:
             index = self.table.get_index(simulation.parameters.to_tuple())
 
@@ -315,6 +316,7 @@ class ParameterScan(object):
 
             jobid = sge.submit_job(job_file)
             jobids.append(jobid)
+            jobid_pindices.append(index)
 
             sge.write_stop_script(
                 os.path.join("epilogue", "{}.sh".format(jobid)), [jobid])
@@ -324,8 +326,8 @@ class ParameterScan(object):
         sge.write_stop_script("stop_all.sh", jobids)
 
         with open("jobids.txt", "w") as fhandle:
-            for id_ in jobids:
-                fhandle.write(str(id_) + "\n")
+            for id_, idx in zip(jobids, jobid_pindices):
+                fhandle.write("{} -> {}".format(idx, id_))
 
         cwd.go_back()
 

@@ -10,6 +10,7 @@ import h5py
 from mlxtk.task import task
 from mlxtk.process import watch_process
 
+from mlxtk import hdf5
 from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
@@ -183,6 +184,10 @@ class PropagationTask(task.Task):
             pickle.dump(self.get_parameter_dict(), fhandle)
 
     def create_hdf5(self, group=None):
+        if self.is_running():
+            raise hdf5.IncompleteHDF5(
+                "Possibly running ExpectationValueTask, no data can be added")
+
         opened_file = group is None
         if opened_file:
             self.logger.info("create new hdf5 file")

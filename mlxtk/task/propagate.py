@@ -10,7 +10,7 @@ import h5py
 from mlxtk.task import task
 from mlxtk.process import watch_process
 
-from mlxtk import hdf5
+from mlxtk.inout import hdf5
 from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5

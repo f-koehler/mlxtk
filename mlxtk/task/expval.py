@@ -4,7 +4,7 @@ import sys
 
 import h5py
 
-from mlxtk import hdf5
+from mlxtk.inout import hdf5
 from mlxtk.task import task
 from mlxtk.process import watch_process
 from mlxtk.inout.expval import add_expval_to_hdf5

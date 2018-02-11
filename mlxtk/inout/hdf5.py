@@ -7,6 +7,11 @@ class HDF5Error(Exception):
         Exception.__init__(self, message)
 
 
+class IncompleteHDF5(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
 def parse_hdf5_path(path):
     path_inside = None
 

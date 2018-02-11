@@ -9,7 +9,7 @@ import h5py
 from mlxtk import task
 from mlxtk import sge
 from mlxtk import log
-from .inout.hdf5 import HDF5Error
+from .inout.hdf5 import IncompleteHDF5, HDF5Error
 from . import cwd
 
 
@@ -179,12 +179,12 @@ class Simulation(object):
             if getattr(tsk, "create_hdf5", None) is not None:
                 try:
                     tsk.create_hdf5(group)
-                except HDF5Error as e:
+                except IncompleteHDF5 as e:
                     self.logger.error(
-                        "failed to create hdf5 group for task \"%s\"",
+                        "dataset is incomplete, adding data of task \"%s\" failed with exception:",
                         tsk.name)
-                    self.logger.error("exception: %s", str(e))
-                    self.logger.error("the data is incomplete")
+                    self.logger.error(str(e))
+                    break
 
         cwd.go_back()
 

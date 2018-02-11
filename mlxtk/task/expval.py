@@ -4,6 +4,7 @@ import sys
 
 import h5py
 
+from mlxtk.inout import hdf5
 from mlxtk.task import task
 from mlxtk.process import watch_process
 from mlxtk.inout.expval import add_expval_to_hdf5
@@ -76,6 +77,10 @@ class ExpectationValueTask(task.Task):
             stderr=sys.stderr)
 
     def create_hdf5(self, group=None):
+        if self.is_running():
+            raise hdf5.IncompleteHDF5(
+                "Possibly running ExpectationValueTask, no data can be added")
+
         opened_file = group is None
         if opened_file:
             self.logger.info("create new hdf5 file")

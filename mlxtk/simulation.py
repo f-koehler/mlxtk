@@ -88,6 +88,7 @@ class Simulation(object):
         self.logger.info("enter simulation %s", self.name)
         if self.parameters is not None:
             self.logger.info("parameters: %s", str(self.parameters))
+
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
@@ -114,6 +115,10 @@ class Simulation(object):
         cwd.go_back()
 
     def dry_run(self):
+        self.logger.info("enter simulation %s", self.name)
+        if self.parameters is not None:
+            self.logger.info("parameters: %s", str(self.parameters))
+
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
@@ -126,9 +131,12 @@ class Simulation(object):
         tasks_to_run = []
         for tsk in self.tasks:
             tsk.parameters = self.parameters
-            self.logger.info("task \"%s\" would be run", tsk.name)
             if not tsk.is_up_to_date():
+                self.logger.info("task \"%s\" would be run", tsk.name)
                 tasks_to_run.append(tsk.name)
+            else:
+                self.logger.info("task \"%s\" is up-to-date", tsk.name)
+
         self.logger.info("%d tasks would be run", len(tasks_to_run))
 
         cwd.go_back()

@@ -37,14 +37,18 @@ class WaveFunctionCreationTask(task.Task):
         if os.path.exists(path):
             stored_wave_function = load_wave_function(path)
 
+            print(numpy.max(numpy.abs(wave_function._psi)))
+            print(numpy.max(numpy.abs(stored_wave_function._psi)))
+
             max_diff = numpy.max(
-                numpy.abs(wave_function._psi - stored_wave_function._psi))
+                numpy.abs(wave_function._psi) -
+                numpy.abs(stored_wave_function._psi))
 
             if max_diff < 1e-9:
-                self.logger.warn((
-                    "the maximal absolute difference to the stored wave "
-                    "function is %s < 1e-9, the wave functions are considered"
-                    " identical"), "{:e}".format(max_diff))
+                self.logger.warn(
+                    ("the maximal absolute difference to the stored wave "
+                     "function is %s < 1e-9, the wave functions are considered"
+                     " identical"), "{:e}".format(max_diff))
                 stored_wave_function.createWfnFile(sio)
                 return sio.getvalue()
             else:

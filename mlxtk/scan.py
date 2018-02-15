@@ -329,6 +329,9 @@ class ParameterScan(object):
             for id_, idx in zip(jobids, jobid_pindices):
                 fhandle.write("{} -> {} \n".format(idx, id_))
 
+        subdirs = ["sim_" + str(pindex) for pindex in jobid_pindices]
+        write_rsync_script("qsync.sh", jobids, subdirs)
+
         cwd.go_back()
 
         log.close_log_file()
@@ -416,7 +419,6 @@ class ParameterScan(object):
         subparsers.add_parser("summary")
         subparsers.add_parser("list-tasks")
         subparsers.add_parser("dry-run")
-        subparsers.add_parser("sync-nodes")
 
         parser_run_index.add_argument(
             "--index",
@@ -456,3 +458,39 @@ class ParameterScan(object):
             self.dry_run()
         else:
             raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")
+
+
+def write_rsync_script(path, jobids, subdirs):
+    script = ["#!/bin/bash", "set -euf -o pipefail", ""]
+
+    for jid, subdir in zip(jobids, subdirs):
+        script.append(
+            "working_dir=$(qstat -j {} | grep -Po \"(?<=^cwd:).+$\" | sed -e \"s/^[ \\t]*//\")/{}".
+            format(jid, subdir))
+        script.append("retval=$?")
+        script.append("if [ $retval -eq 0 ]; then")
+        script.append("    state=$(qstat | grep \"^{}\"".format(jid) +
+                      " | awk \'{ print $5 }\')")
+        script.append("    if [ \"${state}\" == \"r\" ]; then")
+        script.append(
+            "        node=$(qstat | grep \"^{}\" | cut -d \"@\" -f2 | cut -d \".\" -f1)".
+            format(jid))
+        script.append("        echo \"syncing job {} ({})\"".format(
+            jid, subdir))
+        script.append(
+            "        rsync -avh --progress --rsh=\"sshpass -v -p ${SSH_PASSWORD} ssh\" ${node}:${working_dir}/ ${working_dir}/"
+        )
+        script.append("        echo \"finished syncing job {} ({})\"".format(
+            jid, subdir))
+        script.append("    else")
+        script.append(
+            "        echo \"job {} ({}) is not running, skipping\"".format(
+                jid, subdir))
+        script.append("    fi")
+        script.append("fi")
+        script.append("echo \"\"")
+        script.append("")
+
+    with open(path, "w") as fhandle:
+        fhandle.write("\n".join(script))
+        sge.mark_file_executable(path)

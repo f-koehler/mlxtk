@@ -3,7 +3,7 @@ import re
 import shutil
 import subprocess
 
-from mlxtk import rsync
+from mlxtk import ssh
 
 regex_hostname = re.compile(r"^(.+)\.physnet\.uni-hamburg\.de$")
 
@@ -22,7 +22,7 @@ def main():
         if m:
             nodes.append(m.group(1))
 
-    with rsync.SSHPassword() as password:
+    with ssh.SSHPassword() as password:
         for node in nodes:
             print("node:", node)
             cmd = [

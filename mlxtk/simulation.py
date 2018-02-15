@@ -6,11 +6,11 @@ import sys
 
 import h5py
 
-from mlxtk import task
-from mlxtk import sge
-from mlxtk import log
-from .inout.hdf5 import IncompleteHDF5, HDF5Error
 from . import cwd
+from . import log
+from . import sge
+from . import task
+from .inout.hdf5 import IncompleteHDF5, HDF5Error
 
 
 class Simulation(object):

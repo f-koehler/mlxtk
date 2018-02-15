@@ -2,6 +2,14 @@ import subprocess
 
 
 def hash_string(string):
+    """Compute the SHA256 of a string using the ``sha256sum`` program
+
+    Args:
+        string (str): String to hash.
+
+    Returns:
+        str: SHA256 of the given string.
+    """
     process = subprocess.Popen(
         ["sha256sum"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     out, _ = process.communicate(string.encode())
@@ -11,6 +19,14 @@ def hash_string(string):
 
 
 def hash_file(path):
+    """Compute the SHA256 of a file using the ``sha256sum`` program
+
+    Args:
+        path (str): Path to the file.
+
+    Returns:
+        str: SHA256 of the given file.
+    """
     process = subprocess.Popen(["sha256sum", path], stdout=subprocess.PIPE)
     out, _ = process.communicate()
     if process.wait() != 0:

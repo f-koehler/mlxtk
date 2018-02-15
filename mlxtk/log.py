@@ -24,24 +24,44 @@ except ImportError:
     pass
 
 LOG_FORMAT = "%(asctime)s [%(levelname)s] [%(name)s] %(message)s"
+"""str: Format for log messages."""
 
-loggers = set()
-file_handler = None
-stream_handler = logging.StreamHandler()
+LOGGERS = set()
+"""set: All created loggers."""
+
+FILE_HANDLER = None
+"""logging.FileHandler: Handler for the log file"""
+
 
 logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
 
 
 def get_logger(name):
+    """Create a logger with a given name
+
+    If :py:data:`mlxtk.log.FILE_HANDLER` is initialized then the handler is added to the new logger.
+
+    Args:
+        name (str): Name for the new logger.
+
+    Returns:
+        logging.Logger: The newly created logger.
+    """
     logger = logging.getLogger(name)
-    if file_handler is not None:
-        logger.addHandler(file_handler)
-    loggers.add(logger)
+    if FILE_HANDLER is not None:
+        logger.addHandler(FILE_HANDLER)
+    LOGGERS.add(logger)
     return logger
 
 
 def open_log_file(path, mode="a"):
-    global file_handler
+    """Open the log file
+
+    Args:
+        path (str): Path of the log file
+        mode (str): File mode of the log file
+    """
+    global FILE_HANDLER
 
     close_log_file()
 
@@ -49,17 +69,19 @@ def open_log_file(path, mode="a"):
     if dirname and (not os.path.exists(dirname)):
         os.makedirs(dirname)
 
-    file_handler = logging.FileHandler(path, mode)
-    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+    FILE_HANDLER = logging.FileHandler(path, mode)
+    FILE_HANDLER.setFormatter(logging.Formatter(LOG_FORMAT))
 
-    for logger in loggers:
-        logger.addHandler(file_handler)
+    for logger in LOGGERS:
+        logger.addHandler(FILE_HANDLER)
 
 
 def close_log_file():
-    global file_handler
+    """Close the log file
+    """
+    global FILE_HANDLER
 
-    if file_handler is not None:
-        for logger in loggers:
-            logger.removeHandler(file_handler)
-        file_handler.close()
+    if FILE_HANDLER is not None:
+        for logger in LOGGERS:
+            logger.removeHandler(FILE_HANDLER)
+        FILE_HANDLER.close()

@@ -12,6 +12,16 @@ from mlxtk.inout.expval import add_expval_to_hdf5
 
 
 class ExpectationValueTask(task.Task):
+    """Task to calculate time-dependent expectation values
+
+    Args:
+        propagation (mlxtk.task.PropagationTask): propagation that creates the psi file
+        operator (str): name of operator file for the observable
+
+    Attributes:
+        operator (str): name of operator file for the observable
+        propagation (mlxtk.task.PropagationTask): propagation that creates the psi file
+    """
     def __init__(self, propagation, operator, **kwargs):
         kwargs["task_type"] = "ExpectationValueTask"
 

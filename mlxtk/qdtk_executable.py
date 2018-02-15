@@ -2,6 +2,7 @@ import os
 import shutil
 
 OVERRIDES = {}
+"""dict: A dictionary containing overridden qdtk_executables"""
 
 
 def find_qdtk_executable(name):
@@ -24,4 +25,10 @@ def find_qdtk_executable(name):
 
 
 def override(name, path):
+    """Override a qdtk_executable
+
+    Args:
+        name (str): Name of the executable to override, e.g. `qdtk_propagate.x`
+        path (str): Path to the executable to use instead of the default one.
+    """
     OVERRIDES[name] = path

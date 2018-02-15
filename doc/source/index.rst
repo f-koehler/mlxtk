@@ -15,6 +15,14 @@ Indices and tables
 * :ref:`search`
 
 
+Logging
+=======
+
+.. automodule:: mlxtk.log
+    :members:
+    :undoc-members:
+
+
 SGE
 ===
 
@@ -43,5 +51,21 @@ Tasks
     :undoc-members:
 
 .. autoclass:: mlxtk.task.WaveFunctionCreationTask
+    :members:
+    :undoc-members:
+
+
+Hashing
+=======
+
+.. automodule:: mlxtk.hashing
+    :members:
+    :undoc-members:
+
+
+qdtk_executable
+===============
+
+.. automodule:: mlxtk.qdtk_executable
     :members:
     :undoc-members:

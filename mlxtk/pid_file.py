@@ -9,7 +9,7 @@ class PIDFile(object):
         self.path = path
 
     def acquire(self):
-        if os.path.exists(self.path):
+        if self.exists():
             raise RuntimeError(
                 "PID file \"" + self.path + "\" does exist, cannot run")
 
@@ -18,9 +18,12 @@ class PIDFile(object):
             pass
 
     def release(self):
-        if os.path.exists(self.path):
+        if self.exists():
             self.logger.debug("remove PID file \"" + self.path + "\"")
             os.remove(self.path)
         else:
             self.logger.warn("PID file \"" + self.path +
                              "\"does not exist, cannot remove it")
+
+    def exists(self):
+        return os.path.exists(self.path)

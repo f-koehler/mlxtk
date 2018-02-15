@@ -4,6 +4,8 @@ import sys
 
 import h5py
 
+from mlxtk.qdtk_executable import find_qdtk_executable
+from mlxtk.inout import hdf5
 from mlxtk.task import task
 from mlxtk.process import watch_process
 from mlxtk.inout.expval import add_expval_to_hdf5
@@ -41,14 +43,8 @@ class ExpectationValueTask(task.Task):
             self.logger.warn("propagation does not seem to create a psi file")
 
     def get_command(self):
-        if "QDTK_PREFIX" in os.environ:
-            program_path = os.path.join(os.environ["QDTK_PREFIX"], "bin",
-                                        "qdtk_expect.x")
-            if not os.path.exists(program_path):
-                raise RuntimeError(
-                    "QDTK executable \"{}\" not found".format(program_path))
-        else:
-            program_path = "qdtk_expect.x"
+        program_path = find_qdtk_executable("qdtk_expect.x")
+        self.logger.info("use propagation executable: " + program_path)
 
         return [
             program_path, "-psi", "psi", "-rst", "restart", "-opr",
@@ -76,6 +72,10 @@ class ExpectationValueTask(task.Task):
             stderr=sys.stderr)
 
     def create_hdf5(self, group=None):
+        if self.is_running():
+            raise hdf5.IncompleteHDF5(
+                "Possibly running ExpectationValueTask, no data can be added")
+
         opened_file = group is None
         if opened_file:
             self.logger.info("create new hdf5 file")

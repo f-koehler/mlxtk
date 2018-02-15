@@ -215,7 +215,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         if self.hdf5_mode:
             with h5py.File(self.path, "r") as fhandle:
-                subdirectories = [sim for sim in fhandle["sim_0"]]
+                subdirectories = [
+                    sim for sim in fhandle["sim_" + str(index.row())]
+                ]
         else:
             sim_dir = os.path.join(self.path, "sim_" + str(index.row()))
             subdirectories = [

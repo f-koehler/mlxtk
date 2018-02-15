@@ -62,6 +62,7 @@ class Task(object):
         self.stored_input_states = None
         self.stored_output_states = None
         self.parameters = None
+        self.pid = pid_file.PIDFile(self.name + ".pid")
 
         self.logger = log.get_logger(__name__ + "(" + self.task_type + ")")
 
@@ -128,17 +129,19 @@ class Task(object):
 
         return True
 
+    def is_running(self):
+        return self.pid.exists()
+
     def run(self):
         """Execute the task.
         """
         self.logger.info("enter task \"%s\"", self.name)
 
-        pid = pid_file.PIDFile(self.name + ".pid")
-        pid.acquire()
+        self.pid.acquire()
 
         if self.is_up_to_date():
             self.logger.info("already up-to-date")
-            pid.release()
+            self.pid.release()
             return False
 
         self.logger.info("create directories")
@@ -155,4 +158,4 @@ class Task(object):
         self.get_current_state()
         self.write_state_file()
 
-        pid.release()
+        self.pid.release()

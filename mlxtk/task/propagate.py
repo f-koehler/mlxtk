@@ -9,7 +9,9 @@ import h5py
 
 from mlxtk.task import task
 from mlxtk.process import watch_process
+from mlxtk.qdtk_executable import find_qdtk_executable
 
+from mlxtk.inout import hdf5
 from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
@@ -112,14 +114,8 @@ class PropagationTask(task.Task):
         parameters = self.get_parameter_dict()
         parameters["cont"] = self.cont
 
-        if "QDTK_PREFIX" in os.environ:
-            program_path = os.path.join(os.environ["QDTK_PREFIX"], "bin",
-                                        "qdtk_propagate.x")
-            if not os.path.exists(program_path):
-                raise RuntimeError(
-                    "QDTK executable \"{}\" not found".format(program_path))
-        else:
-            program_path = "qdtk_propagate.x"
+        program_path = find_qdtk_executable("qdtk_propagate.x")
+        self.logger.info("use propagation executable: " + program_path)
 
         cmd = [program_path]
         for name in parameters:
@@ -183,6 +179,10 @@ class PropagationTask(task.Task):
             pickle.dump(self.get_parameter_dict(), fhandle)
 
     def create_hdf5(self, group=None):
+        if self.is_running():
+            raise hdf5.IncompleteHDF5(
+                "Possibly running ExpectationValueTask, no data can be added")
+
         opened_file = group is None
         if opened_file:
             self.logger.info("create new hdf5 file")

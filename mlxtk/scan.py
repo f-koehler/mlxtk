@@ -351,7 +351,7 @@ class ParameterScan(object):
                 fhandle.write("{} -> {} \n".format(idx, id_))
 
         subdirs = ["sim_" + str(pindex) for pindex in jobid_pindices]
-        write_rsync_script("qsync.sh", jobids, subdirs)
+        write_sync_script("qsync.sh", jobids, subdirs)
 
         cwd.go_back()
 
@@ -481,8 +481,8 @@ class ParameterScan(object):
             raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")
 
 
-def write_rsync_script(path, jobids, subdirs):
-    script = ["#!/bin/bash", "set -euf -o pipefail", ""]
+def write_sync_script(path, jobids, subdirs):
+    script = ["#!/bin/bash", "set -eu -o pipefail", ""]
 
     for jid, subdir in zip(jobids, subdirs):
         script.append(
@@ -498,9 +498,13 @@ def write_rsync_script(path, jobids, subdirs):
             format(jid))
         script.append("        echo \"syncing job {} ({})\"".format(
             jid, subdir))
+        script.append("        mkdir -p \"${working_dir}_tmp\"")
         script.append(
-            "        rsync -avh --progress --rsh=\"sshpass -v -p ${SSH_PASSWORD} ssh\" ${node}:${working_dir}/ ${working_dir}/"
+            "        sshpass -v -p ${SSH_PASSWORD} scp -v -r ${node}:\"${working_dir}/\"* \"${working_dir}_tmp/\""
         )
+        script.append(
+            "        cp -r \"${working_dir}_tmp/\"* \"${working_dir}\"")
+        script.append("        rm -rf \"${working_dir}_tmp\"")
         script.append("        echo \"finished syncing job {} ({})\"".format(
             jid, subdir))
         script.append("    else")

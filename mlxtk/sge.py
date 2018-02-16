@@ -100,7 +100,7 @@ def write_job_file(path, name, cmd, args):
     if args.email.upper() != "NONE":
         script.append("#$ -M {email} -m aes")
     script += [
-        "#$ -S /bin/bash", "#$ -cwd", "#$ -o /dev/null", "#$ -e /dev/null",
+        "#$ -S /bin/bash", "#$ -cwd", "#$ -j y",
         "#$ -V", "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}",
         "#$ -pe smp {cpus}", "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
     ]

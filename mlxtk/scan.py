@@ -232,31 +232,52 @@ class ParameterScan(object):
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
-        changes = self.check_parameters_dry_run()
-        changes["simulations"] = {}
+        with open("dry_run.txt", "w") as fhandle:
+            changes = self.check_parameters_dry_run()
+            changes["simulations"] = {}
 
-        cwd.change_dir(self.cwd)
+            if "shelve" in changes:
+                fhandle.write("simulations that would be shelved:\n")
+                for shelved in changes["shelve"]:
+                    fhandle.write("\t" + shelved + "\n")
+                fhandle.write("\n\n")
+                fhandle.flush()
 
-        for simulation in self.simulations:
-            tasks = simulation.dry_run()
-            if tasks:
-                changes["simulations"][simulation.name] = tasks
+            if "moves" in changes:
+                fhandle.write("simulations that would be moved:\n")
+                for moved in changes["moves"]:
+                    fhandle.write("\t" + moved[0] + " -> " + moved[1] + "\n")
+                fhandle.write("\n\n")
+                fhandle.flush()
 
-        cwd.go_back()
+            cwd.change_dir(self.cwd)
 
-        for sim_name in changes["simulations"]:
-            print("sim:", sim_name)
-            print(" ", changes["simulations"][sim_name], "\n")
+            fhandle.write("simulations that would perform work:\n")
+            for simulation in self.simulations:
+                tasks = simulation.dry_run()
+                if tasks:
+                    fhandle.write("\t" + simulation.name + ":\n")
+                    changes["simulations"][simulation.name] = tasks
+                    for tsk in tasks:
+                        fhandle.write("\t\t" + tsk + "\n")
+                    fhandle.write("\n")
+                fhandle.flush()
 
-        if "moves" in changes:
-            print("\nmoves:")
-            for move in changes["moves"]:
-                print(" ", move[0], "->", move[1])
+            cwd.go_back()
 
-        if "shelve" in changes:
-            print("\nshelf:")
-            for shelved in changes["shelve"]:
-                print(" ", shelved)
+            for sim_name in changes["simulations"]:
+                print("sim:", sim_name)
+                print(" ", changes["simulations"][sim_name], "\n")
+
+            if "moves" in changes:
+                print("\nmoves:")
+                for move in changes["moves"]:
+                    print(" ", move[0], "->", move[1])
+
+            if "shelve" in changes:
+                print("\nshelf:")
+                for shelved in changes["shelve"]:
+                    print(" ", shelved)
 
     def run_index(self, index):
         log.open_log_file(os.path.join("sim_" + str(index), "sim.log"))

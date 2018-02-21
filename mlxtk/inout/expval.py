@@ -38,12 +38,13 @@ def read_expval_hdf5(parsed_path):
     return data
 
 
-def add_expval_to_hdf5(group, expval_path):
+def add_expval_to_hdf5(group, expval_path, name=None):
     logger = log.get_logger(__name__)
 
     data = read_expval(expval_path)
 
-    name = "expval_" + os.path.splitext(os.path.basename(expval_path))[0]
+    if name is None:
+        name = "expval_" + os.path.splitext(os.path.basename(expval_path))[0]
 
     opened_file = isinstance(group, str)
     if opened_file:
@@ -71,3 +72,8 @@ def add_expval_to_hdf5(group, expval_path):
 
     if opened_file:
         group.close()
+
+
+def add_variance_to_hdf5(group, variance_path):
+    name = "expval_" + os.path.splitext(os.path.basename(variance_path))[0]
+    add_expval_to_hdf5(group, variance_path, name)

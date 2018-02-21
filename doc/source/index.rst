@@ -54,6 +54,10 @@ Tasks
     :members:
     :undoc-members:
 
+.. autoclass:: mlxtk.task.ComputeVarianceTask
+   :members:
+   :undoc-members:
+
 
 Hashing
 =======

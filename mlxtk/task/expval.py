@@ -19,8 +19,8 @@ class ExpectationValueTask(task.Task):
         operator (str): name of operator file for the observable
 
     Attributes:
-        operator (str): name of operator file for the observable
         propagation (mlxtk.task.PropagationTask): propagation that creates the psi file
+        operator (str): name of operator file for the observable
     """
     def __init__(self, propagation, operator, **kwargs):
         kwargs["task_type"] = "ExpectationValueTask"
@@ -91,6 +91,7 @@ class ExpectationValueTask(task.Task):
             self.logger.info("create new hdf5 file")
             group = h5py.File(self.propagation.propagation_name + ".hdf5", "w")
         else:
+            print(group)
             if self.propagation.propagation_name not in group:
                 group = group.create_group(self.propagation.propagation_name)
             else:
@@ -99,8 +100,9 @@ class ExpectationValueTask(task.Task):
         expval = os.path.join(self.propagation.propagation_name,
                               self.operator + ".expval")
         if not os.path.exists(expval):
-            raise RuntimeError(
-                "Expectation value \"{}\" does not exist".format(expval))
+            raise FileNotFoundError(
+                "Expectation value file \"{}\" does not exist".format(expval))
+
         add_expval_to_hdf5(group, expval)
 
         if opened_file:

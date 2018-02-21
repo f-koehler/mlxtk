@@ -38,6 +38,13 @@ class Simulation(object):
             task.ExpectationValueTask(propagation, operator, **kwargs))
         return self.tasks[-1]
 
+    def compute_variance(self, propagation, operator, operator_squared,
+                         **kwargs):
+        self.tasks.append(
+            task.ComputeVarianceTask(propagation, operator, operator_squared,
+                                     **kwargs))
+        return self.tasks[-1]
+
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
             name = kwargs["name"]

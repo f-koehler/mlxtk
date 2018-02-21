@@ -1,6 +1,5 @@
 import argparse
 import copy
-import datetime
 import os
 import shutil
 import sys
@@ -12,6 +11,7 @@ from . import cwd
 from . import log
 from . import sge
 from . import tabulate
+from . import date
 from .parameters import ParameterTable
 
 
@@ -60,8 +60,8 @@ class ParameterScan(object):
     def check_parameters(self):
         self.logger.info("check stored parameter table if present")
 
-        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        shelf_dir = os.path.join(self.cwd, "shelf_" + time_stamp)
+        timestamp = date.get_timestamp_filename()
+        shelf_dir = os.path.join(self.cwd, "shelf_" + timestamp)
 
         def create_shelf_dir():
             self.logger.info("create shelf directory %s", shelf_dir)
@@ -129,8 +129,8 @@ class ParameterScan(object):
 
     def check_parameters_dry_run(self):
 
-        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-        shelf_dir = os.path.join(self.cwd, "shelf_" + time_stamp)
+        timestamp = date.get_timestamp_filename()
+        shelf_dir = os.path.join(self.cwd, "shelf_" + timestamp)
 
         result = {}
 
@@ -199,7 +199,9 @@ class ParameterScan(object):
         self.simulations = [simulation]
 
     def run(self):
-        log.open_log_file(os.path.join(self.cwd, "run.log"))
+        log.open_log_file(
+            os.path.join(self.cwd,
+                         "run_" + date.get_timestamp_filename() + ".log"))
 
         self.generate_simulations()
 
@@ -308,7 +310,9 @@ class ParameterScan(object):
                     print(" ", shelved)
 
     def run_index(self, index):
-        log.open_log_file(os.path.join("sim_" + str(index), "sim.log"))
+        log.open_log_file(
+            os.path.join("sim_" + str(index),
+                         "sim_" + date.get_timestamp_filename() + ".log"))
 
         self.generate_simulation(index)
 
@@ -322,7 +326,9 @@ class ParameterScan(object):
         log.close_log_file()
 
     def qsub(self, args):
-        log.open_log_file(os.path.join(self.cwd, "qsub.log"))
+        log.open_log_file(
+            os.path.join(self.cwd,
+                         "qsub_" + date.get_timestamp_filename() + ".log"))
 
         self.generate_simulations()
 
@@ -386,7 +392,9 @@ class ParameterScan(object):
         log.close_log_file()
 
     def create_hdf5(self, group=None):
-        log.open_log_file(os.path.join(self.cwd, "hdf5.log"))
+        log.open_log_file(
+            os.path.join(self.cwd,
+                         "hdf5" + date.get_timestamp_filename() + ".log"))
 
         self.generate_simulations()
 
@@ -436,10 +444,10 @@ class ParameterScan(object):
             print(self.table.format_variables(args.fmt))
 
     def print_summary(self):
-        time_stamp = datetime.datetime.now().strftime("%Y-%m-%d %a %H:%M")
+        timestamp = date.get_timestamp_filename()
         print("\n".join([
             "#+TITLE: Parameter Scan Summary", "#+CREATOR: mlxtk",
-            "#+DATE: " + time_stamp, ""
+            "#+DATE: " + timestamp, ""
         ]))
         print("\n\n* Constants\n")
         self.print_constants()

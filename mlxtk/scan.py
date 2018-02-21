@@ -226,6 +226,34 @@ class ParameterScan(object):
 
         log.close_log_file()
 
+    def run_task(self, name):
+        log.open_log_file(os.path.join(self.cwd, "run_task_" + name + ".log"))
+
+        self.generate_simulations()
+
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        self.check_parameters()
+
+        self.table.dump(os.path.join(self.cwd, "parameters.pickle"))
+
+        if not self.simulations:
+            self.logger.info("all simulations are up-to-date")
+            return
+
+        cwd.change_dir(self.cwd)
+
+        self.logger.info("found %d simulations that are not up-to-date",
+                         len(self.simulations))
+
+        for simulation in self.simulations:
+            simulation.run_task(name)
+
+        cwd.go_back()
+
+        log.close_log_file()
+
     def dry_run(self):
         self.generate_simulations()
 
@@ -439,12 +467,15 @@ class ParameterScan(object):
         parser_variables = subparsers.add_parser("variables")
         subparsers.add_parser("summary")
         subparsers.add_parser("list-tasks")
+        parser_run_task = subparsers.add_parser("run-task")
         subparsers.add_parser("dry-run")
 
         parser_run_index.add_argument(
             "--index",
             type=int,
             help="index of the simulation to run when using \"run-index\"")
+
+        parser_run_task.add_argument("task", type=str, help="")
 
         sge.add_parser_arguments(parser_qsub)
 
@@ -461,6 +492,8 @@ class ParameterScan(object):
             self.run()
         elif args.subcommand == "run-index":
             self.run_index(args.index)
+        elif args.subcommand == "run-task":
+            self.run_task(args.task)
         elif args.subcommand == "qsub":
             self.qsub(args)
         elif args.subcommand == "hdf5":

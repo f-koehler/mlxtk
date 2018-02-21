@@ -203,18 +203,19 @@ class Simulation(object):
         return [tsk.name for tsk in self.tasks]
 
     def main(self):
+        self.logger.info("start simulation")
+
         parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "action",
-            metavar="action",
-            type=str,
-            choices=["run", "qsub"],
-            help="{run, qsub}")
-        sge.add_parser_arguments(parser)
+        subparsers = parser.add_subparsers(dest="subcommand")
+
+        subparsers.add_parser("run")
+        parser_qsub = subparsers.add_parser("qsub")
+
+        sge.add_parser_arguments(parser_qsub)
 
         args = parser.parse_args()
 
-        if args.action == "run":
+        if args.subcommand == "run":
             self.run()
-        elif args.action == "qsub":
+        elif args.subcommand == "qsub":
             self.qsub(args)

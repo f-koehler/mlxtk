@@ -21,7 +21,7 @@ class ParameterScan(object):
     Args:
         name (str): name for the parameter scan
         parameters (mlxtk.parameters.Parameters): parameters of this scan (the
-            values are takes as initial values)
+            values are taken as initial values)
         simulation_generator: function that returns a simulation given a
             parameter set
 

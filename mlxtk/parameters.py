@@ -1,7 +1,9 @@
 import functools
 import itertools
 import json
+import numpy
 import os
+import pandas
 import pickle
 
 from . import tabulate
@@ -164,6 +166,14 @@ class ParameterTable(object):
             "table": self.table
         }
         return pickle.dumps(data)
+
+    def to_data_frame(self):
+        return pandas.DataFrame(
+            numpy.insert(
+                numpy.array(self.table),
+                0, [i for i, _ in enumerate(self.table)],
+                axis=1),
+            columns=["sim_index"] + self.names)
 
     @staticmethod
     def load(path):

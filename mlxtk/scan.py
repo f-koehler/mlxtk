@@ -411,9 +411,13 @@ class ParameterScan(object):
         cwd.change_dir(self.cwd)
 
         for i, simulation in enumerate(self.simulations):
-            simulation.create_hdf5(group)
-            self.logger.info("%d/%d simulations processed", i + 1,
-                             len(self.simulations))
+            try:
+                simulation.create_hdf5(group)
+                self.logger.info("%d/%d simulations processed", i + 1,
+                                 len(self.simulations))
+            except hdf5.HDF5Error:
+                self.warn("simulation %d does not exist, HDF5 file will be incomplete")
+
 
         cwd.go_back()
 

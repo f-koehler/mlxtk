@@ -35,7 +35,7 @@ def main():
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
         cbar = plot.figure.colorbar(heatmap)
-        cbar.ax.set_ylabel("density")
+        cbar.ax.set_ylabel(r"$\rho_1(x)$")
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

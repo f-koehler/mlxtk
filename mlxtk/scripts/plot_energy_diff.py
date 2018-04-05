@@ -19,6 +19,7 @@ def main():
         "--in1", type=str, dest="input_file1", help="first input_file")
     parser.add_argument(
         "--in2", type=str, dest="input_file2", help="second input_file")
+    parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
 
     data1 = read_output(args.input_file1)
@@ -29,10 +30,17 @@ def main():
     n_t = max(len(data1.time), len(data2.time))
 
     def init_plot(plot):
-        plot.axes.plot(data1.time, data1.energy - data2.energy, marker=".")
+        if args.relative:
+            plot.axes.plot(
+                data1.time, 1 - data2.energy / data1.energy, marker=".")
+            plot.axes.set_ylabel(
+                r"$1-\frac{{\langle H\rangle}_2 (t)}{{\langle H\rangle}_1 (t)}$"
+            )
+        else:
+            plot.axes.plot(data1.time, data1.energy - data2.energy, marker=".")
+            plot.axes.set_ylabel(
+                r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$")
         plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(
-            r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$")
 
     def init_plot_interpolate(plot):
         t = numpy.linspace(t_min, t_max, n_t)
@@ -48,10 +56,17 @@ def main():
             kind=5,
             bounds_error=True,
             assume_sorted=True)
-        plot.axes.plot(t, interp1(t) - interp2(t), marker=".")
+        if args.relative:
+            plot.axes.set_ylabel(
+                r"$1-\frac{{\langle H\rangle}_2 (t)}{{\langle H\rangle}_1 (t)}$"
+            )
+            plot.axes.plot(t, 1 - interp2(t) / interp1(t), marker=".")
+        else:
+            plot.axes.set_ylabel(
+                r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$ (interpolated)"
+            )
+            plot.axes.plot(t, interp1(t) - interp2(t), marker=".")
         plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(
-            r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$ (interpolated)")
 
     if not numpy.array_equal(data1.time.as_matrix(), data2.time.as_matrix()):
         log.get_logger(__name__).warn("incompatible times, interpolating")

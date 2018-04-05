@@ -45,6 +45,11 @@ class Simulation(object):
                                      **kwargs))
         return self.tasks[-1]
 
+    def compute_basis_projection(self, propagation, basis, **kwargs):
+        self.tasks.append(
+            task.TDBasisProjectionTask(propagation, basis, **kwargs))
+        return self.tasks[-1]
+
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
             name = kwargs["name"]

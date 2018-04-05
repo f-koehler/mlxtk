@@ -25,6 +25,7 @@ def main():
         type=int,
         default=1,
         help="degree of freedom for which to plot the density")
+    parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
 
     times1, grids1, densities1 = read_gpop(args.input_file1)
@@ -34,16 +35,23 @@ def main():
     grid2 = grids2[args.dof]
 
     def init_plot(plot):
-        difference = numpy.transpose(
-            densities1[args.dof] - densities2[args.dof])
-        amplitude = max(abs(numpy.min(difference)), numpy.max(difference))
+        if args.relative:
+            values = numpy.transpose(
+                1. - densities2[args.dof] / densities1[args.dof])
+        else:
+            values = numpy.transpose(
+                densities1[args.dof] - densities2[args.dof])
+        amplitude = max(abs(numpy.min(values)), numpy.max(values))
         t, x = numpy.meshgrid(times1, grids1[args.dof])
         heatmap = plot.axes.pcolormesh(
-            t, x, difference, cmap="bwr", vmin=-amplitude, vmax=amplitude)
+            t, x, values, cmap="bwr", vmin=-amplitude, vmax=amplitude)
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
         cbar = plot.figure.colorbar(heatmap)
-        cbar.ax.set_ylabel("density1 - density2")
+        if args.relative:
+            cbar.ax.set_ylabel(r"$1-\frac{\rho_1^{(2)}(x,t)}{\rho_1^{(1)}(x,t)}$")
+        else:
+            cbar.ax.set_ylabel(r"$\rho_1^{(1)}(x,t)-\rho_1^{(2)}(x,t)$")
 
     def init_plot_interpolate(plot):
         t_min = max(numpy.min(times1), numpy.min(times2))
@@ -73,15 +81,21 @@ def main():
 
         t = numpy.linspace(t_min, t_max, n_t)
         x = numpy.linspace(x_min, x_max, n_x)
-        difference = interp1(t, x) - interp2(t, x)
-        amplitude = max(abs(numpy.min(difference)), numpy.max(difference))
+        if args.relative:
+            values = numpy.transpose(1. - interp2(t, x) / interp1(t, x))
+        else:
+            values = numpy.transpose(interp1(t, x) - interp2(t, x))
+        amplitude = max(abs(numpy.min(values)), numpy.max(values))
 
         heatmap = plot.axes.pcolormesh(
-            t, x, difference, cmap="bwr", vmin=-amplitude, vmax=amplitude)
+            t, x, values, cmap="bwr", vmin=-amplitude, vmax=amplitude)
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
         cbar = plot.figure.colorbar(heatmap)
-        cbar.ax.set_ylabel("density1 - density2 (interpolated)")
+        if args.relative:
+            cbar.ax.set_ylabel(r"$1-\frac{\rho_1^{(2)}(x,t)}{\rho_1^{(1)}(x,t)}$ (interpolated)")
+        else:
+            cbar.ax.set_ylabel(r"$\rho_1^{(1)}(x,t)-\rho_1^{(2)}(x,t)$ (interpolated)")
 
     logger = log.get_logger(__name__)
 

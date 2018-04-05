@@ -1,3 +1,4 @@
+from .basis_projection import TDBasisProjectionTask
 from .expval import ExpectationValueTask
 from .operator import OperatorCreationTask
 from .propagate import PropagationTask

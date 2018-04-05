@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import argparse
-import numpy
 
 from mlxtk import mpl
 import mlxtk.plot.argparser
 from mlxtk.plot.plot_program import SimplePlotProgram
 from mlxtk.inout.gpop import read_gpop
+
+from ..plot.gpop import plot_gpop
 
 
 def main():
@@ -28,14 +29,7 @@ def main():
     args = parser.parse_args()
 
     def init_plot(plot):
-        times, grids, densities = read_gpop(args.input_file)
-        density = numpy.transpose(densities[args.dof])
-        t, x = numpy.meshgrid(times, grids[args.dof])
-        heatmap = plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
-        plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel("$x$")
-        cbar = plot.figure.colorbar(heatmap)
-        cbar.ax.set_ylabel(r"$\rho_1(x)$")
+        plot_gpop(plot, args.input_file, args.dof)
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

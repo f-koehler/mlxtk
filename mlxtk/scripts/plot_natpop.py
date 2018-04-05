@@ -4,7 +4,8 @@ import argparse
 from mlxtk import mpl
 import mlxtk.plot.argparser
 from mlxtk.plot.plot_program import SimplePlotProgram
-from mlxtk.inout.natpop import read_natpop
+
+from ..plot.natpop import plot_natpop
 
 
 def main():
@@ -25,11 +26,7 @@ def main():
     args = parser.parse_args()
 
     def init_plot(plot):
-        data = read_natpop(args.input_file)[1][1]
-        for column in data.columns[1:]:
-            plot.axes.plot(data["time"], data[column] / 1000.)
-        plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(r"$\lambda_i$")
+        plot_natpop(plot, args.input_file)
 
     program = SimplePlotProgram("Natural Populations", init_plot)
     program.main(args)

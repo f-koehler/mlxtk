@@ -87,6 +87,9 @@ class PropagationTask(task.Task):
 
         self.preprocess_steps.append(self.write_propagation_parameters)
 
+    def get_final_wave_function_name(self):
+        return os.path.join(self.propagation_name, "final")
+
     def get_parameter_dict(self):
         return {
             "dt": self.dt,

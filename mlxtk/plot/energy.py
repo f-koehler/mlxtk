@@ -4,6 +4,7 @@ import scipy.interpolate
 from .. import log
 from ..inout.output import read_output
 
+
 def plot_energy_diff(plot, path1, path2, relative=False):
     data1 = read_output(path1)
     data2 = read_output(path2)
@@ -12,8 +13,10 @@ def plot_energy_diff(plot, path1, path2, relative=False):
     t_max = min(max(data1.time), max(data2.time))
     n_t = max(len(data1.time), len(data2.time))
 
-    if numpy.array_equal(data1.time.as_matrix(), data2.time.as_matrix()):
-        log.get_logger(__name__).warn("incompatible times, interpolating")
+    interpolate = numpy.array_equal(data1.time.as_matrix(),
+                                    data2.time.as_matrix())
+
+    if not interpolate:
         if relative:
             plot.axes.plot(
                 data1.time, 1 - data2.energy / data1.energy, marker=".")
@@ -26,6 +29,7 @@ def plot_energy_diff(plot, path1, path2, relative=False):
                 r"${\langle H\rangle}_1 (t)-{\langle H\rangle}_2 (t)$")
         plot.axes.set_xlabel("$t$")
     else:
+        log.get_logger(__name__).warn("incompatible times, interpolating")
         t = numpy.linspace(t_min, t_max, n_t)
         interp1 = scipy.interpolate.interp1d(
             data1.time,

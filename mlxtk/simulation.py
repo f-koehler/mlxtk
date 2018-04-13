@@ -45,7 +45,12 @@ class Simulation(object):
                                      **kwargs))
         return self.tasks[-1]
 
-    def compute_basis_projection(self, propagation, basis, **kwargs):
+    def compute_basis_projection(self, wave_function, basis, **kwargs):
+        self.tasks.append(
+            task.BasisProjectionTask(wave_function, basis, **kwargs))
+        return self.tasks[-1]
+
+    def compute_td_basis_projection(self, propagation, basis, **kwargs):
         self.tasks.append(
             task.TDBasisProjectionTask(propagation, basis, **kwargs))
         return self.tasks[-1]

@@ -1,10 +1,14 @@
+import h5py
 import os
 import shutil
 import sys
-from .task import Task, FileInput, FileOutput
-from ..qdtk_executable import find_qdtk_executable
+
+from ..inout import hdf5
 from ..process import watch_process
+from ..qdtk_executable import find_qdtk_executable
 from ..util import TemporaryCopy
+from .task import Task, FileInput, FileOutput
+from ..inout.projection import add_projection_to_hdf5
 
 
 class TDBasisProjectionTask(Task):
@@ -76,7 +80,8 @@ class BasisProjectionTask(Task):
         self.directory = os.path.dirname(wave_function)
         self.wave_function = os.path.basename(wave_function) + ".wave_function"
         self.basis = basis
-        self.output_name = "projection_" + os.path.splitext(self.wave_function)[0] + "_onto_" + basis
+        self.output_name = "projection_" + os.path.splitext(
+            self.wave_function)[0] + "_onto_" + basis
 
         inp_wave_function = FileInput("wave_function", self.wave_function)
         inp_basis = FileInput("basis", self.basis)
@@ -119,3 +124,24 @@ class BasisProjectionTask(Task):
                 cwd=self.directory,
                 stdout=sys.stdout,
                 stderr=sys.stderr)
+
+    def create_hdf5(self, group=None):
+        if self.is_running():
+            raise hdf5.IncompleteHDF5(
+                "Possibly running BasisProjectionTask, no data can be added")
+
+        opened_file = group is None
+        if opened_file:
+            self.logger.info("create new HDF5 file")
+            group = h5py.File(self.output_name + ".hdf5", "w")
+
+        path = os.path.join(self.directory, self.output_name)
+
+        if not os.path.exists(path):
+            raise FileNotFoundError(
+                "BasisProjection file \"{}\" does not exist".format(path))
+
+        add_projection_to_hdf5(group, path, self.output_name)
+
+        if opened_file:
+            group.close()

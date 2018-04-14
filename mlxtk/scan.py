@@ -12,6 +12,7 @@ from . import log
 from . import sge
 from . import tabulate
 from . import date
+from .inout import hdf5
 from .parameters import ParameterTable
 
 

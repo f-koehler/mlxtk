@@ -126,7 +126,8 @@ class Simulation(object):
             json.dump(parameter_dict, fhandle)
 
         if os.path.exists("timings.pickle"):
-            timings = pickle.load("timings.pickle")
+            with open("timings.pickle", "rb") as fhandle:
+                timings = pickle.load(fhandle)
         else:
             timings = {}
 

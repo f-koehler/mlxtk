@@ -1,7 +1,9 @@
 import argparse
 import copy
+import multiprocessing
 import os
 import shutil
+import subprocess
 import sys
 
 import h5py
@@ -392,6 +394,46 @@ class ParameterScan(object):
 
         log.close_log_file()
 
+    def submit_tmux(self, args):
+        log.open_log_file(
+            os.path.join(
+                self.cwd,
+                "submit_tmux_" + date.get_timestamp_filename() + ".log"))
+
+        self.generate_simulations()
+
+        if not os.path.exists(self.cwd):
+            os.makedirs(self.cwd)
+
+        self.check_parameters()
+
+        self.table.dump(os.path.join(self.cwd, "parameters.pickle"))
+
+        if not self.simulations:
+            self.logger.info("all simulations are up-to-date")
+            return
+
+        script_path = os.path.abspath(sys.argv[0])
+
+        cwd.change_dir(self.cwd)
+
+        def run_simulation(sim):
+            index = self.table.get_index(sim.parameters.to_tuple())
+
+            name = "sim_" + str(index)
+
+            cmd = " ".join([
+                "tmux", "new-session", "-d", "-s", name, "python",
+                os.path.relpath(script_path), "run-index", "--index",
+                str(index)
+            ])
+            subprocess.check_output(cmd)
+
+        multiprocessing.map(run_simulation, self.simulations)
+
+        cwd.go_back()
+        log.close_log_file()
+
     def create_hdf5(self, group=None):
         log.open_log_file(
             os.path.join(self.cwd,
@@ -417,8 +459,9 @@ class ParameterScan(object):
                 self.logger.info("%d/%d simulations processed", i + 1,
                                  len(self.simulations))
             except hdf5.HDF5Error:
-                self.warn("simulation %d does not exist, HDF5 file will be incomplete")
-
+                self.warn(
+                    "simulation %d does not exist, HDF5 file will be incomplete"
+                )
 
         cwd.go_back()
 
@@ -482,6 +525,7 @@ class ParameterScan(object):
         subparsers.add_parser("list-tasks")
         parser_run_task = subparsers.add_parser("run-task")
         subparsers.add_parser("dry-run")
+        parser_submit_tmux = subparsers.add_parser("submit-tmux")
 
         parser_run_index.add_argument(
             "--index",
@@ -489,6 +533,13 @@ class ParameterScan(object):
             help="index of the simulation to run when using \"run-index\"")
 
         parser_run_task.add_argument("task", type=str, help="")
+
+        parser_submit_tmux.add_argument(
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of threads to use")
 
         sge.add_parser_arguments(parser_qsub)
 
@@ -523,6 +574,8 @@ class ParameterScan(object):
             self.list_tasks()
         elif args.subcommand == "dry-run":
             self.dry_run()
+        elif args.subcommand == "submit-tmux":
+            self.submit_tmux(args)
         else:
             raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")
 

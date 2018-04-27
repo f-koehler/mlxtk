@@ -142,7 +142,7 @@ class Task(object):
         if self.is_up_to_date():
             self.logger.info("already up-to-date")
             self.pid.release()
-            return False
+            return {"executed": False}
 
         self.logger.info("create directories")
         for out in self.outputs:
@@ -159,3 +159,5 @@ class Task(object):
         self.write_state_file()
 
         self.pid.release()
+
+        return {"executed": True, "time": stop - start}

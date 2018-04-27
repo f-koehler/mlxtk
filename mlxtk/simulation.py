@@ -125,9 +125,22 @@ class Simulation(object):
         with open("parameters.json", "w") as fhandle:
             json.dump(parameter_dict, fhandle)
 
+        if os.path.exists("timings.pickle"):
+            timings = pickle.load("timings.pickle")
+        else:
+            timings = {}
+
         for tsk in self.tasks:
             tsk.parameters = self.parameters
-            tsk.run()
+            result = tsk.run()
+            if result["executed"]:
+                timings[tsk.name] = result["time"]
+
+        with open("timings.pickle", "wb") as fhandle:
+            pickle.dump(timings, fhandle)
+
+        with open("timings.json", "w") as fhandle:
+            json.dump(timings, fhandle)
 
         cwd.go_back()
 

@@ -22,17 +22,16 @@ class ExpectationValueTask(task.Task):
         propagation (mlxtk.task.PropagationTask): propagation that creates the psi file
         operator (str): name of operator file for the observable
     """
+
     def __init__(self, propagation, operator, **kwargs):
         kwargs["task_type"] = "ExpectationValueTask"
 
         self.operator = operator
         self.propagation = propagation
 
-        inp_wave_function = task.FileInput(
-            "initial_wave_function",
-            propagation.initial_wave_function + ".wave_function")
-        inp_operator = task.FileInput("operator",
-                                      propagation.operator + ".operator")
+        inp_wave_function = task.FileInput("initial_wave_function",
+                                           propagation.initial_wave_function)
+        inp_operator = task.FileInput("operator", propagation.operator)
         inp_psi_file = task.FileInput("psi_file",
                                       os.path.join(
                                           propagation.propagation_name, "psi"))
@@ -49,7 +48,7 @@ class ExpectationValueTask(task.Task):
             outputs=[out_expval],
             **kwargs)
 
-        if not propagation.psi:
+        if not propagation.flags["psi"]:
             self.logger.warn("propagation does not seem to create a psi file")
 
     def get_command(self):
@@ -58,14 +57,14 @@ class ExpectationValueTask(task.Task):
 
         return [
             program_path, "-psi", "psi", "-rst", "restart", "-opr",
-            self.operator + ".operator", "-save", self.operator + ".expval"
+            self.operator + ".opr", "-save", self.operator + ".expval"
         ]
 
     def compute_expectation_value(self):
         self.logger.info("copy operator")
-        shutil.copy2(self.operator + ".operator",
+        shutil.copy2(self.operator + ".opr",
                      os.path.join(self.propagation.propagation_name,
-                                  self.operator + ".operator"))
+                                  self.operator + ".opr"))
 
         self.logger.info("run qdtk_expect.x")
         command = self.get_command()

@@ -21,7 +21,7 @@ class WaveFunctionCreationTask(task.Task):
                 task.FunctionInput("wave_function_string",
                                    self.get_wave_function_string)
             ],
-            outputs=[task.FileOutput(name, name + ".wave_function")],
+            outputs=[task.FileOutput(name, name + ".wfn")],
             **kwargs)
 
     def get_wave_function_string(self):
@@ -33,7 +33,7 @@ class WaveFunctionCreationTask(task.Task):
         # Due to numerical issues the components can marginally differ even if
         # the input did not change. If this is the case we pretend that the
         # task has not changed.
-        path = self.wave_function_name + ".wave_function"
+        path = self.wave_function_name + ".wfn"
         if os.path.exists(path):
             stored_wave_function = load_wave_function(path)
 
@@ -59,6 +59,6 @@ class WaveFunctionCreationTask(task.Task):
 
     def write_wave_function_file(self):
         wave_function = self.wave_function_creator(self.parameters)
-        path = self.wave_function_name + ".wave_function"
+        path = self.wave_function_name + ".wfn"
         with open(path, "w") as fhandle:
             wave_function.createWfnFile(fhandle)

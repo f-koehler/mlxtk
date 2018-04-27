@@ -21,7 +21,7 @@ class OperatorCreationTask(task.Task):
             inputs=[
                 task.FunctionInput("operator_string", self.get_operator_string)
             ],
-            outputs=[task.FileOutput(name, name + ".operator")],
+            outputs=[task.FileOutput(name, name + ".opr")],
             **kwargs)
 
     def get_operator_string(self):
@@ -42,10 +42,10 @@ class OperatorCreationTask(task.Task):
     def write_operator_file(self):
         """Create the operator and write it to a file
 
-        The filename is composed by appending the ``.operator`` extension to the operator name
+        The filename is composed by appending the ``.opr`` extension to the operator name
         """
         operator = self.operator_creator(self.parameters)
-        path = self.operator_name + ".operator"
+        path = self.operator_name + ".opr"
         with open(path, "w") as fhandle:
             if isinstance(operator, Operator):
                 operator.createOperatorFile(fhandle)

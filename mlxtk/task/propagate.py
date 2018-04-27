@@ -16,40 +16,97 @@ from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
 
+FLAG_TYPES = {
+    "rst": str,
+    "opr": str,
+    "dt": float,
+    "tfinal": float,
+    "psi": bool,
+    "relax": bool,
+    "improved_relax": bool,
+    "cont": bool,
+    "rstzero": bool,
+    "transMat": bool,
+    "MBop_apply": bool,
+    "itg": str,
+    "zvode_mf": int,
+    "atol": float,
+    "rtol": float,
+    "reg": float,
+    "exproj": bool,
+    "resetnorm": bool,
+    "gramschmidt": bool,
+    "statsteps": int,
+    "stat_energy_tol": float,
+    "stat_npop_tol": float,
+    "gauge": str,
+    "pruning_method": str,
+    "timing": bool
+}
+
+DEFAULT_FLAGS = {
+    "rst": "initial.wfn",
+    "opr": "hamiltonian.opr",
+    "dt": 0.1,
+    "tfinal": 1.,
+    "psi": False,
+    "relax": False,
+    "improved_relax": False,
+    "cont": False,
+    "rstzero": False,
+    "transMat": False,
+    "MBop_apply": False,
+    "itg": "dp5",
+    "atol": 1e-12,
+    "rtol": 1e-12,
+    "reg": 1e-8,
+    "exproj": True,
+    "resetnorm": False,
+    "gramschmidt": False,
+    "timing": True
+}
+
+
+def create_flags(**kwargs):
+    flags = DEFAULT_FLAGS
+
+    for flag in FLAG_TYPES:
+        if flag not in kwargs:
+            continue
+        flags[flag] = kwargs[flag]
+
+    if flags["improved_relax"]:
+        flags["statsteps"] = flags.get("statsteps", 100)
+
+    if flags["itg"] == "zvode":
+        flags["zvode_mf"] = flags.get("zvode_mf", 10)
+
+    flag_list = []
+    for flag in flags:
+        if FLAG_TYPES[flag] == bool:
+            if flags[flag]:
+                flag_list.append("-" + flag)
+        elif FLAG_TYPES[flag] == str:
+            flag_list += ["-" + flag, flags[flag]]
+        else:
+            flag_list += ["-" + flag, str(flags[flag])]
+
+    return flags, flag_list
+
 
 class PropagationTask(task.Task):
     def __init__(self, name, initial_wave_function, operator, **kwargs):
         self.propagation_name = name
-        self.initial_wave_function = initial_wave_function
-        self.operator = operator
 
-        self.dt = kwargs.get("dt", 0.1)
-        self.tfinal = kwargs.get("tfinal", 1.)
-        self.psi = kwargs.get("psi", False)
-        self.relax = kwargs.get("relax", False)
-        self.improved_relax = kwargs.get("improved_relax", False)
-        self.cont = kwargs.get("cont", False)
-        self.rstzero = kwargs.get("rstzero", True)
-        self.transMat = kwargs.get("transMat", False)
-        self.MBop_apply = kwargs.get("MBop_apply", False)
-        self.itg = kwargs.get("itg", "dp5")
-        self.zvode_mf = kwargs.get("zvode_mf", 10)
-        self.atol = kwargs.get("atol", 1e-10)
-        self.rtol = kwargs.get("rtol", 1e-10)
-        self.reg = kwargs.get("reg", 1e-8)
-        self.exproj = kwargs.get("exproj", False)
-        self.resetnorm = kwargs.get("resetnorm", False)
-        self.gramschmidt = kwargs.get("gramschmidt", False)
-        self.statsteps = kwargs.get("statsteps", 0)
-        self.stat_energ_tol = kwargs.get("stat_energy_tol", 1e-10)
-        self.stat_npop_tol = kwargs.get("stat_npop_tol", 1e-10)
+        self.initial_wave_function = initial_wave_function + ".wfn"
+        self.operator = operator + ".opr"
 
-        if self.relax:
+        self.flags, self.flag_list = create_flags(**kwargs)
+
+        if self.flags["relax"]:
             kwargs["task_type"] = "RelaxationTask"
             name = "relax_" + name
-            if self.statsteps == 0:
-                self.statsteps = 100
-        elif self.improved_relax:
+        elif self.flags["improved_relax"]:
             name = "improved_relax_" + name
             kwargs["task_type"] = "ImprovedRelaxationTask"
         else:
@@ -59,11 +116,9 @@ class PropagationTask(task.Task):
         inp_parameters = task.FileInput("parameters",
                                         os.path.join(self.propagation_name,
                                                      "parameters.pickle"))
-        inp_wave_function = task.FileInput(
-            "initial_wave_function",
-            self.initial_wave_function + ".wave_function")
-        inp_operator = task.FileInput("hamiltonian",
-                                      self.operator + ".operator")
+        inp_wave_function = task.FileInput("initial_wave_function",
+                                           self.flags["rst"])
+        inp_operator = task.FileInput("hamiltonian", self.flags["opr"])
 
         out_restart = task.FileOutput("final_wave_function",
                                       os.path.join(self.propagation_name,
@@ -90,60 +145,21 @@ class PropagationTask(task.Task):
     def get_final_wave_function_name(self):
         return os.path.join(self.propagation_name, "final")
 
-    def get_parameter_dict(self):
-        return {
-            "dt": self.dt,
-            "tfinal": self.tfinal,
-            "psi": self.psi,
-            "relax": self.relax,
-            "improved_relax": self.improved_relax,
-            "rstzero": self.rstzero,
-            "transMat": self.transMat,
-            "MBop_apply": self.MBop_apply,
-            "itg": self.itg,
-            "zvode_mf": self.zvode_mf,
-            "atol": self.atol,
-            "rtol": self.rtol,
-            "reg": self.reg,
-            "exproj": self.exproj,
-            "resetnorm": self.resetnorm,
-            "gramschmidt": self.gramschmidt,
-            "statsteps": self.statsteps,
-            "stat_energ_tol": self.stat_energ_tol,
-            "stat_npop_tol": self.stat_npop_tol
-        }
-
     def get_command(self):
-        parameters = self.get_parameter_dict()
-        parameters["cont"] = self.cont
-
         program_path = find_qdtk_executable("qdtk_propagate.x")
         self.logger.info("use propagation executable: " + program_path)
 
-        cmd = [program_path]
-        for name in parameters:
-            if isinstance(parameters[name], bool):
-                if parameters[name]:
-                    cmd += ["-" + name]
-            else:
-                cmd += ["-" + name, str(parameters[name])]
-
-        cmd += [
-            "-opr", "hamiltonian.operator", "-rst", "initial.wave_function",
-            "-timing"
-        ]
+        cmd = [program_path] + self.flag_list
         return cmd
 
     def run_propagation(self):
         self.logger.info("copy initial wave function")
-        shutil.copy2(self.initial_wave_function + ".wave_function",
-                     os.path.join(self.propagation_name,
-                                  "initial.wave_function"))
+        shutil.copy2(self.initial_wave_function,
+                     os.path.join(self.propagation_name, "initial.wfn"))
 
         self.logger.info("copy operator")
-        shutil.copy2(self.operator + ".operator",
-                     os.path.join(self.propagation_name,
-                                  "hamiltonian.operator"))
+        shutil.copy2(self.operator,
+                     os.path.join(self.propagation_name, "hamiltonian.opr"))
 
         self.logger.info("run qdtk_propagate.x")
         command = self.get_command()
@@ -161,7 +177,7 @@ class PropagationTask(task.Task):
 
         self.logger.info("create symlink to final wave function")
         src = os.path.join(self.propagation_name, "restart")
-        dst = os.path.join(self.propagation_name, "final.wave_function")
+        dst = os.path.join(self.propagation_name, "final.wfn")
         self.logger.debug("%s -> %s", src, dst)
 
         subprocess.check_output(["ln", "-srf", src, dst])
@@ -176,10 +192,10 @@ class PropagationTask(task.Task):
         json_file = os.path.join(self.propagation_name, "parameters.json")
         pickle_file = os.path.join(self.propagation_name, "parameters.pickle")
         with open(json_file, "w") as fhandle:
-            json.dump(self.get_parameter_dict(), fhandle)
+            json.dump(self.flags, fhandle)
 
         with open(pickle_file, "wb") as fhandle:
-            pickle.dump(self.get_parameter_dict(), fhandle)
+            pickle.dump(self.flags, fhandle)
 
     def create_hdf5(self, group=None):
         if self.is_running():

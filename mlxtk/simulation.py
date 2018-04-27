@@ -60,7 +60,7 @@ class Simulation(object):
             name = kwargs["name"]
             kwargs.pop("name")
         else:
-            name = "propagation{}".format(self.propagation_counter)
+            name = "propagation_" + str(self.propagation_counter)
             self.propagation_counter += 1
 
         self.tasks.append(
@@ -72,7 +72,7 @@ class Simulation(object):
             name = kwargs["name"]
             kwargs.pop("name")
         else:
-            name = "relaxation{}".format(self.relaxation_counter)
+            name = "relaxation_" + str(self.relaxation_counter)
             self.relaxation_counter += 1
 
         kwargs["relax"] = True

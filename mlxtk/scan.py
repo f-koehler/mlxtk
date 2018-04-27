@@ -8,6 +8,7 @@ import sys
 
 import h5py
 import numpy
+from pathos.multiprocessing import ThreadingPool as Pool
 
 from . import cwd
 from . import log
@@ -16,6 +17,35 @@ from . import tabulate
 from . import date
 from .inout import hdf5
 from .parameters import ParameterTable
+
+
+def fun(f, q_in, q_out):
+    while True:
+        i, x = q_in.get()
+        if i is None:
+            break
+        q_out.put((i, f(x)))
+
+
+def parmap(f, X, nprocs=multiprocessing.cpu_count()):
+    q_in = multiprocessing.Queue(1)
+    q_out = multiprocessing.Queue()
+
+    proc = [
+        multiprocessing.Process(target=fun, args=(f, q_in, q_out))
+        for _ in range(nprocs)
+    ]
+    for p in proc:
+        p.daemon = True
+        p.start()
+
+    sent = [q_in.put((i, x)) for i, x in enumerate(X)]
+    [q_in.put((None, None)) for _ in range(nprocs)]
+    res = [q_out.get() for _ in range(len(sent))]
+
+    [p.join() for p in proc]
+
+    return [x for i, x in sorted(res)]
 
 
 class ParameterScan(object):
@@ -422,14 +452,15 @@ class ParameterScan(object):
 
             name = "sim_" + str(index)
 
-            cmd = " ".join([
-                "tmux", "new-session", "-d", "-s", name, "python",
+            cmd = [
+                "python",
                 os.path.relpath(script_path), "run-index", "--index",
                 str(index)
-            ])
-            subprocess.check_output(cmd)
+            ]
+            subprocess.run(cmd)
 
-        multiprocessing.map(run_simulation, self.simulations)
+        with Pool(args.jobs) as p:
+            p.map(run_simulation, self.simulations)
 
         cwd.go_back()
         log.close_log_file()

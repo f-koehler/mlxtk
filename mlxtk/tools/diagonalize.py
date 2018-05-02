@@ -32,3 +32,15 @@ def store_eigen_vectors(path, eigenvectors):
         eigenvectors: the eigenvectors to save
     """
     numpy.savetxt(path, eigenvectors)
+
+
+def find_degeneracies(energies, tolerance=1e-8):
+    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) + 0.5
+                 ) * tolerance
+    unique = (
+        numpy.unique(numpy.floor(energies / tolerance).astype(numpy.int64)) +
+        0.5) * tolerance
+    degeneracies = []
+    for energy in unique:
+        degeneracies.append(list(numpy.nonzero(converted == energy)[0]))
+    return degeneracies

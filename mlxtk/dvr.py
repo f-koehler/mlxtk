@@ -78,6 +78,10 @@ def add_fft(name, npoints, xmin, xmax):
     REGISTERED_DVRS[name] = [FFT, npoints, xmin, xmax]
 
 
+def exists(name):
+    return name in REGISTERED_DVRS
+
+
 def get(name):
     if name not in DVRS:
         LOGGER.info("constructing dvr \"%s\" (%s)", name,

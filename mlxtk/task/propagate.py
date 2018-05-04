@@ -17,31 +17,33 @@ from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
 
 FLAG_TYPES = {
-    "rst": str,
-    "opr": str,
-    "dt": float,
-    "tfinal": float,
-    "psi": bool,
-    "relax": bool,
-    "improved_relax": bool,
-    "cont": bool,
-    "rstzero": bool,
-    "transMat": bool,
     "MBop_apply": bool,
-    "itg": str,
-    "zvode_mf": int,
     "atol": float,
-    "rtol": float,
-    "reg": float,
+    "cont": bool,
+    "dt": float,
+    "eig_index": int,
     "exproj": bool,
-    "resetnorm": bool,
+    "gauge": str,
     "gramschmidt": bool,
-    "statsteps": int,
+    "improved_relax": bool,
+    "itg": str,
+    "nstep_diag": int,
+    "opr": str,
+    "pruning_method": str,
+    "psi": bool,
+    "reg": float,
+    "relax": bool,
+    "resetnorm": bool,
+    "rst": str,
+    "rstzero": bool,
+    "rtol": float,
     "stat_energy_tol": float,
     "stat_npop_tol": float,
-    "gauge": str,
-    "pruning_method": str,
-    "timing": bool
+    "statsteps": int,
+    "tfinal": float,
+    "timing": bool,
+    "transMat": bool,
+    "zvode_mf": int,
 }
 
 DEFAULT_FLAGS = {
@@ -75,8 +77,13 @@ def create_flags(**kwargs):
             continue
         flags[flag] = kwargs[flag]
 
+    if flags["relax"]:
+        flags["statsteps"] = flags.get("statsteps", 50)
+
     if flags["improved_relax"]:
-        flags["statsteps"] = flags.get("statsteps", 100)
+        flags["statsteps"] = flags.get("statsteps", 40)
+        flags["eig_index"] = 1
+        flags["nstep_diag"] = 50
 
     if flags["itg"] == "zvode":
         flags["zvode_mf"] = flags.get("zvode_mf", 10)

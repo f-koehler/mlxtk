@@ -36,7 +36,7 @@ def add_rharmdvr(name, npoints, xeq, xho, tolerance=1e-15):
     REGISTERED_DVRS[name] = [rHarmdvr, npoints, xeq, xho, tolerance]
 
 
-def add_sindvr(name, npoints, qmin, qmax):
+def add_sinedvr(name, npoints, qmin, qmax):
     if name in REGISTERED_DVRS:
         LOGGER.warn("overwrite existing dvr %s", name)
         remove_dvr(name)

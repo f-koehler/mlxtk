@@ -23,6 +23,7 @@ class Simulation(object):
 
         self.propagation_counter = 0
         self.relaxation_counter = 0
+        self.improved_relaxation_counter = 0
 
     def create_operator(self, name, function, **kwargs):
         self.tasks.append(task.OperatorCreationTask(name, function, **kwargs))
@@ -76,6 +77,20 @@ class Simulation(object):
             self.relaxation_counter += 1
 
         kwargs["relax"] = True
+        self.tasks.append(
+            task.PropagationTask(name, wave_function, operator, **kwargs))
+
+        return self.tasks[-1]
+
+    def relax_improved(self, wave_function, operator, **kwargs):
+        if "name" in kwargs:
+            name = kwargs["name"]
+            kwargs.pop("name")
+        else:
+            name = "improved_relaxation_" + str(self.relaxation_counter)
+            self.relaxation_counter += 1
+
+        kwargs["improved_relax"] = True
         self.tasks.append(
             task.PropagationTask(name, wave_function, operator, **kwargs))
 

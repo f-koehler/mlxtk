@@ -431,7 +431,7 @@ class ParameterScan(object):
             subprocess.run(cmd)
 
         with Pool(args.jobs) as p:
-            p.map(run_simulation, self.simulations)
+            p.map(run_simulation, self.simulations, chunksize=1)
 
         cwd.go_back()
         log.close_log_file()

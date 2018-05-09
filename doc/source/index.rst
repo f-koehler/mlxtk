@@ -73,3 +73,23 @@ qdtk_executable
 .. automodule:: mlxtk.qdtk_executable
     :members:
     :undoc-members:
+
+
+DVR
+===
+
+.. automodule:: mlxtk.dvr
+    :members:
+    :undoc-members:
+
+
+Tools
+=====
+
+.. automodule:: mlxtk.tools.diagonalize
+    :members:
+    :undoc-members:
+
+.. automodule:: mlxtk.tools.wave_function_manipulation
+    :members:
+    :undoc-members:

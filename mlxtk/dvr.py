@@ -18,11 +18,25 @@ LOGGER = log.get_logger(__name__)
 
 
 def remove_dvr(name):
+    """Remove a registered DVR
+
+    Args:
+        name (str): Name of the DVR
+    """
     if name in DVRS:
         del DVRS[name]
 
 
 def add_harmdvr(name, npoints, xeq, xho, tolerance=1e-15):
+    """Register a new harmonic oscillator DVR
+
+    Args:
+        name (str): Name for the DVR object
+        npoints (int): Number of grid points
+        xeq (float): equilibrium position
+        xh0 (float): harmonic oscillator length
+        tolerance (float): ???
+    """
     if name in REGISTERED_DVRS:
         LOGGER.warn("overwrite existing dvr %s", name)
         remove_dvr(name)
@@ -30,6 +44,15 @@ def add_harmdvr(name, npoints, xeq, xho, tolerance=1e-15):
 
 
 def add_rharmdvr(name, npoints, xeq, xho, tolerance=1e-15):
+    """Register a new radial harmonic oscillator DVR
+
+    Args:
+        name (str): Name for the DVR object
+        npoints (int): Number of grid points
+        xeq (float): equilibrium position
+        xh0 (float): harmonic oscillator length
+        tolerance (float): ???
+    """
     if name in REGISTERED_DVRS:
         LOGGER.warn("overwrite existing dvr %s", name)
         remove_dvr(name)
@@ -37,6 +60,14 @@ def add_rharmdvr(name, npoints, xeq, xho, tolerance=1e-15):
 
 
 def add_sinedvr(name, npoints, qmin, qmax):
+    """Register a new sine DVR
+
+    Args:
+        name (str): Name for the DVR object
+        npoints (int): Number of grid points
+        qmin (float): Minimal x value
+        qmax (float): Maximal x value
+    """
     if name in REGISTERED_DVRS:
         LOGGER.warn("overwrite existing dvr %s", name)
         remove_dvr(name)
@@ -44,6 +75,14 @@ def add_sinedvr(name, npoints, qmin, qmax):
 
 
 def add_expdvr(name, npoints, qmin, qmax):
+    """Register a new exponential DVR
+
+    Args:
+        name (str): Name for the DVR object
+        npoints (int): Number of grid points
+        qmin (float): Minimal x value
+        qmax (float): Maximal x value
+    """
     if name in REGISTERED_DVRS:
         LOGGER.warn("overwrite existing dvr %s", name)
         remove_dvr(name)
@@ -83,6 +122,14 @@ def exists(name):
 
 
 def get(name):
+    """Return the DVR registered under the given name
+
+    Args:
+        name (str): Name of the DVR
+
+    Returns:
+        The DVR object with the given name
+    """
     if name not in DVRS:
         LOGGER.info("constructing dvr \"%s\" (%s)", name,
                     REGISTERED_DVRS[name][0].__name__)
@@ -95,6 +142,14 @@ def get(name):
 
 
 def is_fft(name):
+    """Check wether a DVR is of FFT type
+
+    Args:
+        name (str): Name of the DVR
+
+    Returns:
+        bool: `True` if the DVR is of FFT type, `False` otherwise
+    """
     if name not in REGISTERED_DVRS:
         raise RuntimeError("No DVR with name \"" + name + "\" present")
 

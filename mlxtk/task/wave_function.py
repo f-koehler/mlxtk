@@ -1,5 +1,6 @@
-import os
 import numpy
+import os
+import shutil
 
 from mlxtk.stringio import StringIO
 from mlxtk.task import task
@@ -62,3 +63,23 @@ class WaveFunctionCreationTask(task.Task):
         path = self.wave_function_name + ".wfn"
         with open(path, "w") as fhandle:
             wave_function.createWfnFile(fhandle)
+
+
+class WaveFunctionCopyTask(task.Task):
+    def __init__(self, name, source, **kwargs):
+        self.wave_function_name = name
+        self.source = source
+
+        kwargs["task_type"] = "WaveFunctionCopyTask"
+
+        task.Task.__init__(
+            self,
+            "copy_wave_function_file_" + name,
+            self.copy_wave_function_file,
+            inputs=[task.FileInput("source_file", source)],
+            outputs=[task.FileOutput(name, name + ".wfn")],
+            **kwargs)
+
+    def copy_wave_function_file(self):
+        path = self.wave_function_name + ".wfn"
+        shutil.copy2(self.source, path)

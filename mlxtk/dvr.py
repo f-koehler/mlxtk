@@ -117,3 +117,33 @@ def get_d2(name):
         return get(name).d2fft
     else:
         return get(name).d2dvr
+
+
+def fftw_grid_sizes(n_max):
+    sizes = []
+
+    for i in range(2, n_max):
+        n = i
+
+        while True:
+            if n % 5 == 0:
+                n = n // 5
+            else:
+                break
+
+        while True:
+            if n % 3 == 0:
+                n = n // 3
+            else:
+                break
+
+        while True:
+            if n % 2 == 0:
+                n = n // 2
+            else:
+                break
+
+        if n == 1:
+            sizes.append(i)
+
+    return sizes

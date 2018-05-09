@@ -1,9 +1,11 @@
+import copy
 import json
 import os
 import pickle
 import shutil
 import subprocess
 import sys
+import time
 
 import h5py
 
@@ -47,30 +49,30 @@ FLAG_TYPES = {
 }
 
 DEFAULT_FLAGS = {
-    "rst": "initial.wfn",
-    "opr": "hamiltonian.opr",
-    "dt": 0.1,
-    "tfinal": 1.,
-    "psi": False,
-    "relax": False,
-    "improved_relax": False,
-    "cont": False,
-    "rstzero": False,
-    "transMat": False,
     "MBop_apply": False,
-    "itg": "dp5",
     "atol": 1e-12,
-    "rtol": 1e-12,
-    "reg": 1e-8,
+    "cont": False,
+    "dt": 0.1,
     "exproj": True,
-    "resetnorm": False,
     "gramschmidt": False,
-    "timing": True
+    "improved_relax": False,
+    "itg": "dp5",
+    "opr": "hamiltonian.opr",
+    "psi": False,
+    "reg": 1e-8,
+    "relax": False,
+    "resetnorm": False,
+    "rst": "initial.wfn",
+    "rstzero": True,
+    "rtol": 1e-12,
+    "tfinal": 1.,
+    "timing": True,
+    "transMat": False,
 }
 
 
 def create_flags(**kwargs):
-    flags = DEFAULT_FLAGS
+    flags = copy.copy(DEFAULT_FLAGS)
 
     for flag in FLAG_TYPES:
         if flag not in kwargs:

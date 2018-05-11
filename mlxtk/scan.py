@@ -423,12 +423,14 @@ class ParameterScan(object):
 
             name = "sim_" + str(index)
 
+            env = os.environ.copy()
+            env["OMP_NUM_THREADS"] = "1"
             cmd = [
                 "python",
                 os.path.relpath(script_path), "run-index", "--index",
                 str(index)
             ]
-            subprocess.run(cmd)
+            subprocess.run(cmd, env=env)
 
         with Pool(args.jobs) as p:
             p.map(run_simulation, self.simulations, chunksize=1)

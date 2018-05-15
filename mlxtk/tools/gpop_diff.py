@@ -48,9 +48,9 @@ def compute_absolute_gpop_diff(time1, time2, grid1, grid2, gpop1, gpop2):
         den2 = numpy.transpose(gpop2)
 
         interp1 = scipy.interpolate.interp2d(
-            time1, grid1, den1, kind="quintic", copy=False, bounds_error=True)
+            time1, grid1, den1, kind=5, copy=False, bounds_error=True)
         interp2 = scipy.interpolate.interp2d(
-            time2, grid2, den2, kind="quintic", copy=False, bounds_error=True)
+            time2, grid2, den2, kind=5, copy=False, bounds_error=True)
 
         t_min = max(time1.min(), time2.min())
         t_max = min(time1.max(), time2.max())
@@ -125,14 +125,14 @@ def compute_relative_gpop_diff(time1,
             time1,
             grid1,
             numpy.transpose(gpop1),
-            kind="quintic",
+            kind=5,
             copy=False,
             bounds_error=True)(t, x)
         den2 = scipy.interpolate.interp2d(
             time2,
             grid2,
             numpy.transpose(gpop2),
-            kind="quintic",
+            kind=5,
             copy=False,
             bounds_error=True)(t, x)
 
@@ -143,5 +143,5 @@ def compute_relative_gpop_diff(time1,
     else:
         mask = numpy.logical_or(gpop1 > threshold, gpop2 > threshold)
         values = numpy.zeros_like(gpop1)
-        values[mask] = 1. - gpop1[mask] / gpop2[mask]
+        values[mask] = 1. - gpop2[mask] / gpop1[mask]
         return time1.copy(), grid1.copy(), values

@@ -35,6 +35,7 @@ setup(
             "plot_gpop_diff=mlxtk.scripts.plot_gpop_diff:main",
             "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",
             "plot_natpop=mlxtk.scripts.plot_natpop:main",
+            "plot_natpop_diff=mlxtk.scripts.plot_natpop_diff:main",
             "plot_norm=mlxtk.scripts.plot_norm:main",
             "plot_norm_diff=mlxtk.scripts.plot_norm_diff:main",
             "plot_overlap=mlxtk.scripts.plot_overlap:main",

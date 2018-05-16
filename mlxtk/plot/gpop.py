@@ -17,7 +17,7 @@ def plot_gpop(plot, path, dof):
     cbar.ax.set_ylabel(r"$\rho_1(x)$")
 
 
-def plot_gpop_diff(plot, path1, path2, dof, relative=False):
+def plot_gpop_diff(plot, path1, path2, dof, relative=False, threshold=1e-5):
     """
     .. todo:: allow vmin != -vmax but still keep the white color for a value of 0
     """
@@ -32,7 +32,13 @@ def plot_gpop_diff(plot, path1, path2, dof, relative=False):
     if relative:
         label = r"$1-\frac{\rho_1^{(2)}(x,t)}{\rho_1^{(1)}(x,t)}$"
         t, x, values = compute_relative_gpop_diff(
-            times1, times2, grid1, grid2, densities1[dof], densities2[dof])
+            times1,
+            times2,
+            grid1,
+            grid2,
+            densities1[dof],
+            densities2[dof],
+            threshold=threshold)
     else:
         label = r"$\rho_1^{(1)}(x,t)-\rho_1^{(2)}(x,t)$"
         t, x, values = compute_absolute_gpop_diff(

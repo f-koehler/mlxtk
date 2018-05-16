@@ -5,30 +5,28 @@ from mlxtk import mpl
 import mlxtk.plot.argparser
 from mlxtk.plot.plot_program import SimplePlotProgram
 
-from ..plot.natpop import plot_natpop
+from ..plot.natpop import plot_natpop_diff
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Plot evolution of natural populations in time")
+        description="Plot evolution of natural population differences in time")
     mlxtk.plot.argparser.add_plotting_arguments(parser)
-    parser.add_argument(
-        "--in",
-        type=str,
-        dest="input_file",
-        default="natpop",
-        help="input_file (defaults to \"natpop\")")
+    parser.add_argument("input_file1", type=str)
+    parser.add_argument("input_file2", type=str)
     parser.add_argument(
         "--dof",
         type=int,
         default=1,
         help="degree of freedom for which to plot the natural populations")
+    parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
 
     def init_plot(plot):
-        plot_natpop(plot, args.input_file)
+        plot_natpop_diff(plot, args.input_file1, args.input_file2,
+                         args.relative)
 
-    program = SimplePlotProgram("Natural Populations", init_plot)
+    program = SimplePlotProgram("Natural Population Differences", init_plot)
     program.main(args)
 
 

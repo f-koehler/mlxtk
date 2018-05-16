@@ -86,4 +86,4 @@ def compute_relative_signal_diff_1d(t1, t2, sig1, sig2, threshold=1e-5):
         mask = numpy.logical_or(sig1 > threshold, sig2 > threshold)
         values = numpy.zeros_like(sig1)
         values[mask] = 1. - sig2[mask] / sig1[mask]
-        return t1.copy(), mask
+        return t1.copy(), values

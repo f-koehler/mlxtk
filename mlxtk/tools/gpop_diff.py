@@ -73,7 +73,7 @@ def compute_relative_gpop_diff(time1,
                                grid2,
                                gpop1,
                                gpop2,
-                               threshold=1e-5):
+                               threshold=1e-3):
     """Compute the relative difference between one-body densities :math:`1-\\frac{\\rho_2(x,t)}{\\rho_1(x,t)}`
 
     Only points where :math:`\\rho_1(x,t)` or :math:`\\rho_2(x,t)` excels the threshold are taken into account to avoid divergences.
@@ -143,5 +143,7 @@ def compute_relative_gpop_diff(time1,
     else:
         mask = numpy.logical_or(gpop1 > threshold, gpop2 > threshold)
         values = numpy.zeros_like(gpop1)
-        values[mask] = 1. - gpop2[mask] / gpop1[mask]
+        # values[mask] = 1. - gpop2[mask] / gpop1[mask]
+        values[mask] = (gpop1[mask] - gpop2[mask]) / (
+            numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask]))
         return time1.copy(), grid1.copy(), values

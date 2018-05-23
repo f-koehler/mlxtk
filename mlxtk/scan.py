@@ -285,7 +285,7 @@ class ParameterScan(object):
             if "moves" in changes:
                 fhandle.write("simulations that would be moved:\n")
                 for moved in changes["moves"]:
-                    fhandle.write("\t" + moved[0] + " -> " + moved[1] + "\n")
+                    fhandle.write("\t{} -> {}\n".format(moved[0], moved[1]))
                 fhandle.write("\n\n")
                 fhandle.flush()
 

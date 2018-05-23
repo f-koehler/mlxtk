@@ -61,6 +61,11 @@ class ParameterScan(object):
         """
         self.table.set_values(name, values)
 
+
+    def add_parameter_filter(self, filt):
+        self.table.filters.append(filt)
+        self.table.recalculate()
+
     def check_parameters(self):
         self.logger.info("check stored parameter table if present")
 

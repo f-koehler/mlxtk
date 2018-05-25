@@ -32,6 +32,7 @@ FLAG_TYPES = {
     "nstep_diag": int,
     "opr": str,
     "pruning_method": str,
+    "pruning_threshold": float,
     "psi": bool,
     "reg": float,
     "relax": bool,

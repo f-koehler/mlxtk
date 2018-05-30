@@ -105,6 +105,17 @@ class ParameterTable(object):
         self.values[self.names.index(name)] = [value for value in values]
         self.recalculate()
 
+    def get_values(self, name):
+        return self.values[self.names.index(name)]
+
+    def filter_indices(self, parameters):
+        filtered = self.table
+        for parameter in parameters:
+            idx = self.names.index(parameter)
+            val = parameters[parameter]
+            filtered = filter(lambda e: (e[idx] == val), filtered)
+        return [self.get_index(entry) for entry in filtered]
+
     def create_parameters(self, row):
         parameters = Parameters()
         for name, value in zip(self.names, row):

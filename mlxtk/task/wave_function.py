@@ -38,6 +38,10 @@ class WaveFunctionCreationTask(task.Task):
         if os.path.exists(path):
             stored_wave_function = load_wave_function(path)
 
+            if len(wave_function._psi) != len(stored_wave_function._psi):
+                wave_function.createWfnFile(sio)
+                return sio.getvalue()
+
             max_diff = numpy.max(
                 numpy.abs(wave_function._psi) -
                 numpy.abs(stored_wave_function._psi))

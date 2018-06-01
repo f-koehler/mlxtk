@@ -295,5 +295,12 @@ class ParameterTable(object):
                 table[key].append(None)
         return tabulate.tabulate(table, tablefmt=fmt, headers="keys")
 
-    def __getitem__(self, name):
-        return self.values[self.names.index(name)]
+    def __getitem__(self, e):
+        if isinstance(e, str):
+            return self.get_values(e)
+        elif isinstance(e, tuple):
+            return self.get_index(e)
+        else:
+            raise NotImplementedError(
+                "ParameterTable.__getitem__ not implemented for type %s",
+                str(type(e)))

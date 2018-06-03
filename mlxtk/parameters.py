@@ -1,3 +1,4 @@
+import copy
 import functools
 import itertools
 import json
@@ -109,11 +110,11 @@ class ParameterTable(object):
         return self.values[self.names.index(name)]
 
     def filter_indices(self, parameters):
-        filtered = self.table
+        filtered = copy.copy(self.table)
         for parameter in parameters:
             idx = self.names.index(parameter)
             val = parameters[parameter]
-            filtered = filter(lambda e: (e[idx] == val), filtered)
+            filtered = list(filter(lambda e: (e[idx] == val), filtered))
         return [self.get_index(entry) for entry in filtered]
 
     def create_parameters(self, row):
@@ -124,6 +125,12 @@ class ParameterTable(object):
 
     def get_index(self, row):
         return self.table.index(row)
+
+    def create_row_dict(self, row):
+        result = {}
+        for name, value in zip(self.names, row):
+            result[name] = value
+        return result
 
     def recalculate(self):
         """Recalculate all value combinations
@@ -300,6 +307,8 @@ class ParameterTable(object):
             return self.get_values(e)
         elif isinstance(e, tuple):
             return self.get_index(e)
+        elif isinstance(e, int):
+            return self.table[e]
         else:
             raise NotImplementedError(
                 "ParameterTable.__getitem__ not implemented for type %s",

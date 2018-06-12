@@ -43,10 +43,10 @@ def compute_relative_natpop_diff(data1, data2, threshold=1e-2):
         natpop1 = data1[name].values / 1000.
         natpop2 = data2[name].values / 1000.
 
-        # if numpy.max(numpy.abs(natpop1)) < 1e-2 and numpy.max(
-        #         numpy.abs(natpop2)) < 1e-2:
-        #     diffs.append([])
-        #     continue
+        if numpy.max(numpy.abs(natpop1)) < 1e-2 and numpy.max(
+                numpy.abs(natpop2)) < 1e-2:
+            diffs.append([])
+            continue
 
         time, diff = compute_relative_signal_diff_1d(time1, time2, natpop1,
                                                      natpop2, threshold)

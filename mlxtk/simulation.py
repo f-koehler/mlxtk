@@ -236,7 +236,8 @@ class Simulation(object):
                 except IncompleteHDF5 as e:
                     self.logger.error(
                         "dataset is incomplete, adding data of task \"%s\" failed with exception:",
-                        tsk.name)
+                        tsk.name,
+                    )
                     self.logger.error(str(e))
                     break
 

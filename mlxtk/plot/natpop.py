@@ -1,5 +1,8 @@
 from ..inout.natpop import read_natpop
-from ..tools.natpop_diff import compute_absolute_natpop_diff, compute_relative_natpop_diff
+from ..tools.natpop_diff import (
+    compute_absolute_natpop_diff,
+    compute_relative_natpop_diff,
+)
 
 
 def plot_natpop(plot, path):

@@ -16,7 +16,8 @@ def main():
         type=str,
         dest="input_file",
         default="output",
-        help="input_file (defaults to \"output\")")
+        help="input_file (defaults to \"output\")",
+    )
     args = parser.parse_args()
 
     def init_plot(plot):

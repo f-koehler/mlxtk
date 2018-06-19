@@ -61,7 +61,6 @@ class ParameterScan(object):
         """
         self.table.set_values(name, values)
 
-
     def add_parameter_filter(self, filt):
         self.table.filters.append(filt)
         self.table.recalculate()
@@ -101,8 +100,10 @@ class ParameterScan(object):
                 shelve(i)
             return
 
-        self.logger.info("%d simulations are not present in the scan anymore",
-                         len(difference["missing_rows"]))
+        self.logger.info(
+            "%d simulations are not present in the scan anymore",
+            len(difference["missing_rows"]),
+        )
         self.logger.info("%d simulations have to be moved",
                          len(difference["moved_rows"]))
 
@@ -372,8 +373,10 @@ class ParameterScan(object):
 
             cmd = " ".join([
                 "python",
-                os.path.relpath(script_path), "run-index", "--index",
-                str(index)
+                os.path.relpath(script_path),
+                "run-index",
+                "--index",
+                str(index),
             ])
             job_file = os.path.join("job", "{}.sh".format(simulation.name))
             sge.write_job_file(job_file, simulation.name, cmd, args)
@@ -432,8 +435,10 @@ class ParameterScan(object):
             env["OMP_NUM_THREADS"] = "1"
             cmd = [
                 "python",
-                os.path.relpath(script_path), "run-index", "--index",
-                str(index)
+                os.path.relpath(script_path),
+                "run-index",
+                "--index",
+                str(index),
             ]
             subprocess.run(cmd, env=env)
 
@@ -503,8 +508,10 @@ class ParameterScan(object):
     def print_summary(self):
         timestamp = date.get_timestamp_filename()
         print("\n".join([
-            "#+TITLE: Parameter Scan Summary", "#+CREATOR: mlxtk",
-            "#+DATE: " + timestamp, ""
+            "#+TITLE: Parameter Scan Summary",
+            "#+CREATOR: mlxtk",
+            "#+DATE: " + timestamp,
+            "",
         ]))
         print("\n\n* Constants\n")
         self.print_constants()
@@ -539,7 +546,8 @@ class ParameterScan(object):
         parser_run_index.add_argument(
             "--index",
             type=int,
-            help="index of the simulation to run when using \"run-index\"")
+            help="index of the simulation to run when using \"run-index\"",
+        )
 
         parser_run_task.add_argument("task", type=str, help="")
 

@@ -18,7 +18,7 @@ def add_parser_arguments(parser):
         "--queue",
         default="none",
         help=
-        "queue of the SGE batch system, \"none\" if you do not want to specify a queue"
+        "queue of the SGE batch system, \"none\" if you do not want to specify a queue",
     )
     parser.add_argument(
         "--memory",
@@ -34,7 +34,8 @@ def add_parser_arguments(parser):
         "--email",
         default="none",
         help=
-        "email address to notify about finished, aborted and suspended jobs")
+        "email address to notify about finished, aborted and suspended jobs",
+    )
 
 
 def submit_job(jobfile):
@@ -100,9 +101,15 @@ def write_job_file(path, name, cmd, args):
     if args.email.upper() != "NONE":
         script.append("#$ -M {email} -m aes")
     script += [
-        "#$ -S /bin/bash", "#$ -cwd", "#$ -j y",
-        "#$ -V", "#$ -l h_vmem={memory}", "#$ -l h_cpu={time}",
-        "#$ -pe smp {cpus}", "export OMP_NUM_THREADS={cpus}", "{cmd}\n"
+        "#$ -S /bin/bash",
+        "#$ -cwd",
+        "#$ -j y",
+        "#$ -V",
+        "#$ -l h_vmem={memory}",
+        "#$ -l h_cpu={time}",
+        "#$ -pe smp {cpus}",
+        "export OMP_NUM_THREADS={cpus}",
+        "{cmd}\n",
     ]
 
     script = "\n".join(script).format(
@@ -112,7 +119,8 @@ def write_job_file(path, name, cmd, args):
         time=args.time,
         cpus=args.cpus,
         cmd=cmd,
-        email=args.email)
+        email=args.email,
+    )
 
     logger.info("write job script \"%s\"", path)
     with open(path, "w") as fhandle:
@@ -129,8 +137,8 @@ def write_stop_script(path, jobids):
         jobids (list): List of job ids to abort
     """
     script = ["#!/bin/bash", "qdel {jobids}"]
-    script = "\n".join(script).format(jobids=" ".join(
-        [str(jobid) for jobid in jobids]))
+    script = "\n".join(script).format(
+        jobids=" ".join([str(jobid) for jobid in jobids]))
 
     logger.info("write stop script \"%s\"", path)
     with open(path, "w") as fhandle:

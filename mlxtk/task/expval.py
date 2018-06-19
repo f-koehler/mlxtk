@@ -36,9 +36,10 @@ class ExpectationValueTask(task.Task):
                                       os.path.join(
                                           propagation.propagation_name, "psi"))
 
-        out_expval = task.FileOutput("expval_" + operator,
-                                     os.path.join(propagation.propagation_name,
-                                                  operator + ".expval"))
+        out_expval = task.FileOutput(
+            "expval_" + operator,
+            os.path.join(propagation.propagation_name, operator + ".expval"),
+        )
 
         task.Task.__init__(
             self,
@@ -56,15 +57,24 @@ class ExpectationValueTask(task.Task):
         self.logger.info("use propagation executable: " + program_path)
 
         return [
-            program_path, "-psi", "psi", "-rst", "restart", "-opr",
-            self.operator + ".opr", "-save", self.operator + ".expval"
+            program_path,
+            "-psi",
+            "psi",
+            "-rst",
+            "restart",
+            "-opr",
+            self.operator + ".opr",
+            "-save",
+            self.operator + ".expval",
         ]
 
     def compute_expectation_value(self):
         self.logger.info("copy operator")
-        shutil.copy2(self.operator + ".opr",
-                     os.path.join(self.propagation.propagation_name,
-                                  self.operator + ".opr"))
+        shutil.copy2(
+            self.operator + ".opr",
+            os.path.join(self.propagation.propagation_name,
+                         self.operator + ".opr"),
+        )
 
         self.logger.info("run qdtk_expect.x")
         command = self.get_command()
@@ -78,7 +88,8 @@ class ExpectationValueTask(task.Task):
             self.logger.warn,
             cwd=working_dir,
             stdout=sys.stdout,
-            stderr=sys.stderr)
+            stderr=sys.stderr,
+        )
 
     def create_hdf5(self, group=None):
         if self.is_running():

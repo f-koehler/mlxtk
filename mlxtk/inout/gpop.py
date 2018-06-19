@@ -146,9 +146,11 @@ def add_gpop_to_hdf5(group, gpop_path):
     for dof in grids:
         logger.info("add grid %d", dof)
         dset_grid = group_grids.create_dataset(
-            "grid" + str(dof), (len(grids[dof]), ),
+            "grid" + str(dof),
+            (len(grids[dof]), ),
             dtype=numpy.float64,
-            compression="gzip")
+            compression="gzip",
+        )
         dset_grid[:] = grids[dof]
 
         logger.info("add density %d", dof)
@@ -156,7 +158,8 @@ def add_gpop_to_hdf5(group, gpop_path):
             "density" + str(dof),
             densities[dof].shape,
             dtype=numpy.float64,
-            compression="gzip")
+            compression="gzip",
+        )
         dset_density[:] = densities[dof]
 
     if opened_file:

@@ -17,12 +17,14 @@ def main():
         type=str,
         dest="input_file",
         default="natpop",
-        help="input_file (defaults to \"natpop\")")
+        help="input_file (defaults to \"natpop\")",
+    )
     parser.add_argument(
         "--dof",
         type=int,
         default=1,
-        help="degree of freedom for which to plot the natural populations")
+        help="degree of freedom for which to plot the natural populations",
+    )
     args = parser.parse_args()
 
     def init_plot(plot):

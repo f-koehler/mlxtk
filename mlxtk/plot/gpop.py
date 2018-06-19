@@ -38,7 +38,8 @@ def plot_gpop_diff(plot, path1, path2, dof, relative=False, threshold=1e-5):
             grid2,
             densities1[dof],
             densities2[dof],
-            threshold=threshold)
+            threshold=threshold,
+        )
     else:
         label = r"$\rho_1^{(1)}(x,t)-\rho_1^{(2)}(x,t)$"
         t, x, values = compute_absolute_gpop_diff(

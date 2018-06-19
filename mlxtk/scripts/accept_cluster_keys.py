@@ -26,8 +26,13 @@ def main():
         for node in nodes:
             print("node:", node)
             cmd = [
-                "sshpass", "-p", password, "ssh", "-oStrictHostKeyChecking=no",
-                node, "uptime"
+                "sshpass",
+                "-p",
+                password,
+                "ssh",
+                "-oStrictHostKeyChecking=no",
+                node,
+                "uptime",
             ]
             try:
                 subprocess.check_output(cmd)

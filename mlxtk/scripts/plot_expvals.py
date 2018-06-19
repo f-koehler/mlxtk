@@ -59,7 +59,8 @@ def plot_expval(path, plot, real=True, imaginary=False):
             data.time,
             data.real,
             color="C0",
-            label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
+            label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$",
+        )
         plot.axes.set_ylabel(r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
 
     if imaginary:
@@ -68,7 +69,8 @@ def plot_expval(path, plot, real=True, imaginary=False):
             data.time,
             data.imaginary,
             color="C1",
-            label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
+            label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$",
+        )
         ax.set_ylabel(r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
 
     plot.axes.set_xlabel("$t$")
@@ -111,9 +113,12 @@ class ExpvalTab(QtWidgets.QWidget):
             self.layout.addWidget(self.toolbar)
             self.layout.addWidget(self.widget_controls)
             self.layout.addWidget(self.plot)
-            plot_expval(self.path, self.plot,
-                        self.check_real.isChecked(),
-                        self.check_imaginary.isChecked())
+            plot_expval(
+                self.path,
+                self.plot,
+                self.check_real.isChecked(),
+                self.check_imaginary.isChecked(),
+            )
 
         self.check_real.stateChanged.connect(replot)
         self.check_imaginary.stateChanged.connect(replot)

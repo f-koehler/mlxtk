@@ -28,7 +28,8 @@ def main():
                 data.time,
                 data.real,
                 color="C0",
-                label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
+                label=r"$\mathrm{Re}\left[\left<O\right>\right](t)$",
+            )
             plot.axes.set_ylabel(
                 r"$\mathrm{Re}\left[\left<O\right>\right](t)$")
 
@@ -38,7 +39,8 @@ def main():
                 data.time,
                 data.imaginary,
                 color="C1",
-                label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
+                label=r"$\mathrm{Im}\left[\left<O\right>\right](t)$",
+            )
             ax.set_ylabel(r"$\mathrm{Im}\left[\left<O\right>\right](t)$")
 
         plot.axes.set_xlabel("$t$")

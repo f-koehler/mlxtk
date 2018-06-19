@@ -18,7 +18,8 @@ def main():
         "--dof",
         type=int,
         default=1,
-        help="degree of freedom for which to plot the natural populations")
+        help="degree of freedom for which to plot the natural populations",
+    )
     parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
 

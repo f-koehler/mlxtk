@@ -80,13 +80,13 @@ def read_natpop_ascii(path):
 
             # prepend time stamps to data
             for i, time in enumerate(timestamps):
-                node_content[node][orbitals][
-                    i] = str(time) + " " + node_content[node][orbitals][i]
+                node_content[node][orbitals][i] = (
+                    str(time) + " " + node_content[node][orbitals][i])
 
             # construct header for DataFrame
-            header = "time " + " ".join([
+            header = ("time " + " ".join([
                 "orbital" + str(orbital) for orbital in range(0, num_orbitals)
-            ]) + "\n"
+            ]) + "\n")
 
             # create DataFrame
             sio = StringIO(header + "\n".join(node_content[node][orbitals]))
@@ -155,7 +155,8 @@ def add_natpop_to_hdf5(group, natpop_path):
                 "layer" + str(layer),
                 current_data.shape,
                 dtype=numpy.float64,
-                compression="gzip")
+                compression="gzip",
+            )
             dataset_layer[:, :] = current_data.values[:, :]
 
     if opened_file:

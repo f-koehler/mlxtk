@@ -42,7 +42,7 @@ def read_output_hdf5(parsed_path):
                 "time": fhandle[os.path.join(path_inside, "time")][:],
                 "norm": fhandle[os.path.join(path_inside, "norm")][:],
                 "energy": fhandle[os.path.join(path_inside, "energy")][:],
-                "overlap": fhandle[os.path.join(path_inside, "overlap")][:]
+                "overlap": fhandle[os.path.join(path_inside, "overlap")][:],
             })
 
     return data

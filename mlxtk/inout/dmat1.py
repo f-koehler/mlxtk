@@ -7,7 +7,8 @@ def read_raw(path):
         path,
         delimiter=r"\s+",
         header=None,
-        names=["time", "x", "y", "real", "imaginary"])
+        names=["time", "x", "y", "real", "imaginary"],
+    )
 
     # get a list of all time points
     times = data.time.unique().tolist()

@@ -34,8 +34,8 @@ class OperatorCreationTask(task.Task):
         elif isinstance(operator, Operatorb):
             operator.createOperatorFileb(sio)
         else:
-            raise TypeError(
-                "Unknown operator type \"{}\"".format(type(operator).__name__))
+            raise TypeError("Unknown operator type \"{}\"".format(
+                type(operator).__name__))
 
         return sio.getvalue()
 

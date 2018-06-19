@@ -164,8 +164,10 @@ class PropagationTask(task.Task):
 
     def run_propagation(self):
         self.logger.info("copy initial wave function")
-        shutil.copy2(self.initial_wave_function,
-                     os.path.join(self.propagation_name, "initial.wfn"))
+        shutil.copy2(
+            self.initial_wave_function,
+            os.path.join(self.propagation_name, "initial.wfn"),
+        )
 
         self.logger.info("copy operator")
         shutil.copy2(self.operator,
@@ -183,7 +185,8 @@ class PropagationTask(task.Task):
             self.logger.warn,
             cwd=working_dir,
             stdout=sys.stdout,
-            stderr=sys.stderr)
+            stderr=sys.stderr,
+        )
 
         self.logger.info("create symlink to final wave function")
         src = os.path.join(self.propagation_name, "restart")

@@ -27,9 +27,10 @@ class TDBasisProjectionTask(Task):
                                  os.path.join(propagation.propagation_name,
                                               "psi"))
         inp_basis = FileInput("basis", self.basis)
-        out_projection = FileOutput(self.output_name,
-                                    os.path.join(propagation.propagation_name,
-                                                 self.output_name))
+        out_projection = FileOutput(
+            self.output_name,
+            os.path.join(propagation.propagation_name, self.output_name),
+        )
 
         Task.__init__(
             self,
@@ -49,16 +50,24 @@ class TDBasisProjectionTask(Task):
         self.logger.info("use analysis executable: " + program_path)
 
         return [
-            program_path, "-fixed_ns", "-psi", "psi", "-rst_ket",
-            self.initial_wave_function, "-rst_bra",
-            self.basis + ".wave_function", "-save", self.output_name
+            program_path,
+            "-fixed_ns",
+            "-psi",
+            "psi",
+            "-rst_ket",
+            self.initial_wave_function,
+            "-rst_bra",
+            self.basis + ".wave_function",
+            "-save",
+            self.output_name,
         ]
 
     def compute_projection(self):
         working_dir = self.propagation.propagation_name
-        with TemporaryCopy(self.basis + ".wave_function",
-                           os.path.join(working_dir,
-                                        self.basis + ".wave_function")):
+        with TemporaryCopy(
+                self.basis + ".wave_function",
+                os.path.join(working_dir, self.basis + ".wave_function"),
+        ):
             self.logger.info("run qdtk_analysis.x")
             command = self.get_command()
             self.logger.debug("command: %s", " ".join(command))
@@ -70,7 +79,8 @@ class TDBasisProjectionTask(Task):
                 self.logger.warn,
                 cwd=working_dir,
                 stdout=sys.stdout,
-                stderr=sys.stderr)
+                stderr=sys.stderr,
+            )
 
 
 class BasisProjectionTask(Task):
@@ -80,8 +90,8 @@ class BasisProjectionTask(Task):
         self.directory = os.path.dirname(wave_function)
         self.wave_function = os.path.basename(wave_function) + ".wave_function"
         self.basis = basis
-        self.output_name = "projection_" + os.path.splitext(
-            self.wave_function)[0] + "_onto_" + basis
+        self.output_name = ("projection_" + os.path.splitext(
+            self.wave_function)[0] + "_onto_" + basis)
 
         inp_wave_function = FileInput("wave_function", self.wave_function)
         inp_basis = FileInput("basis", self.basis)
@@ -103,15 +113,21 @@ class BasisProjectionTask(Task):
         self.logger.info("use analysis executable: " + program_path)
 
         return [
-            program_path, "-fixed_ns", "-rst_ket", self.wave_function,
-            "-rst_bra", self.basis + ".wave_function", "-save",
-            self.output_name
+            program_path,
+            "-fixed_ns",
+            "-rst_ket",
+            self.wave_function,
+            "-rst_bra",
+            self.basis + ".wave_function",
+            "-save",
+            self.output_name,
         ]
 
     def compute_projection(self):
-        with TemporaryCopy(self.basis + ".wave_function",
-                           os.path.join(self.directory,
-                                        self.basis + ".wave_function")):
+        with TemporaryCopy(
+                self.basis + ".wave_function",
+                os.path.join(self.directory, self.basis + ".wave_function"),
+        ):
             self.logger.info("run qdtk_analysis.x")
             command = self.get_command()
             self.logger.debug("command: %s", " ".join(command))
@@ -123,7 +139,8 @@ class BasisProjectionTask(Task):
                 self.logger.warn,
                 cwd=self.directory,
                 stdout=sys.stdout,
-                stderr=sys.stderr)
+                stderr=sys.stderr,
+            )
 
     def create_hdf5(self, group=None):
         if self.is_running():

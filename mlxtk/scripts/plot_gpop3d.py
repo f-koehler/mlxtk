@@ -16,12 +16,14 @@ def main():
         type=str,
         dest="input_file",
         default="gpop",
-        help="input_file (defaults to \"gpop\")")
+        help="input_file (defaults to \"gpop\")",
+    )
     parser.add_argument(
         "--dof",
         type=int,
         default=1,
-        help="degree of freedom for which to plot the density")
+        help="degree of freedom for which to plot the density",
+    )
     args = parser.parse_args()
 
     def init_plot(plot):
@@ -61,7 +63,8 @@ def main():
             rstride=1,
             cstride=1,
             linewidth=0,
-            antialiased=False)
+            antialiased=False,
+        )
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel("$x$")
         plot.axes.set_zlabel("density")

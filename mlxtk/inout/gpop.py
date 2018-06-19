@@ -57,8 +57,8 @@ def read_gpop_ascii(path):
 
             if dof not in dofs:
                 dofs.append(dof)
-                grids[dof] = data["grid"].as_matrix()
-                densities[dof] = [data["density"].as_matrix()]
+                grids[dof] = data["grid"].values
+                densities[dof] = [data["density"].values]
             else:
                 densities[dof].append(data["density"])
 

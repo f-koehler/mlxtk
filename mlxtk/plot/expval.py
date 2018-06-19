@@ -55,8 +55,8 @@ def plot_expval_diff(plot,
     t_max = min(max(data1.time), max(data2.time))
     n_t = max(len(data1.time), len(data2.time))
 
-    interpolate = numpy.array_equal(data1.time.as_matrix(),
-                                    data2.time.as_matrix())
+    interpolate = numpy.array_equal(data1.time.values,
+                                    data2.time.values)
 
     lines = []
     if not interpolate:

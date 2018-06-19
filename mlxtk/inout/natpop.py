@@ -156,7 +156,7 @@ def add_natpop_to_hdf5(group, natpop_path):
                 current_data.shape,
                 dtype=numpy.float64,
                 compression="gzip")
-            dataset_layer[:, :] = current_data.as_matrix()[:, :]
+            dataset_layer[:, :] = current_data.values[:, :]
 
     if opened_file:
         logger.info("close hdf5 file")

@@ -4,7 +4,7 @@ import pandas
 
 def read_norbs_ascii(path):
     data = pandas.read_csv(
-        path, header=None, delim_whitespace=True).as_matrix().transpose()
+        path, header=None, delim_whitespace=True).values.transpose()
     grid = numpy.unique(data[1])
     times = numpy.unique(data[0])
     m = (data.shape[0] - 2) // 2

@@ -8,13 +8,13 @@ import sys
 
 import h5py
 import numpy
-from pathos.multiprocessing import ThreadingPool as Pool
 
 from . import cwd
+from . import date
 from . import log
 from . import sge
 from . import tabulate
-from . import date
+from . import util
 from .inout import hdf5
 from .parameters import ParameterTable
 
@@ -442,8 +442,7 @@ class ParameterScan(object):
             ]
             subprocess.run(cmd, env=env)
 
-        with Pool(args.jobs) as p:
-            p.map(run_simulation, self.simulations, chunksize=1)
+        util.parallel_map(run_simulation, self.simulations, args.jobs)
 
         cwd.go_back()
         log.close_log_file()

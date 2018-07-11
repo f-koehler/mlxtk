@@ -20,7 +20,8 @@ def main():
         "--dof",
         type=int,
         default=1,
-        help="degree of freedom for which to plot the density")
+        help="degree of freedom for which to plot the density",
+    )
     parser.add_argument("--threshold", type=float, default=1e-5)
     parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
@@ -32,7 +33,8 @@ def main():
             args.input_file2,
             args.dof,
             args.relative,
-            threshold=args.threshold)
+            threshold=args.threshold,
+        )
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

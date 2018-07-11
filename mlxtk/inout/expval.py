@@ -32,7 +32,8 @@ def read_expval_hdf5(parsed_path):
             data={
                 "time": fhandle[os.path.join(path_inside, "time")][:],
                 "real": fhandle[os.path.join(path_inside, "real")][:],
-                "imaginary": fhandle[os.path.join(path_inside, "imaginary")][:]
+                "imaginary": fhandle[os.path.join(path_inside, "imaginary")]
+                [:],
             })
 
     return data

@@ -246,8 +246,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.combo_plot_type.currentIndex())
 
         indices = [
-            int(self.table_variables.model().data(self.table_variables.model()
-                                                  .index(index.row(), 0)))
+            int(self.table_variables.model().data(
+                self.table_variables.model().index(index.row(), 0)))
             for index in indices
         ]
 

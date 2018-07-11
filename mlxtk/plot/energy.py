@@ -2,7 +2,10 @@ import numpy
 import scipy.interpolate
 
 from ..inout.output import read_output
-from ..tools.signal_diff import compute_absolute_signal_diff_1d, compute_relative_signal_diff_1d
+from ..tools.signal_diff import (
+    compute_absolute_signal_diff_1d,
+    compute_relative_signal_diff_1d,
+)
 
 
 def plot_energy_diff(plot, path1, path2, relative=False):

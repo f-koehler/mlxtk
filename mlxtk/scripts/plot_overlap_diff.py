@@ -51,7 +51,7 @@ def main():
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel(r"max overlap difference")
 
-    if not numpy.array_equal(data1.time.as_matrix(), data2.time.as_matrix()):
+    if not numpy.array_equal(data1.time.values, data2.time.values):
         log.get_logger(__name__).warn("incompatible times, interpolating")
         program = SimplePlotProgram("Overlap Diff", init_plot_interpolate)
     else:

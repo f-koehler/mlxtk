@@ -7,7 +7,8 @@ from mlxtk.plot.plot import Plot
 try:
     from PyQt5 import QtCore, QtGui, QtWidgets
     from mlxtk.plot.qt5_plot import Qt5Plot
-    from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+    from matplotlib.backends.backend_qt5agg import (NavigationToolbar2QT as
+                                                    NavigationToolbar)
 except ImportError:
     pass
 

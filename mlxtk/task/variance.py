@@ -66,7 +66,8 @@ class ComputeVarianceTask(task.Task):
         data_variance = pandas.DataFrame(
             numpy.column_stack((data_operator.time, numpy.real(variance),
                                 numpy.imag(variance))),
-            columns=["time", "real", "imaginary"])
+            columns=["time", "real", "imaginary"],
+        )
 
         data_variance.to_csv(
             self.path_variance, sep="\t", index=False, header=False)

@@ -25,7 +25,7 @@ def plot_expval_diff(path1, path2, plot, real=True, imaginary=False):
             data1.real - data2.real,
             color="C0",
             label=
-            r"$\mathrm{Re}\left[{\left<O\right>}_1\right](t)-\mathrm{Re}\left[{\left<O\right>}_2\right](t)$"
+            r"$\mathrm{Re}\left[{\left<O\right>}_1\right](t)-\mathrm{Re}\left[{\left<O\right>}_2\right](t)$",
         )
         plot.axes.set_ylabel(
             r"$\mathrm{Re}\left[{\left<O\right>}_1\right](t)-\mathrm{Re}\left[{\left<O\right>}_2\right](t)$"
@@ -38,7 +38,7 @@ def plot_expval_diff(path1, path2, plot, real=True, imaginary=False):
             data1.imaginary - data2.imaginary,
             color="C1",
             label=
-            r"$\mathrm{Im}\left[{\left<O\right>}_1\right](t)-\mathrm{Im}\left[{\left<O\right>}_2\right](t)$"
+            r"$\mathrm{Im}\left[{\left<O\right>}_1\right](t)-\mathrm{Im}\left[{\left<O\right>}_2\right](t)$",
         )
         ax.set_ylabel(
             r"$\mathrm{Im}\left[{\left<O\right>}_1\right](t)-\mathrm{Im}\left[{\left<O\right>}_2\right](t)$"
@@ -85,9 +85,13 @@ class ExpvalDiffTab(QtWidgets.QWidget):
             self.layout.addWidget(self.toolbar)
             self.layout.addWidget(self.widget_controls)
             self.layout.addWidget(self.plot)
-            plot_expval_diff(self.path1, self.path2, self.plot,
-                             self.check_real.isChecked(),
-                             self.check_imaginary.isChecked())
+            plot_expval_diff(
+                self.path1,
+                self.path2,
+                self.plot,
+                self.check_real.isChecked(),
+                self.check_imaginary.isChecked(),
+            )
 
         self.check_real.stateChanged.connect(replot)
         self.check_imaginary.stateChanged.connect(replot)

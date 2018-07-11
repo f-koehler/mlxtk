@@ -20,7 +20,9 @@ def plot_dmat2(data_frame, dvr1=None, dvr2=None):
         values = data_frame.element.values.reshape(n1, n2)
     p.axes.pcolormesh(
         data_frame.dof1.values.reshape(n1, n2),
-        data_frame.dof2.values.reshape(n1, n2), numpy.abs(values))
+        data_frame.dof2.values.reshape(n1, n2),
+        numpy.abs(values),
+    )
 
     p.axes.set_xlabel("dof 1")
     p.axes.set_ylabel("dof 2")

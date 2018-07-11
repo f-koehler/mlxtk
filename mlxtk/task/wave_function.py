@@ -50,14 +50,18 @@ class WaveFunctionCreationTask(task.Task):
                 self.logger.warn(
                     ("the maximal absolute difference to the stored wave "
                      "function is %s < 1e-9, the wave functions are considered"
-                     " identical"), "{:e}".format(max_diff))
+                     " identical"),
+                    "{:e}".format(max_diff),
+                )
                 stored_wave_function.createWfnFile(sio)
                 return sio.getvalue()
             else:
                 self.logger.warn(
                     ("the maximal absolute difference to the stored wave "
                      "function is %s >= 1e-9, the wave functions are not "
-                     "considered identical"), "{:e}".format(max_diff))
+                     "considered identical"),
+                    "{:e}".format(max_diff),
+                )
 
         wave_function.createWfnFile(sio)
         return sio.getvalue()

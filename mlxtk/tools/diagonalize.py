@@ -22,8 +22,11 @@ def diagonalize_1b_hamiltonian(hamiltonian, number_eigenfunctions,
         A tuple with the list of eigenvalues as the first element followed by the eigenvectors
     """
     eigenvalues, eigenvectors = hamiltonian.diag_1b_hamiltonian1d(grid_points)
-    LOGGER.info("%d lowest eigenvalues: %s", number_eigenfunctions,
-                str(eigenvalues[:number_eigenfunctions]))
+    LOGGER.info(
+        "%d lowest eigenvalues: %s",
+        number_eigenfunctions,
+        str(eigenvalues[:number_eigenfunctions]),
+    )
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
         number_eigenfunctions, eigenvectors)
@@ -52,11 +55,11 @@ def find_degeneracies(energies, tolerance=1e-8):
     Returns:
         list: A list of tuples containing the indices of equal eigenvalues.
     """
-    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) +
-                 0.5) * tolerance
+    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) + 0.5
+                 ) * tolerance
     unique = (
-        numpy.unique(numpy.floor(energies / tolerance).astype(
-            numpy.int64)) + 0.5) * tolerance
+        numpy.unique(numpy.floor(energies / tolerance).astype(numpy.int64)) +
+        0.5) * tolerance
     degeneracies = []
     for energy in unique:
         degeneracies.append(list(numpy.nonzero(converted == energy)[0]))

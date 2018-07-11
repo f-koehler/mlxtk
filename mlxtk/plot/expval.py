@@ -55,25 +55,26 @@ def plot_expval_diff(plot,
     t_max = min(max(data1.time), max(data2.time))
     n_t = max(len(data1.time), len(data2.time))
 
-    interpolate = numpy.array_equal(data1.time.as_matrix(),
-                                    data2.time.as_matrix())
+    interpolate = numpy.array_equal(data1.time.values, data2.time.values)
 
     lines = []
     if not interpolate:
         if real:
             if relative:
-                label = r"$1-\frac{" + get_label_real_part(
-                    get_label_expval("O") + "_2") + "}{" + get_label_real_part(
-                        get_label_expval("O") + "_1") + "}$"
+                label = (
+                    r"$1-\frac{" +
+                    get_label_real_part(get_label_expval("O") + "_2") + "}{" +
+                    get_label_real_part(get_label_expval("O") + "_1") + "}$")
                 lines += plot.axes.plot(
                     data1.time,
                     1. - data2.real / data1.real,
                     color="C0",
                     label=label)
             else:
-                label = "$" + get_label_real_part(
-                    get_label_expval("O") + "_1") + " -" + get_label_real_part(
-                        get_label_expval("O") + "_2") + "$"
+                label = (
+                    "$" + get_label_real_part(get_label_expval("O") + "_1") +
+                    " -" + get_label_real_part(get_label_expval("O") + "_2") +
+                    "$")
                 lines += plot.axes.plot(
                     data1.time,
                     data1.real - data2.real,
@@ -85,25 +86,31 @@ def plot_expval_diff(plot,
         if imaginary:
             ax = plot.axes.twinx() if real else plot.axes
             if relative:
-                label = r"$1-\frac{" + get_label_imaginary_part(
-                    get_label_expval("O") + "_2"
-                ) + "}{" + get_label_imaginary_part(
-                    get_label_expval("O") + "_1") + "}$"
+                label = (
+                    r"$1-\frac{" +
+                    get_label_imaginary_part(get_label_expval("O") + "_2") +
+                    "}{" +
+                    get_label_imaginary_part(get_label_expval("O") + "_1") +
+                    "}$")
                 lines += ax.plot(
                     data1.time,
                     1. - data2.imaginary / data1.imaginary,
                     color="C0",
-                    label=label)
+                    label=label,
+                )
             else:
-                label = "$" + get_label_imaginary_part(
-                    get_label_expval("O") + "_1"
-                ) + " -" + get_label_imaginary_part(
-                    get_label_expval("O") + "_2") + "$"
+                label = (
+                    "$" +
+                    get_label_imaginary_part(get_label_expval("O") + "_1") +
+                    " -" +
+                    get_label_imaginary_part(get_label_expval("O") + "_2") +
+                    "$")
                 lines += ax.plot(
                     data1.time,
                     data1.imaginary - data2.imaginary,
                     color="C0",
-                    label=label)
+                    label=label,
+                )
 
             ax.set_ylabel(label)
     else:
@@ -125,15 +132,17 @@ def plot_expval_diff(plot,
                 assume_sorted=True)
 
             if relative:
-                label = r"$1-\frac{" + get_label_real_part(
-                    get_label_expval("O") + "_2") + "}{" + get_label_real_part(
-                        get_label_expval("O") + "_1") + "}$"
+                label = (
+                    r"$1-\frac{" +
+                    get_label_real_part(get_label_expval("O") + "_2") + "}{" +
+                    get_label_real_part(get_label_expval("O") + "_1") + "}$")
                 lines += plot.axes.plot(
                     t, 1. - interp2(t) / interp1(t), color="C0", label=label)
             else:
-                label = "$" + get_label_real_part(
-                    get_label_expval("O") + "_1") + " -" + get_label_real_part(
-                        get_label_expval("O") + "_2") + "$"
+                label = (
+                    "$" + get_label_real_part(get_label_expval("O") + "_1") +
+                    " -" + get_label_real_part(get_label_expval("O") + "_2") +
+                    "$")
                 lines += plot.axes.plot(
                     t, interp1(t) - interp2(t), color="C0", label=label)
 
@@ -146,26 +155,32 @@ def plot_expval_diff(plot,
                 data1.imaginary,
                 kind=5,
                 bounds_error=True,
-                assume_sorted=True)
+                assume_sorted=True,
+            )
             interp2 = scipy.interpolate.interp1d(
                 data2.time,
                 data2.imaginary,
                 kind=5,
                 bounds_error=True,
-                assume_sorted=True)
+                assume_sorted=True,
+            )
 
             if relative:
-                label = r"$1-\frac{" + get_label_imaginary_part(
-                    get_label_expval("O") + "_2"
-                ) + "}{" + get_label_imaginary_part(
-                    get_label_expval("O") + "_1") + "}$"
+                label = (
+                    r"$1-\frac{" +
+                    get_label_imaginary_part(get_label_expval("O") + "_2") +
+                    "}{" +
+                    get_label_imaginary_part(get_label_expval("O") + "_1") +
+                    "}$")
                 lines += ax.plot(
                     t, 1. - interp2(t) / interp1(t), color="C0", label=label)
             else:
-                label = "$" + get_label_imaginary_part(
-                    get_label_expval("O") + "_1"
-                ) + " -" + get_label_imaginary_part(
-                    get_label_expval("O") + "_2") + "$"
+                label = (
+                    "$" +
+                    get_label_imaginary_part(get_label_expval("O") + "_1") +
+                    " -" +
+                    get_label_imaginary_part(get_label_expval("O") + "_2") +
+                    "$")
                 lines += ax.plot(
                     t, interp1(t) - interp2(t), color="C0", label=label)
 

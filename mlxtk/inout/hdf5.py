@@ -51,6 +51,6 @@ def is_hdf5_file(path):
         return False
 
     with open(path, "rb") as fhandle:
-        result = (fhandle.read(8) == magic_number)
+        result = fhandle.read(8) == magic_number
 
     return result

@@ -189,9 +189,12 @@ class ParameterTable(object):
         return pandas.DataFrame(
             numpy.insert(
                 numpy.array(self.table),
-                0, [i for i, _ in enumerate(self.table)],
-                axis=1),
-            columns=["sim_index"] + self.names)
+                0,
+                [i for i, _ in enumerate(self.table)],
+                axis=1,
+            ),
+            columns=["sim_index"] + self.names,
+        )
 
     @staticmethod
     def load(path):
@@ -280,7 +283,7 @@ class ParameterTable(object):
         return {
             "missing_rows": missing_rows,
             "extra_rows": extra_rows,
-            "moved_rows": moved_rows
+            "moved_rows": moved_rows,
         }
 
     def format_table(self, fmt="plain"):
@@ -292,7 +295,8 @@ class ParameterTable(object):
         return tabulate.tabulate(
             [[self.names[i], self.values[i][0]] for i in self.constants],
             headers=["constant", "value"],
-            tablefmt=fmt)
+            tablefmt=fmt,
+        )
 
     def format_variables(self, fmt="plain"):
         table = {self.names[i]: self.values[i] for i in self.variables}

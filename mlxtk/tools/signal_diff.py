@@ -78,7 +78,7 @@ def compute_relative_signal_diff_1d(t1, t2, sig1, sig2, threshold=1e-5):
             bounds_error=True,
             assume_sorted=True,
             copy=False)(t)
-        mask = numpy.logical_or(s1 > threshold, s2 > threshold)
+        mask = numpy.logical_and(s1 > threshold, s2 > threshold)
         values = numpy.zeros_like(sig1)
         values[mask] = 1. - s2[mask] / s1[mask]
         return t, values

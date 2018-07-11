@@ -2,7 +2,7 @@ import numpy
 import scipy
 
 from ..inout.gpop import read_gpop
-from ..tools.gpop_diff import compute_absolute_gpop_diff, compute_relative_gpop_diff
+from ..tools.gpop_diff import compute_absolute_gpop_diff, compute_relative_gpop_diff, compute_integrated_relative_gpop_diff, compute_integrated_absolute_gpop_diff
 from .. import log
 
 
@@ -21,8 +21,6 @@ def plot_gpop_diff(plot, path1, path2, dof, relative=False, threshold=1e-5):
     """
     .. todo:: allow vmin != -vmax but still keep the white color for a value of 0
     """
-    logger = log.get_logger(__name__)
-
     times1, grids1, densities1 = read_gpop(path1)
     times2, grids2, densities2 = read_gpop(path2)
 
@@ -53,3 +51,28 @@ def plot_gpop_diff(plot, path1, path2, dof, relative=False, threshold=1e-5):
         T, X, values.transpose(), cmap="bwr", vmin=-amplitude, vmax=amplitude)
     cbar = plot.figure.colorbar(heatmap)
     cbar.ax.set_ylabel(label)
+
+
+def plot_integrated_gpop_diff(plot,
+                              path1,
+                              path2,
+                              dof,
+                              relative=False,
+                              threshold=1e-5):
+    times, grids, densities1 = read_gpop(path1)
+    _, _, densities2 = read_gpop(path2)
+
+    grid = grids[dof]
+
+    if relative:
+        label = r"$\int\left(1-\frac{\rho^{(2)}(x,t)}{\rho^{(1)}(x,t)}\right)\mathrm{d}x$"
+        t, d = compute_integrated_relative_gpop_diff(
+            times, grid, densities1[dof], densities2[dof], threshold)
+    else:
+        label = r"$\frac{1}{2}\int\left|\rho^{(1)}(x,t)-\rho^{(2)}(x,t)\right|\mathrm{d}x$"
+        t, d = compute_integrated_absolute_gpop_diff(
+            times, grid, densities1[dof], densities2[dof])
+
+    plot.axes.set_xlabel("$t$")
+    plot.axes.set_ylabel(label)
+    plot.axes.plot(t, d)

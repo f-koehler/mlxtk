@@ -33,6 +33,7 @@ setup(
             "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
             "plot_gpop=mlxtk.scripts.plot_gpop:main",
             "plot_gpop_diff=mlxtk.scripts.plot_gpop_diff:main",
+            "plot_integrated_gpop_diff=mlxtk.scripts.plot_integrated_gpop_diff:main",
             "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",
             "plot_natpop=mlxtk.scripts.plot_natpop:main",
             "plot_natpop_diff=mlxtk.scripts.plot_natpop_diff:main",

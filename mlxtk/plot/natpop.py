@@ -10,12 +10,12 @@ def plot_natpop(plot, path):
     plot.axes.set_ylabel(r"$\lambda_i$")
 
 
-def plot_natpop_diff(plot, path1, path2, relative=False):
+def plot_natpop_diff(plot, path1, path2, relative=False, threshold=1e-2):
     data1 = read_natpop(path1)[1][1]
     data2 = read_natpop(path2)[1][1]
 
     if relative:
-        time, diffs = compute_relative_natpop_diff(data1, data2)
+        time, diffs = compute_relative_natpop_diff(data1, data2, threshold)
         label = r"$1-\frac{\lambda_i^{(2)}}{\lambda_i^{(1)}}$"
     else:
         time, diffs = compute_absolute_natpop_diff(data1, data2)

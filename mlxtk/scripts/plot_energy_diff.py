@@ -12,10 +12,8 @@ def main():
         description=
         "Plot the difference in evolution of energy between two simulations")
     mlxtk.plot.argparser.add_plotting_arguments(parser)
-    parser.add_argument(
-        "--in1", type=str, dest="input_file1", help="first input_file")
-    parser.add_argument(
-        "--in2", type=str, dest="input_file2", help="second input_file")
+    parser.add_argument("input_file1", type=str, help="first input_file")
+    parser.add_argument("input_file2", type=str, help="second input_file")
     parser.add_argument("-r", "--relative", action="store_true")
     args = parser.parse_args()
 

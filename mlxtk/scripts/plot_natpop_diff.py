@@ -20,11 +20,12 @@ def main():
         default=1,
         help="degree of freedom for which to plot the natural populations")
     parser.add_argument("-r", "--relative", action="store_true")
+    parser.add_argument("-t", "--threshold", type=float, default=1e-3)
     args = parser.parse_args()
 
     def init_plot(plot):
         plot_natpop_diff(plot, args.input_file1, args.input_file2,
-                         args.relative)
+                         args.relative, args.threshold)
 
     program = SimplePlotProgram("Natural Population Differences", init_plot)
     program.main(args)

@@ -136,14 +136,37 @@ def compute_relative_gpop_diff(time1,
             copy=False,
             bounds_error=True)(t, x)
 
-        mask = numpy.logical_or(den1, den2)
+        mask = numpy.logical_and(den1 > threshold, den2 > threshold)
         values = numpy.zeros_like(den1)
         values[mask] = 1. - den2[mask] / den1[mask]
         return t, x, values
     else:
-        mask = numpy.logical_or(gpop1 > threshold, gpop2 > threshold)
+        mask = numpy.logical_and(gpop1 > threshold, gpop2 > threshold)
         values = numpy.zeros_like(gpop1)
         # values[mask] = 1. - gpop2[mask] / gpop1[mask]
         values[mask] = (gpop1[mask] - gpop2[mask]) / (
             numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask]))
         return time1.copy(), grid1.copy(), values
+
+
+def compute_integrated_absolute_gpop_diff(time, grid, weights, gpop1, gpop2):
+    _, _, diffs = compute_absolute_gpop_diff(time, time, grid, grid, gpop1,
+                                             gpop2)
+    return time.copy(), numpy.sum(numpy.abs(diffs * weights), axis=1) / 2.
+
+
+def compute_integrated_relative_gpop_diff(time,
+                                          grid,
+                                          weights,
+                                          gpop1,
+                                          gpop2,
+                                          threshold=1e-3):
+    # _, _, diffs = compute_relative_gpop_diff(time, time, grid, grid, gpop1,
+    #                                          gpop2, threshold)
+    # return time.copy(), numpy.sum(diffs, axis=1)
+    mask = numpy.logical_and(gpop1 > threshold, gpop2 > threshold)
+    diff = numpy.zeros_like(gpop1)
+    # diff[mask] = numpy.abs(gpop1[mask] - gpop2[mask]) / (
+    #     numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask]))
+    diff[mask] = numpy.abs(1. - gpop2[mask] / gpop1[mask])
+    return time.copy(), numpy.sum(weights * diff, axis=1)

@@ -85,8 +85,8 @@ def create_flags(**kwargs):
 
     if flags["improved_relax"]:
         flags["statsteps"] = flags.get("statsteps", 40)
-        flags["eig_index"] = 1
-        flags["nstep_diag"] = 50
+        flags["eig_index"] = flags.get("eig_index", 1)
+        flags["nstep_diag"] = flags.get("nstep_diag", 50)
 
     if flags["itg"] == "zvode":
         flags["zvode_mf"] = flags.get("zvode_mf", 10)

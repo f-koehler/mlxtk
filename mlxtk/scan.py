@@ -426,11 +426,12 @@ class ParameterScan(object):
 
         cwd.change_dir(self.cwd)
 
-        def run_simulation(sim):
-            index = self.table.get_index(sim.parameters.to_tuple())
+        indices = [
+            self.table.get_index(sim.parameters.to_tuple())
+            for sim in self.simulations
+        ]
 
-            name = "sim_" + str(index)
-
+        def run_simulation(sim_index):
             env = os.environ.copy()
             env["OMP_NUM_THREADS"] = "1"
             cmd = [
@@ -438,11 +439,11 @@ class ParameterScan(object):
                 os.path.relpath(script_path),
                 "run-index",
                 "--index",
-                str(index),
+                str(sim_index),
             ]
             subprocess.run(cmd, env=env)
 
-        util.parallel_map(run_simulation, self.simulations, args.jobs)
+        util.parallel_map(run_simulation, indices, args.jobs)
 
         cwd.go_back()
         log.close_log_file()

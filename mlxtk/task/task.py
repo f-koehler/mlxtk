@@ -29,6 +29,15 @@ class FunctionInput(object):
         return hashing.hash_values(self.function())
 
 
+class ConstantInput(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def get_state(self):
+        return hashing.hash_values(self.value)
+
+
 class FileOutput(object):
     def __init__(self, name, filename):
         self.name = name

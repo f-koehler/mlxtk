@@ -56,6 +56,11 @@ class Simulation(object):
             task.TDBasisProjectionTask(propagation, basis, **kwargs))
         return self.tasks[-1]
 
+    def slice_psi(self, psi_in, psi_out, t_min, t_max, step=1, **kwargs):
+        self.tasks.append(
+            task.PsiTimeSlice(psi_in, psi_out, t_min, t_max, step, **kwargs))
+        return self.tasks[-1]
+
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
             name = kwargs["name"]

@@ -28,3 +28,6 @@ else:
 
         def tight_layout(self):
             self.figure.tight_layout()
+
+        def save(self, *args, **kwargs):
+            self.figure.savefig(*args, **kwargs)

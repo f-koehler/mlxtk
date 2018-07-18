@@ -1,7 +1,7 @@
-import argparse
 import matplotlib
 import sys
 
+from .argparser import parse_figsize
 from mlxtk.plot.plot import Plot
 
 try:
@@ -88,3 +88,5 @@ def apply_plot_parameters(plot, args):
     if args.ymax is not None:
         ymin, _ = plot.axes.get_ylim()
         plot.axes.set_ylim(ymin, args.ymax)
+
+    plot.figure.set_size_inches(*parse_figsize(args.figsize), forward=True)

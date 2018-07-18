@@ -1,8 +1,9 @@
-import argparse
-
-
 def get_defaults():
-    return {"logx": False, "logy": False, "grid": True}
+    return {"logx": False, "logy": False, "grid": True, "figsize": "4.5,4.5"}
+
+
+def parse_figsize(size):
+    return tuple(float(x) for x in size.split(","))
 
 
 def add_plotting_arguments(parser, defaults=get_defaults()):
@@ -54,4 +55,5 @@ def add_plotting_arguments(parser, defaults=get_defaults()):
         help=
         "maximal value on the y-axis, automatically chosen if not specified",
     )
+    parser.add_argument("--figsize", type=str, default=defaults["figsize"])
     return parser

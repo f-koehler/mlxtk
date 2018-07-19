@@ -6,6 +6,16 @@ from . import hdf5
 from ..log import get_logger
 
 
+def to_ndarray(data):
+    num_coeffs = (data.shape[1] - 1) // 2
+    num_times = data.shape[0]
+    arr = numpy.zeros((num_times, num_coeffs + 1), dtype=numpy.complex128)
+    arr[:, 0] = data["time"]
+    for i in range(num_coeffs):
+        arr[:, 1 + i] = data["real_" + str(i)] + 1j * data["imag_" + str(i)]
+    return arr
+
+
 def read_basis_projection(path):
     parsed = hdf5.parse_hdf5_path(path)
     if parsed is None:
@@ -17,8 +27,8 @@ def read_basis_projection_ascii(path):
     with open(path) as fhandle:
         num_coeffs = (len(fhandle.readline().split()) - 1) // 3
 
-    usecols = ([0] + list(range(1, num_coeffs + 1)) +
-               list(range(num_coeffs + 1, 2 * num_coeffs + 1)))
+    usecols = ([0] + list(range(1, num_coeffs + 1)) + list(
+        range(num_coeffs + 1, 2 * num_coeffs + 1)))
     names = (["time"] + ["real_" + str(i) for i in range(num_coeffs)] +
              ["imag_" + str(i) for i in range(num_coeffs)])
     return pandas.read_csv(

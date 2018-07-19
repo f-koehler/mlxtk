@@ -26,11 +26,16 @@ class TemporaryCopy(object):
             LOGGER.debug("create temporary copy: %s -> %s", self.src, self.dst)
             copy(self.src, self.dst)
             self.copy = True
+        else:
+            LOGGER.debug("no creation of temporary file necessary")
+            self.copy = False
 
     def __exit__(self, type, value, traceback):
         if self.copy:
             LOGGER.debug("remove temporary copy: %s", self.dst)
             os.remove(self.dst)
+        else:
+            LOGGER.debug("no clean-up of temporary copy necessary")
 
 
 def parallel_map_helper(function, queue_in, queue_out):

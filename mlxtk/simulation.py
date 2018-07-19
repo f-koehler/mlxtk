@@ -56,6 +56,20 @@ class Simulation(object):
             task.TDBasisProjectionTask(propagation, basis, **kwargs))
         return self.tasks[-1]
 
+    def extract_wave_function(self, name, psi, time, **kwargs):
+        self.tasks.append(task.ExtractWaveFunction(name, psi, time, **kwargs))
+        return self.tasks[-1]
+
+    def compute_fidelity(self, initial_wfn, wfn, **kwargs):
+        self.tasks.append(task.BasisProjectionTask(initial_wfn, wfn))
+        self.tasks.append(
+            task.FidelityTask(wfn, self.tasks[-1].projection_name))
+        return self.tasks[-2:]
+
+    def compute_fidelity_manually(self, wfn, projection, **kwargs):
+        self.tasks.append(task.FidelityTask(wfn, projection, **kwargs))
+        return self.tasks[-1]
+
     def slice_psi(self, psi_in, psi_out, t_min, t_max, step=1, **kwargs):
         self.tasks.append(
             task.PsiTimeSlice(psi_in, psi_out, t_min, t_max, step, **kwargs))

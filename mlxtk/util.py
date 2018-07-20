@@ -15,6 +15,14 @@ def copy(src, dst, force=False):
     shutil.copy2(src, dst)
 
 
+def create_fresh_symlink(path):
+    if os.path.islink(path):
+        os.unlink(path)
+    elif os.path.exists(path):
+        os.remove(path)
+    os.symlink(os.devnull, path)
+
+
 class TemporaryCopy(object):
     def __init__(self, src, dst):
         self.src = src

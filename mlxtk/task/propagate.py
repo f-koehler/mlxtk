@@ -5,7 +5,6 @@ import pickle
 import shutil
 import subprocess
 import sys
-import time
 
 import h5py
 
@@ -17,6 +16,7 @@ from mlxtk.inout import hdf5
 from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
+from ..util import create_fresh_symlink
 
 FLAG_TYPES = {
     "MBop_apply": bool,
@@ -112,6 +112,8 @@ class PropagationTask(task.Task):
         self.operator = operator + ".opr"
 
         self.flags, self.flag_list = create_flags(**kwargs)
+        self.disable_gpop = kwargs.get("disable_gpop", False)
+        self.disable_natpop = kwargs.get("disable_natpop", False)
 
         if self.flags["relax"]:
             kwargs["task_type"] = "RelaxationTask"
@@ -123,31 +125,35 @@ class PropagationTask(task.Task):
             name = "propagate_" + name
             kwargs["task_type"] = "PropagationTask"
 
-        inp_parameters = task.FileInput("parameters",
-                                        os.path.join(self.propagation_name,
-                                                     "parameters.pickle"))
+        inp_parameters = task.FileInput(
+            "parameters",
+            os.path.join(self.propagation_name, "parameters.pickle"))
         inp_wave_function = task.FileInput("initial_wave_function",
                                            self.flags["rst"])
         inp_operator = task.FileInput("hamiltonian", self.flags["opr"])
 
-        out_restart = task.FileOutput("final_wave_function",
-                                      os.path.join(self.propagation_name,
-                                                   "restart"))
-        out_gpop = task.FileOutput("global_population",
-                                   os.path.join(self.propagation_name, "gpop"))
-        out_npop = task.FileOutput("natural_population",
-                                   os.path.join(self.propagation_name,
-                                                "natpop"))
-        out_output = task.FileOutput("qdtk_output",
-                                     os.path.join(self.propagation_name,
-                                                  "output"))
+        outputs = []
+        outputs.append(
+            task.FileOutput("final_wave_function",
+                            os.path.join(self.propagation_name, "restart")))
+        outputs.append(
+            task.FileOutput("qdtk_output",
+                            os.path.join(self.propagation_name, "output")))
+        if not self.disable_gpop:
+            outputs.append(
+                task.FileOutput("global_population",
+                                os.path.join(self.propagation_name, "gpop")))
+        if not self.disable_natpop:
+            outputs.append(
+                task.FileOutput("natural_population",
+                                os.path.join(self.propagation_name, "natpop")))
 
         task.Task.__init__(
             self,
             name,
             self.run_propagation,
             inputs=[inp_parameters, inp_wave_function, inp_operator],
-            outputs=[out_restart, out_gpop, out_npop, out_output],
+            outputs=outputs,
             **kwargs)
 
         self.preprocess_steps.append(self.write_propagation_parameters)
@@ -179,6 +185,12 @@ class PropagationTask(task.Task):
         working_dir = self.propagation_name
         self.logger.debug("working directory: %s", working_dir)
 
+        if self.disable_gpop:
+            create_fresh_symlink(os.path.join(working_dir, "gpop"))
+
+        if self.disable_natpop:
+            create_fresh_symlink(os.path.join(working_dir, "natpop"))
+
         watch_process(
             command,
             self.logger.info,
@@ -194,6 +206,12 @@ class PropagationTask(task.Task):
         self.logger.debug("%s -> %s", src, dst)
 
         subprocess.check_output(["ln", "-srf", src, dst])
+
+        if self.disable_gpop:
+            os.unlink(os.path.join(working_dir, "gpop"))
+
+        if self.disable_natpop:
+            os.unlink(os.path.join(working_dir, "natpop"))
 
     def write_propagation_parameters(self):
         """Write the propagation parameters to disk

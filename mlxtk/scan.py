@@ -1,6 +1,5 @@
 import argparse
 import copy
-import multiprocessing
 import os
 import shutil
 import subprocess
@@ -355,7 +354,7 @@ class ParameterScan(object):
         self.generate_simulations()
 
         if args.indices is not None:
-            indices = parse_simulation_selection(arg.indices)
+            indices = parse_simulation_selection(args.indices)
             self.simulations = [self.simulations[i] for i in indices]
 
         if not os.path.exists(self.cwd):

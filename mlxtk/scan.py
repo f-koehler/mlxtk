@@ -394,7 +394,8 @@ class ParameterScan(object):
                 str(index),
             ])
             job_file = os.path.join("job", "{}.sh".format(simulation.name))
-            sge.write_job_file(job_file, simulation.name, cmd, args)
+            sge.write_job_file(job_file, self.name + "_" + simulation.name,
+                               cmd, args)
 
             jobid = sge.submit_job(job_file)
             jobids.append(jobid)

@@ -36,6 +36,7 @@ mpl_rc("xtick", labelsize=10)
 mpl_rc("ytick", labelsize=10)
 mpl_rc("legend", fontsize=10)
 mpl_rc("axes", titlesize=10)
+mpl_rc("savefig", dpi=600)
 
 latex_preamble = [
         r"\usepackage{siunitx}", r"\usepackage{bigints}", r"\usepackage{xfrac}",

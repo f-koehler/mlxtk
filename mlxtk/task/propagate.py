@@ -16,7 +16,7 @@ from mlxtk.inout import hdf5
 from mlxtk.inout.gpop import add_gpop_to_hdf5
 from mlxtk.inout.natpop import add_natpop_to_hdf5
 from mlxtk.inout.output import add_output_to_hdf5
-from ..util import create_fresh_symlink
+from ..util import create_fresh_symlink, TemporaryCopy
 
 FLAG_TYPES = {
     "MBop_apply": bool,
@@ -169,49 +169,44 @@ class PropagationTask(task.Task):
         return cmd
 
     def run_propagation(self):
-        self.logger.info("copy initial wave function")
-        shutil.copy2(
-            self.initial_wave_function,
-            os.path.join(self.propagation_name, "initial.wfn"),
-        )
+        with TemporaryCopy(self.initial_wave_function,
+                           os.path.join(self.propagation_name, "initial.wfn")):
+            with TemporaryCopy(
+                    self.operator,
+                    os.path.join(self.propagation_name, "hamiltonian.opr")):
+                self.logger.info("run qdtk_propagate.x")
+                command = self.get_command()
+                self.logger.debug("command: %s", " ".join(command))
+                working_dir = self.propagation_name
+                self.logger.debug("working directory: %s", working_dir)
 
-        self.logger.info("copy operator")
-        shutil.copy2(self.operator,
-                     os.path.join(self.propagation_name, "hamiltonian.opr"))
+                if self.disable_gpop:
+                    create_fresh_symlink(os.path.join(working_dir, "gpop"))
 
-        self.logger.info("run qdtk_propagate.x")
-        command = self.get_command()
-        self.logger.debug("command: %s", " ".join(command))
-        working_dir = self.propagation_name
-        self.logger.debug("working directory: %s", working_dir)
+                if self.disable_natpop:
+                    create_fresh_symlink(os.path.join(working_dir, "natpop"))
 
-        if self.disable_gpop:
-            create_fresh_symlink(os.path.join(working_dir, "gpop"))
+                watch_process(
+                    command,
+                    self.logger.info,
+                    self.logger.warn,
+                    cwd=working_dir,
+                    stdout=sys.stdout,
+                    stderr=sys.stderr,
+                )
 
-        if self.disable_natpop:
-            create_fresh_symlink(os.path.join(working_dir, "natpop"))
+                self.logger.info("create symlink to final wave function")
+                src = os.path.join(self.propagation_name, "restart")
+                dst = os.path.join(self.propagation_name, "final.wfn")
+                self.logger.debug("%s -> %s", src, dst)
 
-        watch_process(
-            command,
-            self.logger.info,
-            self.logger.warn,
-            cwd=working_dir,
-            stdout=sys.stdout,
-            stderr=sys.stderr,
-        )
+                subprocess.check_output(["ln", "-srf", src, dst])
 
-        self.logger.info("create symlink to final wave function")
-        src = os.path.join(self.propagation_name, "restart")
-        dst = os.path.join(self.propagation_name, "final.wfn")
-        self.logger.debug("%s -> %s", src, dst)
+                if self.disable_gpop:
+                    os.unlink(os.path.join(working_dir, "gpop"))
 
-        subprocess.check_output(["ln", "-srf", src, dst])
-
-        if self.disable_gpop:
-            os.unlink(os.path.join(working_dir, "gpop"))
-
-        if self.disable_natpop:
-            os.unlink(os.path.join(working_dir, "natpop"))
+                if self.disable_natpop:
+                    os.unlink(os.path.join(working_dir, "natpop"))
 
     def write_propagation_parameters(self):
         """Write the propagation parameters to disk

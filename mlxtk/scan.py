@@ -1,6 +1,5 @@
 import argparse
 import copy
-import multiprocessing
 import os
 import shutil
 import subprocess
@@ -21,16 +20,14 @@ from .parameters import ParameterTable
 
 def parse_simulation_selection(string):
     tokens = string.split(",")
-    indices = []
-    for tok in tokens:
-        if "-" in tok:
-            min_i = int(tok.split("-")[0])
-            max_i = int(tok.split("-")[1])
-            indices += list(range(min_i, max_i + 1))
+    indices = set()
+    for token in tokens:
+        if "-" in token:
+            i_s = [int(i) for i in token.split("-")]
+            indices = indices | set(range(min(i_s), max(i_s) + 1))
         else:
-            indices.append(int(tok))
-    indices = list(set(indices))
-    return indices
+            indices.add(int(token))
+    return list(indices)
 
 
 class ParameterScan(object):
@@ -356,6 +353,10 @@ class ParameterScan(object):
 
         self.generate_simulations()
 
+        if args.indices is not None:
+            indices = parse_simulation_selection(args.indices)
+            self.simulations = [self.simulations[i] for i in indices]
+
         if not os.path.exists(self.cwd):
             os.makedirs(self.cwd)
 
@@ -393,7 +394,8 @@ class ParameterScan(object):
                 str(index),
             ])
             job_file = os.path.join("job", "{}.sh".format(simulation.name))
-            sge.write_job_file(job_file, simulation.name, cmd, args)
+            sge.write_job_file(job_file, self.name + "_" + simulation.name,
+                               cmd, args)
 
             jobid = sge.submit_job(job_file)
             jobids.append(jobid)
@@ -573,7 +575,7 @@ class ParameterScan(object):
             help="number of threads to use")
 
         sge.add_parser_arguments(parser_qsub)
-        parser_qsub.add_argument("-i", "--indices", type=str)
+        parser_qsub.add_argument("-i", "--indices")
 
         tabulate.create_tabulate_argument(parser_table, ["-f", "--format"],
                                           "fmt")

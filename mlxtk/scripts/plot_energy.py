@@ -22,7 +22,10 @@ def main():
 
     def init_plot(plot):
         data = read_output(args.input_file)
-        plot.axes.plot(data.time, data.energy, marker=".")
+        plot.axes.plot(
+            data.time,
+            data.energy,
+            marker="." if len(data.time) <= 300 else "None")
         plot.axes.set_xlabel("$t$")
         plot.axes.set_ylabel(r"$\langle H\rangle (t)$")
 

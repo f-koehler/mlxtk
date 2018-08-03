@@ -19,6 +19,20 @@ from .inout import hdf5
 from .parameters import ParameterTable
 
 
+def parse_simulation_selection(string):
+    tokens = string.split(",")
+    indices = []
+    for tok in tokens:
+        if "-" in tok:
+            min_i = int(tok.split("-")[0])
+            max_i = int(tok.split("-")[1])
+            indices += list(range(min_i, max_i + 1))
+        else:
+            indices.append(int(tok))
+    indices = list(set(indices))
+    return indices
+
+
 class ParameterScan(object):
     """Scan over ranges of parameters
 
@@ -559,6 +573,7 @@ class ParameterScan(object):
             help="number of threads to use")
 
         sge.add_parser_arguments(parser_qsub)
+        parser_qsub.add_argument("-i", "--indices", type=str)
 
         tabulate.create_tabulate_argument(parser_table, ["-f", "--format"],
                                           "fmt")

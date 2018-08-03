@@ -31,6 +31,7 @@ FLAG_TYPES = {
     "itg": str,
     "nstep_diag": int,
     "opr": str,
+    "pruning_eom": str,
     "pruning_method": str,
     "pruning_threshold": float,
     "psi": bool,

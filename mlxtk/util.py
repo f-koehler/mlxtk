@@ -15,12 +15,15 @@ def copy(src, dst, force=False):
     shutil.copy2(src, dst)
 
 
-def create_fresh_symlink(path):
-    if os.path.islink(path):
-        os.unlink(path)
-    elif os.path.exists(path):
-        os.remove(path)
-    os.symlink(os.devnull, path)
+def create_fresh_symlink(src, dst):
+    if os.path.islink(dst):
+        os.unlink(dst)
+    elif os.path.exists(dst):
+        os.remove(dst)
+    dirname = os.path.dirname(dst)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+    os.symlink(src, dst)
 
 
 class TemporaryCopy(object):

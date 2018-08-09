@@ -182,10 +182,12 @@ class PropagationTask(task.Task):
                 self.logger.debug("working directory: %s", working_dir)
 
                 if self.disable_gpop:
-                    create_fresh_symlink(os.path.join(working_dir, "gpop"))
+                    create_fresh_symlink(os.devnull,
+                                         os.path.join(working_dir, "gpop"))
 
                 if self.disable_natpop:
-                    create_fresh_symlink(os.path.join(working_dir, "natpop"))
+                    create_fresh_symlink(os.devnull,
+                                         os.path.join(working_dir, "natpop"))
 
                 watch_process(
                     command,

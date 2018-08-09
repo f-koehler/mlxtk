@@ -75,6 +75,10 @@ class Simulation(object):
             task.PsiTimeSlice(psi_in, psi_out, t_min, t_max, step, **kwargs))
         return self.tasks[-1]
 
+    def symlink(self, src, dst, **kwargs):
+        self.tasks.append(task.SymlinkTask(src, dst, **kwargs))
+        return self.tasks[-1]
+
     def propagate(self, wave_function, operator, **kwargs):
         if "name" in kwargs:
             name = kwargs["name"]

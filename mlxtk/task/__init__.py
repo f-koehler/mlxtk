@@ -4,5 +4,6 @@ from .fidelity import FidelityTask
 from .operator import OperatorCreationTask
 from .propagate import PropagationTask
 from .psi import PsiTimeSlice, ExtractWaveFunction
+from .symlink import SymlinkTask
 from .variance import ComputeVarianceTask
 from .wave_function import WaveFunctionCreationTask

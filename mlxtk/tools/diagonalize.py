@@ -22,11 +22,6 @@ def diagonalize_1b_hamiltonian(hamiltonian, number_eigenfunctions,
         A tuple with the list of eigenvalues as the first element followed by the eigenvectors
     """
     eigenvalues, eigenvectors = hamiltonian.diag_1b_hamiltonian1d(grid_points)
-    LOGGER.info(
-        "%d lowest eigenvalues: %s",
-        number_eigenfunctions,
-        str(eigenvalues[:number_eigenfunctions]),
-    )
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
         number_eigenfunctions, eigenvectors)

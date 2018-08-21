@@ -540,6 +540,26 @@ class ParameterScan(object):
         self.generate_simulations()
         print("tasks in sim_0:", self.simulations[0].list_tasks())
 
+    def unlock(self):
+        if not os.path.exists(self.cwd):
+            self.logger.warn("Nothing to do, scan directory does not exist")
+            exit()
+
+        answer = None
+        while answer not in ["y", "n"]:
+            answer = input("Remove all .pid files? [y/n]").lower()
+
+        if answer != "y":
+            exit()
+
+        cwd.change_dir(self.cwd)
+        for root, _, files in os.walk("."):
+            for name in files:
+                if os.path.splitext(name)[1] == ".pid":
+                    os.remove(name)
+
+        cwd.go_back()
+
     def main(self):
         self.logger.info("start parameter scan")
 
@@ -558,6 +578,7 @@ class ParameterScan(object):
         parser_run_task = subparsers.add_parser("run-task")
         subparsers.add_parser("dry-run")
         parser_submit_tmux = subparsers.add_parser("submit-tmux")
+        subparsers.add_parser("unlock")
 
         parser_run_index.add_argument(
             "--index",
@@ -610,6 +631,8 @@ class ParameterScan(object):
             self.dry_run()
         elif args.subcommand == "submit-tmux":
             self.submit_tmux(args)
+        elif args.subcommand == "unlock":
+            self.unlock()
         else:
             raise ValueError("Invalid subcommand \"" + args.subcommand + "\"")
 

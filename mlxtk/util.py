@@ -21,8 +21,9 @@ def create_fresh_symlink(src, dst):
     elif os.path.exists(dst):
         os.remove(dst)
     dirname = os.path.dirname(dst)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
+    if dirname:
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
     os.symlink(src, dst)
 
 

@@ -277,6 +277,32 @@ class ParameterScan(object):
 
         log.close_log_file()
 
+    def mark_task_up_to_date(self, name):
+        self.generate_simulation()
+
+        if not os.path.exists(self.cwd):
+            raise RuntimeError("working dir does not exist")
+
+        self.check_parameters()
+
+        self.table.dump(os.path.join(self.cwd, "parameters.pickle"))
+
+        if not self.simulations:
+            self.logger.info("all simulations are up-to-date")
+            return
+
+        cwd.change_dir(self.cwd)
+
+        self.logger.info("found %d simulations that are not up-to-date",
+                         len(self.simulations))
+
+        for simulation in self.simulations:
+            simulation.mark_task_up_to_date(name)
+
+        cwd.go_back()
+
+        log.close_log_file()
+
     def dry_run(self):
         self.generate_simulations()
 
@@ -576,6 +602,7 @@ class ParameterScan(object):
         subparsers.add_parser("summary")
         subparsers.add_parser("list-tasks")
         parser_run_task = subparsers.add_parser("run-task")
+        parser_mask_up_to_date = subparsers.add_parser("mark-task-up-to-date")
         subparsers.add_parser("dry-run")
         parser_submit_tmux = subparsers.add_parser("submit-tmux")
         subparsers.add_parser("unlock")
@@ -587,6 +614,7 @@ class ParameterScan(object):
         )
 
         parser_run_task.add_argument("task", type=str, help="")
+        parser_mask_up_to_date.add_argument("task", type=str, help="")
 
         parser_submit_tmux.add_argument(
             "-j",
@@ -613,6 +641,8 @@ class ParameterScan(object):
             self.run_index(args.index)
         elif args.subcommand == "run-task":
             self.run_task(args.task)
+        elif args.subcommand == "mark-task-up-to-date":
+            self.mark_task_up_to_date(args.task)
         elif args.subcommand == "qsub":
             self.qsub(args)
         elif args.subcommand == "hdf5":

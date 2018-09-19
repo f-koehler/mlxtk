@@ -170,3 +170,9 @@ class Task(object):
         self.pid.release()
 
         return {"executed": True, "time": stop - start}
+
+    def mark_up_to_date(self):
+        self.pid.acquire()
+        self.get_current_state()
+        self.write_state_file()
+        self.pid.release()

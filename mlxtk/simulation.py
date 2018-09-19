@@ -225,6 +225,20 @@ class Simulation(object):
         tsk.run()
         cwd.go_back()
 
+    def mark_task_up_to_date(self, name):
+        for t in self.tasks:
+            if t.name == name:
+                tsk = t
+                break
+        else:
+            raise ValueError("task with name \"" + name + "\" does not exist")
+
+        self.logger.info("mark task \"%s\" up-to-date")
+        cwd.change_dir(self.cwd)
+        tsk.parameters = self.parameters
+        tsk.mark_up_to_date()
+        cwd.go_back()
+
     def qsub(self, args):
         script_path = os.path.abspath(sys.argv[0])
         if not os.path.exists(self.cwd):

@@ -3,7 +3,8 @@
 *.pyc
 *.swp
 *~
-.ctags
-\#*\#
-\#*
 .\#*
+.ctags
+.mypy_cache/
+\#*
+\#*\#

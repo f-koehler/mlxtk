@@ -1,0 +1,12 @@
+#!/bin/bash
+
+FILES=`find mlxtk examples -name "*.py"`
+
+echo "Run autopep8"
+parallel autopep8 --in-place {} ::: ${FILES}
+
+echo "Run yapf"
+parallel yapf --in-place {} ::: ${FILES}
+
+echo "Run black"
+parallel black --skip-string-normalization ::: ${FILES}

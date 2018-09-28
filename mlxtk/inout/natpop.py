@@ -1,20 +1,9 @@
+import io
 import re
 
+import h5py
 import numpy
 import pandas
-import h5py
-
-from mlxtk.stringio import StringIO
-from mlxtk.inout import hdf5
-from mlxtk import log
-
-
-def read_natpop(path):
-    parsed = hdf5.parse_hdf5_path(path)
-    if parsed is None:
-        return read_natpop_ascii(path)
-    else:
-        return read_natpop_hdf5(parsed)
 
 
 def read_natpop_ascii(path):
@@ -79,86 +68,68 @@ def read_natpop_ascii(path):
             num_orbitals = len(node_content[node][orbitals][0].split())
 
             # prepend time stamps to data
-            for i, time in enumerate(timestamps):
-                node_content[node][orbitals][i] = (
-                    str(time) + " " + node_content[node][orbitals][i])
+            for i in range(len(timestamps)):
+                node_content[node][orbitals][i] = node_content[node][orbitals][i]
 
             # construct header for DataFrame
-            header = ("time " + " ".join([
-                "orbital" + str(orbital) for orbital in range(0, num_orbitals)
-            ]) + "\n")
+            header = (
+                " ".join(
+                    ["orbital_" + str(orbital) for orbital in range(0, num_orbitals)]
+                )
+                + "\n"
+            )
 
             # create DataFrame
-            sio = StringIO(header + "\n".join(node_content[node][orbitals]))
-            data[node + 1][orbitals + 1] = pandas.read_csv(sio, sep="\s+")
+            sio = io.StringIO(header + "\n".join(node_content[node][orbitals]))
+            df = pandas.read_csv(sio, sep=r"\s+")
+            vals = numpy.zeros(df.shape, dtype=numpy.float64)
+            for i in range(num_orbitals):
+                vals[:, i] = df["orbital_" + str(i)]
+            data[node + 1][orbitals + 1] = vals / 1000.
 
-    return data
-
-
-def read_natpop_hdf5(parsed_path):
-    path, path_inside = parsed_path
-    if not hdf5.is_hdf5_group(path, path_inside):
-        raise RuntimeError(
-            "Expected a group containing the natural populations")
-
-    fhandle = h5py.File(path, "r")
-    group_natpop = fhandle[path_inside]
-
-    regex_node_name = re.compile(r"^node(\d+)$")
-    regex_layer_name = re.compile(r"^layer(\d+)$")
-
-    data = {}
-
-    for node in fhandle[path_inside]:
-        group_node = group_natpop[node]
-        m = regex_node_name.match(node)
-        if not m:
-            raise RuntimeError("Invalid node name \"%s\"".format(node))
-        i = int(m.group(1))
-        data[i] = {}
-
-        for layer in group_node:
-            dataset_layer = group_node[layer]
-            m = regex_layer_name.match(layer)
-            if not m:
-                raise RuntimeError("Invalid layer name \"%s\"".format(node))
-            j = int(m.group(1))
-
-            local_data = dataset_layer[:, :]
-            headers = ["time"] + [
-                "orbital" + str(k) for k in range(local_data.shape[1] - 1)
-            ]
-            data[i][j] = pandas.DataFrame(dataset_layer[:, :], columns=headers)
-
-    fhandle.close()
-
-    return data
+    return [numpy.array(timestamps), data]
 
 
-def add_natpop_to_hdf5(group, natpop_path):
-    logger = log.get_logger(__name__)
+def read_natpop_hdf5(path, node=None, dof=None):
+    with h5py.File(path, "r") as fp:
+        time = fp["time"][:]
 
-    opened_file = isinstance(group, str)
-    if opened_file:
-        logger.info("open new hdf5 file %s", group)
-        group = h5py.File(group, "w")
+        if node is not None:
+            if dof is not None:
+                return [time, fp["node_" + str(node)]["dof_" + str(dof)][:, :]]
+            else:
+                node_str = "node_" + str(node)
+                data = {}
+                for entry in fp[node_str]:
+                    data[int(entry.replace("dof_", ""))] = fp[node_str][entry][:, :]
+                return [time, data]
+        else:
+            if dof is not None:
+                raise ValueError("No node specified while specifying the DOF")
+            data = {}
+            for node_entry in (entry for entry in fp if entry.startswith("node_")):
+                node_i = int(node_entry.replace("node_", ""))
+                data[node_i] = {}
+                for dof_entry in fp[node_entry]:
+                    dof_i = int(dof_entry.replace("dof_", ""))
+                    data[node_i][dof_i] = fp[node_entry][dof_entry]
+            return [time, data]
 
-    group_natpop = group.create_group("natpop")
 
-    data = read_natpop(natpop_path)
-    for node in data:
-        group_node = group_natpop.create_group("node" + str(node))
-        for layer in data[node]:
-            logger.info("add natpop data (node: %d, layer: %d)", node, layer)
-            current_data = data[node][layer]
-            dataset_layer = group_node.create_dataset(
-                "layer" + str(layer),
-                current_data.shape,
-                dtype=numpy.float64,
-                compression="gzip",
-            )
-            dataset_layer[:, :] = current_data.values[:, :]
-
-    if opened_file:
-        logger.info("close hdf5 file")
-        group.close()
+def write_natpop_hdf5(path, data):
+    time, data = data
+    with h5py.File(path, "w") as fp:
+        dset = fp.create_dataset(
+            "time", time.shape, dtype=numpy.float64, compression="gzip"
+        )
+        dset[:] = time
+        for node in data:
+            grp = fp.create_group("node_{}".format(node))
+            for dof in data[node]:
+                dset = grp.create_dataset(
+                    "dof_" + str(dof),
+                    data[node][dof].shape,
+                    dtype=numpy.float64,
+                    compression="gzip",
+                )
+                dset[:, :] = data[node][dof][:, :]

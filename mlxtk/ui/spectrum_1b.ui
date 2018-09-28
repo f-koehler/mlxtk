@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Spectrum of One-Body Operator</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QGroupBox" name="group_spfs">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>SPFs</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QListWidget" name="list_spfs"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="tabs">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_spectrum">
+       <attribute name="title">
+        <string>Spectrum</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QGraphicsView" name="plot_spectrum"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_abs">
+       <attribute name="title">
+        <string>Absolute</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QGraphicsView" name="plot_abs"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_real">
+       <attribute name="title">
+        <string>Real</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QGraphicsView" name="plot_real"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_imag">
+       <attribute name="title">
+        <string>Imaginary</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QGraphicsView" name="plot_imag"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_properties">
+       <attribute name="title">
+        <string>Properties</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QTableWidget" name="table_properties">
+          <row>
+           <property name="text">
+            <string>Energy</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Index</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Norm</string>
+           </property>
+          </row>
+          <row>
+           <property name="text">
+            <string>Max. Overlap</string>
+           </property>
+          </row>
+          <column>
+           <property name="text">
+            <string>Value</string>
+           </property>
+          </column>
+          <item row="0" column="0">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </item>
+          <item row="1" column="0">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </item>
+          <item row="2" column="0">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </item>
+          <item row="3" column="0">
+           <property name="text">
+            <string>0</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

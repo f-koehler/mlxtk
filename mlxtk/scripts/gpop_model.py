@@ -3,8 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 from ..inout.gpop import read_gpop_hdf5
-from ..plot.gpop import plot_gpop
-from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..plot.gpop import create_model
 
 
 def main():
@@ -13,15 +12,10 @@ def main():
         "path", nargs="?", default="gpop.hdf5", help="path to the gpop file"
     )
     parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
-    add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    fig, ax = plt.subplots(1, 1)
-
     time, grid, density = read_gpop_hdf5(args.path, dof=args.dof)
-    plot_gpop(ax, time, grid, density)
-
-    apply_2d_args(ax, args)
+    create_model(time, grid, density)
 
     plt.show()
 

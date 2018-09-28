@@ -1,9 +1,8 @@
 import os
 import re
 import subprocess
-import sys
 
-from mlxtk import log
+from . import log
 
 logger = log.get_logger(__name__)
 
@@ -17,24 +16,19 @@ def add_parser_arguments(parser):
     parser.add_argument(
         "--queue",
         default="none",
-        help=
-        "queue of the SGE batch system, \"none\" if you do not want to specify a queue",
+        help='queue of the SGE batch system, "none" if you do not want to specify a queue',
     )
     parser.add_argument(
-        "--memory",
-        default="2G",
-        help="amount of memory available to the job(s)")
+        "--memory", default="2G", help="amount of memory available to the job(s)"
+    )
     parser.add_argument(
-        "--time",
-        default="00:10:00",
-        help="maximum computation time for the job(s)")
-    parser.add_argument(
-        "--cpus", default="1", help="number of cpus to use for SMP")
+        "--time", default="00:10:00", help="maximum computation time for the job(s)"
+    )
+    parser.add_argument("--cpus", default="1", help="number of cpus to use for SMP")
     parser.add_argument(
         "--email",
         default="none",
-        help=
-        "email address to notify about finished, aborted and suspended jobs",
+        help="email address to notify about finished, aborted and suspended jobs",
     )
 
 
@@ -47,7 +41,7 @@ def submit_job(jobfile):
     Returns:
         int: Id of the newly created job
     """
-    logger.info("submit job script \"%s\"", jobfile)
+    logger.info('submit job script "%s"', jobfile)
     regex = re.compile(r"^Your job (\d+)")
     output = subprocess.check_output(["qsub", jobfile])
     m = regex.match(output.decode())
@@ -64,7 +58,7 @@ def mark_file_executable(path):
     Args:
         path (str): Path to the file
     """
-    logger.info("make file executable \"%s\"", path)
+    logger.info('make file executable "%s"', path)
     os.chmod(path, 0o755)
 
 
@@ -79,7 +73,7 @@ def write_epilogue_script(path, jobid):
     """
     script = ("#!/bin/bash\n" "qacct -j {jobid}\n").format(jobid=jobid)
 
-    logger.info("write epilogue script \"%s\"", path)
+    logger.info('write epilogue script "%s"', path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
@@ -122,7 +116,7 @@ def write_job_file(path, name, cmd, args):
         email=args.email,
     )
 
-    logger.info("write job script \"%s\"", path)
+    logger.info('write job script "%s"', path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 
@@ -137,10 +131,9 @@ def write_stop_script(path, jobids):
         jobids (list): List of job ids to abort
     """
     script = ["#!/bin/bash", "qdel {jobids}"]
-    script = "\n".join(script).format(
-        jobids=" ".join([str(jobid) for jobid in jobids]))
+    script = "\n".join(script).format(jobids=" ".join([str(jobid) for jobid in jobids]))
 
-    logger.info("write stop script \"%s\"", path)
+    logger.info('write stop script "%s"', path)
     with open(path, "w") as fhandle:
         fhandle.write(script)
 

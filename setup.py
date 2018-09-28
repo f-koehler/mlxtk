@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# from distutils.core import setup
 from setuptools import setup
 
 setup(
@@ -11,36 +10,24 @@ setup(
     url="https://github.com/f-koehler/mlxtk",
     license="MIT",
     install_requires=[
-        "colorama>=0.3.9",
-        "h5py>=2.7.1",
-        "matplotlib>=2.1.0",
-        "numpy>=1.13.3",
-        "pandas>=0.20.3",
-        "scipy>=1.0.0",
-        "tabulate>=0.8.2",
+        "colorama",
+        "doit",
+        "h5py",
+        "matplotlib",
+        "numpy",
+        "numpy-stl",
+        "pandas",
+        "scipy",
+        "tabulate",
     ],
     packages=["mlxtk"],
     entry_points={
-        "console_scripts": [
-            "accept_cluster_keys=mlxtk.scripts.accept_cluster_keys:main",
-            "plot_dmat2=mlxtk.scripts.plot_dmat2:main",
-            "plot_energy=mlxtk.scripts.plot_energy:main",
-            "plot_energy_diff=mlxtk.scripts.plot_energy_diff:main",
-            "plot_expval=mlxtk.scripts.plot_expval:main",
-            "plot_expvals=mlxtk.scripts.plot_expvals:main",
-            "plot_expvals_diff=mlxtk.scripts.plot_expvals_diff:main",
-            "plot_gpop3d=mlxtk.scripts.plot_gpop3d:main",
-            "plot_gpop=mlxtk.scripts.plot_gpop:main",
-            "plot_gpop_diff=mlxtk.scripts.plot_gpop_diff:main",
-            "plot_integrated_gpop_diff=mlxtk.scripts.plot_integrated_gpop_diff:main",
-            "plot_gpop_slider=mlxtk.scripts.plot_gpop_slider:main",
-            "plot_natpop=mlxtk.scripts.plot_natpop:main",
-            "plot_natpop_diff=mlxtk.scripts.plot_natpop_diff:main",
-            "plot_norm=mlxtk.scripts.plot_norm:main",
-            "plot_norm_diff=mlxtk.scripts.plot_norm_diff:main",
-            "plot_overlap=mlxtk.scripts.plot_overlap:main",
-            "plot_overlap_diff=mlxtk.scripts.plot_overlap_diff:main",
-            "scan_view=mlxtk.scripts.scan_view:main",
-            # "plot_dmat1=mlxtk.scripts.plot_dmat1:main",
-        ]
-    })
+        "console_scripts":[
+            "gpop_model = mlxtk.scripts.gpop_model:main",
+            "plot_energy = mlxtk.scripts.plot_energy:main",
+            "plot_gpop = mlxtk.scripts.plot_gpop:main",
+            "plot_natpop = mlxtk.scripts.plot_natpop:main",
+            "spectrum_1b = mlxtk.scripts.spectrum_1b:main",
+            ]
+        }
+)

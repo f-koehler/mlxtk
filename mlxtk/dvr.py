@@ -1,4 +1,4 @@
-import time
+# import time
 
 from QDTK.Primitive import Harmdvr
 from QDTK.Primitive import rHarmdvr
@@ -9,196 +9,216 @@ from QDTK.Primitive import Laguerredvr
 from QDTK.Primitive import Discrete
 from QDTK.Primitive import FFT
 
-from mlxtk import log
+DVR_CLASSES = {
+    "HarmonicDVR": Harmdvr,
+    "RadialHarmonicDVR": rHarmdvr,
+    "SineDVR": Sindvr,
+    "ExponentialDVR": Expdvr,
+    "LegendreDVR": Legendredvr,
+    "LaguerreDVR": Laguerredvr,
+}
 
-REGISTERED_DVRS = {}
-DVRS = {}
 
-LOGGER = log.get_logger(__name__)
-
-
-def remove_dvr(name):
-    """Remove a registered DVR
+class DVRSpecification(object):
+    """A specification for a DVR grid
 
     Args:
-        name (str): Name of the DVR
+       type_ (str): type of the DVR
+       *args (list): list of arguments to construct the DVR
+
+    Attributes:
+       type_ (str): type of the DVR
+       args (list): list of arguments to construct the DVR
+       dvr: the DVR object once it is constructed
     """
-    if name in DVRS:
-        del DVRS[name]
+
+    def __init__(self, type_, *args):
+        self.type_ = type_
+        self.args = args
+        self.dvr = None
+
+    def compute(self):
+        if self.dvr is None:
+            class_ = DVR_CLASSES[self.type_]
+            self.dvr = class_(*self.args)
+
+    def get(self):
+        self.compute()
+        return self.dvr
+
+    def get_x(self):
+        self.compute()
+        return self.dvr.x
+
+    def get_weights(self):
+        self.compute()
+        return self.dvr.weights
+
+    def get_d1(self):
+        self.compute()
+        return self.dvr.d1dvr
+
+    def get_d2(self):
+        self.compute()
+        return self.dvr.d2dvr
+
+    def get_delta(self):
+        self.compute()
+        return self.dvr.delta_w()
+
+    def __getstate__(self):
+        return {"type": self.type_, "args": self.args}
+
+    def __setstate__(self, state):
+        if (state["type"] != self.type_) or (state["args"] != self.args):
+            self.dvr = None
+
+        self.type_ = state["type"]
+        self.args = state["args"]
 
 
-def add_harmdvr(name, npoints, xeq, xho, tolerance=1e-15):
+def add_harmdvr(npoints, xeq, xho, tolerance=1e-15):
     """Register a new harmonic oscillator DVR
 
     Args:
-        name (str): Name for the DVR object
-        npoints (int): Number of grid points
+        npoints (int): lnumber of grid points
         xeq (float): equilibrium position
         xh0 (float): harmonic oscillator length
         tolerance (float): ???
     """
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Harmdvr, npoints, xeq, xho, tolerance]
+    return DVRSpecification("HarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_rharmdvr(name, npoints, xeq, xho, tolerance=1e-15):
+def add_rharmdvr(npoints, xeq, xho, tolerance=1e-15):
     """Register a new radial harmonic oscillator DVR
 
     Args:
-        name (str): Name for the DVR object
-        npoints (int): Number of grid points
+        npoints (int): number of grid points
         xeq (float): equilibrium position
         xh0 (float): harmonic oscillator length
         tolerance (float): ???
     """
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [rHarmdvr, npoints, xeq, xho, tolerance]
+    return DVRSpecification("RadialHarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_sinedvr(name, npoints, qmin, qmax):
+def add_sinedvr(npoints, qmin, qmax):
     """Register a new sine DVR
 
     Args:
-        name (str): Name for the DVR object
-        npoints (int): Number of grid points
-        qmin (float): Minimal x value
-        qmax (float): Maximal x value
+        npoints (int): number of grid points
+        qmin (float): minimal x value
+        qmax (float): maximal x value
     """
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Sindvr, npoints, qmin, qmax]
+    return DVRSpecification("SineDVR", npoints, qmin, qmax)
 
 
-def add_expdvr(name, npoints, qmin, qmax):
+def add_expdvr(npoints, qmin, qmax):
     """Register a new exponential DVR
 
     Args:
-        name (str): Name for the DVR object
-        npoints (int): Number of grid points
-        qmin (float): Minimal x value
-        qmax (float): Maximal x value
+        npoints (int): number of grid points
+        qmin (float): minimal x value
+        qmax (float): maximal x value
     """
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Expdvr, npoints, qmin, qmax]
+    return DVRSpecification("ExponentialDVR", npoints, qmin, qmax)
 
 
-def add_lengendredvr(name, npoints, m, tolerance=1e-10):
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Legendredvr, npoints, m, tolerance]
+def add_lengendredvr(npoints, m, tolerance=1e-10):
+    return DVRSpecification("LegendreDVR", npoints, m, tolerance)
 
 
 def add_laguerredvr(name, npoints, alpha, xlag, x0, tolerance=1e-11):
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Laguerredvr, npoints, alpha, xlag, x0, tolerance]
+    return DVRSpecification("LaguerreDVR", npoints, alpha, xlag, x0, tolerance)
 
 
-def add_discretedvr(name, nstates):
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [Discrete, nstates]
+# def add_discretedvr(name, nstates):
+#     if name in REGISTERED_DVRS:
+#         LOGGER.warn("overwrite existing dvr %s", name)
+#         remove_dvr(name)
+#     REGISTERED_DVRS[name] = [Discrete, nstates]
 
+# def add_fft(name, npoints, xmin, xmax):
+#     if name in REGISTERED_DVRS:
+#         LOGGER.warn("overwrite existing dvr %s", name)
+#         remove_dvr(name)
+#     REGISTERED_DVRS[name] = [FFT, npoints, xmin, xmax]
 
-def add_fft(name, npoints, xmin, xmax):
-    if name in REGISTERED_DVRS:
-        LOGGER.warn("overwrite existing dvr %s", name)
-        remove_dvr(name)
-    REGISTERED_DVRS[name] = [FFT, npoints, xmin, xmax]
+# def exists(name):
+#     return name in REGISTERED_DVRS
 
+# def get(name):
+#     """Return the DVR registered under the given name
 
-def exists(name):
-    return name in REGISTERED_DVRS
+#     Args:
+#         name (str): Name of the DVR
 
+#     Returns:
+#         The DVR object with the given name
+#     """
+#     if name not in DVRS:
+#         LOGGER.info("constructing dvr \"%s\" (%s)", name,
+#                     REGISTERED_DVRS[name][0].__name__)
+#         start = time.perf_counter()
+#         DVRS[name] = REGISTERED_DVRS[name][0](*REGISTERED_DVRS[name][1:])
+#         stop = time.perf_counter()
+#         LOGGER.info("execution took %fs", stop - start)
 
-def get(name):
-    """Return the DVR registered under the given name
+#     return DVRS[name]
 
-    Args:
-        name (str): Name of the DVR
+# def is_fft(name):
+#     """Check wether a DVR is of FFT type
 
-    Returns:
-        The DVR object with the given name
-    """
-    if name not in DVRS:
-        LOGGER.info("constructing dvr \"%s\" (%s)", name,
-                    REGISTERED_DVRS[name][0].__name__)
-        start = time.perf_counter()
-        DVRS[name] = REGISTERED_DVRS[name][0](*REGISTERED_DVRS[name][1:])
-        stop = time.perf_counter()
-        LOGGER.info("execution took %fs", stop - start)
+#     Args:
+#         name (str): Name of the DVR
 
-    return DVRS[name]
+#     Returns:
+#         bool: `True` if the DVR is of FFT type, `False` otherwise
+#     """
+#     if name not in REGISTERED_DVRS:
+#         raise RuntimeError("No DVR with name \"" + name + "\" present")
 
+#     return REGISTERED_DVRS[name][0] == FFT
 
-def is_fft(name):
-    """Check wether a DVR is of FFT type
+# def get_x(name):
+#     return get(name).x
 
-    Args:
-        name (str): Name of the DVR
+# def get_d1(name):
+#     if is_fft(name):
+#         return get(name).d1fft
+#     else:
+#         return get(name).d1dvr
 
-    Returns:
-        bool: `True` if the DVR is of FFT type, `False` otherwise
-    """
-    if name not in REGISTERED_DVRS:
-        raise RuntimeError("No DVR with name \"" + name + "\" present")
+# def get_d2(name):
+#     if is_fft(name):
+#         return get(name).d2fft
+#     else:
+#         return get(name).d2dvr
 
-    return REGISTERED_DVRS[name][0] == FFT
+# def fftw_grid_sizes(n_max):
+#     sizes = []
 
+#     for i in range(2, n_max):
+#         n = i
 
-def get_x(name):
-    return get(name).x
+#         while True:
+#             if n % 5 == 0:
+#                 n = n // 5
+#             else:
+#                 break
 
+#         while True:
+#             if n % 3 == 0:
+#                 n = n // 3
+#             else:
+#                 break
 
-def get_d1(name):
-    if is_fft(name):
-        return get(name).d1fft
-    else:
-        return get(name).d1dvr
+#         while True:
+#             if n % 2 == 0:
+#                 n = n // 2
+#             else:
+#                 break
 
+#         if n == 1:
+#             sizes.append(i)
 
-def get_d2(name):
-    if is_fft(name):
-        return get(name).d2fft
-    else:
-        return get(name).d2dvr
-
-
-def fftw_grid_sizes(n_max):
-    sizes = []
-
-    for i in range(2, n_max):
-        n = i
-
-        while True:
-            if n % 5 == 0:
-                n = n // 5
-            else:
-                break
-
-        while True:
-            if n % 3 == 0:
-                n = n // 3
-            else:
-                break
-
-        while True:
-            if n % 2 == 0:
-                n = n // 2
-            else:
-                break
-
-        if n == 1:
-            sizes.append(i)
-
-    return sizes
+#     return sizes

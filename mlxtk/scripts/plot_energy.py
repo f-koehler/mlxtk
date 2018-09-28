@@ -1,36 +1,28 @@
-#!/usr/bin/env python
 import argparse
 
-from mlxtk import mpl
-import mlxtk.plot.argparser
-from mlxtk.plot.plot_program import SimplePlotProgram
-from mlxtk.inout.output import read_output
+import matplotlib.pyplot as plt
+
+from ..inout.output import read_output_hdf5
+from ..plot.energy import plot_energy
+from ..plot.plot import add_argparse_2d_args, apply_2d_args
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Plot evolution of energy expectation value over time")
-    mlxtk.plot.argparser.add_plotting_arguments(parser)
+    parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--in",
-        type=str,
-        dest="input_file",
-        default="output",
-        help="input_file (defaults to \"output\")",
+        "path", nargs="?", default="output.hdf5", help="path to the output file"
     )
+    add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    def init_plot(plot):
-        data = read_output(args.input_file)
-        plot.axes.plot(
-            data.time,
-            data.energy,
-            marker="." if len(data.time) <= 300 else "None")
-        plot.axes.set_xlabel("$t$")
-        plot.axes.set_ylabel(r"$\langle H\rangle (t)$")
+    fig, ax = plt.subplots(1, 1)
 
-    program = SimplePlotProgram("Energy", init_plot)
-    program.main(args)
+    time, _, energy, _ = read_output_hdf5(args.path)
+    plot_energy(ax, time, energy)
+
+    apply_2d_args(ax, args)
+
+    plt.show()
 
 
 if __name__ == "__main__":

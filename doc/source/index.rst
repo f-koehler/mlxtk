@@ -1,9 +1,20 @@
+.. mlxtk documentation master file, created by
+   sphinx-quickstart on Tue Sep 25 16:01:37 2018.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
 Welcome to mlxtk's documentation!
 =================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   grid
+   systems/index
+   inout
+   log
+   sge
 
 
 
@@ -13,83 +24,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-Logging
-=======
-
-.. automodule:: mlxtk.log
-    :members:
-    :undoc-members:
-
-
-SGE
-===
-
-.. automodule:: mlxtk.sge
-    :members:
-    :undoc-members:
-
-
-Tasks
-=====
-
-.. autoclass:: mlxtk.task.ExpectationValueTask
-    :members:
-    :undoc-members:
-
-.. autoclass:: mlxtk.task.OperatorCreationTask
-    :members:
-    :undoc-members:
-
-.. autoclass:: mlxtk.task.PropagationTask
-    :members:
-    :undoc-members:
-
-.. automodule:: mlxtk.task.task
-    :members:
-    :undoc-members:
-
-.. autoclass:: mlxtk.task.WaveFunctionCreationTask
-    :members:
-    :undoc-members:
-
-.. autoclass:: mlxtk.task.ComputeVarianceTask
-   :members:
-   :undoc-members:
-
-
-Hashing
-=======
-
-.. automodule:: mlxtk.hashing
-    :members:
-    :undoc-members:
-
-
-qdtk_executable
-===============
-
-.. automodule:: mlxtk.qdtk_executable
-    :members:
-    :undoc-members:
-
-
-DVR
-===
-
-.. automodule:: mlxtk.dvr
-    :members:
-    :undoc-members:
-
-
-Tools
-=====
-
-.. automodule:: mlxtk.tools.diagonalize
-    :members:
-    :undoc-members:
-
-.. automodule:: mlxtk.tools.wave_function_manipulation
-    :members:
-    :undoc-members:

@@ -9,22 +9,24 @@ from .. import log
 LOGGER = log.get_logger(__name__)
 
 
-def diagonalize_1b_hamiltonian(hamiltonian, number_eigenfunctions,
-                               grid_points):
+def diagonalize_1b_operator(matrix, number_eigenfunctions):
     """Diagonalize the supplied one-dimensional one-body hamiltonian
 
     Args:
         hamiltonian (QDTK.Operator): operator to diagonalize
         number_eigenfunctions (int): number of eigenvalues/eigenvectors to compute
-        grid_points (int): the number of grid points
 
     Returns:
         A tuple with the list of eigenvalues as the first element followed by the eigenvectors
     """
-    eigenvalues, eigenvectors = hamiltonian.diag_1b_hamiltonian1d(grid_points)
+    eigenvalues, eigenvectors = scipy.linalg.eig(matrix)
+    eigenvalues = numpy.real(eigenvalues)
+
+    QDTK.Tools.Mathematics.sortEigValsVecs(eigenvalues, eigenvectors)
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
-        number_eigenfunctions, eigenvectors)
+        number_eigenfunctions, eigenvectors
+    )
     eigenvalues = eigenvalues[0:number_eigenfunctions]
     QDTK.Tools.Mathematics.gramSchmidt(eigenvectors)
     return eigenvalues, eigenvectors
@@ -50,11 +52,12 @@ def find_degeneracies(energies, tolerance=1e-8):
     Returns:
         list: A list of tuples containing the indices of equal eigenvalues.
     """
-    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) + 0.5
-                 ) * tolerance
+    converted = (
+        numpy.floor(energies / tolerance).astype(numpy.int64) + 0.5
+    ) * tolerance
     unique = (
-        numpy.unique(numpy.floor(energies / tolerance).astype(numpy.int64)) +
-        0.5) * tolerance
+        numpy.unique(numpy.floor(energies / tolerance).astype(numpy.int64)) + 0.5
+    ) * tolerance
     degeneracies = []
     for energy in unique:
         degeneracies.append(list(numpy.nonzero(converted == energy)[0]))
@@ -68,15 +71,14 @@ def split_bands(spfs, periodicity):
         exit()
 
     for i in range(num_bands):
-        yield spfs[i * periodicity:(i + 1) * periodicity]
+        yield spfs[i * periodicity : (i + 1) * periodicity]
 
 
 def get_position_operator_in_spf_basis(spfs, x):
     operator = numpy.zeros((len(spfs), len(spfs)), dtype=numpy.complex128)
     for i, spf_i in enumerate(spfs):
         for j, spf_j in enumerate(spfs):
-            operator[i, j] = numpy.dot(spf_i.conjugate(),
-                                       numpy.multiply(x, spf_j))
+            operator[i, j] = numpy.dot(spf_i.conjugate(), numpy.multiply(x, spf_j))
     return operator
 
 

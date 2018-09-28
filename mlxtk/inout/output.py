@@ -1,88 +1,51 @@
 import h5py
-import numpy
 import pandas
-import os.path
-
-from mlxtk import log
-from mlxtk.inout import hdf5
-
-
-def read_output(path):
-    """Read a QDTK ouput file
-
-    The resulting :py:class:`pandas.DataFrame` contains the columns `time`,
-    `norm`, `energy` and `overlap`.
-
-    Args:
-        path (str): Path to the output file
-
-    Returns:
-        pandas.DataFrame: The output of the QDTK run
-    """
-    parsed = hdf5.parse_hdf5_path(path)
-    if parsed is None:
-        return read_output_ascii(path)
-    else:
-        return read_output_hdf5(parsed)
 
 
 def read_output_ascii(path):
-    return pandas.read_csv(
-        path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
+    """Read an output file (raw ASCII format)
+
+    Args:
+       path (str): path to the file
+
+    Return:
+       list: The contents of the output file as a :py:class:`list` containing
+          four :py:class:`numpy.ndarray` instances. The first one contains all
+          simulation times. The other entries contain the norm, energy and
+          maximum SPF overlap of the wave function at all times.
+    """
+    df = pandas.read_csv(path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
+    return [
+        df["time"].values,
+        df["norm"].values,
+        df["energy"].values,
+        df["overlap"].values,
+    ]
 
 
-def read_output_hdf5(parsed_path):
-    path, path_inside = parsed_path
-    if not hdf5.is_hdf5_group(path, path_inside):
-        raise RuntimeError("Expected a group containing the output")
-
-    with h5py.File(path, "r") as fhandle:
-        data = pandas.DataFrame(
-            data={
-                "time": fhandle[os.path.join(path_inside, "time")][:],
-                "norm": fhandle[os.path.join(path_inside, "norm")][:],
-                "energy": fhandle[os.path.join(path_inside, "energy")][:],
-                "overlap": fhandle[os.path.join(path_inside, "overlap")][:],
-            })
-
-    return data
+def read_output_hdf5(path):
+    with h5py.File(path, "r") as fp:
+        return [fp["time"][:], fp["norm"][:], fp["energy"][:], fp["overlap"][:]]
 
 
-def add_output_to_hdf5(group, output_path):
-    logger = log.get_logger(__name__)
+def write_output_hdf5(path, data):
+    with h5py.File(path, "w") as fp:
+        dset = fp.create_dataset(
+            "time", data[0].shape, dtype=data[0].dtype, compression="gzip"
+        )
+        dset[:] = data[0]
 
-    data = read_output(output_path)
+        dset = fp.create_dataset(
+            "norm", data[1].shape, dtype=data[1].dtype, compression="gzip"
+        )
+        dset[:] = data[1]
 
-    opened_file = isinstance(group, str)
-    if opened_file:
-        logger.info("open new hdf5 file %s", group)
-        group = h5py.File(group, "w")
-    else:
-        group = group.create_group("output")
+        dset = fp.create_dataset(
+            "energy", data[2].shape, dtype=data[2].dtype, compression="gzip"
+        )
+        dset[:] = data[2]
 
-    logger.info("add times")
-    dset_time = group.create_dataset(
-        "time", (len(data["time"]), ), dtype=numpy.float64, compression="gzip")
-    dset_time[:] = data["time"]
-
-    logger.info("add norm")
-    dset_norm = group.create_dataset(
-        "norm", (len(data["norm"]), ), dtype=numpy.float64, compression="gzip")
-    dset_norm[:] = data["norm"]
-
-    logger.info("add energy")
-    dset_energy = group.create_dataset(
-        "energy", (len(data["energy"]), ),
-        dtype=numpy.float64,
-        compression="gzip")
-    dset_energy[:] = data["energy"]
-
-    logger.info("add overlap")
-    dset_overlap = group.create_dataset(
-        "overlap", (len(data["overlap"]), ),
-        dtype=numpy.float64,
-        compression="gzip")
-    dset_overlap[:] = data["overlap"]
-
-    if opened_file:
-        group.close()
+        dset = fp.create_dataset(
+            "overlap", data[3].shape, dtype=data[3].dtype, compression="gzip"
+        )
+        dset[:] = data[3]

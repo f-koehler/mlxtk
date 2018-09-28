@@ -10,11 +10,11 @@ def change_dir(path):
     path = os.path.abspath(path)
 
     if not os.path.exists(path):
-        raise RuntimeError(
-            "New working directory \"{}\" does not exist".format(path))
+        raise RuntimeError("New working directory \"{}\" does not exist".format(path))
     if not os.path.isdir(path):
         raise RuntimeError(
-            "New working directory \"{}\" is not a directory".format(path))
+            "New working directory \"{}\" is not a directory".format(path)
+        )
 
     # store the old working directory
     old = os.path.abspath(os.getcwd())

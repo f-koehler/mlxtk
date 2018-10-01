@@ -1,0 +1,2 @@
+class ParameterScan(object):
+    pass

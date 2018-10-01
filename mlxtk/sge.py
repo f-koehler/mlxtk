@@ -2,9 +2,11 @@ import os
 import re
 import subprocess
 
-from . import log
+from . import log, templates
 
-logger = log.get_logger(__name__)
+LOGGER = log.get_logger(__name__)
+REGEX_QSTAT = re.compile(r"^(\d+)\s+")
+REGEX_QSUB = re.compile(r"^Your job (\d+)")
 
 
 def add_parser_arguments(parser):
@@ -14,9 +16,9 @@ def add_parser_arguments(parser):
         parser (argparse.ArgumentParser): parser to modify
     """
     parser.add_argument(
-        "--queue",
+        "--queues",
         default="none",
-        help='queue of the SGE batch system, "none" if you do not want to specify a queue',
+        help='comma separated list of queues for the SGE batch system, "none" if you do not want to specify a queue',
     )
     parser.add_argument(
         "--memory", default="2G", help="amount of memory available to the job(s)"
@@ -32,109 +34,65 @@ def add_parser_arguments(parser):
     )
 
 
-def submit_job(jobfile):
-    """Submit a job to the SGE batch-queuing system
-
-    Args:
-        jobfile (str): Path to the script that runs the job
-
-    Returns:
-        int: Id of the newly created job
-    """
-    logger.info('submit job script "%s"', jobfile)
-    regex = re.compile(r"^Your job (\d+)")
-    output = subprocess.check_output(["qsub", jobfile])
-    m = regex.match(output.decode())
-
-    if not m:
-        raise RuntimeError("failed to extract jobid from qsub output")
-
-    return int(m.group(1))
+def get_jobs_in_queue():
+    output = subprocess.check_output(["qstat"]).decode().splitlines()
+    job_ids = []
+    for line in output:
+        m = REGEX_QSTAT
+        if m:
+            job_ids.append(int(m.group(1)))
+    return job_ids
 
 
-def mark_file_executable(path):
-    """Make a file executable using :py:func:`os.chmod`
+def submit(command, args):
+    # check if job is already running
+    if os.path.exists("sge.id"):
+        with open("sge.id") as fp:
+            job_id = int(fp.read())
+            if job_id in get_jobs_in_queue():
+                LOGGER.warning(
+                    "job seems to be in the queue already (with id %d)", job_id
+                )
+                return
 
-    Args:
-        path (str): Path to the file
-    """
-    logger.info('make file executable "%s"', path)
-    os.chmod(path, 0o755)
+    # set up args for the job script
+    args = {
+        "queues": args.queues,
+        "memory": args.memory,
+        "time": args.time,
+        "cpus": args.cpus,
+        "email": args.email,
+    }
 
+    # create job script
+    LOGGER.debug("create job script")
+    with open("sge", "w") as fp:
+        fp.write(templates.get_template("sge_job.j2").render(args=args))
+    os.chmod("sge", 0o755)
+    LOGGER.debug("done")
 
-def write_epilogue_script(path, jobid):
-    """Create a epilogue script fo a given job
+    # submit job
+    LOGGER.debug("submit job")
+    output = subprocess.check_output(["qsub", "sge"]).decode()
+    m = REGEX_QSUB.match(output)
+    job_id = int(m.group(1))
+    LOGGER.debug("done")
 
-    The script uses the `qacct` command to show information about the job
+    LOGGER.debug("write id to file")
+    with open("sge.id", "w") as fp:
+        fp.write(str(job_id) + "\n")
+    LOGGER.debug("done")
 
-    Args:
-        path (str): Path where the script should be stored
-        jobid (int): Id of the job
-    """
-    script = ("#!/bin/bash\n" "qacct -j {jobid}\n").format(jobid=jobid)
+    # write stop script
+    LOGGER.debug("create stop script")
+    with open("sge_stop", "w") as fp:
+        fp.write(templates.get_template("sge_epilogue").render(job_id=job_id))
+    os.chmod("sge_stop", 0o755)
+    LOGGER.debug("done")
 
-    logger.info('write epilogue script "%s"', path)
-    with open(path, "w") as fhandle:
-        fhandle.write(script)
-
-    mark_file_executable(path)
-
-
-def write_job_file(path, name, cmd, args):
-    """Create a job file
-
-    Args:
-        path (str): Path where the scirpt should be stored
-        name (str): Name of the job
-        cmd (str): Job command
-        args (argparse.Namespace): Namespace containing the SGE related command line arguments
-    """
-    script = ["#!/bin/bash", "#$ -N {name}"]
-    if args.queue.upper() != "NONE":
-        script.append("#$ -q {queue}")
-    if args.email.upper() != "NONE":
-        script.append("#$ -M {email} -m aes")
-    script += [
-        "#$ -S /bin/bash",
-        "#$ -cwd",
-        "#$ -j y",
-        "#$ -V",
-        "#$ -l h_vmem={memory}",
-        "#$ -l h_cpu={time}",
-        "#$ -pe smp {cpus}",
-        "export OMP_NUM_THREADS={cpus}",
-        "{cmd}\n",
-    ]
-
-    script = "\n".join(script).format(
-        name=name,
-        queue=args.queue,
-        memory=args.memory,
-        time=args.time,
-        cpus=args.cpus,
-        cmd=cmd,
-        email=args.email,
-    )
-
-    logger.info('write job script "%s"', path)
-    with open(path, "w") as fhandle:
-        fhandle.write(script)
-
-    mark_file_executable(path)
-
-
-def write_stop_script(path, jobids):
-    """Create a stop script to abort given jobs
-
-    Args:
-        path (str): Path where the script should be stored
-        jobids (list): List of job ids to abort
-    """
-    script = ["#!/bin/bash", "qdel {jobids}"]
-    script = "\n".join(script).format(jobids=" ".join([str(jobid) for jobid in jobids]))
-
-    logger.info('write stop script "%s"', path)
-    with open(path, "w") as fhandle:
-        fhandle.write(script)
-
-    mark_file_executable(path)
+    # write epilogue script
+    LOGGER.debug("create epilogue script")
+    with open("sge_epilogue", "w") as fp:
+        fp.write(templates.get_template("sge_epilogue").render(job_id=job_id))
+    os.chmod("sge_epilogue", 0o755)
+    LOGGER.debug("done")

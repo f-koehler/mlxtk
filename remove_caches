@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euf -o pipefail
+
+CACHES=`find -name __pycache__`
+rm -rfv ${CACHES}

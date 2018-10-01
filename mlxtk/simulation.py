@@ -1,11 +1,9 @@
 import argparse
 import os
+import subprocess
 import sys
 
-from . import cwd
-from . import doit_compat
-from . import log
-from . import sge
+from . import cwd, doit_compat, log, sge
 
 
 class Simulation(object):
@@ -26,8 +24,22 @@ class Simulation(object):
         doit_compat.run_doit(self.tasks, ["-n", str(args.jobs)])
         cwd.go_back()
 
-    def qsub(self, qsub):
-        pass
+    def qsub(self, args):
+        if not os.path.exists(self.working_dir):
+            os.makedirs(self.working_dir)
+
+        cwd.change_dir(self.working_dir)
+        sge.submit(
+            [sys.executable, os.path.dirname(os.path.realpath(__file__)), "run"], args
+        )
+        cwd.go_back()
+
+    def qdel(self, args):
+        cwd.change_dir(self.working_dir)
+        if os.path.exists("sge_stop"):
+            LOGGER.warning("stopping job")
+            subprocess.check_output("sge_stop")
+        cwd.go_back()
 
     def task_info(self, args):
         cwd.change_dir(self.working_dir)
@@ -54,6 +66,9 @@ class Simulation(object):
         parser_qsub = subparsers.add_parser("qsub")
         sge.add_parser_arguments(parser_qsub)
 
+        # parser for qdel
+        subparsers.add_parser("qdel")
+
         args = parser.parse_args(args)
 
         if args.subcommand is None:
@@ -65,6 +80,8 @@ class Simulation(object):
             self.run(args)
         elif args.subcommand == "qsub":
             self.qsub(args)
+        elif args.subcommand == "qdel":
+            self.qdel(args)
         elif args.subcommand == "list-tasks":
             doit_compat.run_doit(self.tasks, ["list"])
         elif args.subcommand == "task-info":

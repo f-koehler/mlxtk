@@ -1,14 +1,14 @@
 #!/bin/bash
 # -*- mode: sh -*-
-
-{% if args.queue is not None %}
+{% if args.queue -%}
 #$ -q {{args.queue}}
-{% end if %}
-{% if args.email is not None %}
+{%- endif %}
+{% if args.email -%}
 #$ -M {{args.email}} -m aes
-{% end if %}
+{%- endif %}
 #$ -S /bin/bash
 #$ -cwd
+#$ -o {{ args.sge_dir }}
 #$ -j y
 #$ -V
 #$ -l h_vmem={{args.memory}}
@@ -16,4 +16,4 @@
 #$ -pe smp {{args.cpus}}
 
 export OMP_NUM_THREADS={{args.cpus}}
-{{args.cmd}}
+{{args.command}}

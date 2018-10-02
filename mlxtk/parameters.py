@@ -75,9 +75,7 @@ class Parameters(object):
         setattr(self, name, value)
 
     def __str__(self):
-        return "Parameters " + str(
-            {name: getattr(self, name)
-             for name in self.names})
+        return "Parameters " + str({name: getattr(self, name) for name in self.names})
 
 
 class ParameterTable(object):
@@ -165,11 +163,7 @@ class ParameterTable(object):
         json_path = path + ".json"
         pickle_path = path + ".pickle"
 
-        data = {
-            "names": self.names,
-            "values": self.values,
-            "table": self.table
-        }
+        data = {"names": self.names, "values": self.values, "table": self.table}
 
         with open(json_path, "w") as fhandle:
             json.dump(data, fhandle)
@@ -178,11 +172,7 @@ class ParameterTable(object):
             pickle.dump(data, fhandle)
 
     def dumps(self):
-        data = {
-            "names": self.names,
-            "values": self.values,
-            "table": self.table
-        }
+        data = {"names": self.names, "values": self.values, "table": self.table}
         return pickle.dumps(data)
 
     def to_data_frame(self):
@@ -222,7 +212,8 @@ class ParameterTable(object):
         table.values = data["values"]
         table.table = data["table"]
         table.filters.append(
-            functools.partial(pseudo_filter, initial_table=data["table"]))
+            functools.partial(pseudo_filter, initial_table=data["table"])
+        )
         table.recalculate()
 
         return table
@@ -243,7 +234,8 @@ class ParameterTable(object):
         table.values = data["values"]
         table.table = data["table"]
         table.filters.append(
-            functools.partial(pseudo_filter, initial_table=data["table"]))
+            functools.partial(pseudo_filter, initial_table=data["table"])
+        )
         table.recalculate()
 
         return table
@@ -288,8 +280,7 @@ class ParameterTable(object):
 
     def format_table(self, fmt="plain"):
         table = [[i] + list(row) for i, row in enumerate(self.table)]
-        return tabulate.tabulate(
-            table, headers=["index"] + self.names, tablefmt=fmt)
+        return tabulate.tabulate(table, headers=["index"] + self.names, tablefmt=fmt)
 
     def format_constants(self, fmt="plain"):
         return tabulate.tabulate(
@@ -315,5 +306,5 @@ class ParameterTable(object):
             return self.table[e]
         else:
             raise NotImplementedError(
-                "ParameterTable.__getitem__ not implemented for type %s",
-                str(type(e)))
+                "ParameterTable.__getitem__ not implemented for type %s", str(type(e))
+            )

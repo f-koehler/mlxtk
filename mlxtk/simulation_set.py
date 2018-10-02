@@ -1,5 +1,6 @@
 import argparse
 
+
 class SimulationSet(object):
     def __init__(self):
         self.simulations = []

@@ -28,11 +28,11 @@ class Simulation(object):
         if not os.path.exists(self.working_dir):
             os.makedirs(self.working_dir)
 
-        cwd.change_dir(self.working_dir)
         sge.submit(
-            [sys.executable, os.path.dirname(os.path.realpath(__file__)), "run"], args
+            " ".join([sys.executable, os.path.abspath(sys.argv[0]), "run"]),
+            args,
+            sge_dir=self.working_dir,
         )
-        cwd.go_back()
 
     def qdel(self, args):
         cwd.change_dir(self.working_dir)

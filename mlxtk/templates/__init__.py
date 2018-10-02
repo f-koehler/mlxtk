@@ -1,8 +1,6 @@
 import jinja2
 
-TEMPLATE_ENV = jinja2.Environment(
-    loader=jinja2.PackageLoader("mlxtk", "templates")
-)
+TEMPLATE_ENV = jinja2.Environment(loader=jinja2.PackageLoader("mlxtk", "templates"))
 
 
 def get_template(name):

@@ -25,7 +25,7 @@ def extract_psi(name):
             "file_dep": [path_compressed],
         }
 
-    return [task_extract()]
+    return [task_extract]
 
 
 class ExtractedPsi(object):
@@ -42,9 +42,10 @@ class ExtractedPsi(object):
                 LOGGER.info("remove ascci psi file")
                 os.remove(self.psi)
 
-        self.simulation += [
-            {
+        def task_remove():
+            return {
                 "name": "extract_psi:{}:remove".format(self.psi),
                 "actions": [action_remove],
             }
-        ]
+
+        self.simulation += [task_remove]

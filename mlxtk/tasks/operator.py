@@ -85,4 +85,4 @@ def create_operator(name, dofs, coefficients, terms, table):
             "file_dep": [path_pickle],
         }
 
-    return [task_write_parameters(), task_write_operator()]
+    return [task_write_parameters, task_write_operator]

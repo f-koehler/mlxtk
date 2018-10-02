@@ -67,4 +67,4 @@ def create_mctdhb_wave_function(name, hamiltonian_1b, num_particles, num_spfs):
             "file_dep": [path_pickle, path_matrix],
         }
 
-    return [task_write_parameters(), task_write_wave_function()]
+    return [task_write_parameters, task_write_wave_function]

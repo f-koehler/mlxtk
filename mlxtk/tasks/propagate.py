@@ -224,7 +224,7 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
             "file_dep": [path_pickle, path_wfn, path_opr],
         }
 
-    return [task_write_parameters(), task_propagate()]
+    return [task_write_parameters, task_propagate]
 
 
 def relax(name, wave_function, hamiltonian, **kwargs):

@@ -3,3 +3,6 @@ set -euf -o pipefail
 
 CACHES=`find -name __pycache__`
 rm -rfv ${CACHES}
+
+COVERS=`find -name *.cover`
+rm -fv ${COVERS}

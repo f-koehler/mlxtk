@@ -74,4 +74,4 @@ def create_many_body_operator(name, dofs, grids, coefficients, terms, table):
             "file_dep": [path_pickle],
         }
 
-    return [task_write_parameters(), task_write_operator()]
+    return [task_write_parameters, task_write_operator]

@@ -5,15 +5,17 @@ import sys
 
 from . import cwd, doit_compat, log, sge
 
+LOGGER = log.get_logger(__name__)
+
 
 class Simulation(object):
     def __init__(self, name, working_dir=None):
-        self.tasks = []
+        self.task_generators = []
         self.working_dir = name if working_dir is None else working_dir
         self.logger = log.get_logger(__name__)
 
     def __iadd__(self, other):
-        self.tasks += other
+        self.task_generators += other
         return self
 
     def run(self, args):
@@ -21,7 +23,7 @@ class Simulation(object):
             os.makedirs(self.working_dir)
 
         cwd.change_dir(self.working_dir)
-        doit_compat.run_doit(self.tasks, ["-n", str(args.jobs)])
+        doit_compat.run_doit(self.task_generators, ["-n", str(args.jobs)])
         cwd.go_back()
 
     def qsub(self, args):
@@ -43,14 +45,14 @@ class Simulation(object):
 
     def task_info(self, args):
         cwd.change_dir(self.working_dir)
-        doit_compat.run_doit(self.tasks, ["info", args.name])
+        doit_compat.run_doit(self.task_generators, ["info", args.name])
         cwd.go_back()
 
     def main(self, args=sys.argv[1:]):
         parser = argparse.ArgumentParser()
         subparsers = parser.add_subparsers(dest="subcommand")
 
-        subparsers.add_parser("list-tasks")
+        subparsers.add_parser("list-task_generators")
 
         # parser for run
         parser_run = subparsers.add_parser("run")
@@ -82,7 +84,7 @@ class Simulation(object):
             self.qsub(args)
         elif args.subcommand == "qdel":
             self.qdel(args)
-        elif args.subcommand == "list-tasks":
-            doit_compat.run_doit(self.tasks, ["list"])
+        elif args.subcommand == "list-task_generators":
+            doit_compat.run_doit(self.task_generators, ["list"])
         elif args.subcommand == "task-info":
             self.task_info(args)

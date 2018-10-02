@@ -4,13 +4,13 @@ from doit.doit_cmd import DoitMain
 
 
 class CustomTaskLoader(TaskLoader):
-    def __init__(self, tasks):
-        self.tasks = tasks
+    def __init__(self, task_generators):
+        self.task_generators = task_generators
 
     def load_tasks(self, *args):
         tasks = []
-        for task_dict in self.tasks:
-            tasks.append(dict_to_task(task_dict))
+        for task_generator in self.task_generators:
+            tasks.append(dict_to_task(task_generator()))
         return tasks, {}
 
 

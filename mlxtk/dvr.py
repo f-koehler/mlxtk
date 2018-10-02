@@ -19,6 +19,12 @@ DVR_CLASSES = {
 }
 
 
+for dvr_class in DVR_CLASSES:
+    def dummy_d4(self):
+        pass
+    setattr(DVR_CLASSES[dvr_class], "_calcd4dvr", dummy_d4)
+
+
 class DVRSpecification(object):
     """A specification for a DVR grid
 

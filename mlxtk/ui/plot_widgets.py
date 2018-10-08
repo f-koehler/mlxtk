@@ -22,7 +22,7 @@ class SingleLinePlot(MplCanvas):
     def __init__(self, x, y, parent=None, **kwargs):
         super(SingleLinePlot, self).__init__(parent)
 
-        self.axes.plot(
+        self.line, = self.axes.plot(
             x,
             y,
             linestyle=kwargs.get("linestyle", "-"),

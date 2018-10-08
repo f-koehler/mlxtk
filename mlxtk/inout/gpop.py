@@ -1,15 +1,26 @@
 import io
 import re
+from typing import Dict, List, Optional, Union, Tuple
 
 import h5py
 import numpy
 import pandas
 
 
-def read_gpop_ascii(path):
+def read_gpop_ascii(
+    path: str
+) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
+    """Read the one-body densities from a raw ML-X file
+
+    Args:
+        path (str): path of the ASCII file
+
+    Returns:
+        Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]: one-body density data
+    """
     regex_time_stamp = re.compile(r"^#\s+(.+)\s+\[au\]$")
     times = []
-    dofs = []
+    dofs = []  # type: List[int]
     grids = {}
     densities = {}
 
@@ -20,11 +31,11 @@ def read_gpop_ascii(path):
 
         while True:
             try:
-                dof, grid_points = fhandle.readline().split()
+                dof_s, grid_points_s = fhandle.readline().split()
             except ValueError:
                 raise RuntimeError("Failed to determine DOF and number of grid points")
-            dof = int(dof)
-            grid_points = int(grid_points)
+            dof = int(dof_s)
+            grid_points = int(grid_points_s)
 
             sio = io.StringIO()
             for i in range(0, grid_points):
@@ -72,15 +83,28 @@ def read_gpop_ascii(path):
     for dof in densities:
         densities[dof] = numpy.array(densities[dof])
 
-    return [numpy.array(times), grids, densities]
+    return (numpy.array(times), grids, densities)
 
 
-def read_gpop_hdf5(path, dof=None):
+def read_gpop_hdf5(
+    path: str, dof: Optional[int] = None
+) -> Union[
+    Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
+    Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
+]:
+    """Read the one-body densities from a HDF5 file
+
+    Args:
+        path (str): path of the HDF5 file
+
+    Returns:
+        one-body density data
+    """
     with h5py.File(path, "r") as fp:
         time = fp["time"][:]
         if dof is not None:
             dof_str = "dof_" + str(dof)
-            return [time, fp[dof_str]["grid"][:], fp[dof_str]["density"][:, :]]
+            return (time, fp[dof_str]["grid"][:], fp[dof_str]["density"][:, :])
 
         grids = {}
         densities = {}
@@ -88,10 +112,19 @@ def read_gpop_hdf5(path, dof=None):
             dof_i = dof_str.replace("dof_", "")
             grids[dof_i] = fp[dof_str][:]
             densities[dof_i] = fp[dof_str][:, :]
-        return [time, grids, densities]
+        return (time, grids, densities)
 
 
-def write_gpop_hdf5(path, data):
+def write_gpop_hdf5(
+    path: str,
+    data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
+):
+    """Write the one-body densities to a HDF5 file
+
+    Args:
+        path (str): path for the HDF5 file
+        data (Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]): one-body densities
+    """
     time, grids, densities = data
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(

@@ -26,6 +26,7 @@ setup(
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",
             "plot_gpop = mlxtk.scripts.plot_gpop:main",
+            "plot_gpop_slider = mlxtk.scripts.plot_gpop_slider:main",
             "plot_natpop = mlxtk.scripts.plot_natpop:main",
             "spectrum_1b = mlxtk.scripts.spectrum_1b:main",
             ]

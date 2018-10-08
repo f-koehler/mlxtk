@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import numpy
 import scipy.linalg
 
@@ -9,7 +11,9 @@ from .. import log
 LOGGER = log.get_logger(__name__)
 
 
-def diagonalize_1b_operator(matrix, number_eigenfunctions):
+def diagonalize_1b_operator(
+    matrix: numpy.ndarray, number_eigenfunctions: int
+) -> Tuple[numpy.ndarray, List[numpy.ndarray]]:
     """Diagonalize the supplied one-dimensional one-body hamiltonian
 
     Args:
@@ -29,10 +33,10 @@ def diagonalize_1b_operator(matrix, number_eigenfunctions):
     )
     eigenvalues = eigenvalues[0:number_eigenfunctions]
     QDTK.Tools.Mathematics.gramSchmidt(eigenvectors)
-    return eigenvalues, eigenvectors
+    return (eigenvalues, eigenvectors)
 
 
-def store_eigen_vectors(path, eigenvectors):
+def store_eigen_vectors(path: str, eigenvectors: List[numpy.ndarray]):
     """Write eigenvectors to a file
 
     Args:

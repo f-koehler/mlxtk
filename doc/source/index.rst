@@ -14,6 +14,7 @@ Welcome to mlxtk's documentation!
    systems/index
    inout
    log
+   parameters
    sge
 
 

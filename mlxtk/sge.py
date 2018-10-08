@@ -1,6 +1,8 @@
+import argparse
 import os
 import re
 import subprocess
+from typing import List
 
 from . import log, templates
 
@@ -9,7 +11,7 @@ REGEX_QSTAT = re.compile(r"^(\d+)\s+")
 REGEX_QSUB = re.compile(r"^Your job (\d+)")
 
 
-def add_parser_arguments(parser):
+def add_parser_arguments(parser: argparse.ArgumentParser):
     """Add SGE related command line options to an :py:class:`argparse.ArgumentParser`
 
     Args:
@@ -34,7 +36,7 @@ def add_parser_arguments(parser):
     )
 
 
-def get_jobs_in_queue():
+def get_jobs_in_queue() -> List[int]:
     output = subprocess.check_output(["qstat"]).decode().splitlines()
     job_ids = []
     for line in output:
@@ -44,7 +46,7 @@ def get_jobs_in_queue():
     return job_ids
 
 
-def submit(command, args, sge_dir=os.path.curdir):
+def submit(command: str, args, sge_dir: str = os.path.curdir) -> int:
     id_file = os.path.join(sge_dir, "sge.id")
     job_script = os.path.join(sge_dir, "sge_job")
     stop_script = os.path.join(sge_dir, "sge_stop")
@@ -103,3 +105,5 @@ def submit(command, args, sge_dir=os.path.curdir):
         fp.write(templates.get_template("sge_epilogue.j2").render(job_id=job_id))
     os.chmod(epilogue_script, 0o755)
     LOGGER.debug("done")
+
+    return job_id

@@ -6,7 +6,7 @@ logger = log.get_logger(__name__)
 previous_directories = []
 
 
-def change_dir(path):
+def change_dir(path: str):
     path = os.path.abspath(path)
 
     if not os.path.exists(path):

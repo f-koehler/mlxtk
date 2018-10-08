@@ -1,5 +1,6 @@
-# import time
+import numpy
 
+from QDTK.Primitive import Dvr
 from QDTK.Primitive import Harmdvr
 from QDTK.Primitive import rHarmdvr
 from QDTK.Primitive import Sindvr
@@ -18,10 +19,11 @@ DVR_CLASSES = {
     "LaguerreDVR": Laguerredvr,
 }
 
-
 for dvr_class in DVR_CLASSES:
+
     def dummy_d4(self):
         pass
+
     setattr(DVR_CLASSES[dvr_class], "_calcd4dvr", dummy_d4)
 
 
@@ -38,10 +40,10 @@ class DVRSpecification(object):
        dvr: the DVR object once it is constructed
     """
 
-    def __init__(self, type_, *args):
+    def __init__(self, type_: str, *args):
         self.type_ = type_
         self.args = args
-        self.dvr = None
+        self.dvr = None  # type: Dvr
 
     def compute(self):
         if self.dvr is None:
@@ -52,23 +54,23 @@ class DVRSpecification(object):
         self.compute()
         return self.dvr
 
-    def get_x(self):
+    def get_x(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.x
 
-    def get_weights(self):
+    def get_weights(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.weights
 
-    def get_d1(self):
+    def get_d1(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.d1dvr
 
-    def get_d2(self):
+    def get_d2(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.d2dvr
 
-    def get_delta(self):
+    def get_delta(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.delta_w()
 
@@ -83,7 +85,9 @@ class DVRSpecification(object):
         self.args = state["args"]
 
 
-def add_harmdvr(npoints, xeq, xho, tolerance=1e-15):
+def add_harmdvr(
+    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
+) -> DVRSpecification:
     """Register a new harmonic oscillator DVR
 
     Args:
@@ -95,7 +99,9 @@ def add_harmdvr(npoints, xeq, xho, tolerance=1e-15):
     return DVRSpecification("HarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_rharmdvr(npoints, xeq, xho, tolerance=1e-15):
+def add_rharmdvr(
+    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
+) -> DVRSpecification:
     """Register a new radial harmonic oscillator DVR
 
     Args:
@@ -107,7 +113,7 @@ def add_rharmdvr(npoints, xeq, xho, tolerance=1e-15):
     return DVRSpecification("RadialHarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_sinedvr(npoints, qmin, qmax):
+def add_sinedvr(npoints: int, qmin: float, qmax: float) -> DVRSpecification:
     """Register a new sine DVR
 
     Args:
@@ -118,7 +124,7 @@ def add_sinedvr(npoints, qmin, qmax):
     return DVRSpecification("SineDVR", npoints, qmin, qmax)
 
 
-def add_expdvr(npoints, qmin, qmax):
+def add_expdvr(npoints: int, qmin: float, qmax: float) -> DVRSpecification:
     """Register a new exponential DVR
 
     Args:
@@ -129,11 +135,15 @@ def add_expdvr(npoints, qmin, qmax):
     return DVRSpecification("ExponentialDVR", npoints, qmin, qmax)
 
 
-def add_lengendredvr(npoints, m, tolerance=1e-10):
+def add_lengendredvr(
+    npoints: int, m: int, tolerance: float = 1e-10
+) -> DVRSpecification:
     return DVRSpecification("LegendreDVR", npoints, m, tolerance)
 
 
-def add_laguerredvr(name, npoints, alpha, xlag, x0, tolerance=1e-11):
+def add_laguerredvr(
+    npoints: int, alpha: float, xlag: float, x0: float, tolerance: float = 1e-11
+) -> DVRSpecification:
     return DVRSpecification("LaguerreDVR", npoints, alpha, xlag, x0, tolerance)
 
 

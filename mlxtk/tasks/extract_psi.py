@@ -1,4 +1,5 @@
 import os.path
+from typing import Any, Callable, Dict, Iterable, List
 
 from ..inout.psi import read_psi_hdf5, write_psi_ascii
 from ..log import get_logger
@@ -6,11 +7,11 @@ from ..log import get_logger
 LOGGER = get_logger(__name__)
 
 
-def extract_psi(name):
+def extract_psi(name: str) -> List[Callable]:
     path_compressed = name + ".hdf5"
 
-    def task_extract():
-        def action_extract(targets):
+    def task_extract() -> Dict[str, Any]:
+        def action_extract(targets: Iterable[str]):
             if os.path.exists(name):
                 LOGGER.info("ascii psi file already present, skipping")
                 return

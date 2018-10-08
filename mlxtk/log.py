@@ -51,7 +51,7 @@ FILE_HANDLER = None
 logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
 
 
-def get_logger(name):
+def get_logger(name: str) -> logging.Logger:
     """Create a logger with a given name
 
     If :py:data:`mlxtk.log.FILE_HANDLER` is initialized then the handler is added to the new logger.
@@ -69,7 +69,7 @@ def get_logger(name):
     return logger
 
 
-def open_log_file(path, mode="a"):
+def open_log_file(path: str, mode: str = "a"):
     """Open the log file
 
     Args:

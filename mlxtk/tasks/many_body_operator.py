@@ -1,20 +1,23 @@
 import gzip
 import io
 import pickle
+from typing import Any, Callable, Dict, Iterable, List, Union
 
 from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
 
 
-def create_many_body_operator(name, dofs, grids, coefficients, terms, table):
+def create_many_body_operator(
+    name: str, dofs, grids, coefficients, terms, table: Union[str, Iterable[str]]
+) -> List[Callable[[], Dict[str, Any]]]:
     if not isinstance(table, str):
         table = "\n".join(table)
 
     path_pickle = name + ".mb_opr_pickle"
 
-    def task_write_parameters():
-        def action_write_parameters(targets):
+    def task_write_parameters() -> Dict[str, Any]:
+        def action_write_parameters(targets: List[str]):
             for term in terms:
                 if isinstance(terms[term], dict):
                     if terms[term]["td"]:
@@ -30,10 +33,10 @@ def create_many_body_operator(name, dofs, grids, coefficients, terms, table):
             "targets": [path_pickle],
         }
 
-    def task_write_operator():
+    def task_write_operator() -> Dict[str, Any]:
         path = name + ".mb_opr.gz"
 
-        def action_write_operator(targets):
+        def action_write_operator(targets: List[str]):
             op = Operator()
             op.define_dofs_and_grids(dofs, [grid.get() for grid in grids])
 

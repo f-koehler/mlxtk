@@ -1,6 +1,18 @@
 import copy
 import itertools
-from typing import Any, Callable, Dict, Generator, Iterable, Optional, Set, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
+
+from .tools.terminal import get_terminal_size
 
 
 class Parameters(object):
@@ -11,9 +23,9 @@ class Parameters(object):
     All parameters are exposed as member variables of this class.
     """
 
-    def __init__(self, params: Set = set()):
-        self.names = set()  # type: Set[str]
-        self.docs = {}  # type: Dict[str, str]
+    def __init__(self, params: List[Dict[str, Any]] = []):
+        self.names = []  # type: List[str]
+        self.docs = {}   # type: Dict[str, str]
 
         for param in params:
             Parameters.__iadd__(self, param)
@@ -26,13 +38,13 @@ class Parameters(object):
             value: value for the parameter
             doc (str): description of the purpose of this parameter
         """
-        self.names.add(name)
+        self.names.append(name)
         self.docs[name] = doc
-        setattr(self, name, value)
+        self.__setitem__(name, value)
 
     def set_values(self, values: Iterable[Any]):
         for name, value in zip(self.names, values):
-            setattr(self, name, value)
+            self.__setitem__(name, value)
 
     def __iadd__(self, param: Union[dict, list]):
         if isinstance(param, dict):
@@ -42,22 +54,58 @@ class Parameters(object):
 
     def __getstate__(self) -> Dict[str, Any]:
         return {
-            "values": [getattr(self, name) for name in self.names],
+            "values": {name: self.__getitem__(name) for name in self.names},
             "docs": self.docs,
         }
 
     def __setstate__(self, state: Dict[str, Any]):
-        self.names = set()
+        self.names = []
         self.docs = {}
-        for entry in state:
-            self.add_parameter(**state[entry])
+        for name in state["values"]:
+            self.add_parameter(name, state["values"][name], state["docs"].get(name, ""))
+
+    def __str__(self):
+        return (
+            "{\n"
+            + "\n".join(
+                [
+                    "  {}:\n    value: {}\n    doc:   {}".format(
+                        name, self.__getitem__(name), self.docs[name]
+                    )
+                    for name in self.names
+                ]
+            )
+            + "\n}"
+        )
+
+    def __eq__(self, other):
+        if isinstance(other, Parameters):
+            if self.names != other.names:
+                return False
+
+            for name in self.names:
+                if self.__getitem__(name) != other.__getitem__(name):
+                    return False
+
+            return True
+
+        raise NotImplementedError
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __getitem__(self, name):
+        return getattr(self, name)
+
+    def __setitem__(self, name, value):
+        setattr(self, name, value)
 
 
 def generate_all(
     parameters: Parameters, values: Dict[str, Any]
 ) -> Generator[Parameters, None, None]:
     for name in parameters.names:
-        values[name] = values.get(name, [getattr(parameters, name)])
+        values[name] = values.get(name, [parameters[name]])
 
     for combination in itertools.product(*[values[name] for name in parameters.names]):
         p = copy.deepcopy(parameters)
@@ -102,3 +150,26 @@ def merge(
 
     for combination in combinations2:
         yield combination
+
+
+def get_variables(parameters: List[Parameters]) -> Tuple[List[str], List[str]]:
+    p0 = parameters[0]
+    is_variable = [False for n in p0.names]
+
+    for p in parameters[1:]:
+        for i, n in enumerate(p.names):
+            if is_variable[i]:
+                continue
+
+            if p[n] != p0[n]:
+                is_variable[i] = True
+
+    variables = []
+    constants = []
+    for name, value in zip(p0.names, is_variable):
+        if value:
+            variables.append(name)
+        else:
+            constants.append(name)
+
+    return variables, constants

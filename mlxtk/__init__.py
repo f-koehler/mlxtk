@@ -1,7 +1,4 @@
 from . import dvr
 from . import tasks
 from .simulation import Simulation
-
-dvr
-tasks
-Simulation
+from .parameter_scan import ParameterScan

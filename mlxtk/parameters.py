@@ -1,16 +1,8 @@
 import copy
 import itertools
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Union,
-)
+import json
+from typing import (Any, Callable, Dict, Generator, Iterable, List, Optional,
+                    Tuple, Union)
 
 from .tools.terminal import get_terminal_size
 
@@ -25,7 +17,7 @@ class Parameters(object):
 
     def __init__(self, params: List[Dict[str, Any]] = []):
         self.names = []  # type: List[str]
-        self.docs = {}   # type: Dict[str, str]
+        self.docs = {}  # type: Dict[str, str]
 
         for param in params:
             Parameters.__iadd__(self, param)
@@ -41,6 +33,14 @@ class Parameters(object):
         self.names.append(name)
         self.docs[name] = doc
         self.__setitem__(name, value)
+
+    def to_json(self) -> str:
+        return json.dumps(
+            {
+                "values": {name: self[name] for name in self.names},
+                "docs": {name: self.docs[name] for name in self.names},
+            }
+        )
 
     def set_values(self, values: Iterable[Any]):
         for name, value in zip(self.names, values):
@@ -64,7 +64,10 @@ class Parameters(object):
         for name in state["values"]:
             self.add_parameter(name, state["values"][name], state["docs"].get(name, ""))
 
-    def __str__(self):
+    def __repr__(self) -> str:
+        return "_".join([name + "=" + str(self[name]) for name in self.names])
+
+    def __str__(self) -> str:
         return (
             "{\n"
             + "\n".join(
@@ -78,7 +81,7 @@ class Parameters(object):
             + "\n}"
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if isinstance(other, Parameters):
             if self.names != other.names:
                 return False
@@ -91,7 +94,7 @@ class Parameters(object):
 
         raise NotImplementedError
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return not self.__eq__(other)
 
     def __getitem__(self, name):

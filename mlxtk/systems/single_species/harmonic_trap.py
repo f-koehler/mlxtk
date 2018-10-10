@@ -27,7 +27,6 @@ class HarmonicTrap(object):
         return Parameters(
             [
                 ("g", 0.1, "strength of the contact interaction between the particles"),
-                ("m", 5, "number of single particle functions"),
                 ("mass", 1.0, "mass of the particles"),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
             ]

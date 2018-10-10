@@ -2,7 +2,7 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.output import read_output_hdf5
+from ..inout.output import read_output
 from ..plot.energy import plot_energy
 from ..plot.plot import add_argparse_2d_args, apply_2d_args
 
@@ -17,7 +17,7 @@ def main():
 
     fig, ax = plt.subplots(1, 1)
 
-    time, _, energy, _ = read_output_hdf5(args.path)
+    time, _, energy, _ = read_output(args.path)
     plot_energy(ax, time, energy)
 
     apply_2d_args(ax, args)

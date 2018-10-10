@@ -26,9 +26,8 @@ class Simulation(object):
 
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
-        cwd.change_dir(self.working_dir)
-        doit_compat.run_doit(self.task_generators, ["-n", str(args.jobs)])
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            doit_compat.run_doit(self.task_generators, ["-n", str(args.jobs)])
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -44,16 +43,14 @@ class Simulation(object):
                 "working dir %s does not exist, do nothing", self.working_dir
             )
             return
-        cwd.change_dir(self.working_dir)
-        if os.path.exists("sge_stop"):
-            LOGGER.warning("stopping job")
-            subprocess.check_output("sge_stop")
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            if os.path.exists("sge_stop"):
+                LOGGER.warning("stopping job")
+                subprocess.check_output("sge_stop")
 
     def task_info(self, args: argparse.Namespace):
-        cwd.change_dir(self.working_dir)
-        doit_compat.run_doit(self.task_generators, ["info", args.name])
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            doit_compat.run_doit(self.task_generators, ["info", args.name])
 
     def main(self, args: Iterable[str] = sys.argv[1:]):
         parser = argparse.ArgumentParser(description="This is a mlxtk simulation")

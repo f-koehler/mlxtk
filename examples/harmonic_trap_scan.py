@@ -11,9 +11,10 @@ if __name__ == "__main__":
     parameters.g = 0.1
     parameters_quenched = HarmonicTrap.create_parameters()
     parameters_quenched.g = 0.2
+    parameters.add_parameter("m", 1, "number of single particle functions")
 
     def create_simulation(p):
-        system = HarmonicTrap(parameters)
+        system = HarmonicTrap(p)
         system_quenched = HarmonicTrap(parameters_quenched)
 
         sim = mlxtk.Simulation("")
@@ -24,7 +25,7 @@ if __name__ == "__main__":
             "initial", "hamiltonian_1b", 2, 5
         )
         sim += mlxtk.tasks.improved_relax(
-            "gs_relax", "initial", "hamiltonian_quenched", 1, tfinal=1000., dt=0.01
+            "gs_relax", "initial", "hamiltonian", 1, tfinal=1000., dt=0.01
         )
 
         return sim

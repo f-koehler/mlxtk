@@ -3,9 +3,22 @@ import os
 import sys
 from typing import Iterable, List, Optional
 
+from . import cwd, doit_compat
 from .log import get_logger
-from . import cwd
 from .simulation import Simulation
+
+
+def run_simulation(simulation):
+    def task_run_simulation():
+        def action_run_simulation(targets):
+            simulation.main(["run"])
+
+        return {
+            "name": "run_simulation:{}".format(simulation.name.replace("=", ":")),
+            "actions": [action_run_simulation],
+        }
+
+    return [task_run_simulation]
 
 
 class SimulationSet(object):
@@ -29,10 +42,13 @@ class SimulationSet(object):
         self.argparser_list_tasks = subparsers.add_parser("list-tasks")
         subparsers.add_parser("qdel")
         subparsers.add_parser("qsub")
-        subparsers.add_parser("run")
+        self.argparser_run = subparsers.add_parser("run")
 
         self.argparser_list_tasks.add_argument(
             "index", type=int, help="index of the simulation whose tasks to list"
+        )
+        self.argparser_run.add_argument(
+            "-j", "--jobs", type=int, default=1, help="number of parallel workers"
         )
 
     def create_working_dir(self):
@@ -49,10 +65,11 @@ class SimulationSet(object):
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
 
-        cwd.change_dir(self.working_dir)
-        for simulation in self.simulations:
-            simulation.main(["run"])
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            tasks = []
+            for simulation in self.simulations:
+                tasks += run_simulation(simulation)
+            doit_compat.run_doit(tasks, ["-n", str(args.jobs)])
 
     def qdel(self, args: argparse.Namespace):
         if not os.path.exists(self.working_dir):
@@ -60,18 +77,16 @@ class SimulationSet(object):
                 "working dir %s does not exist, do nothing", self.working_dir
             )
 
-        cwd.change_dir(self.working_dir)
-        for simulation in self.simulations:
-            simulation.main(["qdel"])
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            for simulation in self.simulations:
+                simulation.main(["qdel"])
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
 
-        cwd.change_dir(self.working_dir)
-        for simulation in self.simulations:
-            simulation.qsub(args)
-        cwd.go_back()
+        with cwd.WorkingDir(self.working_dir):
+            for simulation in self.simulations:
+                simulation.qsub(args)
 
     def main(self, args: Iterable[str] = sys.argv[1:]):
 

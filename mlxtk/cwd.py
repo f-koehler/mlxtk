@@ -2,30 +2,18 @@ import os
 
 from . import log
 
-logger = log.get_logger(__name__)
-previous_directories = []
+LOGGER = log.get_logger(__name__)
 
 
-def change_dir(path: str):
-    path = os.path.abspath(path)
+class WorkingDir(object):
+    def __init__(self, path):
+        self.initial_dir = os.path.abspath(os.getcwd())
+        self.path = path
 
-    if not os.path.exists(path):
-        raise RuntimeError("New working directory \"{}\" does not exist".format(path))
-    if not os.path.isdir(path):
-        raise RuntimeError(
-            "New working directory \"{}\" is not a directory".format(path)
-        )
+    def __enter__(self):
+        LOGGER.debug("set new cwd: %s", self.path)
+        os.chdir(self.path)
 
-    # store the old working directory
-    old = os.path.abspath(os.getcwd())
-    previous_directories.append(old)
-    logger.debug("store old cwd: %s", old)
-
-    logger.debug("set new cwd: %s", path)
-    os.chdir(path)
-
-
-def go_back():
-    old = previous_directories.pop()
-    logger.debug("go back to old cwd: %s", old)
-    os.chdir(old)
+    def __exit__(self, type_, value, tb):
+        LOGGER.debug("go back to old cwd: %s", self.initial_dir)
+        os.chdir(self.initial_dir)

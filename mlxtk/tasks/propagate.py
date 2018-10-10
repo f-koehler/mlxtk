@@ -155,12 +155,13 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
                     fp_out.write(fp_in.read().decode())
 
         def action_propagate(targets):
-            cwd.change_dir(name)
-            LOGGER.info("propagate wave function")
-            cmd = ["qdtk_propagate.x"] + flag_list
-            LOGGER.info("command: %s", " ".join(cmd))
-            subprocess.run(cmd)
-            cwd.go_back()
+            with cwd.WorkingDir(name):
+                LOGGER.info("propagate wave function")
+                cmd = ["qdtk_propagate.x"] + flag_list
+                env = os.environ.copy()
+                env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                LOGGER.info("command: %s", " ".join(cmd))
+                subprocess.run(cmd, env=env)
 
         def action_convert_output(targets):
             LOGGER.info("convert ouput to HDF5")
@@ -241,6 +242,6 @@ def improved_relax(name, wave_function, hamiltonian, eig_index, **kwargs):
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
     kwargs["stat_npop_tol"] = kwargs.get("stat_energ_tol", 1e-6)
     kwargs["nstep_diag"] = kwargs.get("nstep_diag", 50)
-    kwargs["stat_steps"] = kwargs.get("stat_steps", 40)
+    kwargs["stat_steps"] = kwargs.get("stat_steps", 80)
     kwargs["eig_index"] = eig_index
     return propagate(name, wave_function, hamiltonian, **kwargs)

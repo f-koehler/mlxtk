@@ -1,8 +1,25 @@
+from typing import Tuple
+
 import h5py
+import numpy
 import pandas
 
+from . import tools
 
-def read_output_ascii(path):
+
+def read_output(
+    path: str
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    is_hdf5, path, interior_path = tools.is_hdf5_path(path)
+    if is_hdf5:
+        return read_output_hdf5(path, interior_path)
+    else:
+        return read_output_ascii(path)
+
+
+def read_output_ascii(
+    path
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read an output file (raw ASCII format)
 
     Args:
@@ -15,20 +32,29 @@ def read_output_ascii(path):
           maximum SPF overlap of the wave function at all times.
     """
     df = pandas.read_csv(path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
-    return [
+    return (
         df["time"].values,
         df["norm"].values,
         df["energy"].values,
         df["overlap"].values,
-    ]
+    )
 
 
-def read_output_hdf5(path):
+def read_output_hdf5(
+    path: str, interior_path: str = "/"
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fp:
-        return [fp["time"][:], fp["norm"][:], fp["energy"][:], fp["overlap"][:]]
+        return (
+            fp[interior_path]["time"][:],
+            fp[interior_path]["norm"][:],
+            fp[interior_path]["energy"][:],
+            fp[interior_path]["overlap"][:],
+        )
 
 
-def write_output_hdf5(path, data):
+def write_output_hdf5(
+    path: str, data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
             "time", data[0].shape, dtype=data[0].dtype, compression="gzip"

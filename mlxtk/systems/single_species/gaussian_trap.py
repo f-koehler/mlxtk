@@ -5,8 +5,8 @@ from mlxtk import dvr, tasks
 from mlxtk.parameters import Parameters
 
 
-def gaussian(x: Union[float, numpy.ndarray], V0: float, µ: float, w: float):
-    return V0 * numpy.exp(-0.5 * (((x - µ) / w) ** 2))
+def gaussian(x: Union[float, numpy.ndarray], V0: float, x0: float, w: float):
+    return V0 * numpy.exp(-0.5 * (((x - x0) / w) ** 2))
 
 
 class GaussianTrap(object):
@@ -33,10 +33,10 @@ class GaussianTrap(object):
     def create_parameters():
         return Parameters(
             [
-                ["V0", 6.0, "depth of the Gaussian well"],
-                ["µ", 1.0, "center of the Gaussian well"],
-                ["w", 2.0, "width of the Gaussian well"],
-                ["g", 0.1, "strength of the contact interaction"],
+                ("V0", 6.0, "depth of the Gaussian well"),
+                ("x0", 1.0, "center of the Gaussian well"),
+                ("w", 2.0, "width of the Gaussian well"),
+                ("g", 0.1, "strength of the contact interaction"),
             ]
         )
 
@@ -57,7 +57,7 @@ class GaussianTrap(object):
                 "gaussian": gaussian(
                     self.grid.get_x(),
                     self.parameters.V0,
-                    self.parameters.µ,
+                    self.parameters.x0,
                     self.parameters.w,
                 ),
             },
@@ -83,7 +83,7 @@ class GaussianTrap(object):
             "gaussian": gaussian(
                 self.grid.get_x(),
                 self.parameters.V0,
-                self.parameters.µ,
+                self.parameters.x0,
                 self.parameters.w,
             ),
         }

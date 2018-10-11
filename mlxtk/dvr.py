@@ -1,14 +1,14 @@
 import numpy
 
-from QDTK.Primitive import Dvr
 from QDTK.Primitive import Harmdvr
 from QDTK.Primitive import rHarmdvr
 from QDTK.Primitive import Sindvr
 from QDTK.Primitive import Expdvr
 from QDTK.Primitive import Legendredvr
 from QDTK.Primitive import Laguerredvr
-from QDTK.Primitive import Discrete
-from QDTK.Primitive import FFT
+
+# from QDTK.Primitive import Discrete
+# from QDTK.Primitive import FFT
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
@@ -22,12 +22,12 @@ DVR_CLASSES = {
 for dvr_class in DVR_CLASSES:
 
     def dummy_d4(self):
-        pass
+        del self
 
     setattr(DVR_CLASSES[dvr_class], "_calcd4dvr", dummy_d4)
 
 
-class DVRSpecification(object):
+class DVRSpecification:
     """A specification for a DVR grid
 
     Args:

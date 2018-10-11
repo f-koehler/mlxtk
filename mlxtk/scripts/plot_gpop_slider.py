@@ -4,7 +4,7 @@ import sys
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QLabel, QSlider
 
-from ..ui import load_ui, replace_widget
+from ..ui import load_ui
 from ..ui.plot_widgets import SingleLinePlot
 from ..inout.gpop import read_gpop_hdf5
 

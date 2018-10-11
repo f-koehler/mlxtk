@@ -7,7 +7,10 @@ class CustomTaskLoader(TaskLoader):
     def __init__(self, task_generators):
         self.task_generators = task_generators
 
-    def load_tasks(self, *args):
+    def load_tasks(self, cmd, opt_values, pos_args):
+        del cmd
+        del opt_values
+        del pos_args
         tasks = []
         for task_generator in self.task_generators:
             tasks.append(dict_to_task(task_generator()))

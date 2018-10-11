@@ -1,13 +1,20 @@
 import copy
 import itertools
 import json
-from typing import (Any, Callable, Dict, Generator, Iterable, List, Optional,
-                    Tuple, Union)
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
-from .tools.terminal import get_terminal_size
 
-
-class Parameters(object):
+class Parameters:
     """A class to hold arbitrary simulation parameters
 
     This class helps to merge all simulation parameters into one variable and

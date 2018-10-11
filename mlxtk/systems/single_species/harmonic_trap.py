@@ -2,7 +2,7 @@ from mlxtk import dvr, tasks
 from mlxtk.parameters import Parameters
 
 
-class HarmonicTrap(object):
+class HarmonicTrap:
     """A class for a quantum harmonic oscillator with interacting particles
 
     Args:

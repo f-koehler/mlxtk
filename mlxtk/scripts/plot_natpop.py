@@ -2,7 +2,7 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.natpop import read_natpop_hdf5
+from ..inout.natpop import read_natpop
 from ..plot.natpop import plot_natpop
 from ..plot.plot import add_argparse_2d_args, apply_2d_args
 
@@ -17,9 +17,9 @@ def main():
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    fig, ax = plt.subplots(1, 1)
+    _, ax = plt.subplots(1, 1)
 
-    time, natpop = read_natpop_hdf5(args.path, node=args.node, dof=args.dof)
+    time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
     plot_natpop(ax, time, natpop)
 
     apply_2d_args(ax, args)

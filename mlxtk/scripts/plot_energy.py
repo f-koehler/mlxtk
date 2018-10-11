@@ -15,7 +15,7 @@ def main():
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    fig, ax = plt.subplots(1, 1)
+    _, ax = plt.subplots(1, 1)
 
     time, _, energy, _ = read_output(args.path)
     plot_energy(ax, time, energy)

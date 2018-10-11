@@ -5,7 +5,7 @@ from . import log
 LOGGER = log.get_logger(__name__)
 
 
-class WorkingDir(object):
+class WorkingDir:
     def __init__(self, path):
         self.initial_dir = os.path.abspath(os.getcwd())
         self.path = path

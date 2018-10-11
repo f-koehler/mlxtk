@@ -1,8 +1,9 @@
 import argparse
-import h5py
-import numpy
 import sys
 
+import h5py
+import numpy
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import (
     QApplication,
     QGraphicsView,
@@ -12,11 +13,10 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTabWidget,
 )
-from PyQt5.QtCore import QObject
 
+from ..tools.diagonalize import diagonalize_1b_operator
 from ..ui import load_ui, replace_widget
 from ..ui.plot_widgets import SingleLinePlot
-from ..tools.diagonalize import diagonalize_1b_operator
 
 
 class SpectrumPlot(SingleLinePlot):
@@ -124,7 +124,6 @@ class GUI(QObject):
         self.plot_real = self.cache_plot_real[index]
 
     def set_imag_plot(self, index):
-        x = numpy.array([i for i in range(len(self.spfs[0]))])
         if index not in self.cache_plot_imag:
             self.cache_plot_imag[index] = SingleLinePlot(
                 self.grid,
@@ -209,9 +208,7 @@ def main():
 
     # create app
     app = QApplication(sys.argv)
-    gui = GUI(
-        min_, max_, grid, weights, energies[min_ : max_ + 1], spfs[min_ : max_ + 1]
-    )
+    GUI(min_, max_, grid, weights, energies[min_ : max_ + 1], spfs[min_ : max_ + 1])
 
     # run app
     sys.exit(app.exec_())

@@ -9,7 +9,7 @@ from . import cwd, doit_compat, log, sge
 LOGGER = log.get_logger(__name__)
 
 
-class Simulation(object):
+class Simulation:
     def __init__(self, name: str, working_dir: Optional[str] = None):
         self.name = name
         self.working_dir = name if working_dir is None else working_dir
@@ -38,6 +38,8 @@ class Simulation(object):
         )
 
     def qdel(self, args: argparse.Namespace):
+        del args
+
         if not os.path.exists(self.working_dir):
             self.logger.warning(
                 "working dir %s does not exist, do nothing", self.working_dir

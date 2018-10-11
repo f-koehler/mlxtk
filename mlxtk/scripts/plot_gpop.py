@@ -16,7 +16,7 @@ def main():
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    fig, ax = plt.subplots(1, 1)
+    _, ax = plt.subplots(1, 1)
 
     time, grid, density = read_gpop_hdf5(args.path, dof=args.dof)
     plot_gpop(ax, time, grid, density)

@@ -1,7 +1,7 @@
 import argparse
 import os
 import sys
-from typing import Iterable, List, Optional
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from . import cwd, doit_compat
 from .log import get_logger
@@ -11,6 +11,7 @@ from .simulation import Simulation
 def run_simulation(simulation):
     def task_run_simulation():
         def action_run_simulation(targets):
+            del targets
             simulation.main(["run"])
 
         return {
@@ -21,7 +22,7 @@ def run_simulation(simulation):
     return [task_run_simulation]
 
 
-class SimulationSet(object):
+class SimulationSet:
     def __init__(
         self,
         name: str,
@@ -56,6 +57,8 @@ class SimulationSet(object):
             os.makedirs(self.working_dir)
 
     def list_(self, args: argparse.Namespace):
+        del args
+
         for i, simulation in enumerate(self.simulations):
             print(i, simulation.name)
 
@@ -66,12 +69,14 @@ class SimulationSet(object):
         self.create_working_dir()
 
         with cwd.WorkingDir(self.working_dir):
-            tasks = []
+            tasks = []  # type: List[Callable[[], Dict[str, Any]]]
             for simulation in self.simulations:
                 tasks += run_simulation(simulation)
             doit_compat.run_doit(tasks, ["-n", str(args.jobs)])
 
     def qdel(self, args: argparse.Namespace):
+        del args
+
         if not os.path.exists(self.working_dir):
             self.logger.warning(
                 "working dir %s does not exist, do nothing", self.working_dir

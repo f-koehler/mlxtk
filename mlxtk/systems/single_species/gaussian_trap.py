@@ -9,7 +9,7 @@ def gaussian(x: Union[float, numpy.ndarray], V0: float, x0: float, w: float):
     return V0 * numpy.exp(-0.5 * (((x - x0) / w) ** 2))
 
 
-class GaussianTrap(object):
+class GaussianTrap:
     """Interacting particles in a Gaussian shape trap
 
     Args:

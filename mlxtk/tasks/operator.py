@@ -1,7 +1,7 @@
 import gzip
 import io
 import pickle
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, Iterable, List, Union
 
 import h5py
 import numpy
@@ -10,10 +10,17 @@ from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
 
+from ..dvr import DVRSpecification
 from ..tools.operator import get_operator_matrix
 
 
-def create_operator(name, dofs, coefficients, terms, table):
+def create_operator(
+    name: str,
+    dofs: List[DVRSpecification],
+    coefficients: List[Any],
+    terms: List[Any],
+    table: Union[str, Iterable[str]],
+) -> List[Callable[[], Dict[str, Any]]]:
     if not isinstance(table, str):
         table = "\n".join(table)
 

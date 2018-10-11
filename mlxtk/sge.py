@@ -40,7 +40,7 @@ def get_jobs_in_queue() -> List[int]:
     output = subprocess.check_output(["qstat"]).decode().splitlines()
     job_ids = []
     for line in output:
-        m = REGEX_QSTAT
+        m = REGEX_QSTAT.match(line)
         if m:
             job_ids.append(int(m.group(1)))
     return job_ids
@@ -60,7 +60,7 @@ def submit(command: str, args, sge_dir: str = os.path.curdir) -> int:
                 LOGGER.error(
                     "job seems to be in the queue already (with id %d)", job_id
                 )
-                return
+                return -1
 
     # set up args for the job script
     args = {

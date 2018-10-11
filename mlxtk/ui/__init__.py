@@ -1,8 +1,4 @@
 import pkg_resources
-from PyQt5.QtCore import QFile
-
-# from PySide2.QtUiTools import QUiLoader
-from PyQt5.QtWidgets import QWidget
 from PyQt5 import uic
 
 

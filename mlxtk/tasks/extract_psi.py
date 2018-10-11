@@ -12,6 +12,8 @@ def extract_psi(name: str) -> List[Callable]:
 
     def task_extract() -> Dict[str, Any]:
         def action_extract(targets: Iterable[str]):
+            del targets
+
             if os.path.exists(name):
                 LOGGER.info("ascii psi file already present, skipping")
                 return
@@ -29,7 +31,7 @@ def extract_psi(name: str) -> List[Callable]:
     return [task_extract]
 
 
-class ExtractedPsi(object):
+class ExtractedPsi:
     def __init__(self, simulation, psi):
         self.simulation = simulation
         self.psi = psi
@@ -39,6 +41,8 @@ class ExtractedPsi(object):
 
     def __exit__(self, type_, value, tb):
         def action_remove(targets):
+            del targets
+
             if os.path.exists(self.psi):
                 LOGGER.info("remove ascci psi file")
                 os.remove(self.psi)

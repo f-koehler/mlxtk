@@ -3,7 +3,9 @@ import os
 import pickle
 import subprocess
 import sys
-from typing import Callable, Generator, Iterable, Optional
+from typing import Callable, Generator, Iterable, List, Optional
+
+assert List
 
 from . import cwd, parameters
 from .hashing import hash_string
@@ -63,7 +65,10 @@ class ParameterScan(SimulationSet):
             variables, _ = parameters.get_variables(self.combinations)
             for combination, simulation in zip(self.combinations, self.simulations):
                 name = "_".join(
-                    (variable + "=" + str(combination[variable]) for variable in variables)
+                    (
+                        variable + "=" + str(combination[variable])
+                        for variable in variables
+                    )
                 )
                 path = simulation.working_dir
                 link = os.path.join("by_param", name)

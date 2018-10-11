@@ -129,7 +129,6 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
         path_output_hdf5 = path_output + ".hdf5"
         path_gpop_hdf5 = path_gpop + ".hdf5"
         path_natpop_hdf5 = path_natpop + ".hdf5"
-        path_final_hdf5 = os.path.join(name, "final.hdf5")
         path_psi_hdf5 = os.path.join(name, "psi.hdf5")
 
         path_wfn = wave_function + ".wfn.gz"
@@ -138,23 +137,27 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
         path_opr_tmp = os.path.join(name, "hamiltonian.mb_opr")
 
         def action_create_dir(targets):
+            del targets
             if not os.path.exists(name):
                 LOGGER.info("create propagation directory")
                 os.makedirs(name)
 
         def action_copy_initial_wave_function(targets):
+            del targets
             LOGGER.info("copy initial wave function")
             with gzip.open(path_wfn, "rb") as fp_in:
                 with open(path_wfn_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
         def action_copy_hamiltonian(targets):
+            del targets
             LOGGER.info("copy Hamiltonian")
             with gzip.open(path_opr, "rb") as fp_in:
                 with open(path_opr_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
         def action_propagate(targets):
+            del targets
             with cwd.WorkingDir(name):
                 LOGGER.info("propagate wave function")
                 cmd = ["qdtk_propagate.x"] + flag_list
@@ -164,27 +167,32 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
                 subprocess.run(cmd, env=env)
 
         def action_convert_output(targets):
+            del targets
             LOGGER.info("convert ouput to HDF5")
             write_output_hdf5(path_output_hdf5, read_output_ascii(path_output))
             os.remove(path_output)
 
         def action_convert_gpop(targets):
+            del targets
             LOGGER.info("convert one-body densities to HDF5")
             write_gpop_hdf5(path_gpop_hdf5, read_gpop_ascii(path_gpop))
             os.remove(path_gpop)
 
         def action_convert_natpop(targets):
+            del targets
             LOGGER.info("convert natural populations to HDF5")
             write_natpop_hdf5(path_natpop_hdf5, read_natpop_ascii(path_natpop))
             os.remove(path_natpop)
 
         def action_convert_psi(targets):
+            del targets
             LOGGER.info("convert psi file to HDF5")
             write_psi_hdf5(path_psi_hdf5, read_psi_ascii(path_psi))
             if not keep_psi:
                 os.remove(path_psi)
 
         def action_convert_final_wfn(targets):
+            del targets
             LOGGER.info("compress final wave function")
             with gzip.open(path_final_gz, "wb") as fout:
                 with open(path_final, "r") as fin:
@@ -192,10 +200,12 @@ def propagate(name, wave_function, hamiltonian, **kwargs):
             os.remove(path_final)
 
         def action_remove_hamiltonian(targets):
+            del targets
             LOGGER.info("remove Hamiltonian")
             os.remove(path_opr_tmp)
 
         def action_remove_initial_wave_function(targets):
+            del targets
             LOGGER.info("remove initial wave function")
             os.remove(path_wfn_tmp)
 

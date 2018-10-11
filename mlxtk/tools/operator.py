@@ -2,7 +2,6 @@ import numpy
 
 
 def get_operator_matrix(operator):
-    ndim = len(operator.pdim)
     nprod = operator.countProducts()
     grid_points = operator.pdim[0]
 
@@ -24,7 +23,7 @@ def get_operator_matrix(operator):
             continue
 
         # matrix operator
-        if term.type is "matrix":
+        if term.type == "matrix":
             if term.dim != grid_points:
                 raise ValueError(
                     "invalid dimension {} of matrix term, expected {}".format(
@@ -35,7 +34,7 @@ def get_operator_matrix(operator):
             continue
 
         # vector operator
-        if term.type is "diag":
+        if term.type == "diag":
             if term.dim != grid_points:
                 raise ValueError(
                     "invalid dimension {} of vector term, expected {}".format(

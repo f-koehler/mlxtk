@@ -1,12 +1,31 @@
 import io
 import re
+from typing import Dict, List, Tuple, Union
 
 import h5py
 import numpy
 import pandas
 
+from . import tools
 
-def read_natpop_ascii(path):
+
+def read_natpop(
+    path: str, node: int = 0, dof: int = 0
+) -> Tuple[
+    numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]
+]:
+    is_hdf5, path, interior_path = tools.is_hdf5_path(path)
+    if is_hdf5:
+        return read_natpop_hdf5(path, interior_path, node, dof)
+    else:
+        return read_natpop_ascii(path, node, dof)
+
+
+def read_natpop_ascii(
+    path: str, node: int = 0, dof: int = 0
+) -> Tuple[
+    numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]
+]:
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
     re_node_info = re.compile(r"^node:\s+(\d+)\s+layer:\s+(\d+)$")
@@ -61,15 +80,11 @@ def read_natpop_ascii(path):
 
     # create DataFrames
     data = {}
-    for node in node_content:
-        data[node + 1] = {}
-        for orbitals in node_content[node]:
+    for n in node_content:
+        data[n + 1] = {}
+        for orbitals in node_content[n]:
             # obtain number of orbitals
-            num_orbitals = len(node_content[node][orbitals][0].split())
-
-            # prepend time stamps to data
-            for i in range(len(timestamps)):
-                node_content[node][orbitals][i] = node_content[node][orbitals][i]
+            num_orbitals = len(node_content[n][orbitals][0].split())
 
             # construct header for DataFrame
             header = (
@@ -80,44 +95,62 @@ def read_natpop_ascii(path):
             )
 
             # create DataFrame
-            sio = io.StringIO(header + "\n".join(node_content[node][orbitals]))
+            sio = io.StringIO(header + "\n".join(node_content[n][orbitals]))
             df = pandas.read_csv(sio, sep=r"\s+")
             vals = numpy.zeros(df.shape, dtype=numpy.float64)
             for i in range(num_orbitals):
                 vals[:, i] = df["orbital_" + str(i)]
-            data[node + 1][orbitals + 1] = vals / 1000.
+            data[n + 1][orbitals + 1] = vals / 1000.
 
-    return [numpy.array(timestamps), data]
+    if node:
+        if dof:
+            return (numpy.array(timestamps), data[node][dof])
+        return (numpy.array(timestamps), data[node])
+
+    return (numpy.array(timestamps), data)
 
 
-def read_natpop_hdf5(path, node=None, dof=None):
+def read_natpop_hdf5(
+    path: str, interior_path: str = "/", node: int = 0, dof: int = 0
+) -> Tuple[
+    numpy.ndarray,
+    Union[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]],
+]:
     with h5py.File(path, "r") as fp:
-        time = fp["time"][:]
+        time = fp[interior_path]["time"][:]
 
-        if node is not None:
-            if dof is not None:
-                return [time, fp["node_" + str(node)]["dof_" + str(dof)][:, :]]
-            else:
-                node_str = "node_" + str(node)
-                data = {}
-                for entry in fp[node_str]:
-                    data[int(entry.replace("dof_", ""))] = fp[node_str][entry][:, :]
-                return [time, data]
-        else:
-            if dof is not None:
-                raise ValueError("No node specified while specifying the DOF")
+        if node:
+            if dof:
+                return (
+                    time,
+                    fp[interior_path]["node_" + str(node)]["dof_" + str(dof)][:, :],
+                )
+            node_str = "node_" + str(node)
             data = {}
-            for node_entry in (entry for entry in fp if entry.startswith("node_")):
-                node_i = int(node_entry.replace("node_", ""))
-                data[node_i] = {}
-                for dof_entry in fp[node_entry]:
-                    dof_i = int(dof_entry.replace("dof_", ""))
-                    data[node_i][dof_i] = fp[node_entry][dof_entry]
-            return [time, data]
+            for entry in fp[interior_path][node_str]:
+                data[int(entry.replace("dof_", ""))] = fp[interior_path][node_str][
+                    entry
+                ][:, :]
+            return (time, data)
+
+        if dof is not None:
+            raise ValueError("No node specified while specifying the DOF")
+        data = {}
+        for node_entry in (
+            entry for entry in fp[interior_path] if entry.startswith("node_")
+        ):
+            node_i = int(node_entry.replace("node_", ""))
+            data[node_i] = {}
+            for dof_entry in fp[interior_path][node_entry]:
+                dof_i = int(dof_entry.replace("dof_", ""))
+                data[node_i][dof_i] = fp[interior_path][node_entry][dof_entry]
+        return (time, data)
 
 
-def write_natpop_hdf5(path, data):
-    time, data = data
+def write_natpop_hdf5(
+    path: str, all_data: Tuple[numpy.ndarray, Dict[int, Dict[int, numpy.ndarray]]]
+):
+    time, data = all_data
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
             "time", time.shape, dtype=numpy.float64, compression="gzip"

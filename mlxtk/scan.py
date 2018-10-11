@@ -1,2 +1,0 @@
-class ParameterScan(object):
-    pass

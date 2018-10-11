@@ -13,8 +13,8 @@ def read_output(
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_output_hdf5(path, interior_path)
-    else:
-        return read_output_ascii(path)
+
+    return read_output_ascii(path)
 
 
 def read_output_ascii(

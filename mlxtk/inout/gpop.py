@@ -6,6 +6,8 @@ import h5py
 import numpy
 import pandas
 
+assert List
+
 
 def read_gpop_ascii(
     path: str
@@ -38,11 +40,11 @@ def read_gpop_ascii(
             grid_points = int(grid_points_s)
 
             sio = io.StringIO()
-            for i in range(0, grid_points):
+            for _ in range(0, grid_points):
                 sio.write(fhandle.readline())
             sio.seek(0)
             data = pandas.read_csv(sio, sep=r"\s+", names=["grid", "density"])
-            sio = None
+            del sio
 
             # unfortuantely reading from the fhandle directly does not seem to
             # work

@@ -2,7 +2,6 @@ import numpy
 import matplotlib.tri
 import stl
 import matplotlib.pyplot
-from matplotlib.widgets import Slider
 
 
 def plot_gpop(ax, time, grid, density):

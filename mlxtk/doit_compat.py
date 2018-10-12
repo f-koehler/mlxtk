@@ -1,6 +1,6 @@
 from doit.cmd_base import TaskLoader
-from doit.task import dict_to_task
 from doit.doit_cmd import DoitMain
+from doit.task import dict_to_task
 
 
 class CustomTaskLoader(TaskLoader):

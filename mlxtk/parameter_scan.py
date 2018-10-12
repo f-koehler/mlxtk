@@ -5,14 +5,14 @@ import subprocess
 import sys
 from typing import Callable, Generator, Iterable, List, Optional
 
-assert List
-
 from . import cwd, parameters
 from .hashing import hash_string
 from .log import get_logger
 from .parameters import Parameters
 from .simulation import Simulation
 from .simulation_set import SimulationSet
+
+assert List
 
 
 class ParameterScan(SimulationSet):

@@ -1,7 +1,7 @@
-import numpy
-import matplotlib.tri
-import stl
 import matplotlib.pyplot
+import matplotlib.tri
+import numpy
+import stl
 
 
 def plot_gpop(ax, time, grid, density):

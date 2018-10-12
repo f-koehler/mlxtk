@@ -3,7 +3,6 @@ import mlxtk
 import mlxtk.parameters
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
-
 if __name__ == "__main__":
     x = mlxtk.dvr.add_harmdvr(400, 1., 1.)
 

@@ -1,6 +1,6 @@
 import io
 import re
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import h5py
 import numpy

@@ -73,6 +73,7 @@ class ParameterScan(SimulationSet):
                 path = simulation.working_dir
                 link = os.path.join("by_param", name)
 
+                subprocess.run(["rm", link])
                 subprocess.run(["ln", "-s", "-f", "-r", path, link])
 
     def run(self, args: argparse.Namespace):

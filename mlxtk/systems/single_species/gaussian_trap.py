@@ -35,7 +35,7 @@ class GaussianTrap:
         return Parameters(
             [
                 ("V0", 1.0, "depth of the Gaussian well"),
-                ("x0", 1.0, "center of the Gaussian well"),
+                ("x0", 0.0, "center of the Gaussian well"),
                 ("g", 0.1, "strength of the contact interaction"),
             ]
         )

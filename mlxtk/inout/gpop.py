@@ -6,11 +6,23 @@ import h5py
 import numpy
 import pandas
 
+from . import tools
+
 assert List
 
 
+def read_gpop(
+    path: str, dof: Optional[int] = None
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    is_hdf5, path, interior_path = tools.is_hdf5_path(path)
+    if is_hdf5:
+        return read_gpop_hdf5(path, interior_path, dof)
+
+    return read_gpop_ascii(path, dof)
+
+
 def read_gpop_ascii(
-    path: str
+    path: str, dof: Optional[int] = None
 ) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
     """Read the one-body densities from a raw ML-X file
 
@@ -36,7 +48,7 @@ def read_gpop_ascii(
                 dof_s, grid_points_s = fhandle.readline().split()
             except ValueError:
                 raise RuntimeError("Failed to determine DOF and number of grid points")
-            dof = int(dof_s)
+            dof_index = int(dof_s)
             grid_points = int(grid_points_s)
 
             sio = io.StringIO()
@@ -55,12 +67,12 @@ def read_gpop_ascii(
             #     names=["grid", "density"],
             #     skip_blank_lines=False)
 
-            if dof not in dofs:
+            if dof_index not in dofs:
                 dofs.append(dof)
-                grids[dof] = data["grid"].values
-                densities[dof] = [data["density"].values]
+                grids[dof_index] = data["grid"].values
+                densities[dof_index] = [data["density"].values]
             else:
-                densities[dof].append(data["density"])
+                densities[dof_index].append(data["density"])
 
             # read the empty line after the block
             fhandle.readline()
@@ -82,14 +94,17 @@ def read_gpop_ascii(
             fhandle.seek(position)
 
     # convert densities to numpy arrays
-    for dof in densities:
-        densities[dof] = numpy.array(densities[dof])
+    for dof_index in densities:
+        densities[dof_index] = numpy.array(densities[dof_index])
 
-    return (numpy.array(times), grids, densities)
+    if dof is None:
+        return (numpy.array(times), grids, densities)
+
+    return (numpy.array(times), grids[dof], densities[dof])
 
 
 def read_gpop_hdf5(
-    path: str, dof: Optional[int] = None
+    path: str, interior_path: str, dof: Optional[int] = None
 ) -> Union[
     Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
     Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
@@ -106,14 +121,18 @@ def read_gpop_hdf5(
         time = fp["time"][:]
         if dof is not None:
             dof_str = "dof_" + str(dof)
-            return (time, fp[dof_str]["grid"][:], fp[dof_str]["density"][:, :])
+            return (
+                time,
+                fp[interior_path][dof_str]["grid"][:],
+                fp[interior_path][dof_str]["density"][:, :],
+            )
 
         grids = {}
         densities = {}
         for dof_str in (key for key in fp.keys() if key.startswith("dof_")):
             dof_i = dof_str.replace("dof_", "")
-            grids[dof_i] = fp[dof_str][:]
-            densities[dof_i] = fp[dof_str][:, :]
+            grids[dof_i] = fp[interior_path][dof_str][:]
+            densities[dof_i] = fp[interior_path][dof_str][:, :]
         return (time, grids, densities)
 
 

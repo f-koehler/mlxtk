@@ -2,7 +2,7 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.gpop import read_gpop_hdf5
+from ..inout.gpop import read_gpop
 from ..plot.gpop import plot_gpop
 from ..plot.plot import add_argparse_2d_args, apply_2d_args
 
@@ -18,7 +18,7 @@ def main():
 
     _, ax = plt.subplots(1, 1)
 
-    time, grid, density = read_gpop_hdf5(args.path, dof=args.dof)
+    time, grid, density = read_gpop(args.path, dof=args.dof)
     plot_gpop(ax, time, grid, density)
 
     apply_2d_args(ax, args)

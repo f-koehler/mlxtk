@@ -7,6 +7,8 @@ from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
 
+from ..hashing import inaccurate_hash
+
 
 def create_many_body_operator(
     name: str, dofs, grids, coefficients, terms, table: Union[str, Iterable[str]]
@@ -18,11 +20,14 @@ def create_many_body_operator(
 
     def task_write_parameters() -> Dict[str, Any]:
         def action_write_parameters(targets: List[str]):
+            obj = [name, dofs, grids, coefficients, {}, table]
             for term in terms:
                 if isinstance(terms[term], dict):
-                    if terms[term]["td"]:
-                        terms[term]["td_switch"] = terms[term].get("td_switch", [0])
-            obj = [name, dofs, grids, coefficients, terms, table]
+                    # if terms[term]["td"]:
+                    #     terms[term]["td_switch"] = terms[term].get("td_switch", [0])
+                    raise NotImplementedError
+                else:
+                    obj[4][term] = inaccurate_hash(terms[term])
 
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp)

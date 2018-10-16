@@ -11,6 +11,7 @@ from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
 
 from ..dvr import DVRSpecification
+from ..hashing import inaccurate_hash
 from ..tools.operator import get_operator_matrix
 
 
@@ -28,7 +29,9 @@ def create_operator(
 
     def task_write_parameters():
         def action_write_parameters(targets):
-            obj = [name, dofs, coefficients, terms, table]
+            obj = [name, dofs, coefficients, {}, table]
+            for term in terms:
+                obj[3][term] = inaccurate_hash(terms[term])
 
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp)

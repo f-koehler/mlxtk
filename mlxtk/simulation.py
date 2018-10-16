@@ -54,6 +54,10 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(self.task_generators, ["info", args.name])
 
+    # def status(self, args: argparse.Namespace):
+    #     with cwd.WorkingDir(self.working_dir):
+    #         doit_compat.run_doit(self.task_generators, ["--status", "info", args.name])
+
     def main(self, args: Iterable[str] = sys.argv[1:]):
         parser = argparse.ArgumentParser(description="This is a mlxtk simulation")
         subparsers = parser.add_subparsers(dest="subcommand")
@@ -65,6 +69,10 @@ class Simulation:
         parser_run.add_argument(
             "-j", "--jobs", type=int, default=1, help="number of parallel workers"
         )
+
+        # # parser for status
+        # parser_status = subparsers.add_parser("status")
+        # parser_status.add_argument("name")
 
         # parser for task-info
         parser_task_info = subparsers.add_parser("task-info")
@@ -93,5 +101,7 @@ class Simulation:
             self.qdel(args)
         elif args.subcommand == "list":
             doit_compat.run_doit(self.task_generators, ["list"])
+        # elif args.subcommand == "status":
+        #     self.status(args)
         elif args.subcommand == "task-info":
             self.task_info(args)

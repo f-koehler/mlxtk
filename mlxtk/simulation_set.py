@@ -41,12 +41,19 @@ class SimulationSet:
 
         subparsers.add_parser("list")
         self.argparser_list_tasks = subparsers.add_parser("list-tasks")
+        self.argparser_task_info = subparsers.add_parser("task-info")
         subparsers.add_parser("qdel")
         subparsers.add_parser("qsub")
         self.argparser_run = subparsers.add_parser("run")
 
         self.argparser_list_tasks.add_argument(
             "index", type=int, help="index of the simulation whose tasks to list"
+        )
+        self.argparser_task_info.add_argument(
+            "index", type=int, help="index of the simulation"
+        )
+        self.argparser_task_info.add_argument(
+            "name", type=str, help="name of the task"
         )
         self.argparser_run.add_argument(
             "-j", "--jobs", type=int, default=1, help="number of parallel workers"
@@ -64,6 +71,12 @@ class SimulationSet:
 
     def list_tasks(self, args: argparse.Namespace):
         self.simulations[args.index].main(["list"])
+
+    def task_info(self, args: argparse.Namespace):
+        self.create_working_dir()
+
+        with cwd.WorkingDir(self.working_dir):
+            self.simulations[args.index].main(["task-info", args.name])
 
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -105,9 +118,13 @@ class SimulationSet:
 
         if args.subcommand == "list":
             self.list_(args)
+        if args.subcommand == "list-tasks":
+            self.list_tasks(args)
         elif args.subcommand == "qdel":
             self.qdel(args)
         elif args.subcommand == "qsub":
             self.qsub(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "task-info":
+            self.task_info(args)

@@ -1,6 +1,7 @@
 import numpy
 
-from QDTK.Primitive import Expdvr, Harmdvr, Laguerredvr, Legendredvr, Sindvr, rHarmdvr
+from QDTK.Primitive import (Expdvr, Harmdvr, Laguerredvr, Legendredvr, Sindvr,
+                            rHarmdvr)
 
 # from QDTK.Primitive import Discrete
 # from QDTK.Primitive import FFT
@@ -73,7 +74,11 @@ class DVRSpecification:
         return {"type": self.type_, "args": self.args}
 
     def __setstate__(self, state):
-        if (state["type"] != self.type_) or (state["args"] != self.args):
+        if not hasattr(self, "type_"):
+            self.dvr = None
+        elif not hasattr(self, "args_"):
+            self.dvr = None
+        elif (state["type"] != self.type_) or (state["args"] != self.args):
             self.dvr = None
 
         self.type_ = state["type"]

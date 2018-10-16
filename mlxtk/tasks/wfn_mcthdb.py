@@ -11,7 +11,7 @@ from ..tools.diagonalize import diagonalize_1b_operator
 
 
 def create_mctdhb_wave_function(name, hamiltonian_1b, num_particles, num_spfs):
-    path_pickle = name + ".opr_pickle"
+    path_pickle = name + ".wfn_pickle"
 
     def task_write_parameters():
         def action_write_parameters(targets):

@@ -1,7 +1,6 @@
 import numpy
 
-from QDTK.Primitive import (Expdvr, Harmdvr, Laguerredvr, Legendredvr, Sindvr,
-                            rHarmdvr)
+from QDTK.Primitive import Expdvr, Harmdvr, Laguerredvr, Legendredvr, Sindvr, rHarmdvr
 
 # from QDTK.Primitive import Discrete
 # from QDTK.Primitive import FFT

@@ -52,9 +52,7 @@ class SimulationSet:
         self.argparser_task_info.add_argument(
             "index", type=int, help="index of the simulation"
         )
-        self.argparser_task_info.add_argument(
-            "name", type=str, help="name of the task"
-        )
+        self.argparser_task_info.add_argument("name", type=str, help="name of the task")
         self.argparser_run.add_argument(
             "-j", "--jobs", type=int, default=1, help="number of parallel workers"
         )

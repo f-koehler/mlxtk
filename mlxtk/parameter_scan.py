@@ -58,18 +58,40 @@ class ParameterScan(SimulationSet):
     def link_simulations(self):
         self.create_working_dir()
 
+        # link by index
+        with cwd.WorkingDir(self.working_dir):
+            if not os.path.exists("by_index"):
+                os.makedirs("by_index")
+
+            for index, simulation in enumerate(self.simulations):
+                path = simulation.working_dir
+                link = os.path.join("by_index", str(index))
+
+                if os.path.exists(link):
+                    subprocess.run(["rm", link])
+                subprocess.run(["ln", "-s", "-f", "-r", path, link])
+
+        # link by parameters
         with cwd.WorkingDir(self.working_dir):
             if not os.path.exists("by_param"):
                 os.makedirs("by_param")
 
-            variables, _ = parameters.get_variables(self.combinations)
+            variables, constants = parameters.get_variables(self.combinations)
             for combination, simulation in zip(self.combinations, self.simulations):
-                name = "_".join(
-                    (
-                        variable + "=" + str(combination[variable])
-                        for variable in variables
+                if not variables:
+                    name = "_".join(
+                        (
+                            constant + "=" + str(combination[constant])
+                            for constant in constants
+                        )
                     )
-                )
+                else:
+                    name = "_".join(
+                        (
+                            variable + "=" + str(combination[variable])
+                            for variable in variables
+                        )
+                    )
                 path = simulation.working_dir
                 link = os.path.join("by_param", name)
 

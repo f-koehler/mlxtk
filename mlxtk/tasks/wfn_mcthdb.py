@@ -10,12 +10,20 @@ from QDTK.Wavefunction import Wavefunction as WaveFunction
 from ..tools.diagonalize import diagonalize_1b_operator
 
 
-def create_mctdhb_wave_function(name, hamiltonian_1b, num_particles, num_spfs):
+def create_mctdhb_wave_function(
+    name, hamiltonian_1b, num_particles, num_spfs, number_state=None
+):
     path_pickle = name + ".wfn_pickle"
+
+    if number_state is None:
+        number_state = numpy.zeros(num_spfs, dtype=numpy.int64)
+        number_state[0] = num_particles
+    elif not isinstance(number_state, numpy.ndarray):
+        number_state = numpy.array(number_state)
 
     def task_write_parameters():
         def action_write_parameters(targets):
-            obj = [name, hamiltonian_1b, num_particles, num_spfs]
+            obj = [name, hamiltonian_1b, num_particles, num_spfs, number_state.tolist()]
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp)
 
@@ -50,10 +58,8 @@ def create_mctdhb_wave_function(name, hamiltonian_1b, num_particles, num_spfs):
 
             grid_points = matrix.shape[0]
             tape = (-10, num_particles, +1, num_spfs, -1, 1, 1, 0, grid_points, -2)
-            ns = numpy.zeros(num_spfs)
-            ns[0] = num_particles
             wfn = WaveFunction(tape=tape)
-            wfn.init_coef_sing_spec_B(ns, spfs, 1e-15, 1e-15, full_spf=True)
+            wfn.init_coef_sing_spec_B(number_state, spfs, 1e-15, 1e-15, full_spf=True)
 
             with gzip.open(targets[0], "wb") as fp:
                 with io.StringIO() as sio:

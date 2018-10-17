@@ -286,7 +286,7 @@ def relax(
     kwargs["relax"] = True
     kwargs["tfinal"] = kwargs.get("tfinal", 1000.)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
-    kwargs["stat_npop_tol"] = kwargs.get("stat_energ_tol", 1e-6)
+    kwargs["stat_npop_tol"] = kwargs.get("stat_npop_tol", 1e-6)
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
@@ -296,7 +296,7 @@ def improved_relax(
     kwargs["improved_relax"] = True
     kwargs["tfinal"] = kwargs.get("tfinal", 1000.)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
-    kwargs["stat_npop_tol"] = kwargs.get("stat_energ_tol", 1e-6)
+    kwargs["stat_npop_tol"] = kwargs.get("stat_npop_tol", 1e-6)
     kwargs["nstep_diag"] = kwargs.get("nstep_diag", 50)
     kwargs["stat_steps"] = kwargs.get("stat_steps", 80)
     kwargs["eig_index"] = eig_index

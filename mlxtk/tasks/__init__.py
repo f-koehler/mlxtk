@@ -6,6 +6,7 @@ from .propagate import improved_relax
 from .propagate import propagate
 from .propagate import relax
 from .wfn_mcthdb import create_mctdhb_wave_function
+from .wfn_mcthdb import mctdhb_add_momentum
 
 from .extract_psi import ExtractedPsi
 
@@ -17,5 +18,6 @@ assert improved_relax
 assert propagate
 assert relax
 assert create_mctdhb_wave_function
+assert mctdhb_add_momentum
 
 assert ExtractedPsi

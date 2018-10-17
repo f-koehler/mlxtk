@@ -1,13 +1,16 @@
 import gzip
 import io
 import pickle
+from typing import Any, Dict, Iterable
 
 import h5py
 import numpy
 
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
+from ..dvr import DVRSpecification
 from ..tools.diagonalize import diagonalize_1b_operator
+from ..tools.wave_function import add_momentum, load_wave_function, save_wave_function
 
 
 def create_mctdhb_wave_function(
@@ -61,10 +64,7 @@ def create_mctdhb_wave_function(
             wfn = WaveFunction(tape=tape)
             wfn.init_coef_sing_spec_B(number_state, spfs, 1e-15, 1e-15, full_spf=True)
 
-            with gzip.open(targets[0], "wb") as fp:
-                with io.StringIO() as sio:
-                    wfn.createWfnFile(sio)
-                    fp.write(sio.getvalue().encode())
+            save_wave_function(targets[0], wfn)
 
         return {
             "name": "create_mctdhb_wave_function:{}:write_wave_function".format(name),
@@ -74,3 +74,41 @@ def create_mctdhb_wave_function(
         }
 
     return [task_write_parameters, task_write_wave_function]
+
+
+def mctdhb_add_momentum(
+    name: str, initial: str, momentum: float, grid: DVRSpecification
+):
+    path_pickle = name + ".wfn_pickle"
+
+    def task_write_parameters() -> Dict[str, Any]:
+        def action_write_parameters(targets: Iterable[str]):
+            del targets
+            obj = [name, initial, momentum]
+            with open(path_pickle, "wb") as fp:
+                pickle.dump(obj, fp)
+
+        return {
+            "name": "mctdhb_add_momentum:{}:write_parameters".format(name),
+            "actions": [action_write_parameters],
+            "targets": [path_pickle],
+        }
+
+    def task_add_momentum() -> Dict[str, Any]:
+        path = name + ".wfn.gz"
+        initial_path = initial + ".wfn.gz"
+
+        def action_add_momentum(targets: Iterable[str]):
+            wfn = load_wave_function(initial_path)
+            wfn.tree._topNode._pgrid[0] = grid.get_x()
+            add_momentum(wfn, momentum)
+            save_wave_function(path, wfn)
+
+        return {
+            "name": "mctdhb_add_momentum:{}:add_momentum".format(name),
+            "actions": [action_add_momentum],
+            "targets": [path],
+            "file_dep": [path_pickle],
+        }
+
+    return [task_write_parameters, task_add_momentum]

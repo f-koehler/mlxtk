@@ -87,7 +87,7 @@ def get_position_operator_in_spf_basis(spfs, x):
 
 
 def get_translation_operator_in_spf_basis(spfs, periodicity, x):
-    offset = numpy.abs(x - (x[0] + 1. / periodicity)).argmin()
+    offset = numpy.abs(x - (x[0] + 1.0 / periodicity)).argmin()
     operator = numpy.zeros((len(spfs), len(spfs)), dtype=numpy.complex128)
     for i, spf_i in enumerate(spfs):
         for j, spf_j in enumerate(spfs):

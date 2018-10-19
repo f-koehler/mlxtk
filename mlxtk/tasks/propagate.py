@@ -64,7 +64,7 @@ DEFAULT_FLAGS = {
     "resetnorm": False,
     "rstzero": True,
     "rtol": 1e-12,
-    "tfinal": 1.,
+    "tfinal": 1.0,
     "timing": True,
     "transMat": False,
 }
@@ -284,7 +284,7 @@ def relax(
     name: str, wave_function: str, hamiltonian: str, **kwargs
 ) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["relax"] = True
-    kwargs["tfinal"] = kwargs.get("tfinal", 1000.)
+    kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
     kwargs["stat_npop_tol"] = kwargs.get("stat_npop_tol", 1e-6)
     return propagate(name, wave_function, hamiltonian, **kwargs)
@@ -294,7 +294,7 @@ def improved_relax(
     name: str, wave_function: str, hamiltonian: str, eig_index: int, **kwargs
 ) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["improved_relax"] = True
-    kwargs["tfinal"] = kwargs.get("tfinal", 1000.)
+    kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
     kwargs["stat_npop_tol"] = kwargs.get("stat_npop_tol", 1e-6)
     kwargs["nstep_diag"] = kwargs.get("nstep_diag", 50)

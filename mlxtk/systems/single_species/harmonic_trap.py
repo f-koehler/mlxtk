@@ -17,7 +17,7 @@ class HarmonicTrap:
     def __init__(
         self,
         parameters: Parameters,
-        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0., 1.),
+        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0.0, 1.0),
     ):
         self.parameters = parameters
         self.grid = grid
@@ -44,7 +44,7 @@ class HarmonicTrap:
             name,
             (self.grid,),
             {
-                "kin": -1. / (2. * self.parameters.mass),
+                "kin": -1.0 / (2.0 * self.parameters.mass),
                 "pot": 0.5 * self.parameters.mass * (self.parameters.omega ** 2),
             },
             {"dx²": self.grid.get_d2(), "x²": self.grid.get_x() ** 2},
@@ -65,7 +65,7 @@ class HarmonicTrap:
         """
 
         coefficients = {
-            "kin": -1. / (2. * self.parameters.mass),
+            "kin": -1.0 / (2.0 * self.parameters.mass),
             "pot": 0.5 * self.parameters.mass * (self.parameters.omega ** 2),
         }
         terms = {"dx²": self.grid.get_d2(), "x²": self.grid.get_x() ** 2}

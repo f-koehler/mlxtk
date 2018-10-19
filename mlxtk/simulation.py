@@ -24,10 +24,28 @@ class Simulation:
         if not os.path.exists(self.working_dir):
             os.makedirs(self.working_dir)
 
+    def list(self, args: argparse.Namespace):
+        self.create_working_dir()
+        with cwd.WorkingDir(self.working_dir):
+            doit_compat.run_doit(
+                self.task_generators,
+                ["list", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
+            )
+
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
-            doit_compat.run_doit(self.task_generators, ["-n", str(args.jobs)])
+            doit_compat.run_doit(
+                self.task_generators,
+                [
+                    "-n",
+                    str(args.jobs),
+                    "--backend",
+                    "sqlite3",
+                    "--db-file",
+                    "doit.sqlite3",
+                ],
+            )
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -52,11 +70,17 @@ class Simulation:
 
     def task_info(self, args: argparse.Namespace):
         with cwd.WorkingDir(self.working_dir):
-            doit_compat.run_doit(self.task_generators, ["info", args.name])
-
-    # def status(self, args: argparse.Namespace):
-    #     with cwd.WorkingDir(self.working_dir):
-    #         doit_compat.run_doit(self.task_generators, ["--status", "info", args.name])
+            doit_compat.run_doit(
+                self.task_generators,
+                [
+                    "info",
+                    "--backend",
+                    "sqlite3",
+                    "--db-file",
+                    "doit.sqlite3",
+                    args.name,
+                ],
+            )
 
     def main(self, args: Iterable[str] = sys.argv[1:]):
         parser = argparse.ArgumentParser(description="This is a mlxtk simulation")
@@ -69,10 +93,6 @@ class Simulation:
         parser_run.add_argument(
             "-j", "--jobs", type=int, default=1, help="number of parallel workers"
         )
-
-        # # parser for status
-        # parser_status = subparsers.add_parser("status")
-        # parser_status.add_argument("name")
 
         # parser for task-info
         parser_task_info = subparsers.add_parser("task-info")
@@ -100,8 +120,6 @@ class Simulation:
         elif args.subcommand == "qdel":
             self.qdel(args)
         elif args.subcommand == "list":
-            doit_compat.run_doit(self.task_generators, ["list"])
-        # elif args.subcommand == "status":
-        #     self.status(args)
+            self.list(args)
         elif args.subcommand == "task-info":
             self.task_info(args)

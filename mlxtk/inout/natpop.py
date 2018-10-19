@@ -100,7 +100,7 @@ def read_natpop_ascii(
             vals = numpy.zeros(df.shape, dtype=numpy.float64)
             for i in range(num_orbitals):
                 vals[:, i] = df["orbital_" + str(i)]
-            data[n + 1][orbitals + 1] = vals / 1000.
+            data[n + 1][orbitals + 1] = vals / 1000.0
 
     if node:
         if dof:

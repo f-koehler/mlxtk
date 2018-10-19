@@ -25,7 +25,7 @@ class GaussianTrap:
     def __init__(
         self,
         parameters: Parameters,
-        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0., 1.),
+        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0.0, 1.0),
     ):
         self.parameters = parameters
         self.grid = grid
@@ -51,7 +51,7 @@ class GaussianTrap:
         return tasks.create_operator(
             name,
             (self.grid,),
-            {"kin": -1., "pot": -1.},
+            {"kin": -1.0, "pot": -1.0},
             {
                 "dx²": self.grid.get_d2(),
                 "gaussian": gaussian(
@@ -74,7 +74,7 @@ class GaussianTrap:
            list: list of task dictionaries to create this operator
         """
 
-        coefficients = {"kin": -1., "pot": -1.}
+        coefficients = {"kin": -1.0, "pot": -1.0}
         terms = {
             "dx²": self.grid.get_d2(),
             "gaussian": gaussian(

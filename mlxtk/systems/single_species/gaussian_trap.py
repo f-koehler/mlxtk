@@ -6,8 +6,8 @@ from mlxtk import dvr, tasks
 from mlxtk.parameters import Parameters
 
 
-def gaussian(x: Union[float, numpy.ndarray], V0: float, x0: float):
-    return V0 * numpy.exp(-((x - x0) ** 2))
+def gaussian(x: Union[float, numpy.ndarray], x0: float):
+    return numpy.exp(-((x - x0) ** 2))
 
 
 class GaussianTrap:
@@ -51,12 +51,10 @@ class GaussianTrap:
         return tasks.create_operator(
             name,
             (self.grid,),
-            {"kin": -1.0, "pot": -1.0},
+            {"kin": -0.5, "pot": -self.parameters.V0},
             {
                 "dx²": self.grid.get_d2(),
-                "gaussian": gaussian(
-                    self.grid.get_x(), self.parameters.V0, self.parameters.x0
-                ),
+                "gaussian": gaussian(self.grid.get_x(), self.parameters.x0),
             },
             ["kin | 1 dx²", "pot | 1 gaussian"],
         )
@@ -74,12 +72,10 @@ class GaussianTrap:
            list: list of task dictionaries to create this operator
         """
 
-        coefficients = {"kin": -1.0, "pot": -1.0}
+        coefficients = {"kin": -0.5, "pot": -self.parameters.V0}
         terms = {
             "dx²": self.grid.get_d2(),
-            "gaussian": gaussian(
-                self.grid.get_x(), self.parameters.V0, self.parameters.x0
-            ),
+            "gaussian": gaussian(self.grid.get_x(), self.parameters.x0),
         }
         table = ["kin | 1 dx²", "pot | 1 gaussian"]
 

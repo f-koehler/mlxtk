@@ -33,7 +33,7 @@ def add_momentum(wfn: Wavefunction, momentum: float) -> Wavefunction:
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     grid = wfn.tree._topNode._pgrid[0]
 
-    phase = numpy.exp(-1j * momentum * grid)
+    phase = numpy.exp(1j * momentum * grid)
 
     for i in range(0, num_spfs):
         start = wfn.tree._subnodes[0]._z0 + i * len_spfs

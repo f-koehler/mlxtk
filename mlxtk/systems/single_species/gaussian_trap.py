@@ -40,24 +40,24 @@ class GaussianTrap:
             ]
         )
 
-    def get_1b_hamiltonian(self, name: str):
-        """Create the single-body Hamiltonian
-        Args:
-           name (str): name for the operator file
-
-        Returns:
-           list: list of task dictionaries to create this operator
-        """
-        return tasks.create_operator(
-            name,
+    def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
+        return tasks.OperatorSpecification(
             (self.grid,),
-            {"kin": -0.5, "pot": -self.parameters.V0},
-            {
-                "dx²": self.grid.get_d2(),
-                "gaussian": gaussian(self.grid.get_x(), self.parameters.x0),
-            },
-            ["kin | 1 dx²", "pot | 1 gaussian"],
+            {"kinetic_coeff": -0.5},
+            {"kinetic": self.grid.get_d2()},
+            ["kinetic_coeff | 1 kinetic"],
         )
+
+    def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
+        return tasks.OperatorSpecification(
+            (self.grid,),
+            {"potential_coeff": -self.parameters.V0},
+            {"potential": gaussian(self.grid.get_x(), self.grid.get_x())},
+            ["potential_coeff | 1 potential"],
+        )
+
+    def get_1b_hamiltonian(self) -> tasks.OperatorSpecification:
+        return self.get_kinetic_operator_1b() + self.get_potential_operator_1b()
 
     def get_mb_hamiltonian(self, name: str):
         """Create the many body hamiltonian

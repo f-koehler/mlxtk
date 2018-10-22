@@ -27,29 +27,28 @@ class HarmonicTrap:
         return Parameters(
             [
                 ("g", 0.1, "strength of the contact interaction between the particles"),
-                ("mass", 1.0, "mass of the particles"),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
             ]
         )
 
-    def get_1b_hamiltonian(self, name: str):
-        """Create the single-body Hamiltonian
-        Args:
-           name (str): name for the operator file
-
-        Returns:
-           list: list of task dictionaries to create this operator
-        """
-        return tasks.create_operator(
-            name,
+    def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
+        return tasks.OperatorSpecification(
             (self.grid,),
-            {
-                "kin": -1.0 / (2.0 * self.parameters.mass),
-                "pot": 0.5 * self.parameters.mass * (self.parameters.omega ** 2),
-            },
-            {"dx²": self.grid.get_d2(), "x²": self.grid.get_x() ** 2},
-            ["kin | 1 dx²", "pot | 1 x²"],
+            {"kinetic_coeff": -0.5},
+            {"kinetic": self.grid.get_d2()},
+            ["kinetic_coeff | 1 kinetic"],
         )
+
+    def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
+        return tasks.OperatorSpecification(
+            (self.grid,),
+            {"potential_coeff": 0.5 * (self.parameters.omega ** 2)},
+            {"potential": self.grid.get_x() ** 2},
+            ["potential_coeff | 1 potential"],
+        )
+
+    def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
+        return self.get_kinetic_operator_1b() + self.get_potential_operator_1b()
 
     def get_mb_hamiltonian(self, name: str):
         """Create the many body hamiltonian
@@ -64,10 +63,7 @@ class HarmonicTrap:
            list: list of task dictionaries to create this operator
         """
 
-        coefficients = {
-            "kin": -1.0 / (2.0 * self.parameters.mass),
-            "pot": 0.5 * self.parameters.mass * (self.parameters.omega ** 2),
-        }
+        coefficients = {"kin": -0.5, "pot": 0.5 * (self.parameters.omega ** 2)}
         terms = {"dx²": self.grid.get_d2(), "x²": self.grid.get_x() ** 2}
         table = ["kin | 1 dx²", "pot | 1 x²"]
 

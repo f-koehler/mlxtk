@@ -46,10 +46,10 @@ class OperatorSpecification:
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
 
-        if not set(*self.coefficients).isdisjoint(set(*other.coefficients)):
+        if not set(self.coefficients.keys()).isdisjoint(set(other.coefficients.keys())):
             raise ValueError("coefficient names are not unique")
 
-        if not set(*self.terms).isdisjoint(set(*other.terms)):
+        if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
 
         self.coefficients = {**self.coefficients, **other.coefficients}

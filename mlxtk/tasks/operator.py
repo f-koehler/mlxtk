@@ -15,23 +15,90 @@ from ..hashing import inaccurate_hash
 from ..tools.operator import get_operator_matrix
 
 
-def create_operator(
-    name: str,
-    dofs: List[DVRSpecification],
-    coefficients: List[Any],
-    terms: List[Any],
-    table: Union[str, Iterable[str]],
-) -> List[Callable[[], Dict[str, Any]]]:
-    if not isinstance(table, str):
-        table = "\n".join(table)
+class OperatorSpecification:
+    def __init__(
+        self,
+        dofs: List[DVRSpecification],
+        coefficients: List[Any],
+        terms: List[Any],
+        table: Union[str, List[str]],
+    ):
+        self.dofs = dofs
+        self.coefficients = coefficients
+        self.terms = terms
 
+        if isinstance(table, str):
+            self.table = [table]
+        else:
+            self.table = table
+
+    def __add__(self, other):
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
+        cpy.__iadd__(other)
+        return cpy
+
+    def __radd(self, other):
+        return self.__add__(other)
+
+    def __iadd__(self, other):
+        if self.dofs != other.dofs:
+            raise ValueError("dofs differ")
+
+        if not set(*self.coefficients).isdisjoint(set(*other.coefficients)):
+            raise ValueError("coefficient names are not unique")
+
+        if not set(*self.terms).isdisjoint(set(*other.terms)):
+            raise ValueError("term names are not unique")
+
+        self.coefficients = {**self.coefficients, **other.coefficients}
+        self.terms = {**self.terms, **other.terms}
+        self.table += other.table
+
+        return self
+
+    def get_operator(self):
+        op = Operator()
+        op.define_grids([dof.get() for dof in self.dofs])
+
+        for coeff in self.coefficients:
+            op.addLabel(coeff, Coeff(self.coefficients[coeff]))
+
+        for term in self.terms:
+            op.addLabel(term, Term(self.terms[term]))
+
+        op.readTable("\n".join(self.table))
+
+        return op
+
+
+def create_operator(name: str, *args, **kwargs):
+    if "specification" in kwargs:
+        return create_operator_impl(name, kwargs["specification"])
+
+    if isinstance(args[0], OperatorSpecification):
+        return create_operator_impl(name, args[0])
+
+    return create_operator_impl(name, OperatorSpecification(*args, **kwargs))
+
+
+def create_operator_impl(
+    name: str, specification: OperatorSpecification
+) -> List[Callable[[], Dict[str, Any]]]:
     path_pickle = name + ".opr_pickle"
 
     def task_write_parameters():
         def action_write_parameters(targets):
-            obj = [name, dofs, coefficients, {}, table]
-            for term in terms:
-                obj[3][term] = inaccurate_hash(terms[term])
+            obj = [
+                name,
+                specification.dofs,
+                specification.coefficients,
+                {},
+                specification.table,
+            ]
+            for term in specification.terms:
+                obj[3][term] = inaccurate_hash(specification.terms[term])
 
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp)
@@ -47,16 +114,7 @@ def create_operator(
         path_matrix = name + ".opr_mat.hdf5"
 
         def action_write_operator(targets):
-            op = Operator()
-            op.define_grids([dof.get() for dof in dofs])
-
-            for coeff in coefficients:
-                op.addLabel(coeff, Coeff(coefficients[coeff]))
-
-            for term in terms:
-                op.addLabel(term, Term(terms[term]))
-
-            op.readTable(table)
+            op = specification.get_operator()
 
             with gzip.open(targets[0], "wb") as fp:
                 with io.StringIO() as sio:
@@ -70,7 +128,7 @@ def create_operator(
                 )
                 dset[:, :] = matrix
 
-                for i, dof in enumerate(dofs):
+                for i, dof in enumerate(specification.dofs):
                     grid = dof.get_x()
                     dset = fp.create_dataset(
                         "grid_{}".format(i + 1),

@@ -9,6 +9,7 @@ from .wfn_mcthdb import create_mctdhb_wave_function
 from .wfn_mcthdb import mctdhb_add_momentum
 
 from .extract_psi import ExtractedPsi
+from .operator import OperatorSpecification
 
 assert extract_psi
 assert create_many_body_operator
@@ -21,3 +22,4 @@ assert create_mctdhb_wave_function
 assert mctdhb_add_momentum
 
 assert ExtractedPsi
+assert OperatorSpecification

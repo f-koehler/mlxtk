@@ -10,9 +10,6 @@ from QDTK.Primitive import (
     rHarmdvr,
 )
 
-# from QDTK.Primitive import Discrete
-# from QDTK.Primitive import FFT
-
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
     "RadialHarmonicDVR": rHarmdvr,
@@ -49,6 +46,9 @@ class DVRSpecification:
         self.args = args
         self.dvr = None  # type: Dvr
 
+        if (type_ == "ExponentialDVR") and (args[0] % 2 == 0):
+            raise RuntimeError("ExponentialDVR requires an odd number of grid points")
+
     def compute(self):
         if self.dvr is None:
             class_ = DVR_CLASSES[self.type_]
@@ -68,10 +68,14 @@ class DVRSpecification:
 
     def get_d1(self) -> numpy.ndarray:
         self.compute()
+        if self.is_fft():
+            return self.dvr.d1fft
         return self.dvr.d1dvr
 
     def get_d2(self) -> numpy.ndarray:
         self.compute()
+        if self.is_fft():
+            return self.dvr.d2fft
         return self.dvr.d2dvr
 
     def get_delta(self) -> numpy.ndarray:
@@ -80,6 +84,12 @@ class DVRSpecification:
 
     def is_fft(self) -> bool:
         return self.type_ == "FFT"
+
+    def get_expdvr(self):
+        if not self.is_fft():
+            raise RuntimeError("get_expdvr() makes only sense for a FFT grid")
+
+        return add_expdvr(*self.args)
 
     def __getstate__(self):
         return {"type": self.type_, "args": self.args}
@@ -94,6 +104,15 @@ class DVRSpecification:
 
         self.type_ = state["type"]
         self.args = state["args"]
+
+    def __str__(self) -> str:
+        return (
+            "DVRSpecification<"
+            + self.type_
+            + ", "
+            + ", ".join((str(arg) for arg in self.args))
+            + ">"
+        )
 
 
 def add_harmdvr(
@@ -160,96 +179,3 @@ def add_laguerredvr(
 
 def add_fft(npoints: int, xmin: float, xmax: float) -> DVRSpecification:
     return DVRSpecification("FFT", npoints, xmin, xmax)
-
-
-# def add_discretedvr(name, nstates):
-#     if name in REGISTERED_DVRS:
-#         LOGGER.warn("overwrite existing dvr %s", name)
-#         remove_dvr(name)
-#     REGISTERED_DVRS[name] = [Discrete, nstates]
-
-# def add_fft(name, npoints, xmin, xmax):
-#     if name in REGISTERED_DVRS:
-#         LOGGER.warn("overwrite existing dvr %s", name)
-#         remove_dvr(name)
-#     REGISTERED_DVRS[name] = [FFT, npoints, xmin, xmax]
-
-# def exists(name):
-#     return name in REGISTERED_DVRS
-
-# def get(name):
-#     """Return the DVR registered under the given name
-
-#     Args:
-#         name (str): Name of the DVR
-
-#     Returns:
-#         The DVR object with the given name
-#     """
-#     if name not in DVRS:
-#         LOGGER.info("constructing dvr \"%s\" (%s)", name,
-#                     REGISTERED_DVRS[name][0].__name__)
-#         start = time.perf_counter()
-#         DVRS[name] = REGISTERED_DVRS[name][0](*REGISTERED_DVRS[name][1:])
-#         stop = time.perf_counter()
-#         LOGGER.info("execution took %fs", stop - start)
-
-#     return DVRS[name]
-
-# def is_fft(name):
-#     """Check wether a DVR is of FFT type
-
-#     Args:
-#         name (str): Name of the DVR
-
-#     Returns:
-#         bool: `True` if the DVR is of FFT type, `False` otherwise
-#     """
-#     if name not in REGISTERED_DVRS:
-#         raise RuntimeError("No DVR with name \"" + name + "\" present")
-
-#     return REGISTERED_DVRS[name][0] == FFT
-
-# def get_x(name):
-#     return get(name).x
-
-# def get_d1(name):
-#     if is_fft(name):
-#         return get(name).d1fft
-#     else:
-#         return get(name).d1dvr
-
-# def get_d2(name):
-#     if is_fft(name):
-#         return get(name).d2fft
-#     else:
-#         return get(name).d2dvr
-
-# def fftw_grid_sizes(n_max):
-#     sizes = []
-
-#     for i in range(2, n_max):
-#         n = i
-
-#         while True:
-#             if n % 5 == 0:
-#                 n = n // 5
-#             else:
-#                 break
-
-#         while True:
-#             if n % 3 == 0:
-#                 n = n // 3
-#             else:
-#                 break
-
-#         while True:
-#             if n % 2 == 0:
-#                 n = n // 2
-#             else:
-#                 break
-
-#         if n == 1:
-#             sizes.append(i)
-
-#     return sizes

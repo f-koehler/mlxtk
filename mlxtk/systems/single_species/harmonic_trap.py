@@ -22,6 +22,11 @@ class HarmonicTrap:
         self.parameters = parameters
         self.grid = grid
 
+        if grid.is_fft():
+            self.grid_1b = grid.get_expdvr()
+        else:
+            self.grid_1b = self.grid
+
     @staticmethod
     def create_parameters() -> Parameters:
         return Parameters(
@@ -32,18 +37,19 @@ class HarmonicTrap:
         )
 
     def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
+        print(self.grid_1b)
         return tasks.OperatorSpecification(
-            (self.grid,),
+            (self.grid_1b,),
             {"kinetic_coeff": -0.5},
-            {"kinetic": self.grid.get_d2()},
+            {"kinetic": self.grid_1b.get_d2()},
             "kinetic_coeff | 1 kinetic",
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
-            (self.grid,),
+            (self.grid_1b,),
             {"potential_coeff": 0.5 * (self.parameters.omega ** 2)},
-            {"potential": self.grid.get_x() ** 2},
+            {"potential": self.grid_1b.get_x() ** 2},
             "potential_coeff | 1 potential",
         )
 
@@ -51,15 +57,11 @@ class HarmonicTrap:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b()
 
     def get_kinetic_operator(self) -> tasks.MBOperatorSpecification:
-        if self.grid.is_fft():
-            term = {"value": self.grid.get_d2(), "fft": True}
-        else:
-            term = self.grid.get_d2()
         return tasks.MBOperatorSpecification(
             (1,),
             (self.grid,),
             {"kinetic_coeff": -0.5},
-            {"kinetic": term},
+            {"kinetic": {"value": self.grid.get_d2(), "fft": self.grid.is_fft()}},
             "kinetic_coeff | 1 kinetic",
         )
 
@@ -89,4 +91,4 @@ class HarmonicTrap:
                 + self.get_interaction_operator()
             )
 
-        return self.get_kinetic_operator() + self.get_potential_operator_1b()
+        return self.get_kinetic_operator() + self.get_potential_operator()

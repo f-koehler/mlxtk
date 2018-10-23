@@ -1,6 +1,14 @@
 import numpy
 
-from QDTK.Primitive import Expdvr, Harmdvr, Laguerredvr, Legendredvr, Sindvr, rHarmdvr
+from QDTK.Primitive import (
+    FFT,
+    Expdvr,
+    Harmdvr,
+    Laguerredvr,
+    Legendredvr,
+    Sindvr,
+    rHarmdvr,
+)
 
 # from QDTK.Primitive import Discrete
 # from QDTK.Primitive import FFT
@@ -71,7 +79,7 @@ class DVRSpecification:
         return self.dvr.delta_w()
 
     def is_fft(self) -> bool:
-        return self.type == "FFT"
+        return self.type_ == "FFT"
 
     def __getstate__(self):
         return {"type": self.type_, "args": self.args}

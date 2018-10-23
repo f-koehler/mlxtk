@@ -7,6 +7,7 @@ from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
 
+from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
 
 
@@ -60,7 +61,7 @@ class MBOperatorSpecification:
 
     def _add_term(self, op: Operator, name: str, term):
         if not isinstance(term, dict):
-            op.addLabel(name, term)
+            op.addLabel(name, Term(term))
             return
 
         term_kwargs = {}
@@ -79,15 +80,16 @@ class MBOperatorSpecification:
             if "td_args" in term:
                 term_kwargs["tf_args"] = term["td_args"]
 
-            op.addLabel(term, **term_kwargs)
+            op.addLabel(term, Term(**term_kwargs))
         else:
-            op.addLabel(term, term["value"], **kwargs)
+            op.addLabel(term, Term(term["value"], **kwargs))
 
     def get_operator(self):
         op = Operator()
-        op.define_dofs_and_grids(dofs, [grid.get() for grid in self.grids])
+        op.define_dofs_and_grids(self.dofs, [grid.get() for grid in self.grids])
 
         for coeff in self.coefficients:
+            print(coeff, self.coefficients[coeff])
             op.addLabel(coeff, Coeff(self.coefficients[coeff]))
 
         for term in self.terms:
@@ -129,7 +131,7 @@ def create_many_body_operator_impl(
                 specification.table,
             ]
             for term in specification.terms:
-                if isinstance(terms[term], dict):
+                if isinstance(specification.terms[term], dict):
                     obj[4][term] = {
                         key: specification.terms[key] for key in specification.terms
                     }

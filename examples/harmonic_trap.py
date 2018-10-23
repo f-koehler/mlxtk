@@ -15,8 +15,12 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("harmonic_trap")
     sim += mlxtk.tasks.create_operator("hamiltonian_1b", system.get_hamiltonian_1b())
-    sim += system.get_mb_hamiltonian("hamiltonian")
-    sim += system_quenched.get_mb_hamiltonian("hamiltonian_quenched")
+    sim += mlxtk.tasks.create_many_body_operator(
+        "hamiltonian", system.get_hamiltonian()
+    )
+    sim += mlxtk.tasks.create_many_body_operator(
+        "hamiltonian_quenched", system_quenched.get_hamiltonian()
+    )
     sim += mlxtk.tasks.create_mctdhb_wave_function("initial", "hamiltonian_1b", 2, 5)
     sim += mlxtk.tasks.improved_relax(
         "gs_relax", "initial", "hamiltonian_quenched", 1, tfinal=1000.0, dt=0.01

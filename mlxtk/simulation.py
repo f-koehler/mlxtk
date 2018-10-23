@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import subprocess
 import sys
 from typing import Iterable, Optional
@@ -23,6 +24,31 @@ class Simulation:
     def create_working_dir(self):
         if not os.path.exists(self.working_dir):
             os.makedirs(self.working_dir)
+
+    def graph(self, args: argparse.Namespace):
+        del args
+
+        regex = re.compile(r"^\s+\".+\"\s*->\s*\".+\";$")
+
+        self.create_working_dir()
+        with cwd.WorkingDir(self.working_dir):
+            doit_compat.run_doit(
+                self.task_generators,
+                ["graph", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
+            )
+
+            with open("tasks.dot") as fp:
+                code = fp.readlines()
+
+            for i in range(len(code)):
+                m = regex.match(code[i])
+                if not m:
+                    continue
+
+                code[i] = code[i].replace(":", "\\n")
+
+            with open("tasks.dot", "w") as fp:
+                fp.writelines(code)
 
     def list(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -86,6 +112,9 @@ class Simulation:
         parser = argparse.ArgumentParser(description="This is a mlxtk simulation")
         subparsers = parser.add_subparsers(dest="subcommand")
 
+        subparsers.add_parser("graph")
+
+        # parser for list
         subparsers.add_parser("list")
 
         # parser for run
@@ -113,7 +142,9 @@ class Simulation:
             parser.print_help(sys.stderr)
             exit(1)
 
-        if args.subcommand == "run":
+        if args.subcommand == "graph":
+            self.graph(args)
+        elif args.subcommand == "run":
             self.run(args)
         elif args.subcommand == "qsub":
             self.qsub(args)

@@ -12,6 +12,7 @@ DVR_CLASSES = {
     "ExponentialDVR": Expdvr,
     "LegendreDVR": Legendredvr,
     "LaguerreDVR": Laguerredvr,
+    "FFT": FFT,
 }
 
 for dvr_class in DVR_CLASSES:
@@ -68,6 +69,9 @@ class DVRSpecification:
     def get_delta(self) -> numpy.ndarray:
         self.compute()
         return self.dvr.delta_w()
+
+    def is_fft(self) -> bool:
+        return self.type == "FFT"
 
     def __getstate__(self):
         return {"type": self.type_, "args": self.args}
@@ -144,6 +148,10 @@ def add_laguerredvr(
     npoints: int, alpha: float, xlag: float, x0: float, tolerance: float = 1e-11
 ) -> DVRSpecification:
     return DVRSpecification("LaguerreDVR", npoints, alpha, xlag, x0, tolerance)
+
+
+def add_fft(npoints: int, xmin: float, xmax: float) -> DVRSpecification:
+    return DVRSpecification("FFT", npoints, xmin, xmax)
 
 
 # def add_discretedvr(name, nstates):

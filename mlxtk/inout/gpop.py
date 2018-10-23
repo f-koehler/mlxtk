@@ -97,8 +97,6 @@ def read_gpop_ascii(
     for dof_index in densities:
         densities[dof_index] = numpy.array(densities[dof_index])
 
-    print(densities[1].shape)
-
     if dof is None:
         return (numpy.array(times), grids, densities)
 
@@ -154,8 +152,6 @@ def write_gpop_hdf5(
             "time", time.shape, dtype=numpy.float64, compression="gzip"
         )
         dset[:] = time
-
-        print(densities[1].shape)
 
         for dof in densities:
             grp = fp.create_group("dof_" + str(dof))

@@ -37,7 +37,6 @@ class HarmonicTrap:
         )
 
     def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
-        print(self.grid_1b)
         return tasks.OperatorSpecification(
             (self.grid_1b,),
             {"kinetic_coeff": -0.5},

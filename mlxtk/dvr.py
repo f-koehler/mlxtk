@@ -1,3 +1,5 @@
+import asyncio
+
 import numpy
 
 from QDTK.Primitive import (
@@ -19,6 +21,7 @@ DVR_CLASSES = {
     "LaguerreDVR": Laguerredvr,
     "FFT": FFT,
 }
+DVR_CACHE = {CLASS: {} for CLASS in DVR_CLASSES}
 
 for dvr_class in DVR_CLASSES:
 
@@ -50,9 +53,15 @@ class DVRSpecification:
             raise RuntimeError("ExponentialDVR requires an odd number of grid points")
 
     def compute(self):
-        if self.dvr is None:
+        if self.dvr is not None:
+            return
+
+        if self.args in DVR_CACHE[self.type_]:
+            self.dvr = DVR_CACHE[self.type_][self.args]
+        else:
             class_ = DVR_CLASSES[self.type_]
             self.dvr = class_(*self.args)
+            DVR_CACHE[self.args] = self.dvr
 
     def get(self):
         self.compute()

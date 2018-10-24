@@ -39,7 +39,7 @@ class OperatorSpecification:
         cpy.__iadd__(other)
         return cpy
 
-    def __radd(self, other):
+    def __radd__(self, other):
         return self.__add__(other)
 
     def __iadd__(self, other):
@@ -57,6 +57,33 @@ class OperatorSpecification:
         self.table += other.table
 
         return self
+
+    def __imul__(self, other):
+        for name in self.coefficients:
+            self.coefficients[name] *= other
+        return self
+
+    def __mul__(self, other):
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
+        cpy.__imul__(other)
+        return cpy
+
+    def __rmul__(self, other):
+        return self.__mul__(self, other)
+
+    def __itruediv__(self, other):
+        for name in self.coefficients:
+            self.coefficients[name] /= other
+        return self
+
+    def __truediv__(self, other):
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
+        cpy.__itruediv__(other)
+        return cpy
 
     def get_operator(self):
         op = Operator()

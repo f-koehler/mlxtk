@@ -9,6 +9,8 @@ class HarmonicTrap(SingleSpeciesSystem):
     def create_parameters() -> Parameters:
         return Parameters(
             [
+                ("N", 2, "number of particles"),
+                ("m", 5, "number of single particle functions"),
                 ("g", 0.1, "strength of the contact interaction between the particles"),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
             ]
@@ -52,3 +54,30 @@ class HarmonicTrap(SingleSpeciesSystem):
             )
 
         return self.get_kinetic_operator() + self.get_potential_operator()
+
+    def get_center_of_mass_operator(self) -> tasks.MBOperatorSpecification:
+        return tasks.MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"center_of_mass_coeff": 1.0},
+            {"center_of_mass": self.grid.get_x()},
+            "center_of_mass_coeff | 1 center_of_mass",
+        )
+
+    def get_center_of_mass_operator_squared(self) -> tasks.MBOperatorSpecification:
+        return tasks.MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {
+                "center_of_mass_squared_coeff_one": 1.0,
+                "center_of_mass_squared_coeff_two": 2.0,
+            },
+            {
+                "center_of_mass_squared_x": self.grid.get_x(),
+                "center_of_mass_squared_x^2": self.grid.get_x() ** 2,
+            },
+            [
+                "center_of_mass_squared_coeff_two | 1 center_of_mass_squared_x",
+                "center_of_mass_squared_coeff_one | 1 center_of_mass_squared_x^2",
+            ],
+        )

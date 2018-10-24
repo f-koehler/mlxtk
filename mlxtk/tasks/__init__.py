@@ -1,3 +1,4 @@
+from .expval import compute_expectation_value
 from .extract_psi import extract_psi
 from .many_body_operator import create_many_body_operator
 from .operator import create_operator
@@ -12,6 +13,7 @@ from .extract_psi import ExtractedPsi
 from .many_body_operator import MBOperatorSpecification
 from .operator import OperatorSpecification
 
+assert compute_expectation_value
 assert extract_psi
 assert create_many_body_operator
 assert create_operator

@@ -3,7 +3,7 @@ import mlxtk
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
 if __name__ == "__main__":
-    x = mlxtk.dvr.add_harmdvr(225, 0., 1.)
+    x = mlxtk.dvr.add_harmdvr(225, 0.0, 1.0)
     # x = mlxtk.dvr.add_fft(225, -10., 10.)
     # x = mlxtk.dvr.add_expdvr(225, -10., 10.)
 
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     system_quenched = HarmonicTrap(parameters_quenched, x)
 
     sim = mlxtk.Simulation("harmonic_trap")
+
     sim += mlxtk.tasks.create_operator("hamiltonian_1b", system.get_hamiltonian_1b())
     sim += mlxtk.tasks.create_many_body_operator(
         "hamiltonian", system.get_hamiltonian()
@@ -23,7 +24,16 @@ if __name__ == "__main__":
     sim += mlxtk.tasks.create_many_body_operator(
         "hamiltonian_quenched", system_quenched.get_hamiltonian()
     )
-    sim += mlxtk.tasks.create_mctdhb_wave_function("initial", "hamiltonian_1b", 2, 5)
+    sim += mlxtk.tasks.create_many_body_operator(
+        "com", system_quenched.get_center_of_mass_operator()
+    )
+    sim += mlxtk.tasks.create_many_body_operator(
+        "com_2", system_quenched.get_center_of_mass_operator_squared()
+    )
+
+    sim += mlxtk.tasks.create_mctdhb_wave_function(
+        "initial", "hamiltonian_1b", parameters.N, parameters.m
+    )
     sim += mlxtk.tasks.improved_relax(
         "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01
     )
@@ -36,6 +46,9 @@ if __name__ == "__main__":
         psi=True,
         keep_psi=True,
     )
-    sim += mlxtk.tasks.extract_psi("propagate/psi")
+
+    with mlxtk.tasks.ExtractedPsi(sim, "propagate/psi"):
+        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
+        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
 
     sim.main()

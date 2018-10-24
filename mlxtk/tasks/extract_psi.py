@@ -44,7 +44,7 @@ class ExtractedPsi:
             del targets
 
             if os.path.exists(self.psi):
-                LOGGER.info("remove ascci psi file")
+                LOGGER.info("remove ASCII psi file")
                 os.remove(self.psi)
 
         def task_remove():

@@ -5,31 +5,14 @@ import numpy
 from mlxtk import dvr, tasks
 from mlxtk.parameters import Parameters
 
+from .single_species import SingleSpeciesSystem
+
 
 def gaussian(x: Union[float, numpy.ndarray], x0: float):
     return numpy.exp(-((x - x0) ** 2))
 
 
 class GaussianTrap:
-    """Interacting particles in a Gaussian shape trap
-
-    Args:
-        parameters (mlxtk.parameters.Parameters): the system parameters
-        grid (mlxtk.dvr.DVRSpecification): the grid of the system
-
-    Attributes:
-        parameters (mlxtk.parameters.Parameters): the system parameters
-        grid (mlxtk.dvr.DVRSpecification): the grid of the system
-    """
-
-    def __init__(
-        self,
-        parameters: Parameters,
-        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0.0, 1.0),
-    ):
-        self.parameters = parameters
-        self.grid = grid
-
     @staticmethod
     def create_parameters():
         return Parameters(
@@ -38,14 +21,6 @@ class GaussianTrap:
                 ("x0", 0.0, "center of the Gaussian well"),
                 ("g", 0.1, "strength of the contact interaction"),
             ]
-        )
-
-    def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
-        return tasks.OperatorSpecification(
-            (self.grid,),
-            {"kinetic_coeff": -0.5},
-            {"kinetic": self.grid.get_d2()},
-            ["kinetic_coeff | 1 kinetic"],
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
@@ -58,19 +33,6 @@ class GaussianTrap:
 
     def get_1b_hamiltonian(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b()
-
-    def get_kinetic_operator(self) -> tasks.MBOperatorSpecification:
-        if self.grid.is_fft():
-            term = {"value": self.grid.get_d2(), "fft": True}
-        else:
-            term = self.grid.get_d2()
-        return tasks.MBOperatorSpecification(
-            (1,),
-            (self.grid,),
-            {"kinetic_coeff": -0.5},
-            {"kinetic": term},
-            "kinetic_coeff | 1 kinetic",
-        )
 
     def get_potential_operator(self) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(

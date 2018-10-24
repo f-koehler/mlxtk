@@ -1,32 +1,10 @@
 from mlxtk import dvr, tasks
 from mlxtk.parameters import Parameters
 
+from .single_species import SingleSpeciesSystem
 
-class HarmonicTrap:
-    """A class for a quantum harmonic oscillator with interacting particles
 
-    Args:
-        parameters (mlxtk.parameters.Parameters): the system parameters
-        grid (mlxtk.dvr.DVRSpecification): the grid of the harmonic oscillator
-
-    Attributes:
-        parameters (mlxtk.parameters.Parameters): the system parameters
-        grid (mlxtk.dvr.DVRSpecification): the grid of the harmonic oscillator
-    """
-
-    def __init__(
-        self,
-        parameters: Parameters,
-        grid: dvr.DVRSpecification = dvr.add_harmdvr(400, 0.0, 1.0),
-    ):
-        self.parameters = parameters
-        self.grid = grid
-
-        if grid.is_fft():
-            self.grid_1b = grid.get_expdvr()
-        else:
-            self.grid_1b = self.grid
-
+class HarmonicTrap(SingleSpeciesSystem):
     @staticmethod
     def create_parameters() -> Parameters:
         return Parameters(
@@ -34,14 +12,6 @@ class HarmonicTrap:
                 ("g", 0.1, "strength of the contact interaction between the particles"),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
             ]
-        )
-
-    def get_kinetic_operator_1b(self) -> tasks.OperatorSpecification:
-        return tasks.OperatorSpecification(
-            (self.grid_1b,),
-            {"kinetic_coeff": -0.5},
-            {"kinetic": self.grid_1b.get_d2()},
-            "kinetic_coeff | 1 kinetic",
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
@@ -54,15 +24,6 @@ class HarmonicTrap:
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b()
-
-    def get_kinetic_operator(self) -> tasks.MBOperatorSpecification:
-        return tasks.MBOperatorSpecification(
-            (1,),
-            (self.grid,),
-            {"kinetic_coeff": -0.5},
-            {"kinetic": {"value": self.grid.get_d2(), "fft": self.grid.is_fft()}},
-            "kinetic_coeff | 1 kinetic",
-        )
 
     def get_potential_operator(self) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(

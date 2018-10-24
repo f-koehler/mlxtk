@@ -13,7 +13,7 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
     if "name" in kwargs:
         name = kwargs["name"]
     else:
-        name = psi + "_" + os.path.basename(operator)
+        name = os.path.join(os.path.dirname(psi), os.path.basename(operator))
 
     dirname = os.path.dirname(psi)
 

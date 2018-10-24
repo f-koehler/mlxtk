@@ -6,6 +6,7 @@ from .propagate import diagonalize
 from .propagate import improved_relax
 from .propagate import propagate
 from .propagate import relax
+from .variance import compute_variance
 from .wfn_mcthdb import create_mctdhb_wave_function
 from .wfn_mcthdb import mctdhb_add_momentum
 
@@ -21,6 +22,7 @@ assert diagonalize
 assert improved_relax
 assert propagate
 assert relax
+assert compute_variance
 assert create_mctdhb_wave_function
 assert mctdhb_add_momentum
 

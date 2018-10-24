@@ -26,7 +26,7 @@ def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 def read_expval_hdf5(
     path: str, interior_path: str
-) -> Tuple[numpy.ndarray, numpy.ndarry]:
+) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fp:
         return fp[interior_path]["time"][:], fp[interior_path]["values"][:]
 

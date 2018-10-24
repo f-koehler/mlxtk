@@ -91,25 +91,29 @@ class MBOperatorSpecification:
             op.addLabel(name, Term(term))
             return
 
+        if "td_name" in term:
+            self._add_td_term(op, name, term)
+            return
+
+        op.addLabel(name, Term(term["value"], is_fft=term.get("fft", False)))
+
+    def _add_td_term(self, op: Operator, name: str, term: Dict):
         term_kwargs = {}
         term_kwargs["is_fft"] = term.get("fft", False)
 
-        if "td_name" in term:
-            if term_kwargs.get("type", "diag") != "diag":
-                raise NotImplementedError(
-                    "Only diagonal time-dependent terms are supported by QDTK"
-                )
-            term_kwargs["type"] = "diag"
+        if term_kwargs.get("type", "diag") != "diag":
+            raise NotImplementedError(
+                "Only diagonal time-dependent terms are supported by QDTK"
+            )
+        term_kwargs["type"] = "diag"
 
-            term_kwargs["tf_label"] = term["td_name"]
-            term_kwargs["tf_switch"] = term.get("td_switch", [0])
+        term_kwargs["tf_label"] = term["td_name"]
+        term_kwargs["tf_switch"] = term.get("td_switch", [0])
 
-            if "td_args" in term:
-                term_kwargs["tf_args"] = term["td_args"]
+        if "td_args" in term:
+            term_kwargs["tf_args"] = term["td_args"]
 
-            op.addLabel(name, Term(**term_kwargs))
-        else:
-            op.addLabel(name, Term(term["value"], **term_kwargs))
+        op.addLabel(name, Term(**term_kwargs))
 
     def get_operator(self):
         op = Operator()

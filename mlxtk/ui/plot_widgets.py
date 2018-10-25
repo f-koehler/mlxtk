@@ -1,5 +1,6 @@
 import PyQt5.QtWidgets
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg as FigureCanvas)
 from matplotlib.figure import Figure
 
 
@@ -11,9 +12,9 @@ class MplCanvas(FigureCanvas):
         super(MplCanvas, self).__init__(self.fig)
         self.setParent(parent)
 
-        super(MplCanvas, self).setSizePolicy(
-            PyQt5.QtWidgets.QSizePolicy.Expanding, PyQt5.QtWidgets.QSizePolicy.Expanding
-        )
+        super(MplCanvas,
+              self).setSizePolicy(PyQt5.QtWidgets.QSizePolicy.Expanding,
+                                  PyQt5.QtWidgets.QSizePolicy.Expanding)
         super(MplCanvas, self).updateGeometry()
 
 
@@ -25,8 +26,7 @@ class SingleLinePlot(MplCanvas):
             x,
             y,
             linestyle=kwargs.get("linestyle", "-"),
-            marker=kwargs.get("marker", "."),
-        )
+            marker=kwargs.get("marker", "."), )
 
         if "xlabel" in kwargs:
             self.axes.set_xlabel(kwargs["xlabel"])

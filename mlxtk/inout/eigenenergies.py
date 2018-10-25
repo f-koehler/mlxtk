@@ -21,7 +21,8 @@ def read_eigenenergies_ascii(path: str) -> numpy.ndarray:
     return numpy.array(eigenenergies)
 
 
-def read_eigenenergies_hdf5(path: str, interior_path: str = "/") -> numpy.ndarray:
+def read_eigenenergies_hdf5(path: str,
+                            interior_path: str="/") -> numpy.ndarray:
     with h5py.File(path, "r") as fp:
         return fp[interior_path]["eigenenergies"][:]
 
@@ -29,6 +30,8 @@ def read_eigenenergies_hdf5(path: str, interior_path: str = "/") -> numpy.ndarra
 def write_eigenenergies_hdf5(path: str, data: numpy.ndarray):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
-            "eigenenergies", data.shape, dtype=numpy.complex128, compression="gzip"
-        )
+            "eigenenergies",
+            data.shape,
+            dtype=numpy.complex128,
+            compression="gzip")
         dset[:] = data

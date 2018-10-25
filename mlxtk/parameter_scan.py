@@ -17,12 +17,11 @@ assert List
 
 class ParameterScan(SimulationSet):
     def __init__(
-        self,
-        name: str,
-        func: Callable[[Parameters], Simulation],
-        parameters: Generator[Parameters, None, None],
-        working_dir: Optional[str] = None,
-    ):
+            self,
+            name: str,
+            func: Callable[[Parameters], Simulation],
+            parameters: Generator[Parameters, None, None],
+            working_dir: Optional[str]=None, ):
         super().__init__(name, [], working_dir)
         self.func = func
         self.parameters = parameters
@@ -38,15 +37,16 @@ class ParameterScan(SimulationSet):
             self.simulations.append(self.func(combination))
             self.simulations[-1].name = repr(combination)
             self.simulations[-1].working_dir = os.path.join(
-                "sim", hash_string(self.simulations[-1].name)
-            )
-            self.simulations[-1].name = self.name + "_" + self.simulations[-1].name
+                "sim", hash_string(self.simulations[-1].name))
+            self.simulations[-1].name = self.name + "_" + self.simulations[
+                -1].name
 
     def store_parameters(self):
         self.create_working_dir()
 
         with cwd.WorkingDir(self.working_dir):
-            for combination, simulation in zip(self.combinations, self.simulations):
+            for combination, simulation in zip(self.combinations,
+                                               self.simulations):
                 simulation.create_working_dir()
                 with cwd.WorkingDir(simulation.working_dir):
                     with open("parameters.pickle", "wb") as fp:
@@ -77,21 +77,16 @@ class ParameterScan(SimulationSet):
                 os.makedirs("by_param")
 
             variables, constants = parameters.get_variables(self.combinations)
-            for combination, simulation in zip(self.combinations, self.simulations):
+            for combination, simulation in zip(self.combinations,
+                                               self.simulations):
                 if not variables:
                     name = "_".join(
-                        (
-                            constant + "=" + str(combination[constant])
-                            for constant in constants
-                        )
-                    )
+                        (constant + "=" + str(combination[constant])
+                         for constant in constants))
                 else:
                     name = "_".join(
-                        (
-                            variable + "=" + str(combination[variable])
-                            for variable in variables
-                        )
-                    )
+                        (variable + "=" + str(combination[variable])
+                         for variable in variables))
                 path = simulation.working_dir
                 link = os.path.join("by_param", name)
 
@@ -111,7 +106,7 @@ class ParameterScan(SimulationSet):
 
         super().qsub(args)
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, args: Iterable[str]=sys.argv[1:]):
         self.compute_simulations()
 
         super().main(args)

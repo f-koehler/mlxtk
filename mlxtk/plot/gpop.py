@@ -29,7 +29,9 @@ def create_model(time, grid, density):
     Z = Z / Z.max() * 0.1
 
     # , remove_empty_areas=False)
-    mesh = stl.mesh.Mesh(numpy.zeros(len(tri.triangles), dtype=stl.mesh.Mesh.dtype))
+    mesh = stl.mesh.Mesh(
+        numpy.zeros(
+            len(tri.triangles), dtype=stl.mesh.Mesh.dtype))
     mesh.x[:] = X[tri.triangles]
     mesh.y[:] = Y[tri.triangles]
     mesh.z[:] = Z[tri.triangles]

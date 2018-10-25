@@ -6,7 +6,10 @@ import subprocess
 from typing import Any, Callable, Dict, List
 
 from .. import cwd, log
-from ..inout.eigenenergies import read_eigenenergies_ascii, write_eigenenergies_hdf5
+from ..inout.eigenenergies import (
+    read_eigenenergies_ascii,
+    write_eigenenergies_hdf5
+)
 from ..inout.gpop import read_gpop_ascii, write_gpop_hdf5
 from ..inout.natpop import read_natpop_ascii, write_natpop_hdf5
 from ..inout.output import read_output_ascii, write_output_hdf5
@@ -102,9 +105,8 @@ def create_flags(**kwargs):
     return flags, flag_list
 
 
-def propagate(
-    name: str, wave_function: str, hamiltonian: str, **kwargs
-) -> List[Callable[[], Dict[str, Any]]]:
+def propagate(name: str, wave_function: str, hamiltonian: str,
+              **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     keep_psi = kwargs.get("keep_psi", False)
     flags, flag_list = create_flags(**kwargs)
     flag_list += ["-rst", "initial.wfn", "-opr", "hamiltonian.mb_opr"]
@@ -222,15 +224,15 @@ def propagate(
         def action_convert_eigenenergies(targets: List[str]):
             del targets
             LOGGER.info("convert eigenenergies to HDF5")
-            write_eigenenergies_hdf5(
-                path_energies_hdf5, read_eigenenergies_ascii(path_energies)
-            )
+            write_eigenenergies_hdf5(path_energies_hdf5,
+                                     read_eigenenergies_ascii(path_energies))
             os.remove(path_energies)
 
         def action_convert_eigenvectors(targets: List[str]):
             del targets
             LOGGER.info("convert eigenstates to HDF5")
-            write_psi_hdf5(path_eigenvectors_hdf5, read_psi_ascii(path_eigenvectors))
+            write_psi_hdf5(path_eigenvectors_hdf5,
+                           read_psi_ascii(path_eigenvectors))
             os.remove(path_eigenvectors)
 
         if flags["exact_diag"]:
@@ -280,9 +282,8 @@ def propagate(
     return [task_write_parameters, task_propagate]
 
 
-def relax(
-    name: str, wave_function: str, hamiltonian: str, **kwargs
-) -> List[Callable[[], Dict[str, Any]]]:
+def relax(name: str, wave_function: str, hamiltonian: str,
+          **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["relax"] = True
     kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -290,9 +291,11 @@ def relax(
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def improved_relax(
-    name: str, wave_function: str, hamiltonian: str, eig_index: int, **kwargs
-) -> List[Callable[[], Dict[str, Any]]]:
+def improved_relax(name: str,
+                   wave_function: str,
+                   hamiltonian: str,
+                   eig_index: int,
+                   **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["improved_relax"] = True
     kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
     kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -303,9 +306,11 @@ def improved_relax(
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def diagonalize(
-    name: str, wave_function: str, hamiltonian: str, states: int, **kwargs
-) -> List[Callable[[], Dict[str, Any]]]:
+def diagonalize(name: str,
+                wave_function: str,
+                hamiltonian: str,
+                states: int,
+                **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["exact_diag"] = True
     kwargs["eig_tot"] = states
     task = propagate(name, wave_function, hamiltonian, **kwargs)

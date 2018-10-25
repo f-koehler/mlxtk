@@ -11,9 +11,8 @@ from . import tools
 assert List
 
 
-def read_gpop(
-    path: str, dof: Optional[int] = None
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+def read_gpop(path: str, dof: Optional[int]=None) -> Tuple[
+        numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_gpop_hdf5(path, interior_path, dof)
@@ -21,16 +20,16 @@ def read_gpop(
     return read_gpop_ascii(path, dof)
 
 
-def read_gpop_ascii(
-    path: str, dof: Optional[int] = None
-) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
+def read_gpop_ascii(path: str, dof: Optional[int]=None) -> Tuple[
+        numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
     """Read the one-body densities from a raw ML-X file
 
     Args:
         path (str): path of the ASCII file
 
     Returns:
-        Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]: one-body density data
+        Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]
+        ]: one-body density data
     """
     regex_time_stamp = re.compile(r"^#\s+(.+)\s+\[au\]$")
     times = []
@@ -47,7 +46,8 @@ def read_gpop_ascii(
             try:
                 dof_s, grid_points_s = fhandle.readline().split()
             except ValueError:
-                raise RuntimeError("Failed to determine DOF and number of grid points")
+                raise RuntimeError(
+                    "Failed to determine DOF and number of grid points")
             dof_index = int(dof_s)
             grid_points = int(grid_points_s)
 
@@ -103,12 +103,10 @@ def read_gpop_ascii(
     return (numpy.array(times), grids[dof], densities[dof])
 
 
-def read_gpop_hdf5(
-    path: str, interior_path: str, dof: Optional[int] = None
-) -> Union[
-    Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
-    Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
-]:
+def read_gpop_hdf5(path: str, interior_path: str,
+                   dof: Optional[int]=None) -> Union[Tuple[numpy.ndarray, Dict[
+                       int, numpy.ndarray], Dict[int, numpy.ndarray]], Tuple[
+                           numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
     """Read the one-body densities from a HDF5 file
 
     Args:
@@ -124,8 +122,7 @@ def read_gpop_hdf5(
             return (
                 time,
                 fp[interior_path][dof_str]["grid"][:],
-                fp[interior_path][dof_str]["density"][:, :],
-            )
+                fp[interior_path][dof_str]["density"][:, :], )
 
         grids = {}
         densities = {}
@@ -137,31 +134,35 @@ def read_gpop_hdf5(
 
 
 def write_gpop_hdf5(
-    path: str,
-    data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
-):
+        path: str,
+        data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[
+            int, numpy.ndarray]], ):
     """Write the one-body densities to a HDF5 file
 
     Args:
         path (str): path for the HDF5 file
-        data (Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]): one-body densities
+        data (Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int,
+        numpy.ndarray]]): one-body densities
     """
     time, grids, densities = data
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip"
-        )
+            "time", time.shape, dtype=numpy.float64, compression="gzip")
         dset[:] = time
 
         for dof in densities:
             grp = fp.create_group("dof_" + str(dof))
 
             dset = grp.create_dataset(
-                "grid", grids[dof].shape, dtype=numpy.float64, compression="gzip"
-            )
+                "grid",
+                grids[dof].shape,
+                dtype=numpy.float64,
+                compression="gzip")
             dset[:] = grids[dof]
 
             dset = grp.create_dataset(
-                "density", densities[dof].shape, dtype=numpy.float64, compression="gzip"
-            )
+                "density",
+                densities[dof].shape,
+                dtype=numpy.float64,
+                compression="gzip")
             dset[:, :] = densities[dof]

@@ -7,6 +7,10 @@ from . import cwd, doit_compat
 from .log import get_logger
 from .simulation import Simulation
 
+assert Any
+assert Callable
+assert Dict
+
 
 def run_simulation(simulation):
     def task_run_simulation():
@@ -15,7 +19,8 @@ def run_simulation(simulation):
             simulation.main(["run"])
 
         return {
-            "name": "run_simulation:{}".format(simulation.name.replace("=", ":")),
+            "name":
+            "run_simulation:{}".format(simulation.name.replace("=", ":")),
             "actions": [action_run_simulation],
         }
 
@@ -24,19 +29,17 @@ def run_simulation(simulation):
 
 class SimulationSet:
     def __init__(
-        self,
-        name: str,
-        simulations: List[Simulation],
-        working_dir: Optional[str] = None,
-    ):
+            self,
+            name: str,
+            simulations: List[Simulation],
+            working_dir: Optional[str]=None, ):
         self.name = name
         self.simulations = simulations
         self.working_dir = name if working_dir is None else working_dir
         self.logger = get_logger(__name__)
 
         self.argparser = argparse.ArgumentParser(
-            description="This is a set of mlxtk simulations"
-        )
+            description="This is a set of mlxtk simulations")
         subparsers = self.argparser.add_subparsers(dest="subcommand")
 
         subparsers.add_parser("list")
@@ -47,15 +50,19 @@ class SimulationSet:
         self.argparser_run = subparsers.add_parser("run")
 
         self.argparser_list_tasks.add_argument(
-            "index", type=int, help="index of the simulation whose tasks to list"
-        )
+            "index",
+            type=int,
+            help="index of the simulation whose tasks to list")
         self.argparser_task_info.add_argument(
-            "index", type=int, help="index of the simulation"
-        )
-        self.argparser_task_info.add_argument("name", type=str, help="name of the task")
+            "index", type=int, help="index of the simulation")
+        self.argparser_task_info.add_argument(
+            "name", type=str, help="name of the task")
         self.argparser_run.add_argument(
-            "-j", "--jobs", type=int, default=1, help="number of parallel workers"
-        )
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of parallel workers")
 
     def create_working_dir(self):
         if not os.path.exists(self.working_dir):
@@ -89,9 +96,8 @@ class SimulationSet:
         del args
 
         if not os.path.exists(self.working_dir):
-            self.logger.warning(
-                "working dir %s does not exist, do nothing", self.working_dir
-            )
+            self.logger.warning("working dir %s does not exist, do nothing",
+                                self.working_dir)
 
         with cwd.WorkingDir(self.working_dir):
             for simulation in self.simulations:
@@ -104,7 +110,7 @@ class SimulationSet:
             for simulation in self.simulations:
                 simulation.qsub(args)
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, args: Iterable[str]=sys.argv[1:]):
 
         args = self.argparser.parse_args(args)
 

@@ -1,7 +1,3 @@
-import asyncio
-
-import numpy
-
 from QDTK.Primitive import (
     FFT,
     Expdvr,
@@ -9,8 +5,9 @@ from QDTK.Primitive import (
     Laguerredvr,
     Legendredvr,
     Sindvr,
-    rHarmdvr,
+    rHarmdvr
 )
+import numpy
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
@@ -50,7 +47,8 @@ class DVRSpecification:
         self.dvr = None  # type: Dvr
 
         if (type_ == "ExponentialDVR") and (args[0] % 2 == 0):
-            raise RuntimeError("ExponentialDVR requires an odd number of grid points")
+            raise RuntimeError(
+                "ExponentialDVR requires an odd number of grid points")
 
     def compute(self):
         if self.dvr is not None:
@@ -115,18 +113,12 @@ class DVRSpecification:
         self.args = state["args"]
 
     def __str__(self) -> str:
-        return (
-            "DVRSpecification<"
-            + self.type_
-            + ", "
-            + ", ".join((str(arg) for arg in self.args))
-            + ">"
-        )
+        return ("DVRSpecification<" + self.type_ + ", " + ", ".join(
+            (str(arg) for arg in self.args)) + ">")
 
 
-def add_harmdvr(
-    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
-) -> DVRSpecification:
+def add_harmdvr(npoints: int, xeq: float, xho: float,
+                tolerance: float=1e-15) -> DVRSpecification:
     """Register a new harmonic oscillator DVR
 
     Args:
@@ -138,9 +130,8 @@ def add_harmdvr(
     return DVRSpecification("HarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_rharmdvr(
-    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
-) -> DVRSpecification:
+def add_rharmdvr(npoints: int, xeq: float, xho: float,
+                 tolerance: float=1e-15) -> DVRSpecification:
     """Register a new radial harmonic oscillator DVR
 
     Args:
@@ -174,15 +165,16 @@ def add_expdvr(npoints: int, qmin: float, qmax: float) -> DVRSpecification:
     return DVRSpecification("ExponentialDVR", npoints, qmin, qmax)
 
 
-def add_lengendredvr(
-    npoints: int, m: int, tolerance: float = 1e-10
-) -> DVRSpecification:
+def add_lengendredvr(npoints: int, m: int,
+                     tolerance: float=1e-10) -> DVRSpecification:
     return DVRSpecification("LegendreDVR", npoints, m, tolerance)
 
 
-def add_laguerredvr(
-    npoints: int, alpha: float, xlag: float, x0: float, tolerance: float = 1e-11
-) -> DVRSpecification:
+def add_laguerredvr(npoints: int,
+                    alpha: float,
+                    xlag: float,
+                    x0: float,
+                    tolerance: float=1e-11) -> DVRSpecification:
     return DVRSpecification("LaguerreDVR", npoints, alpha, xlag, x0, tolerance)
 
 

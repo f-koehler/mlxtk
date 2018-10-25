@@ -1,5 +1,5 @@
-import numpy
 from matplotlib.axes import Axes
+import numpy
 
 
 def plot_energy(ax: Axes, time: numpy.ndarray, energy: numpy.ndarray):

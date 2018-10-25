@@ -10,8 +10,10 @@ from ..plot.plot import add_argparse_2d_args, apply_2d_args
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="?", default="output.hdf5", help="path to the output file"
-    )
+        "path",
+        nargs="?",
+        default="output.hdf5",
+        help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

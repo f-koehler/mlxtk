@@ -8,34 +8,24 @@ try:
 
     logging.addLevelName(
         logging.INFO,
-        colorama.Fore.GREEN
-        + logging.getLevelName(logging.INFO)
-        + colorama.Style.RESET_ALL,
-    )
+        colorama.Fore.GREEN + logging.getLevelName(logging.INFO) +
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.DEBUG,
-        colorama.Fore.WHITE
-        + logging.getLevelName(logging.DEBUG)
-        + colorama.Style.RESET_ALL,
-    )
+        colorama.Fore.WHITE + logging.getLevelName(logging.DEBUG) +
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.WARNING,
-        colorama.Fore.YELLOW
-        + logging.getLevelName(logging.WARNING)
-        + colorama.Style.RESET_ALL,
-    )
+        colorama.Fore.YELLOW + logging.getLevelName(logging.WARNING) +
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.ERROR,
-        colorama.Fore.RED
-        + logging.getLevelName(logging.ERROR)
-        + colorama.Style.RESET_ALL,
-    )
+        colorama.Fore.RED + logging.getLevelName(logging.ERROR) +
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.CRITICAL,
-        colorama.Fore.RED
-        + logging.getLevelName(logging.ERROR)
-        + colorama.Style.RESET_ALL,
-    )
+        colorama.Fore.RED + logging.getLevelName(logging.ERROR) +
+        colorama.Style.RESET_ALL, )
 except ImportError:
     pass
 
@@ -54,7 +44,8 @@ logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
 def get_logger(name: str) -> logging.Logger:
     """Create a logger with a given name
 
-    If :py:data:`mlxtk.log.FILE_HANDLER` is initialized then the handler is added to the new logger.
+    If :py:data:`mlxtk.log.FILE_HANDLER` is initialized then the handler is
+    added to the new logger.
 
     Args:
         name (str): Name for the new logger.
@@ -69,7 +60,7 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def open_log_file(path: str, mode: str = "a"):
+def open_log_file(path: str, mode: str="a"):
     """Open the log file
 
     Args:

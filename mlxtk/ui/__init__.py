@@ -1,4 +1,5 @@
 import pkg_resources
+
 from PyQt5 import uic
 
 

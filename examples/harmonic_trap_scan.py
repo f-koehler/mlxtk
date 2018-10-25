@@ -20,18 +20,15 @@ if __name__ == "__main__":
         sim += system.get_1b_hamiltonian("hamiltonian_1b")
         sim += system.get_mb_hamiltonian("hamiltonian")
         sim += system_quenched.get_mb_hamiltonian("hamiltonian_quenched")
-        sim += mlxtk.tasks.create_mctdhb_wave_function(
-            "initial", "hamiltonian_1b", 2, 5
-        )
+        sim += mlxtk.tasks.create_mctdhb_wave_function("initial",
+                                                       "hamiltonian_1b", 2, 5)
         sim += mlxtk.tasks.improved_relax(
-            "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01
-        )
+            "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01)
 
         return sim
 
     scan = mlxtk.ParameterScan(
         "harmonic_trap_scan",
         create_simulation,
-        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 3, 4, 5, 6]}),
-    )
+        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 3, 4, 5, 6]}), )
     scan.main()

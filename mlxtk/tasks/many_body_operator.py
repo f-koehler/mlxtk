@@ -4,8 +4,8 @@ import pickle
 from typing import Any, Callable, Dict, Iterable, List, Union
 
 from QDTK.Operatorb import OCoef as Coeff
-from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
+from QDTK.Operatorb import Operatorb as Operator
 
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
@@ -13,13 +13,12 @@ from ..hashing import inaccurate_hash
 
 class MBOperatorSpecification:
     def __init__(
-        self,
-        dofs: Iterable[int],
-        grids: Iterable[DVRSpecification],
-        coefficients: List[Any],
-        terms: List[Any],
-        table: Union[str, List[str]],
-    ):
+            self,
+            dofs: Iterable[int],
+            grids: Iterable[DVRSpecification],
+            coefficients: List[Any],
+            terms: List[Any],
+            table: Union[str, List[str]], ):
         self.dofs = dofs
         self.grids = grids
         self.coefficients = coefficients
@@ -31,9 +30,8 @@ class MBOperatorSpecification:
             self.table = table
 
     def __add__(self, other):
-        cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
-        )
+        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
+                                      self.terms, self.table)
         cpy.__iadd__(other)
         return cpy
 
@@ -47,14 +45,15 @@ class MBOperatorSpecification:
         if self.grids != other.grids:
             raise ValueError("grids differ")
 
-        if not set(self.coefficients.keys()).isdisjoint(set(other.coefficients.keys())):
+        if not set(self.coefficients.keys()).isdisjoint(
+                set(other.coefficients.keys())):
             raise ValueError("coefficient names are not unique")
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
 
-        self.coefficients = {**self.coefficients, **other.coefficients}
-        self.terms = {**self.terms, **other.terms}
+        self.coefficients = {** self.coefficients, ** other.coefficients}
+        self.terms = {** self.terms, ** other.terms}
         self.table += other.table
 
         return self
@@ -65,9 +64,8 @@ class MBOperatorSpecification:
         return self
 
     def __mul__(self, other):
-        cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
-        )
+        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
+                                      self.terms, self.table)
         cpy.__imul__(other)
         return cpy
 
@@ -80,9 +78,8 @@ class MBOperatorSpecification:
         return self
 
     def __truediv__(self, other):
-        cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
-        )
+        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
+                                      self.terms, self.table)
         cpy.__itruediv__(other)
         return cpy
 
@@ -103,8 +100,7 @@ class MBOperatorSpecification:
 
         if term_kwargs.get("type", "diag") != "diag":
             raise NotImplementedError(
-                "Only diagonal time-dependent terms are supported by QDTK"
-            )
+                "Only diagonal time-dependent terms are supported by QDTK")
         term_kwargs["type"] = "diag"
 
         term_kwargs["tf_label"] = term["td_name"]
@@ -117,7 +113,8 @@ class MBOperatorSpecification:
 
     def get_operator(self):
         op = Operator()
-        op.define_dofs_and_grids(self.dofs, [grid.get() for grid in self.grids])
+        op.define_dofs_and_grids(self.dofs,
+                                 [grid.get() for grid in self.grids])
 
         for coeff in self.coefficients:
             op.addLabel(coeff, Coeff(self.coefficients[coeff]))
@@ -130,23 +127,22 @@ class MBOperatorSpecification:
         return op
 
 
-def create_many_body_operator(
-    name: str, *args, **kwargs
-) -> List[Callable[[], Dict[str, Any]]]:
+def create_many_body_operator(name: str, *args,
+                              **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     if "specification" in kwargs:
         return create_many_body_operator_impl(name, kwargs["specification"])
 
     if isinstance(args[0], MBOperatorSpecification):
         return create_many_body_operator_impl(name, args[0])
 
-    return create_many_body_operator_impl(
-        name, MBOperatorSpecification(*args, **kwargs)
-    )
+    return create_many_body_operator_impl(name,
+                                          MBOperatorSpecification(*args,
+                                                                  **kwargs))
 
 
-def create_many_body_operator_impl(
-    name: str, specification: MBOperatorSpecification
-) -> List[Callable[[], Dict[str, Any]]]:
+def create_many_body_operator_impl(name: str,
+                                   specification: MBOperatorSpecification
+                                   ) -> List[Callable[[], Dict[str, Any]]]:
 
     path_pickle = name + ".mb_opr_pickle"
 
@@ -163,10 +159,12 @@ def create_many_body_operator_impl(
             for term in specification.terms:
                 if isinstance(specification.terms[term], dict):
                     obj[4][term] = {
-                        key: specification.terms[key] for key in specification.terms
+                        key: specification.terms[key]
+                        for key in specification.terms
                     }
                     if "value" in obj[4][term]:
-                        obj[4][term]["value"] = inaccurate_hash(obj[4][term]["value"])
+                        obj[4][term]["value"] = inaccurate_hash(obj[4][term][
+                            "value"])
                 else:
                     obj[4][term] = inaccurate_hash(specification.terms[term])
 
@@ -174,7 +172,8 @@ def create_many_body_operator_impl(
                 pickle.dump(obj, fp)
 
         return {
-            "name": "create_many_body_operator:{}:write_parameters".format(name),
+            "name":
+            "create_many_body_operator:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }

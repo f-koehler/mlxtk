@@ -1,21 +1,24 @@
-import gzip
-import io
 import pickle
 from typing import Any, Dict, Iterable
 
+from QDTK.Wavefunction import Wavefunction as WaveFunction
 import h5py
 import numpy
 
-from QDTK.Wavefunction import Wavefunction as WaveFunction
-
 from ..dvr import DVRSpecification
 from ..tools.diagonalize import diagonalize_1b_operator
-from ..tools.wave_function import add_momentum, load_wave_function, save_wave_function
+from ..tools.wave_function import (
+    add_momentum,
+    load_wave_function,
+    save_wave_function
+)
 
 
-def create_mctdhb_wave_function(
-    name, hamiltonian_1b, num_particles, num_spfs, number_state=None
-):
+def create_mctdhb_wave_function(name,
+                                hamiltonian_1b,
+                                num_particles,
+                                num_spfs,
+                                number_state=None):
     path_pickle = name + ".wfn_pickle"
 
     if number_state is None:
@@ -26,12 +29,16 @@ def create_mctdhb_wave_function(
 
     def task_write_parameters():
         def action_write_parameters(targets):
-            obj = [name, hamiltonian_1b, num_particles, num_spfs, number_state.tolist()]
+            obj = [
+                name, hamiltonian_1b, num_particles, num_spfs,
+                number_state.tolist()
+            ]
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp)
 
         return {
-            "name": "create_mctdhb_wave_function:{}:write_parameters".format(name),
+            "name":
+            "create_mctdhb_wave_function:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
@@ -50,24 +57,30 @@ def create_mctdhb_wave_function(
 
             with h5py.File(targets[1], "w") as fp:
                 dset = fp.create_dataset(
-                    "energies", (num_spfs,), dtype=numpy.float64, compression="gzip"
-                )
+                    "energies", (num_spfs, ),
+                    dtype=numpy.float64,
+                    compression="gzip")
                 dset[:] = energies
 
                 dset = fp.create_dataset(
-                    "spfs", spfs_arr.shape, dtype=numpy.complex128, compression="gzip"
-                )
+                    "spfs",
+                    spfs_arr.shape,
+                    dtype=numpy.complex128,
+                    compression="gzip")
                 dset[:, :] = spfs_arr
 
             grid_points = matrix.shape[0]
-            tape = (-10, num_particles, +1, num_spfs, -1, 1, 1, 0, grid_points, -2)
+            tape = (-10, num_particles, +1, num_spfs, -1, 1, 1, 0, grid_points,
+                    -2)
             wfn = WaveFunction(tape=tape)
-            wfn.init_coef_sing_spec_B(number_state, spfs, 1e-15, 1e-15, full_spf=True)
+            wfn.init_coef_sing_spec_B(
+                number_state, spfs, 1e-15, 1e-15, full_spf=True)
 
             save_wave_function(targets[0], wfn)
 
         return {
-            "name": "create_mctdhb_wave_function:{}:write_wave_function".format(name),
+            "name":
+            "create_mctdhb_wave_function:{}:write_wave_function".format(name),
             "actions": [action_write_wave_function],
             "targets": [path, path_basis],
             "file_dep": [path_pickle, path_matrix],
@@ -76,9 +89,10 @@ def create_mctdhb_wave_function(
     return [task_write_parameters, task_write_wave_function]
 
 
-def mctdhb_add_momentum(
-    name: str, initial: str, momentum: float, grid: DVRSpecification
-):
+def mctdhb_add_momentum(name: str,
+                        initial: str,
+                        momentum: float,
+                        grid: DVRSpecification):
     path_pickle = name + ".wfn_pickle"
 
     def task_write_parameters() -> Dict[str, Any]:

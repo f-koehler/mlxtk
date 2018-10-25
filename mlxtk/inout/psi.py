@@ -39,8 +39,7 @@ def read_psi_ascii(path):
     tape = numpy.array(tape, dtype=numpy.int64)
     times = numpy.array(times)
     psis = numpy.array(
-        [numpy.array(psi).transpose() for psi in psis], dtype=numpy.complex128
-    )
+        [numpy.array(psi).transpose() for psi in psis], dtype=numpy.complex128)
 
     return [tape, times, psis]
 
@@ -57,18 +56,15 @@ def write_psi_hdf5(path, data):
     tape, time, psis = data
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
-            "tape", tape.shape, dtype=numpy.int64, compression="gzip"
-        )
+            "tape", tape.shape, dtype=numpy.int64, compression="gzip")
         dset[:] = tape
 
         dset = fp.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip"
-        )
+            "time", time.shape, dtype=numpy.float64, compression="gzip")
         dset[:] = time
 
         dset = fp.create_dataset(
-            "psis", psis.shape, dtype=numpy.complex128, compression="gzip"
-        )
+            "psis", psis.shape, dtype=numpy.complex128, compression="gzip")
         dset[:, :] = psis[:, :]
 
 
@@ -79,9 +75,5 @@ def write_psi_ascii(path, data):
         fp.writelines(("\t{}\n".format(entry) for entry in tape))
         for i, time in enumerate(time):
             fp.write("\n$time\n\t{}  [au]\n$psi\n".format(time))
-            fp.writelines(
-                (
-                    " ({},{})\n".format(numpy.real(entry), numpy.imag(entry))
-                    for entry in psis[i]
-                )
-            )
+            fp.writelines((" ({},{})\n".format(
+                numpy.real(entry), numpy.imag(entry)) for entry in psis[i]))

@@ -3,14 +3,14 @@ set -euf -o pipefail
 
 FILES=`find mlxtk examples -name "*.py"`
 
-# echo "Run isort"
-# sort ${FILES}
+echo "Run isort"
+isort ${FILES}
 
-echo "Run autopep8"
-autopep8 --in-place ${FILES}
+echo "Run black"
+black --skip-string-normalization ${FILES}
 
 echo "Run yapf"
 yapf --in-place ${FILES}
 
-echo "Run black"
-black --skip-string-normalization ${FILES}
+echo "Run autopep8"
+autopep8 --in-place ${FILES}

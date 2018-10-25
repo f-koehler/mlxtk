@@ -1,8 +1,9 @@
+*.cover
 *.egg-info
 *.gitignore
+*.orig
 *.pyc
 *.swp
 *~
 .ctags
 .mypy_cache/
-*.cover

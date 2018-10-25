@@ -10,9 +10,9 @@ from ..plot.plot import add_argparse_2d_args, apply_2d_args
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="?", default="gpop.hdf5", help="path to the gpop file"
-    )
-    parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
+        "path", nargs="?", default="gpop.hdf5", help="path to the gpop file")
+    parser.add_argument(
+        "-d", "--dof", type=int, default=1, help="degree of freedom")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

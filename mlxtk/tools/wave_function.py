@@ -2,9 +2,8 @@ import gzip
 import io
 import os
 
-import numpy
-
 from QDTK.Wavefunction import Wavefunction
+import numpy
 
 
 def load_wave_function(path: str) -> Wavefunction:

@@ -12,7 +12,8 @@ REGEX_QSUB = re.compile(r"^Your job (\d+)")
 
 
 def add_parser_arguments(parser: argparse.ArgumentParser):
-    """Add SGE related command line options to an :py:class:`argparse.ArgumentParser`
+    """Add SGE related command line options to an
+    :py:class:`argparse.ArgumentParser`
 
     Args:
         parser (argparse.ArgumentParser): parser to modify
@@ -20,19 +21,24 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--queues",
         default="none",
-        help='comma separated list of queues for the SGE batch system, "none" if you do not want to specify a queue',
+        help=("comma separated list of queues for the SGE batch system,"
+              " \"none\" if you do not want to specify a queue"),
     )
     parser.add_argument(
-        "--memory", default="2G", help="amount of memory available to the job(s)"
-    )
+        "--memory",
+        default="2G",
+        help="amount of memory available to the job(s)")
     parser.add_argument(
-        "--time", default="00:10:00", help="maximum computation time for the job(s)"
-    )
-    parser.add_argument("--cpus", default="1", help="number of cpus to use for SMP")
+        "--time",
+        default="00:10:00",
+        help="maximum computation time for the job(s)")
+    parser.add_argument(
+        "--cpus", default="1", help="number of cpus to use for SMP")
     parser.add_argument(
         "--email",
         default="none",
-        help="email address to notify about finished, aborted and suspended jobs",
+        help=("email address to notify about finished, aborted and suspended"
+              "jobs"),
     )
 
 
@@ -58,8 +64,8 @@ def submit(command: str, args, sge_dir: str = os.path.curdir) -> int:
             job_id = int(fp.read())
             if job_id in get_jobs_in_queue():
                 LOGGER.error(
-                    "job seems to be in the queue already (with id %d)", job_id
-                )
+                    "job seems to be in the queue already (with id %d)",
+                    job_id)
                 return -1
 
     # set up args for the job script
@@ -102,7 +108,8 @@ def submit(command: str, args, sge_dir: str = os.path.curdir) -> int:
     # write epilogue script
     LOGGER.debug("create epilogue script")
     with open(epilogue_script, "w") as fp:
-        fp.write(templates.get_template("sge_epilogue.j2").render(job_id=job_id))
+        fp.write(
+            templates.get_template("sge_epilogue.j2").render(job_id=job_id))
     os.chmod(epilogue_script, 0o755)
     LOGGER.debug("done")
 

@@ -1,14 +1,13 @@
 import gzip
 import io
 import pickle
-from typing import Any, Callable, Dict, Iterable, List, Union
-
-import h5py
-import numpy
+from typing import Any, Callable, Dict, List, Union
 
 from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
+from QDTK.Operator import Operator
+import h5py
+import numpy
 
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
@@ -17,12 +16,11 @@ from ..tools.operator import get_operator_matrix
 
 class OperatorSpecification:
     def __init__(
-        self,
-        dofs: List[DVRSpecification],
-        coefficients: List[Any],
-        terms: List[Any],
-        table: Union[str, List[str]],
-    ):
+            self,
+            dofs: List[DVRSpecification],
+            coefficients: List[Any],
+            terms: List[Any],
+            table: Union[str, List[str]], ):
         self.dofs = dofs
         self.coefficients = coefficients
         self.terms = terms
@@ -33,9 +31,8 @@ class OperatorSpecification:
             self.table = table
 
     def __add__(self, other):
-        cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
-        )
+        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
+                                    self.table)
         cpy.__iadd__(other)
         return cpy
 
@@ -46,14 +43,15 @@ class OperatorSpecification:
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
 
-        if not set(self.coefficients.keys()).isdisjoint(set(other.coefficients.keys())):
+        if not set(self.coefficients.keys()).isdisjoint(
+                set(other.coefficients.keys())):
             raise ValueError("coefficient names are not unique")
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
 
-        self.coefficients = {**self.coefficients, **other.coefficients}
-        self.terms = {**self.terms, **other.terms}
+        self.coefficients = {** self.coefficients, ** other.coefficients}
+        self.terms = {** self.terms, ** other.terms}
         self.table += other.table
 
         return self
@@ -64,9 +62,8 @@ class OperatorSpecification:
         return self
 
     def __mul__(self, other):
-        cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
-        )
+        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
+                                    self.table)
         cpy.__imul__(other)
         return cpy
 
@@ -79,9 +76,8 @@ class OperatorSpecification:
         return self
 
     def __truediv__(self, other):
-        cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
-        )
+        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
+                                    self.table)
         cpy.__itruediv__(other)
         return cpy
 
@@ -110,9 +106,8 @@ def create_operator(name: str, *args, **kwargs):
     return create_operator_impl(name, OperatorSpecification(*args, **kwargs))
 
 
-def create_operator_impl(
-    name: str, specification: OperatorSpecification
-) -> List[Callable[[], Dict[str, Any]]]:
+def create_operator_impl(name: str, specification: OperatorSpecification
+                         ) -> List[Callable[[], Dict[str, Any]]]:
     path_pickle = name + ".opr_pickle"
 
     def task_write_parameters():
@@ -151,8 +146,10 @@ def create_operator_impl(
             matrix = get_operator_matrix(op)
             with h5py.File(path_matrix, "w") as fp:
                 dset = fp.create_dataset(
-                    "matrix", matrix.shape, dtype=numpy.complex128, compression="gzip"
-                )
+                    "matrix",
+                    matrix.shape,
+                    dtype=numpy.complex128,
+                    compression="gzip")
                 dset[:, :] = matrix
 
                 for i, dof in enumerate(specification.dofs):
@@ -161,8 +158,7 @@ def create_operator_impl(
                         "grid_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip",
-                    )
+                        compression="gzip", )
                     dset[:] = grid
 
                     weights = dof.get_weights()
@@ -170,8 +166,7 @@ def create_operator_impl(
                         "weights_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip",
-                    )
+                        compression="gzip", )
                     dset[:] = weights
 
         return {

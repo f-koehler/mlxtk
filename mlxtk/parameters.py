@@ -10,7 +10,7 @@ from typing import (
     List,
     Optional,
     Tuple,
-    Union,
+    Union
 )
 
 
@@ -29,11 +29,15 @@ class Parameters:
         for param in params:
             Parameters.__iadd__(self, param)
 
-    def add_parameter(self, name: str, value: Optional[Any] = None, doc: str = ""):
+    def add_parameter(
+            self, name: str, value: Optional[Any] = None,
+            doc: str = ""
+    ):
         """Add a new parameter
 
         Args:
-            name (str): name of the parameter, should also be a valid python variable name
+            name (str): name of the parameter, should also be a valid python
+                variable name
             value: value for the parameter
             doc (str): description of the purpose of this parameter
         """
@@ -42,12 +46,12 @@ class Parameters:
         self.__setitem__(name, value)
 
     def to_json(self) -> str:
-        return json.dumps(
-            {
-                "values": {name: self[name] for name in self.names},
-                "docs": {name: self.docs[name] for name in self.names},
-            }
-        )
+        return json.dumps({
+            "values": {name: self[name]
+                       for name in self.names},
+            "docs": {name: self.docs[name]
+                     for name in self.names},
+        })
 
     def set_values(self, values: Iterable[Any]):
         for name, value in zip(self.names, values):
@@ -56,9 +60,9 @@ class Parameters:
     def copy(self):
         p = Parameters()
         for name in self.names:
-            p.add_parameter(
-                name, copy.deepcopy(self.__getitem__(name)), self.docs[name]
-            )
+            p.add_parameter(name,
+                            copy.deepcopy(self.__getitem__(name)),
+                            self.docs[name])
         return p
 
     def __iadd__(self, param: Union[dict, list]):
@@ -69,7 +73,8 @@ class Parameters:
 
     def __getstate__(self) -> Dict[str, Any]:
         return {
-            "values": {name: self.__getitem__(name) for name in self.names},
+            "values": {name: self.__getitem__(name)
+                       for name in self.names},
             "docs": self.docs,
         }
 
@@ -77,24 +82,18 @@ class Parameters:
         self.names = []
         self.docs = {}
         for name in state["values"]:
-            self.add_parameter(name, state["values"][name], state["docs"].get(name, ""))
+            self.add_parameter(name, state["values"][name],
+                               state["docs"].get(name, ""))
 
     def __repr__(self) -> str:
         return "_".join([name + "=" + str(self[name]) for name in self.names])
 
     def __str__(self) -> str:
-        return (
-            "{\n"
-            + "\n".join(
-                [
-                    "  {}:\n    value: {}\n    doc:   {}".format(
-                        name, self.__getitem__(name), self.docs[name]
-                    )
-                    for name in self.names
-                ]
-            )
-            + "\n}"
-        )
+        return ("{\n" + "\n".join([
+            "  {}:\n    value: {}\n    doc:   {}".format(
+                name, self.__getitem__(name), self.docs[name])
+            for name in self.names
+        ]) + "\n}")
 
     def __eq__(self, other) -> bool:
         if isinstance(other, Parameters):
@@ -119,39 +118,38 @@ class Parameters:
         setattr(self, name, value)
 
 
-def generate_all(
-    parameters: Parameters, values: Dict[str, Any]
-) -> Generator[Parameters, None, None]:
+def generate_all(parameters: Parameters,
+                 values: Dict[str, Any]) -> Generator[Parameters, None, None]:
     for name in parameters.names:
         values[name] = values.get(name, [parameters[name]])
 
-    for combination in itertools.product(*[values[name] for name in parameters.names]):
+    for combination in itertools.product(
+            * [values[name] for name in parameters.names]):
         p = copy.deepcopy(parameters)
         p.set_values(combination)
         yield p
 
 
 def select(
-    combinations: Generator[Parameters, None, None],
-    condition: Callable[[Parameters], bool],
-) -> Generator[Parameters, None, None]:
+        combinations: Generator[Parameters, None, None],
+        condition: Callable[[Parameters], bool], ) -> Generator[Parameters,
+                                                                None, None]:
     for combination in combinations:
         if condition(combination):
             yield combination
 
 
-def add(
-    combinations: Generator[Parameters, None, None], new_combination: Parameters
-) -> Generator[Parameters, None, None]:
+def add(combinations: Generator[Parameters, None, None],
+        new_combination: Parameters) -> Generator[Parameters, None, None]:
     for combination in combinations:
         yield combination
     yield new_combination
 
 
 def add_multiple(
-    combinations: Generator[Parameters, None, None],
-    new_combinations: Iterable[Parameters],
-) -> Generator[Parameters, None, None]:
+        combinations: Generator[Parameters, None, None],
+        new_combinations: Iterable[Parameters], ) -> Generator[Parameters,
+                                                               None, None]:
     for combination in combinations:
         yield combination
 
@@ -160,9 +158,9 @@ def add_multiple(
 
 
 def merge(
-    combinations1: Generator[Parameters, None, None],
-    combinations2: Generator[Parameters, None, None],
-) -> Generator[Parameters, None, None]:
+        combinations1: Generator[Parameters, None, None],
+        combinations2: Generator[Parameters, None, None], ) -> Generator[
+            Parameters, None, None]:
     for combination in combinations1:
         yield combination
 

@@ -95,11 +95,11 @@ class MBOperatorSpecification:
             self._add_td_term(op, name, term)
             return
 
-        op.addLabel(name, Term(term["value"], is_fft=term.get("fft", False)))
+        op.addLabel(name, Term(term["value"], fft=term.get("fft", False)))
 
     def _add_td_term(self, op: Operator, name: str, term: Dict):
         term_kwargs = {}
-        term_kwargs["is_fft"] = term.get("fft", False)
+        term_kwargs["fft"] = term.get("fft", False)
 
         if term_kwargs.get("type", "diag") != "diag":
             raise NotImplementedError(
@@ -195,6 +195,7 @@ def create_many_body_operator_impl(
             "actions": [action_write_operator],
             "targets": [path],
             "file_dep": [path_pickle],
+            "verbosity": 2,
         }
 
     return [task_write_parameters, task_write_operator]

@@ -4,8 +4,8 @@ from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
 if __name__ == "__main__":
     # x = mlxtk.dvr.add_sinedvr(225, -10., 10.)
-    x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
-    # x = mlxtk.dvr.add_fft(225, -10., 10.)
+    # x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
+    x = mlxtk.dvr.add_fft(225, -10., 10.)
     # x = mlxtk.dvr.add_expdvr(225, -10., 10.)
 
     parameters = HarmonicTrap.create_parameters()

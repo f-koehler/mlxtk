@@ -53,6 +53,14 @@ class Parameters:
         for name, value in zip(self.names, values):
             self.__setitem__(name, value)
 
+    def copy(self):
+        p = Parameters()
+        for name in self.names:
+            p.add_parameter(
+                name, copy.deepcopy(self.__getitem__(name)), self.docs[name]
+            )
+        return p
+
     def __iadd__(self, param: Union[dict, list]):
         if isinstance(param, dict):
             self.add_parameter(**param)

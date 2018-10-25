@@ -17,7 +17,7 @@ def compute_variance(exp_op: str, exp_op2: str, **kwargs):
             del targets
 
             t1, exp = read_expval(exp_op + ".exp.hdf5")
-            t2, exp2 = read_expval(exp_op + ".exp.hdf5")
+            t2, exp2 = read_expval(exp_op2 + ".exp.hdf5")
 
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")

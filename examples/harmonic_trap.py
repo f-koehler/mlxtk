@@ -3,14 +3,18 @@ import mlxtk
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
 if __name__ == "__main__":
-    x = mlxtk.dvr.add_harmdvr(225, 0.0, 1.0)
+    # x = mlxtk.dvr.add_sinedvr(225, -10., 10.)
+    x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
     # x = mlxtk.dvr.add_fft(225, -10., 10.)
     # x = mlxtk.dvr.add_expdvr(225, -10., 10.)
 
     parameters = HarmonicTrap.create_parameters()
-    parameters.g = 0.0
-    parameters_quenched = HarmonicTrap.create_parameters()
-    parameters_quenched.g = 0.0
+    parameters.N = 10
+    parameters.m = 3
+    parameters.g = 0.5
+
+    parameters_quenched = parameters.copy()
+    parameters_quenched.omega = 0.7
 
     system = HarmonicTrap(parameters, x)
     system_quenched = HarmonicTrap(parameters_quenched, x)
@@ -41,8 +45,8 @@ if __name__ == "__main__":
         "propagate",
         "gs_relax/final",
         "hamiltonian_quenched",
-        tfinal=10.0,
-        dt=0.1,
+        tfinal=5.0,
+        dt=0.05,
         psi=True,
         keep_psi=True,
     )
@@ -50,5 +54,6 @@ if __name__ == "__main__":
     with mlxtk.tasks.ExtractedPsi(sim, "propagate/psi"):
         sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
         sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
+        sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
 
     sim.main()

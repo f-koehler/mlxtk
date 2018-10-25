@@ -25,6 +25,7 @@ setup(
         "console_scripts":[
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",
+            "plot_expval = mlxtk.scripts.plot_expval:main",
             "plot_gpop = mlxtk.scripts.plot_gpop:main",
             "plot_gpop_slider = mlxtk.scripts.plot_gpop_slider:main",
             "plot_natpop = mlxtk.scripts.plot_natpop:main",

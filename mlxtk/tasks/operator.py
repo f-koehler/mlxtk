@@ -31,6 +31,9 @@ class OperatorSpecification:
             self.table = table
 
     def __add__(self, other):
+        if not isinstance(other, OperatorSpecification):
+            raise RuntimeError(("other object must be of type "
+                                "OperatorSpecification as well"))
         cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
                                     self.table)
         cpy.__iadd__(other)
@@ -40,6 +43,10 @@ class OperatorSpecification:
         return self.__add__(other)
 
     def __iadd__(self, other):
+        if not isinstance(other, OperatorSpecification):
+            raise RuntimeError(("other object must be of type "
+                                "OperatorSpecification as well"))
+
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
 

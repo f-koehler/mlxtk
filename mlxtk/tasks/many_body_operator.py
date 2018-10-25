@@ -39,6 +39,10 @@ class MBOperatorSpecification:
         return self.__add__(other)
 
     def __iadd__(self, other):
+        if not isinstance(other, MBOperatorSpecification):
+            raise RuntimeError(("other object must be of type "
+                                "MBOperatorSpecification as well"))
+
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
 

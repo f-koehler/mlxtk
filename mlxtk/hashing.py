@@ -1,3 +1,8 @@
+"""Hashing functions.
+
+Functions to hash files and other data using standard hashing programs such
+as ``sha256sum``.
+"""
 import subprocess
 
 import numpy

@@ -8,6 +8,11 @@ language = python
 bears = RadonBear
 enabled = False
 
+[PythonDocumentation]
+bears = PyDocStyleBear
+files = mlxtk/**/*.py,examples/**/*.py
+language = python
+
 [PythonFilenames]
 files = mlxtk/**/*.py,examples/**/*.py
 file_naming_convention = snake

@@ -1,5 +1,8 @@
-# pylint: disable=wildcard-import
-# pylint: disable=unused-wildcard-import
+"""Handle logging
+
+This modules provides facility to log status, warning and error messages
+within mlxtk.
+"""
 import logging
 import os
 

@@ -5,7 +5,7 @@ import subprocess
 import sys
 from typing import Iterable, Optional
 
-from . import cwd, doit_compat, log, sge
+from . import cwd, doit_compat, lock, log, sge
 
 LOGGER = log.get_logger(__name__)
 
@@ -61,16 +61,17 @@ class Simulation:
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
-            doit_compat.run_doit(
-                self.task_generators,
-                [
-                    "-n",
-                    str(args.jobs),
-                    "--backend",
-                    "sqlite3",
-                    "--db-file",
-                    "doit.sqlite3",
-                ], )
+            with lock.LockFile("run.lock"):
+                doit_compat.run_doit(
+                    self.task_generators,
+                    [
+                        "-n",
+                        str(args.jobs),
+                        "--backend",
+                        "sqlite3",
+                        "--db-file",
+                        "doit.sqlite3",
+                    ], )
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()

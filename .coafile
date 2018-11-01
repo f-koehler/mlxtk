@@ -12,6 +12,7 @@ enabled = False
 bears = PyDocStyleBear
 files = mlxtk/**/*.py,examples/**/*.py
 language = python
+enabled = False
 
 [PythonFilenames]
 files = mlxtk/**/*.py,examples/**/*.py

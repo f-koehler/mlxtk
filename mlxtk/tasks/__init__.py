@@ -1,9 +1,7 @@
 from .expval import compute_expectation_value
 from .extract_psi import ExtractedPsi, extract_psi
-from .many_body_operator import (
-    MBOperatorSpecification,
-    create_many_body_operator
-)
+from .many_body_operator import (MBOperatorSpecification,
+                                 create_many_body_operator)
 from .operator import OperatorSpecification, create_operator
 from .propagate import diagonalize, improved_relax, propagate, relax
 from .variance import compute_variance

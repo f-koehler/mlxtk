@@ -1,3 +1,5 @@
+"""Work with the SGE scheduling system.
+"""
 import argparse
 import os
 import re
@@ -13,7 +15,7 @@ REGEX_QSUB = re.compile(r"^Your job (\d+)")
 
 def add_parser_arguments(parser: argparse.ArgumentParser):
     """Add SGE related command line options to an
-    :py:class:`argparse.ArgumentParser`
+    :py:class:`argparse.ArgumentParser`.
 
     Args:
         parser (argparse.ArgumentParser): parser to modify
@@ -22,8 +24,7 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "--queues",
         default="none",
         help=("comma separated list of queues for the SGE batch system,"
-              " \"none\" if you do not want to specify a queue"),
-    )
+              " \"none\" if you do not want to specify a queue"), )
     parser.add_argument(
         "--memory",
         default="2G",
@@ -38,11 +39,15 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "--email",
         default="none",
         help=("email address to notify about finished, aborted and suspended"
-              "jobs"),
-    )
+              "jobs"), )
 
 
 def get_jobs_in_queue() -> List[int]:
+    """Get the job ids of all jobs in the SGE queue.
+
+    Returns:
+        List[int]: job ids of running jobs
+    """
     output = subprocess.check_output(["qstat"]).decode().splitlines()
     job_ids = []
     for line in output:
@@ -52,7 +57,28 @@ def get_jobs_in_queue() -> List[int]:
     return job_ids
 
 
-def submit(command: str, args, sge_dir: str = os.path.curdir) -> int:
+def submit(command: str, args, sge_dir: str=os.path.curdir) -> int:
+    """Create a jobfile for a command and submit it.
+
+    This function takes an arbitrary shell command and submits it to SGE.
+    Therefore the following files are created:
+    - ``sge.id``: a file containing the job id
+    - ``sge_job``: the job script that is submitted using ``qsub``
+    - ``sge_stop``: a script to stop this job
+    - ``sge_epilogue``: a script to gather accounting information using
+      ``qacct``.
+
+   Before doing anything this method checks if the ``sge.id`` file exists and
+   checks whether the corresponding job is still running.
+
+    Args:
+        command (str): the shell command as a string.
+        args (argparse.Namespace): the command line arguments
+        sge_dir (str): working dir for the job
+
+    Returns:
+        int: job id of the new job
+    """
     id_file = os.path.join(sge_dir, "sge.id")
     job_script = os.path.join(sge_dir, "sge_job")
     stop_script = os.path.join(sge_dir, "sge_stop")

@@ -3,4 +3,4 @@
 set -euf -o pipefail
 
 echo "Running coala..."
-docker run -v $(pwd):/app --workdir=/app coala/base coala -a
+docker run -v $(pwd):/app --workdir=/app coala coala -a --ci

@@ -1,5 +1,5 @@
-from matplotlib.axes import Axes
 import numpy
+from matplotlib.axes import Axes
 
 
 def plot_expval(ax: Axes, time: numpy.ndarray, expval: numpy.ndarray,

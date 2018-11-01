@@ -1,13 +1,16 @@
+"""Create operators acting on distinguishable degrees of freedom.
+"""
 import gzip
 import io
 import pickle
 from typing import Any, Callable, Dict, List, Union
 
-from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import OTerm as Term
-from QDTK.Operator import Operator
 import h5py
 import numpy
+
+from QDTK.Operator import OCoef as Coeff
+from QDTK.Operator import Operator
+from QDTK.Operator import OTerm as Term
 
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
@@ -15,6 +18,10 @@ from ..tools.operator import get_operator_matrix
 
 
 class OperatorSpecification:
+    """Object used to specify how to construct an operator acting on degrees
+    of freedom.
+    """
+
     def __init__(
             self,
             dofs: List[DVRSpecification],
@@ -57,8 +64,8 @@ class OperatorSpecification:
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
 
-        self.coefficients = {** self.coefficients, ** other.coefficients}
-        self.terms = {** self.terms, ** other.terms}
+        self.coefficients = {**self.coefficients, **other.coefficients}
+        self.terms = {**self.terms, **other.terms}
         self.table += other.table
 
         return self

@@ -43,8 +43,8 @@ class ParameterScan(SimulationSet):
             self.simulations[-1].name = repr(combination)
             self.simulations[-1].working_dir = os.path.join(
                 "sim", hash_string(self.simulations[-1].name))
-            self.simulations[-1].name = self.name + "_" + self.simulations[
-                -1].name
+            self.simulations[-1].name = self.name + \
+                "_" + self.simulations[-1].name
 
     def store_parameters(self):
         self.create_working_dir()

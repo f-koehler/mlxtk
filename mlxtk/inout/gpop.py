@@ -1,3 +1,5 @@
+"""Read one-body density from ASCII and HDF5 files.
+"""
 import io
 import re
 from typing import Dict, List, Optional, Tuple, Union
@@ -11,8 +13,20 @@ from . import tools
 assert List
 
 
-def read_gpop(path: str, dof: Optional[int]=None) -> Tuple[
-        numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+def read_gpop(
+        path: str, dof: Optional[int]=None
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    """Read the one-body densities from a file.
+
+    This method detects whether the file is an ASCII or a HDF5 file.
+
+    Args:
+        path (str): Path to the file to read
+        dof (int): Only read data for desired degree of freedom (optional)
+
+    Returns:
+        One-body density data
+    """
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_gpop_hdf5(path, interior_path, dof)
@@ -20,9 +34,10 @@ def read_gpop(path: str, dof: Optional[int]=None) -> Tuple[
     return read_gpop_ascii(path, dof)
 
 
-def read_gpop_ascii(path: str, dof: Optional[int]=None) -> Tuple[
-        numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
-    """Read the one-body densities from a raw ML-X file
+def read_gpop_ascii(
+        path: str, dof: Optional[int]=None
+) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
+    """Read the one-body densities from a raw ML-X file.
 
     Args:
         path (str): path of the ASCII file
@@ -107,7 +122,7 @@ def read_gpop_hdf5(path: str, interior_path: str,
                    dof: Optional[int]=None) -> Union[Tuple[numpy.ndarray, Dict[
                        int, numpy.ndarray], Dict[int, numpy.ndarray]], Tuple[
                            numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
-    """Read the one-body densities from a HDF5 file
+    """Read the one-body densities from a HDF5 file.
 
     Args:
         path (str): path of the HDF5 file
@@ -119,10 +134,8 @@ def read_gpop_hdf5(path: str, interior_path: str,
         time = fp["time"][:]
         if dof is not None:
             dof_str = "dof_" + str(dof)
-            return (
-                time,
-                fp[interior_path][dof_str]["grid"][:],
-                fp[interior_path][dof_str]["density"][:, :], )
+            return (time, fp[interior_path][dof_str]["grid"][:],
+                    fp[interior_path][dof_str]["density"][:, :], )
 
         grids = {}
         densities = {}
@@ -137,7 +150,7 @@ def write_gpop_hdf5(
         path: str,
         data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[
             int, numpy.ndarray]], ):
-    """Write the one-body densities to a HDF5 file
+    """Write the one-body densities to a HDF5 file.
 
     Args:
         path (str): path for the HDF5 file

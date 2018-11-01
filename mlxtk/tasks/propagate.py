@@ -6,10 +6,8 @@ import subprocess
 from typing import Any, Callable, Dict, List
 
 from .. import cwd, log
-from ..inout.eigenenergies import (
-    read_eigenenergies_ascii,
-    write_eigenenergies_hdf5
-)
+from ..inout.eigenenergies import (read_eigenenergies_ascii,
+                                   write_eigenenergies_hdf5)
 from ..inout.gpop import read_gpop_ascii, write_gpop_hdf5
 from ..inout.natpop import read_natpop_ascii, write_natpop_hdf5
 from ..inout.output import read_output_ascii, write_output_hdf5

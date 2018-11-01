@@ -1,17 +1,8 @@
 import copy
 import itertools
 import json
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Union
-)
+from typing import (Any, Callable, Dict, Generator, Iterable, List, Optional,
+                    Tuple, Union)
 
 
 class Parameters:
@@ -22,17 +13,14 @@ class Parameters:
     All parameters are exposed as member variables of this class.
     """
 
-    def __init__(self, params: List[Dict[str, Any]] = []):
+    def __init__(self, params: List[Dict[str, Any]]=[]):
         self.names = []  # type: List[str]
         self.docs = {}  # type: Dict[str, str]
 
         for param in params:
             Parameters.__iadd__(self, param)
 
-    def add_parameter(
-            self, name: str, value: Optional[Any] = None,
-            doc: str = ""
-    ):
+    def add_parameter(self, name: str, value: Optional[Any]=None, doc: str=""):
         """Add a new parameter
 
         Args:
@@ -82,8 +70,8 @@ class Parameters:
         self.names = []
         self.docs = {}
         for name in state["values"]:
-            self.add_parameter(name, state["values"][name],
-                               state["docs"].get(name, ""))
+            self.add_parameter(name, state["values"][name], state["docs"].get(
+                name, ""))
 
     def __repr__(self) -> str:
         return "_".join([name + "=" + str(self[name]) for name in self.names])
@@ -132,8 +120,8 @@ def generate_all(parameters: Parameters,
 
 def select(
         combinations: Generator[Parameters, None, None],
-        condition: Callable[[Parameters], bool], ) -> Generator[Parameters,
-                                                                None, None]:
+        condition: Callable[[Parameters], bool],
+) -> Generator[Parameters, None, None]:
     for combination in combinations:
         if condition(combination):
             yield combination
@@ -148,8 +136,8 @@ def add(combinations: Generator[Parameters, None, None],
 
 def add_multiple(
         combinations: Generator[Parameters, None, None],
-        new_combinations: Iterable[Parameters], ) -> Generator[Parameters,
-                                                               None, None]:
+        new_combinations: Iterable[Parameters],
+) -> Generator[Parameters, None, None]:
     for combination in combinations:
         yield combination
 
@@ -159,8 +147,8 @@ def add_multiple(
 
 def merge(
         combinations1: Generator[Parameters, None, None],
-        combinations2: Generator[Parameters, None, None], ) -> Generator[
-            Parameters, None, None]:
+        combinations2: Generator[Parameters, None, None],
+) -> Generator[Parameters, None, None]:
     for combination in combinations1:
         yield combination
 

@@ -7,8 +7,9 @@ import pandas
 from . import tools
 
 
-def read_output(path: str) -> Tuple[numpy.ndarray, numpy.ndarray,
-                                    numpy.ndarray, numpy.ndarray]:
+def read_output(
+        path: str
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_output_hdf5(path, interior_path)
@@ -16,8 +17,9 @@ def read_output(path: str) -> Tuple[numpy.ndarray, numpy.ndarray,
     return read_output_ascii(path)
 
 
-def read_output_ascii(path) -> Tuple[numpy.ndarray, numpy.ndarray,
-                                     numpy.ndarray, numpy.ndarray]:
+def read_output_ascii(
+        path
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read an output file (raw ASCII format)
 
     Args:
@@ -31,21 +33,17 @@ def read_output_ascii(path) -> Tuple[numpy.ndarray, numpy.ndarray,
     """
     df = pandas.read_csv(
         path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
-    return (
-        df["time"].values,
-        df["norm"].values,
-        df["energy"].values,
-        df["overlap"].values, )
+    return (df["time"].values, df["norm"].values, df["energy"].values,
+            df["overlap"].values, )
 
 
-def read_output_hdf5(path: str, interior_path: str="/") -> Tuple[
-        numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+def read_output_hdf5(
+        path: str, interior_path: str="/"
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fp:
-        return (
-            fp[interior_path]["time"][:],
-            fp[interior_path]["norm"][:],
-            fp[interior_path]["energy"][:],
-            fp[interior_path]["overlap"][:], )
+        return (fp[interior_path]["time"][:], fp[interior_path]["norm"][:],
+                fp[interior_path]["energy"][:],
+                fp[interior_path]["overlap"][:], )
 
 
 def write_output_hdf5(path: str,

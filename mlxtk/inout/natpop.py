@@ -84,7 +84,8 @@ def read_natpop_ascii(
 
             # construct header for DataFrame
             header = (" ".join([
-                "orbital_" + str(orbital) for orbital in range(0, num_orbitals)
+                "orbital_" + str(orbital)
+                for orbital in range(0, num_orbitals)
             ]) + "\n")
 
             # create DataFrame
@@ -112,10 +113,10 @@ def read_natpop_hdf5(
 
         if node:
             if dof:
-                return (
-                    time,
-                    fp[interior_path]["node_" + str(node)]["dof_" + str(dof)]
-                    [:, :], )
+                return (time,
+                        fp[interior_path]["node_"
+                                          + str(node)]["dof_"
+                                                       + str(dof)][:, :], )
             node_str = "node_" + str(node)
             data = {}
             for entry in fp[interior_path][node_str]:

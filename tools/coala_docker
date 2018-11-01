@@ -2,4 +2,4 @@
 # -*- mode: bash -*-
 # set -euf -o pipefail
 
-docker run -v $(pwd):/app --workdir=/app coala/base coala --ci
+docker run -v $(pwd):/app --workdir=/app coala

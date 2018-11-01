@@ -12,6 +12,21 @@ HDF5_MAGIC_NUMBER = bytes([0x89, 0x48, 0x44, 0x46, 0x0D, 0x0A, 0x1A, 0x0A])
 
 
 def is_hdf5_path(path: str) -> Tuple[bool, str, str]:
+    """Parse a path which potentially resides inside a HDF5 file
+
+    This function checks wether path points to a regular file on the disk. If
+    this is ``False``, the full path and an empty string are returned.
+    If path is a path to a HDF5 file any trailing components are considered to
+    denote the interior path inside the HDF5 file. In this case ``True``, the
+    path to the HDF5 file and the interior path are returned.
+
+    Args:
+        path (str): path to a file
+
+    Returns:
+        Tuple[bool, str, str]: whether this path is a path in a HDF5 file, path
+            to the file and interior path.
+    """
     interior_path = ""  # type: str
     while path not in ["", "/"]:
         if is_hdf5_file(path):
@@ -26,6 +41,14 @@ def is_hdf5_path(path: str) -> Tuple[bool, str, str]:
 
 
 def is_hdf5_file(path: str) -> bool:
+    """Check if a file is a HDF5 file using the magic number
+
+    Args:
+        path (str): path to the file
+
+    Returns:
+        bool: Whether path points to a HDF5 file.
+    """
     if not os.path.exists(path):
         return False
 

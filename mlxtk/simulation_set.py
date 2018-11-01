@@ -1,3 +1,5 @@
+"""Work with a collection of simulations.
+"""
 import argparse
 import os
 import sys
@@ -11,16 +13,28 @@ assert Any
 assert Callable
 assert Dict
 
+LOGGER = get_logger(__name__)
 
-def run_simulation(simulation):
+
+def run_simulation(simulation: Simulation) -> List[Dict[str, Any]]:
+    """Create a task for running the given simulation.
+
+    Args:
+        simulation (Simulation): simulation to run
+
+    Returns:
+        list: list with a single doit task description for simulation run
+    """
+
     def task_run_simulation():
         def action_run_simulation(targets):
             del targets
             simulation.main(["run"])
 
+        task_name = simulation.name.replace("=", ":")
+
         return {
-            "name":
-            "run_simulation:{}".format(simulation.name.replace("=", ":")),
+            "name": "run_simulation:{}".format(task_name),
             "actions": [action_run_simulation],
         }
 
@@ -28,6 +42,19 @@ def run_simulation(simulation):
 
 
 class SimulationSet:
+    """A collection of simulations.
+
+    Args:
+        name (str): name for this set of simulations
+        simulations (list): the list of simulations
+        working_dir (str): optional working directory
+
+    Attributes:
+        name (str): name for this set of simulations
+        simulations (list): the list of simulations
+        working_dir (str): optional working directory (defaults to ``name``)
+    """
+
     def __init__(
             self,
             name: str,
@@ -36,7 +63,6 @@ class SimulationSet:
         self.name = name
         self.simulations = simulations
         self.working_dir = name if working_dir is None else working_dir
-        self.logger = get_logger(__name__)
 
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
@@ -96,8 +122,8 @@ class SimulationSet:
         del args
 
         if not os.path.exists(self.working_dir):
-            self.logger.warning("working dir %s does not exist, do nothing",
-                                self.working_dir)
+            LOGGER.warning("working dir %s does not exist, do nothing",
+                           self.working_dir)
 
         with cwd.WorkingDir(self.working_dir):
             for simulation in self.simulations:
@@ -115,7 +141,7 @@ class SimulationSet:
         args = self.argparser.parse_args(args)
 
         if args.subcommand is None:
-            self.logger.error("No subcommand specified!")
+            LOGGER.error("No subcommand specified!")
             print()
             self.argparser.print_help(sys.stderr)
             exit(1)

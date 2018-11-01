@@ -1,14 +1,15 @@
 from typing import Union
 
+import numpy
+
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
-import numpy
 
 from .single_species import SingleSpeciesSystem
 
 
 def gaussian(x: Union[float, numpy.ndarray], x0: float):
-    return numpy.exp(-((x - x0) ** 2))
+    return numpy.exp(-((x - x0)**2))
 
 
 class GaussianTrap(SingleSpeciesSystem):
@@ -49,7 +50,8 @@ class GaussianTrap(SingleSpeciesSystem):
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
-            return (self.get_kinetic_operator() + self.get_potential_operator()
-                    + self.get_interaction_operator())
+            return (
+                self.get_kinetic_operator() + self.get_potential_operator() +
+                self.get_interaction_operator())
 
         return self.get_kinetic_operator() + self.get_potential_operator_1b()

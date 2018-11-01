@@ -18,12 +18,9 @@ def read_expval(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(
         path, delim_whitespace=True, names=["time", "real", "imag"])
-    return (
-        numpy.array(
-            df["time"].values, dtype=numpy.float64),
-        numpy.array(
-            df["real"].values, dtype=numpy.complex128) + 1j * numpy.array(
-                df["imag"].values, dtype=numpy.complex128), )
+    return (numpy.array(df["time"].values, dtype=numpy.float64),
+            numpy.array(df["real"].values, dtype=numpy.complex128) +
+            1j * numpy.array(df["imag"].values, dtype=numpy.complex128), )
 
 
 def read_expval_hdf5(

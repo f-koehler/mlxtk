@@ -1,17 +1,15 @@
 import pickle
 from typing import Any, Dict, Iterable
 
-from QDTK.Wavefunction import Wavefunction as WaveFunction
 import h5py
 import numpy
 
+from QDTK.Wavefunction import Wavefunction as WaveFunction
+
 from ..dvr import DVRSpecification
 from ..tools.diagonalize import diagonalize_1b_operator
-from ..tools.wave_function import (
-    add_momentum,
-    load_wave_function,
-    save_wave_function
-)
+from ..tools.wave_function import (add_momentum, load_wave_function,
+                                   save_wave_function)
 
 
 def create_mctdhb_wave_function(name,

@@ -76,7 +76,8 @@ class Simulation:
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
         sge.submit(
-            " ".join([sys.executable, os.path.abspath(sys.argv[0]), "run"]),
+            " ".join([sys.executable,
+                      os.path.abspath(sys.argv[0]), "run"]),
             args,
             sge_dir=self.working_dir, )
 

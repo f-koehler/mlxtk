@@ -1,13 +1,7 @@
-from QDTK.Primitive import (
-    FFT,
-    Expdvr,
-    Harmdvr,
-    Laguerredvr,
-    Legendredvr,
-    Sindvr,
-    rHarmdvr
-)
 import numpy
+
+from QDTK.Primitive import (FFT, Expdvr, Harmdvr, Laguerredvr, Legendredvr,
+                            Sindvr, rHarmdvr)
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,

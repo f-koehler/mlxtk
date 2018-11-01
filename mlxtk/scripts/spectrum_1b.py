@@ -1,18 +1,11 @@
 import argparse
 import sys
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import (
-    QApplication,
-    QGraphicsView,
-    QHeaderView,
-    QLabel,
-    QListWidget,
-    QTableWidget,
-    QTabWidget
-)
 import h5py
 import numpy
+from PyQt5.QtCore import QObject
+from PyQt5.QtWidgets import (QApplication, QGraphicsView, QHeaderView, QLabel,
+                             QListWidget, QTableWidget, QTabWidget)
 
 from ..tools.diagonalize import diagonalize_1b_operator
 from ..ui import load_ui, replace_widget

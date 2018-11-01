@@ -21,7 +21,7 @@ def compute_variance(exp_op: str, exp_op2: str, **kwargs):
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")
 
-            write_expval_hdf5(name + ".var.hdf5", (t1, exp2 - (exp ** 2)))
+            write_expval_hdf5(name + ".var.hdf5", (t1, exp2 - (exp**2)))
 
         return {
             "name": "variance:{}:compute".format(name),

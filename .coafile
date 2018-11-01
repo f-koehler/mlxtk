@@ -19,7 +19,7 @@ files = mlxtk/**/*.py,examples/**/*.py
 file_naming_convention = snake
 
 [PythonFormatting]
-bears = PEP8Bear,PycodestyleBear,PyImportSortBear,SpaceConsistencyBear
+bears = PEP8Bear,PyImportSortBear,SpaceConsistencyBear
 files = setup.py,mlxtk/**/*.py,examples/**/*.py
 language = python
 

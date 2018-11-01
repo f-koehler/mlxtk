@@ -4,8 +4,8 @@ import pickle
 from typing import Any, Callable, Dict, Iterable, List, Union
 
 from QDTK.Operatorb import OCoef as Coeff
-from QDTK.Operatorb import OTerm as Term
 from QDTK.Operatorb import Operatorb as Operator
+from QDTK.Operatorb import OTerm as Term
 
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
@@ -56,8 +56,8 @@ class MBOperatorSpecification:
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
 
-        self.coefficients = {** self.coefficients, ** other.coefficients}
-        self.terms = {** self.terms, ** other.terms}
+        self.coefficients = {**self.coefficients, **other.coefficients}
+        self.terms = {**self.terms, **other.terms}
         self.table += other.table
 
         return self
@@ -140,8 +140,8 @@ def create_many_body_operator(name: str, *args,
         return create_many_body_operator_impl(name, args[0])
 
     return create_many_body_operator_impl(name,
-                                          MBOperatorSpecification(*args,
-                                                                  **kwargs))
+                                          MBOperatorSpecification(
+                                              *args, **kwargs))
 
 
 def create_many_body_operator_impl(name: str,
@@ -167,8 +167,8 @@ def create_many_body_operator_impl(name: str,
                         for key in specification.terms
                     }
                     if "value" in obj[4][term]:
-                        obj[4][term]["value"] = inaccurate_hash(obj[4][term][
-                            "value"])
+                        obj[4][term]["value"] = inaccurate_hash(
+                            obj[4][term]["value"])
                 else:
                     obj[4][term] = inaccurate_hash(specification.terms[term])
 

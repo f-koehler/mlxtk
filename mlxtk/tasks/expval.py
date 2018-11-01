@@ -86,7 +86,8 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
             os.remove(path_opr_tmp)
 
         return {
-            "name": "expval:{}:compute".format(name),
+            "name":
+            "expval:{}:compute".format(name),
             "actions": [
                 action_copy_operator,
                 action_copy_wave_function,

@@ -9,7 +9,7 @@ LOGGER = get_logger(__name__)
 
 class LockFileExistsError(Exception):
     def __init__(self, path: str, host: str, pid: int):
-        message = "Lock file {} exists!\nLocked by PID {} on host {}!".format(
+        message = "Lock file {} exists (locked by PID {} on host {})".format(
             path, pid, host
         )
         super().__init__(message)

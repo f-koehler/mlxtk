@@ -70,7 +70,7 @@ def find_degeneracies(energies, tolerance=1e-8):
 def split_bands(spfs, periodicity):
     num_bands = len(spfs) // periodicity
     if len(spfs) % periodicity != 0:
-        LOGGER.warn("band %d seems to be incomplete", num_bands - 1)
+        LOGGER.warning("band %d seems to be incomplete", num_bands - 1)
         exit()
 
     for i in range(num_bands):
@@ -95,29 +95,28 @@ def get_translation_operator_in_spf_basis(spfs, periodicity, x):
     return operator
 
 
-def create_wannier_states(spfs, periodicity, x):
-    new_spfs = []
-    for band in split_bands(spfs, periodicity):
-        operator = get_position_operator_in_spf_basis(band, x)
-        evals, evecs = scipy.linalg.eigh(operator)
-        LOGGER.info("position operator eigenvalues: %s", str(evals))
+# def create_wannier_states(spfs, periodicity, x):
+#     new_spfs = []
+#     for band in split_bands(spfs, periodicity):
+#         operator = get_position_operator_in_spf_basis(band, x)
+#         evals, evecs = scipy.linalg.eigh(operator)
+#         LOGGER.info("position operator eigenvalues: %s", str(evals))
 
-        for evec in evecs:
-            new_spfs.append(numpy.zeros_like(spfs[0]))
-            for val, spf in zip(evals, band):
-                new_spfs[-1] += val * spf
-    return new_spfs
+#         for evec in evecs:
+#             new_spfs.append(numpy.zeros_like(spfs[0]))
+#             for val, spf in zip(evals, band):
+#                 new_spfs[-1] += val * spf
+#     return new_spfs
 
+# def create_bloch_states(spfs, periodicity, x):
+#     new_spfs = []
+#     for band in split_bands(spfs, periodicity):
+#         operator = get_translation_operator_in_spf_basis(band, periodicity, x)
+#         evals, evecs = scipy.linalg.eigh(operator)
+#         LOGGER.info("translation operator eigenvalues: %s", str(evals))
 
-def create_bloch_states(spfs, periodicity, x):
-    new_spfs = []
-    for band in split_bands(spfs, periodicity):
-        operator = get_translation_operator_in_spf_basis(band, periodicity, x)
-        evals, evecs = scipy.linalg.eigh(operator)
-        LOGGER.info("translation operator eigenvalues: %s", str(evals))
-
-        for evec in evecs:
-            new_spfs.append(numpy.zeros_like(spfs[0]))
-            for val, spf in zip(evals, band):
-                new_spfs[-1] += val * spf
-    return new_spfs
+#         for evec in evecs:
+#             new_spfs.append(numpy.zeros_like(spfs[0]))
+#             for val, spf in zip(evals, band):
+#                 new_spfs[-1] += val * spf
+#     return new_spfs

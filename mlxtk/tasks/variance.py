@@ -6,10 +6,7 @@ from ..inout.expval import read_expval, write_expval_hdf5
 
 
 def compute_variance(exp_op: str, exp_op2: str, **kwargs):
-    if "name" in kwargs:
-        name = kwargs["name"]
-    else:
-        name = exp_op
+    name = kwargs.get("name", exp_op)
 
     def task_compute():
         def action_compute(targets: List[str]):

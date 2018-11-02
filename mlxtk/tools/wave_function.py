@@ -29,6 +29,7 @@ def save_wave_function(path: str, wfn: Wavefunction):
 
 
 def add_momentum(wfn: Wavefunction, momentum: float) -> Wavefunction:
+    # pylint: disable=protected-access
     num_spfs = wfn.tree._subnodes[0]._dim  # type: int
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     grid = wfn.tree._topNode._pgrid[0]

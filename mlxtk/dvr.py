@@ -90,7 +90,7 @@ class DVRSpecification:
         if not self.is_fft():
             raise RuntimeError("get_expdvr() makes only sense for a FFT grid")
 
-        return add_expdvr(*self.args)
+        return add_expdvr(self.args[0], self.args[1], self.args[2])
 
     def __getstate__(self):
         return {"type": self.type_, "args": self.args}

@@ -8,8 +8,8 @@ def read_eigenenergies(path: str):
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_eigenenergies_hdf5(path, interior_path)
-    else:
-        return read_eigenenergies_ascii(path)
+
+    return read_eigenenergies_ascii(path)
 
 
 def read_eigenenergies_ascii(path: str) -> numpy.ndarray:

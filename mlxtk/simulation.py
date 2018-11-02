@@ -40,7 +40,7 @@ class Simulation:
             with open("tasks.dot") as fp:
                 code = fp.readlines()
 
-            for i in range(len(code)):
+            for i, _ in enumerate(code):
                 m = regex.match(code[i])
                 if not m:
                     continue
@@ -51,6 +51,8 @@ class Simulation:
                 fp.writelines(code)
 
     def list(self, args: argparse.Namespace):
+        del args
+
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(

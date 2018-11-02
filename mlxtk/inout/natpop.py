@@ -15,8 +15,8 @@ def read_natpop(path: str, node: int=0,
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_natpop_hdf5(path, interior_path, node, dof)
-    else:
-        return read_natpop_ascii(path, node, dof)
+
+    return read_natpop_ascii(path, node, dof)
 
 
 def read_natpop_ascii(

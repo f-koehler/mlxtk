@@ -111,6 +111,10 @@ def mctdhb_add_momentum(name: str,
         initial_path = initial + ".wfn.gz"
 
         def action_add_momentum(targets: Iterable[str]):
+            del targets
+
+            # pylint: disable=protected-access
+
             wfn = load_wave_function(initial_path)
             wfn.tree._topNode._pgrid[0] = grid.get_x()
             add_momentum(wfn, momentum)

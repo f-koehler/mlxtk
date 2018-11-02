@@ -4,7 +4,7 @@ set -euf -o pipefail
 FILES=`find mlxtk examples -name "*.py"`
 
 echo "Run isort"
-isort ${FILES}
+isort ${FILES} || exit
 
 echo "Run autopep8"
 autopep8 --in-place ${FILES} || exit

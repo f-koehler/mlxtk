@@ -13,8 +13,8 @@ if __name__ == "__main__":
     parameters.add_parameter("m", 1, "number of single particle functions")
 
     def create_simulation(p):
-        system = HarmonicTrap(p)
-        system_quenched = HarmonicTrap(parameters_quenched)
+        system = HarmonicTrap(p, x)
+        system_quenched = HarmonicTrap(parameters_quenched, x)
 
         sim = mlxtk.Simulation("")
         sim += system.get_1b_hamiltonian("hamiltonian_1b")

@@ -9,6 +9,7 @@ def get_operator_matrix(operator):
     unit_matrix = numpy.diag(numpy.ones(grid_points))
 
     for k in range(1, nprod + 1):
+        # pylint: disable=protected-access
         term = operator._table.get((k, 1))
         coefficient = operator._table.get(k)
 

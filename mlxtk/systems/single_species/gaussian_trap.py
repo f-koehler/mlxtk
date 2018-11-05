@@ -16,6 +16,8 @@ class GaussianTrap(SingleSpeciesSystem):
     @staticmethod
     def create_parameters():
         return Parameters([
+            ("N", 2, "number of particles"),
+            ("m", 5, "number of single particle functions"),
             ("V0", 1.0, "depth of the Gaussian well"),
             ("x0", 0.0, "center of the Gaussian well"),
             ("g", 0.1, "strength of the contact interaction"),
@@ -23,12 +25,12 @@ class GaussianTrap(SingleSpeciesSystem):
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
-            (self.grid, ),
+            (self.grid_1b, ),
             {"potential_coeff": -self.parameters.V0},
             {"potential": gaussian(self.grid.get_x(), self.grid.get_x())},
             ["potential_coeff | 1 potential"], )
 
-    def get_1b_hamiltonian(self) -> tasks.OperatorSpecification:
+    def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b(
         )
 

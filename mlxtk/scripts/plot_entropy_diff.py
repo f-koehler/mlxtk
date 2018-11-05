@@ -11,8 +11,7 @@ from ..tools.entropy import compute_entropy
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "path", nargs=2, default="natpop.hdf5", help="path to the natpop file")
+    parser.add_argument("path", nargs=2, help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")
@@ -25,10 +24,10 @@ def main():
     time2, natpop2 = read_natpop(args.path[1], node=args.node, dof=args.dof)
 
     if time1.shape != time2.shape:
-        raise RuntimeError("Number of time points differs")
+        raise ValueError("number of time points differs")
 
     if not numpy.allclose(time1, time2):
-        raise RuntimeError("Time points differ")
+        raise ValueError("time points differ")
 
     entropy1 = compute_entropy(natpop1)
     entropy2 = compute_entropy(natpop2)

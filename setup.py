@@ -40,6 +40,7 @@ simulation outcome.
         "console_scripts": [
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",
+            "plot_energy_diff = mlxtk.scripts.plot_energy_diff:main",
             "plot_entropy = mlxtk.scripts.plot_entropy:main",
             "plot_entropy_diff = mlxtk.scripts.plot_entropy_diff:main",
             "plot_expval = mlxtk.scripts.plot_expval:main",

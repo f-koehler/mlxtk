@@ -6,9 +6,12 @@ parameter ranges.
 import argparse
 import os
 import pickle
+import sqlite3
 import subprocess
 import sys
 from typing import Callable, Generator, Iterable, List, Optional
+
+import pandas
 
 from . import cwd, parameters
 from .hashing import hash_string
@@ -59,6 +62,17 @@ class ParameterScan(SimulationSet):
 
                     with open("parameters.json", "w") as fp:
                         fp.write(combination.to_json() + "\n")
+
+            names = self.combinations[0].names
+            data = pandas.DataFrame({
+                name: pandas.Series([comb[name] for comb in self.combinations])
+                for name in names
+            })
+            if os.path.exists("scan.sqlite3"):
+                os.remove("scan.sqlite3")
+            con = sqlite3.connect("scan.sqlite3")
+            data.to_sql("combinations", con, index=True, index_label="index")
+            con.close()
 
     def link_simulations(self):
         self.create_working_dir()

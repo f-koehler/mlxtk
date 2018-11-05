@@ -6,6 +6,7 @@ import numpy
 from ..inout.natpop import read_natpop
 from ..plot.entropy import plot_entropy
 from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..tools.entropy import compute_entropy
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
     _, ax = plt.subplots(1, 1)
 
     time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
-    entropy = numpy.sum(-natpop * numpy.log(natpop), axis=1)
+    entropy = compute_entropy(natpop)
     plot_entropy(ax, time, entropy)
 
     apply_2d_args(ax, args)

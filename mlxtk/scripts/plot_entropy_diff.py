@@ -6,6 +6,7 @@ import numpy
 from ..inout.natpop import read_natpop
 from ..plot.entropy import plot_entropy_diff
 from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..tools.entropy import compute_entropy
 
 
 def main():
@@ -29,8 +30,8 @@ def main():
     if not numpy.allclose(time1, time2):
         raise RuntimeError("Time points differ")
 
-    entropy1 = numpy.sum(-natpop1 * numpy.log(natpop1), axis=1)
-    entropy2 = numpy.sum(-natpop2 * numpy.log(natpop2), axis=1)
+    entropy1 = compute_entropy(natpop1)
+    entropy2 = compute_entropy(natpop2)
 
     plot_entropy_diff(ax, time1, entropy1, entropy2)
 

@@ -28,6 +28,7 @@ simulation outcome.
         "colorama",
         "doit",
         "h5py",
+        "jinja2",
         "matplotlib",
         "numpy",
         "numpy-stl",

@@ -5,6 +5,7 @@ dependencies:
   - colorama=0.4.0
   - doit=0.31.1
   - h5py=2.8.0
+  - jinja2=2.10
   - matplotlib=3.0.1
   - mkl=2019.0
   - numpy-stl=2.7.0

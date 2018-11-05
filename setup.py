@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="mlxtk",
-    version="0.0.0",
+    version="0.3.0",
     author="Fabian Köhler",
     author_email="fkoehler@physnet.uni-hamburg.de",
     description="Toolkit to design, run and analyze ML-MCTDH(X) simulations",

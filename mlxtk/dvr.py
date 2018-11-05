@@ -53,7 +53,7 @@ class DVRSpecification:
         else:
             class_ = DVR_CLASSES[self.type_]
             self.dvr = class_(*self.args)
-            DVR_CACHE[self.args] = self.dvr
+            DVR_CACHE[self.type_][self.args] = self.dvr
 
     def get(self):
         self.compute()

@@ -5,7 +5,7 @@ import os
 import sys
 from typing import Any, Callable, Dict, Iterable, List, Optional
 
-from . import cwd, doit_compat
+from . import cwd, doit_compat, sge
 from .log import get_logger
 from .simulation import Simulation
 
@@ -72,8 +72,10 @@ class SimulationSet:
         self.argparser_list_tasks = subparsers.add_parser("list-tasks")
         self.argparser_task_info = subparsers.add_parser("task-info")
         subparsers.add_parser("qdel")
-        subparsers.add_parser("qsub")
+        self.argparser_qsub = subparsers.add_parser("qsub")
         self.argparser_run = subparsers.add_parser("run")
+
+        sge.add_parser_arguments(self.argparser_qsub)
 
         self.argparser_list_tasks.add_argument(
             "index",

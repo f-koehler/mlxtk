@@ -112,6 +112,15 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
 
     path_pickle = name + ".prop_pickle"
 
+    if flags["relax"]:
+        basename = "relaxation"
+    elif flags["improved_relax"]:
+        basename = "improved_relaxation"
+    elif flags["exact_diag"]:
+        basename = "exact_diagonalization"
+    else:
+        basename = "propagation"
+
     def task_write_parameters() -> Dict[str, Any]:
         @DoitAction
         def action_write_parameters(targets: List[str]):
@@ -121,7 +130,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 pickle.dump(obj, fp)
 
         return {
-            "name": "propagation:{}:write_parameters".format(name),
+            "name": "{}:{}:write_parameters".format(basename, name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
@@ -172,7 +181,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                     fp_out.write(fp_in.read().decode())
 
         @DoitAction
-        def action_propagate(targets: List[str]):
+        def action_run(targets: List[str]):
             del targets
             with cwd.WorkingDir(name):
                 LOGGER.info("propagate wave function")
@@ -248,15 +257,6 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                            read_psi_ascii(path_eigenvectors))
             os.remove(path_eigenvectors)
 
-        if flags["relax"]:
-            basename = "relaxation"
-        elif flags["improved_relax"]:
-            basename = "improved_relaxation"
-        elif flags["exact_diag"]:
-            basename = "exact_diagonalization"
-        else:
-            basename = "propagation"
-
         if flags["exact_diag"]:
             targets = [path_energies_hdf5, path_eigenvectors_hdf5]
             actions = [
@@ -283,7 +283,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 action_create_dir,
                 action_copy_initial_wave_function,
                 action_copy_hamiltonian,
-                action_propagate,
+                action_run,
                 action_remove_hamiltonian,
                 action_remove_initial_wave_function,
                 action_convert_output,

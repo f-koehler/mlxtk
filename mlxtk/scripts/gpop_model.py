@@ -2,7 +2,7 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.gpop import read_gpop_hdf5
+from ..inout.gpop import read_gpop
 from ..plot.gpop import create_model
 
 
@@ -14,7 +14,7 @@ def main():
         "-d", "--dof", type=int, default=1, help="degree of freedom")
     args = parser.parse_args()
 
-    time, grid, density = read_gpop_hdf5(args.path, dof=args.dof)
+    time, grid, density = read_gpop(args.path, dof=args.dof)
     create_model(time, grid, density)
 
     plt.show()

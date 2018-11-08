@@ -3,8 +3,8 @@
 {% if args.job_name -%}
 #$ -N {{args.job_name}}
 {%- endif %}
-{% if args.queue -%}
-#$ -q {{args.queue}}
+{% if args.queues -%}
+#$ -q {{args.queues}}
 {%- endif %}
 {% if args.email -%}
 #$ -M {{args.email}} -m aes

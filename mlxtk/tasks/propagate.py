@@ -248,6 +248,15 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                            read_psi_ascii(path_eigenvectors))
             os.remove(path_eigenvectors)
 
+        if flags["relax"]:
+            basename = "relaxation"
+        elif flags["improved_relax"]:
+            basename = "improved_relaxation"
+        elif flags["exact_diag"]:
+            basename = "exact_diagonalization"
+        else:
+            basename = "propagation"
+
         if flags["exact_diag"]:
             targets = [path_energies_hdf5, path_eigenvectors_hdf5]
             actions = [
@@ -286,7 +295,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 actions.append(action_convert_psi)
 
         return {
-            "name": "propagation:{}:propagate".format(name),
+            "name": "{}:{}:run".format(basename, name),
             "actions": actions,
             "targets": targets,
             "file_dep": [path_pickle, path_wfn, path_opr],

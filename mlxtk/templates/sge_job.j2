@@ -1,5 +1,8 @@
 #!/bin/bash
 # -*- mode: sh -*-
+{% if args.job_name -%}
+#$ -N {{args.job_name}}
+{%- endif %}
 {% if args.queue -%}
 #$ -q {{args.queue}}
 {%- endif %}
@@ -8,7 +11,7 @@
 {%- endif %}
 #$ -S /bin/bash
 #$ -cwd
-#$ -o {{ args.sge_dir }}
+#$ -o {{args.sge_dir}}
 #$ -j y
 #$ -V
 #$ -l h_vmem={{args.memory}}

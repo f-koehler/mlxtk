@@ -24,7 +24,7 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "--queues",
         default="none",
         help=("comma separated list of queues for the SGE batch system,"
-              " \"none\" if you do not want to specify a queue"), )
+              ' "none" if you do not want to specify a queue'), )
     parser.add_argument(
         "--memory",
         default="2G",
@@ -57,7 +57,8 @@ def get_jobs_in_queue() -> List[int]:
     return job_ids
 
 
-def submit(command: str, args, sge_dir: str=os.path.curdir) -> int:
+def submit(command: str, args, sge_dir: str=os.path.curdir,
+           job_name="") -> int:
     """Create a jobfile for a command and submit it.
 
     This function takes an arbitrary shell command and submits it to SGE.
@@ -104,6 +105,8 @@ def submit(command: str, args, sge_dir: str=os.path.curdir) -> int:
         "sge_dir": sge_dir,
         "time": args.time,
     }
+    if job_name:
+        args["job_name"] = job_name
 
     # create job script
     LOGGER.debug("create job script")

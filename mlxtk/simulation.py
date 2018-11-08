@@ -81,7 +81,8 @@ class Simulation:
             " ".join([sys.executable,
                       os.path.abspath(sys.argv[0]), "run"]),
             args,
-            sge_dir=self.working_dir, )
+            sge_dir=self.working_dir,
+            job_name=self.name)
 
     def qdel(self, args: argparse.Namespace):
         del args

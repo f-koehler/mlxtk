@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>600</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,28 +19,53 @@
      <widget class="QGraphicsView" name="plot"/>
     </item>
     <item>
-     <widget class="QWidget" name="widget_slider" native="true">
+     <widget class="QWidget" name="widget" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="label_slider">
+        <widget class="QLabel" name="labelTime">
          <property name="text">
-          <string>Slider:</string>
+          <string>Time: </string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSlider" name="slider_value">
+        <widget class="QSlider" name="sliderTime">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_value">
+        <widget class="QSpinBox" name="spinTime"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="widget_2" native="true">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="labelDOF">
          <property name="text">
-          <string>Slider Value</string>
+          <string>Degree of Freedom: </string>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinDOF"/>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

@@ -116,7 +116,16 @@ class SimulationSet:
             tasks = []  # type: List[Callable[[], Dict[str, Any]]]
             for simulation in self.simulations:
                 tasks += run_simulation(simulation)
-            doit_compat.run_doit(tasks, ["-n", str(args.jobs)])
+            doit_compat.run_doit(
+                tasks,
+                [
+                    "-n",
+                    str(args.jobs),
+                    "--backend",
+                    "sqlite3",
+                    "--db-file",
+                    "doit.sqlite3",
+                ], )
 
     def qdel(self, args: argparse.Namespace):
         del args

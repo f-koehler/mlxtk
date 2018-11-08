@@ -4,6 +4,7 @@ import subprocess
 from typing import List
 
 from .. import cwd, log
+from ..doit_compat import DoitAction
 from ..inout.expval import read_expval_ascii, write_expval_hdf5
 
 LOGGER = log.get_logger(__name__)
@@ -28,6 +29,7 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
         path_expval = name + ".exp"
         path_expval_hdf5 = path_expval + ".hdf5"
 
+        @DoitAction
         def action_copy_operator(targets: List[str]):
             del targets
 
@@ -36,6 +38,7 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
                 with open(path_opr_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
+        @DoitAction
         def action_copy_wave_function(targets: List[str]):
             del targets
 
@@ -44,6 +47,7 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
                 with open(path_wfn_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
+        @DoitAction
         def action_compute(targets: List[str]):
             del targets
 
@@ -65,6 +69,7 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
                 env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                 subprocess.run(cmd, env=env)
 
+        @DoitAction
         def action_convert(targets: List[str]):
             del targets
 
@@ -72,12 +77,14 @@ def compute_expectation_value(psi: str, operator: str, **kwargs):
             write_expval_hdf5(path_expval_hdf5, read_expval_ascii(path_expval))
             os.remove(path_expval)
 
+        @DoitAction
         def action_remove_wave_function(targets: List[str]):
             del targets
 
             LOGGER.info("remove wave function")
             os.remove(path_wfn_tmp)
 
+        @DoitAction
         def action_remove_operator(targets: List[str]):
             del targets
 

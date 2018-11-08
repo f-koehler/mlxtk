@@ -6,6 +6,7 @@ import subprocess
 from typing import Any, Callable, Dict, List
 
 from .. import cwd, log
+from ..doit_compat import DoitAction
 from ..inout.eigenenergies import (read_eigenenergies_ascii,
                                    write_eigenenergies_hdf5)
 from ..inout.gpop import read_gpop_ascii, write_gpop_hdf5
@@ -112,6 +113,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
     path_pickle = name + ".prop_pickle"
 
     def task_write_parameters() -> Dict[str, Any]:
+        @DoitAction
         def action_write_parameters(targets: List[str]):
             obj = [name, wave_function, hamiltonian, flags]
 
@@ -146,12 +148,14 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
         path_wfn_tmp = os.path.join(name, "initial.wfn")
         path_opr_tmp = os.path.join(name, "hamiltonian.mb_opr")
 
+        @DoitAction
         def action_create_dir(targets: List[str]):
             del targets
             if not os.path.exists(name):
                 LOGGER.info("create propagation directory")
                 os.makedirs(name)
 
+        @DoitAction
         def action_copy_initial_wave_function(targets: List[str]):
             del targets
             LOGGER.info("copy initial wave function")
@@ -159,6 +163,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 with open(path_wfn_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
+        @DoitAction
         def action_copy_hamiltonian(targets: List[str]):
             del targets
             LOGGER.info("copy Hamiltonian")
@@ -166,6 +171,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 with open(path_opr_tmp, "w") as fp_out:
                     fp_out.write(fp_in.read().decode())
 
+        @DoitAction
         def action_propagate(targets: List[str]):
             del targets
             with cwd.WorkingDir(name):
@@ -176,24 +182,28 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 LOGGER.info("command: %s", " ".join(cmd))
                 subprocess.run(cmd, env=env)
 
+        @DoitAction
         def action_convert_output(targets: List[str]):
             del targets
             LOGGER.info("convert ouput to HDF5")
             write_output_hdf5(path_output_hdf5, read_output_ascii(path_output))
             os.remove(path_output)
 
+        @DoitAction
         def action_convert_gpop(targets: List[str]):
             del targets
             LOGGER.info("convert one-body densities to HDF5")
             write_gpop_hdf5(path_gpop_hdf5, read_gpop_ascii(path_gpop))
             os.remove(path_gpop)
 
+        @DoitAction
         def action_convert_natpop(targets: List[str]):
             del targets
             LOGGER.info("convert natural populations to HDF5")
             write_natpop_hdf5(path_natpop_hdf5, read_natpop_ascii(path_natpop))
             os.remove(path_natpop)
 
+        @DoitAction
         def action_convert_psi(targets: List[str]):
             del targets
             LOGGER.info("convert psi file to HDF5")
@@ -201,6 +211,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
             if not keep_psi:
                 os.remove(path_psi)
 
+        @DoitAction
         def action_convert_final_wfn(targets: List[str]):
             del targets
             LOGGER.info("compress final wave function")
@@ -209,16 +220,19 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                     fout.write(fin.read().encode())
             os.remove(path_final)
 
+        @DoitAction
         def action_remove_hamiltonian(targets: List[str]):
             del targets
             LOGGER.info("remove Hamiltonian")
             os.remove(path_opr_tmp)
 
+        @DoitAction
         def action_remove_initial_wave_function(targets: List[str]):
             del targets
             LOGGER.info("remove initial wave function")
             os.remove(path_wfn_tmp)
 
+        @DoitAction
         def action_convert_eigenenergies(targets: List[str]):
             del targets
             LOGGER.info("convert eigenenergies to HDF5")
@@ -226,6 +240,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                                      read_eigenenergies_ascii(path_energies))
             os.remove(path_energies)
 
+        @DoitAction
         def action_convert_eigenvectors(targets: List[str]):
             del targets
             LOGGER.info("convert eigenstates to HDF5")

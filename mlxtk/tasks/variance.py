@@ -2,6 +2,7 @@ from typing import List
 
 import numpy
 
+from ..doit_compat import DoitAction
 from ..inout.expval import read_expval, write_expval_hdf5
 
 
@@ -9,6 +10,7 @@ def compute_variance(exp_op: str, exp_op2: str, **kwargs):
     name = kwargs.get("name", exp_op)
 
     def task_compute():
+        @DoitAction
         def action_compute(targets: List[str]):
             del targets
 

@@ -6,6 +6,7 @@ import numpy
 
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
+from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..tools.diagonalize import diagonalize_1b_operator
 from ..tools.wave_function import (add_momentum, load_wave_function,
@@ -26,6 +27,7 @@ def create_mctdhb_wave_function(name,
         number_state = numpy.array(number_state)
 
     def task_write_parameters():
+        @DoitAction
         def action_write_parameters(targets):
             obj = [
                 name, hamiltonian_1b, num_particles, num_spfs,
@@ -46,6 +48,7 @@ def create_mctdhb_wave_function(name,
         path_basis = name + ".wfn_basis.hdf5"
         path_matrix = hamiltonian_1b + ".opr_mat.hdf5"
 
+        @DoitAction
         def action_write_wave_function(targets):
             with h5py.File(path_matrix, "r") as fp:
                 matrix = fp["matrix"][:, :]
@@ -94,6 +97,7 @@ def mctdhb_add_momentum(name: str,
     path_pickle = name + ".wfn_pickle"
 
     def task_write_parameters() -> Dict[str, Any]:
+        @DoitAction
         def action_write_parameters(targets: Iterable[str]):
             del targets
             obj = [name, initial, momentum]
@@ -110,6 +114,7 @@ def mctdhb_add_momentum(name: str,
         path = name + ".wfn.gz"
         initial_path = initial + ".wfn.gz"
 
+        @DoitAction
         def action_add_momentum(targets: Iterable[str]):
             del targets
 

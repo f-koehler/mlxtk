@@ -1,6 +1,7 @@
 import os.path
 from typing import Any, Callable, Dict, Iterable, List
 
+from ..doit_compat import DoitAction
 from ..inout.psi import read_psi_hdf5, write_psi_ascii
 from ..log import get_logger
 
@@ -11,6 +12,7 @@ def extract_psi(name: str) -> List[Callable]:
     path_compressed = name + ".hdf5"
 
     def task_extract() -> Dict[str, Any]:
+        @DoitAction
         def action_extract(targets: Iterable[str]):
             del targets
 
@@ -40,6 +42,7 @@ class ExtractedPsi:
         self.simulation += extract_psi(self.psi)
 
     def __exit__(self, type_, value, tb):
+        @DoitAction
         def action_remove(targets):
             del targets
 

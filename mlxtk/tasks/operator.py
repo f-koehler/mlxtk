@@ -12,6 +12,7 @@ from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
 
+from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
 from ..tools.operator import get_operator_matrix
@@ -125,6 +126,7 @@ def create_operator_impl(name: str, specification: OperatorSpecification
     path_pickle = name + ".opr_pickle"
 
     def task_write_parameters():
+        @DoitAction
         def action_write_parameters(targets):
             obj = [
                 name,
@@ -149,6 +151,7 @@ def create_operator_impl(name: str, specification: OperatorSpecification
         path = name + ".opr.gz"
         path_matrix = name + ".opr_mat.hdf5"
 
+        @DoitAction
         def action_write_operator(targets):
             op = specification.get_operator()
 

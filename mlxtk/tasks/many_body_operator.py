@@ -7,6 +7,7 @@ from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
 
+from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
 
@@ -151,6 +152,7 @@ def create_many_body_operator_impl(name: str,
     path_pickle = name + ".mb_opr_pickle"
 
     def task_write_parameters() -> Dict[str, Any]:
+        @DoitAction
         def action_write_parameters(targets: List[str]):
             obj = [
                 name,
@@ -185,6 +187,7 @@ def create_many_body_operator_impl(name: str,
     def task_write_operator() -> Dict[str, Any]:
         path = name + ".mb_opr.gz"
 
+        @DoitAction
         def action_write_operator(targets: List[str]):
             op = specification.get_operator()
 

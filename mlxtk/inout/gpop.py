@@ -14,7 +14,7 @@ assert List
 
 
 def read_gpop(
-        path: str, dof: Optional[int]=None
+        path: str, dof: Optional[int] = None
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read the one-body densities from a file.
 
@@ -35,7 +35,7 @@ def read_gpop(
 
 
 def read_gpop_ascii(
-        path: str, dof: Optional[int]=None
+        path: str, dof: Optional[int] = None
 ) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
     """Read the one-body densities from a raw ML-X file.
 
@@ -118,10 +118,11 @@ def read_gpop_ascii(
     return (numpy.array(times), grids[dof], densities[dof])
 
 
-def read_gpop_hdf5(path: str, interior_path: str,
-                   dof: Optional[int]=None) -> Union[Tuple[numpy.ndarray, Dict[
-                       int, numpy.ndarray], Dict[int, numpy.ndarray]], Tuple[
-                           numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
+def read_gpop_hdf5(
+        path: str, interior_path: str, dof: Optional[int] = None
+) -> Union[Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
+                                                               ndarray]],
+           Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
     """Read the one-body densities from a HDF5 file.
 
     Args:
@@ -134,8 +135,11 @@ def read_gpop_hdf5(path: str, interior_path: str,
         time = fp["time"][:]
         if dof is not None:
             dof_str = "dof_" + str(dof)
-            return (time, fp[interior_path][dof_str]["grid"][:],
-                    fp[interior_path][dof_str]["density"][:, :], )
+            return (
+                time,
+                fp[interior_path][dof_str]["grid"][:],
+                fp[interior_path][dof_str]["density"][:, :],
+            )
 
         grids = {}
         densities = {}
@@ -148,8 +152,9 @@ def read_gpop_hdf5(path: str, interior_path: str,
 
 def write_gpop_hdf5(
         path: str,
-        data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[
-            int, numpy.ndarray]], ):
+        data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
+                                                                  ndarray]],
+):
     """Write the one-body densities to a HDF5 file.
 
     Args:

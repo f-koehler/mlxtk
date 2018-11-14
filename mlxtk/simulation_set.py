@@ -59,7 +59,8 @@ class SimulationSet:
             self,
             name: str,
             simulations: List[Simulation],
-            working_dir: Optional[str]=None, ):
+            working_dir: Optional[str] = None,
+    ):
         self.name = name
         self.simulations = simulations
         self.working_dir = name if working_dir is None else working_dir
@@ -74,6 +75,7 @@ class SimulationSet:
         subparsers.add_parser("qdel")
         self.argparser_qsub = subparsers.add_parser("qsub")
         self.argparser_run = subparsers.add_parser("run")
+        self.argparser_run_index = subparsers.add_parser("run-index")
 
         sge.add_parser_arguments(self.argparser_qsub)
 
@@ -91,6 +93,8 @@ class SimulationSet:
             type=int,
             default=1,
             help="number of parallel workers")
+        self.argparser_run_index.add_argument(
+            "index", type=int, help="index of the simulation to run")
 
     def create_working_dir(self):
         if not os.path.exists(self.working_dir):
@@ -127,7 +131,14 @@ class SimulationSet:
                     "sqlite3",
                     "--db-file",
                     "doit.sqlite3",
-                ], )
+                ],
+            )
+
+    def run_index(self, args: argparse.Namespace):
+        self.create_working_dir()
+
+        with cwd.WorkingDir(self.working_dir):
+            self.simulations[args.index].main(["run"])
 
     def qdel(self, args: argparse.Namespace):
         del args
@@ -143,11 +154,18 @@ class SimulationSet:
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
 
-        with cwd.WorkingDir(self.working_dir):
-            for simulation in self.simulations:
-                simulation.qsub(args)
+        for index, simulation in enumerate(self.simulations):
+            sge.submit(
+                " ".join([
+                    sys.executable,
+                    os.path.abspath(sys.argv[0]), "run-index",
+                    str(index)
+                ]),
+                args,
+                sge_dir=self.working_dir,
+                job_name=simulation.name)
 
-    def main(self, args: Iterable[str]=sys.argv[1:]):
+    def main(self, args: Iterable[str] = sys.argv[1:]):
 
         args = self.argparser.parse_args(args)
 

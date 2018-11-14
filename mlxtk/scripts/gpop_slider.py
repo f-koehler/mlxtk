@@ -5,5 +5,6 @@ from ..ui.plot_widgets import SingleLinePlot
 def main():
     pass
 
+
 if __name__ == "__main__":
     pass

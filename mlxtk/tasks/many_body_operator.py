@@ -19,7 +19,8 @@ class MBOperatorSpecification:
             grids: Iterable[DVRSpecification],
             coefficients: List[Any],
             terms: List[Any],
-            table: Union[str, List[str]], ):
+            table: Union[str, List[str]],
+    ):
         self.dofs = dofs
         self.grids = grids
         self.coefficients = coefficients
@@ -140,9 +141,8 @@ def create_many_body_operator(name: str, *args,
     if isinstance(args[0], MBOperatorSpecification):
         return create_many_body_operator_impl(name, args[0])
 
-    return create_many_body_operator_impl(name,
-                                          MBOperatorSpecification(
-                                              *args, **kwargs))
+    return create_many_body_operator_impl(
+        name, MBOperatorSpecification(*args, **kwargs))
 
 
 def create_many_body_operator_impl(name: str,

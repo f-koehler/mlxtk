@@ -90,9 +90,7 @@ def create_mctdhb_wave_function(name,
     return [task_write_parameters, task_write_wave_function]
 
 
-def mctdhb_add_momentum(name: str,
-                        initial: str,
-                        momentum: float,
+def mctdhb_add_momentum(name: str, initial: str, momentum: float,
                         grid: DVRSpecification):
     path_pickle = name + ".wfn_pickle"
 

@@ -313,9 +313,7 @@ def relax(name: str, wave_function: str, hamiltonian: str,
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def improved_relax(name: str,
-                   wave_function: str,
-                   hamiltonian: str,
+def improved_relax(name: str, wave_function: str, hamiltonian: str,
                    eig_index: int,
                    **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["improved_relax"] = True
@@ -328,10 +326,7 @@ def improved_relax(name: str,
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def diagonalize(name: str,
-                wave_function: str,
-                hamiltonian: str,
-                states: int,
+def diagonalize(name: str, wave_function: str, hamiltonian: str, states: int,
                 **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["exact_diag"] = True
     kwargs["eig_tot"] = states

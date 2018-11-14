@@ -28,7 +28,8 @@ class OperatorSpecification:
             dofs: List[DVRSpecification],
             coefficients: List[Any],
             terms: List[Any],
-            table: Union[str, List[str]], ):
+            table: Union[str, List[str]],
+    ):
         self.dofs = dofs
         self.coefficients = coefficients
         self.terms = terms
@@ -175,7 +176,8 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                         "grid_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip", )
+                        compression="gzip",
+                    )
                     dset[:] = grid
 
                     weights = dof.get_weights()
@@ -183,7 +185,8 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                         "weights_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip", )
+                        compression="gzip",
+                    )
                     dset[:] = weights
 
         return {

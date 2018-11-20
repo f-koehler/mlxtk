@@ -28,10 +28,11 @@ def main():
         default=1,
         help="degree of freedom for which to plot the density",
     )
+    parser.add_argument("--smooth", action="store_true", default=False)
     args = parser.parse_args()
 
     def init_plot(plot):
-        plot_gpop(plot, args.input_file, args.dof)
+        plot_gpop(plot, args.input_file, args.dof, smooth=args.smooth)
 
     program = SimplePlotProgram("Density of DOF {}".format(args.dof),
                                 init_plot)

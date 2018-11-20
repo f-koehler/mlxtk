@@ -34,13 +34,17 @@ def compute_absolute_gpop_diff(time1, time2, grid1, grid2, gpop1, gpop2):
         interpolate = True
     elif not numpy.allclose(time1, time2):
         LOGGER.warn(
-            "time points are not close to each other (rtol={}, atol={}), interpolate".
-            format(CLOSE_RTOL, CLOSE_ATOL))
+            "time points are not close to each other (rtol={}, atol={}), interpolate".format(
+                CLOSE_RTOL, CLOSE_ATOL
+            )
+        )
         interpolate = True
     elif not numpy.allclose(grid1, grid2):
         LOGGER.warn(
-            "grid points are not close to each other (rtol={}, atol={}), interpolate".
-            format(CLOSE_RTOL, CLOSE_ATOL))
+            "grid points are not close to each other (rtol={}, atol={}), interpolate".format(
+                CLOSE_RTOL, CLOSE_ATOL
+            )
+        )
         interpolate = True
 
     if interpolate:
@@ -48,9 +52,11 @@ def compute_absolute_gpop_diff(time1, time2, grid1, grid2, gpop1, gpop2):
         den2 = numpy.transpose(gpop2)
 
         interp1 = scipy.interpolate.interp2d(
-            time1, grid1, den1, kind=5, copy=False, bounds_error=True)
+            time1, grid1, den1, kind=5, copy=False, bounds_error=True
+        )
         interp2 = scipy.interpolate.interp2d(
-            time2, grid2, den2, kind=5, copy=False, bounds_error=True)
+            time2, grid2, den2, kind=5, copy=False, bounds_error=True
+        )
 
         t_min = max(time1.min(), time2.min())
         t_max = min(time1.max(), time2.max())
@@ -67,13 +73,9 @@ def compute_absolute_gpop_diff(time1, time2, grid1, grid2, gpop1, gpop2):
         return time1.copy(), grid1.copy(), gpop1 - gpop2
 
 
-def compute_relative_gpop_diff(time1,
-                               time2,
-                               grid1,
-                               grid2,
-                               gpop1,
-                               gpop2,
-                               threshold=1e-3):
+def compute_relative_gpop_diff(
+    time1, time2, grid1, grid2, gpop1, gpop2, threshold=1e-3
+):
     """Compute the relative difference between one-body densities :math:`1-\\frac{\\rho_2(x,t)}{\\rho_1(x,t)}`
 
     Only points where :math:`\\rho_1(x,t)` or :math:`\\rho_2(x,t)` excels the threshold are taken into account to avoid divergences.
@@ -101,13 +103,17 @@ def compute_relative_gpop_diff(time1,
         interpolate = True
     elif not numpy.allclose(time1, time2):
         LOGGER.warn(
-            "time points are not close to each other (rtol={}, atol={}), interpolate".
-            format(CLOSE_RTOL, CLOSE_ATOL))
+            "time points are not close to each other (rtol={}, atol={}), interpolate".format(
+                CLOSE_RTOL, CLOSE_ATOL
+            )
+        )
         interpolate = True
     elif not numpy.allclose(grid1, grid2):
         LOGGER.warn(
-            "grid points are not close to each other (rtol={}, atol={}), interpolate".
-            format(CLOSE_RTOL, CLOSE_ATOL))
+            "grid points are not close to each other (rtol={}, atol={}), interpolate".format(
+                CLOSE_RTOL, CLOSE_ATOL
+            )
+        )
         interpolate = True
 
     if interpolate:
@@ -122,51 +128,42 @@ def compute_relative_gpop_diff(time1,
         x = numpy.linspace(x_min, x_max, n_x)
 
         den1 = scipy.interpolate.interp2d(
-            time1,
-            grid1,
-            numpy.transpose(gpop1),
-            kind=5,
-            copy=False,
-            bounds_error=True)(t, x)
+            time1, grid1, numpy.transpose(gpop1), kind=5, copy=False, bounds_error=True
+        )(t, x)
         den2 = scipy.interpolate.interp2d(
-            time2,
-            grid2,
-            numpy.transpose(gpop2),
-            kind=5,
-            copy=False,
-            bounds_error=True)(t, x)
+            time2, grid2, numpy.transpose(gpop2), kind=5, copy=False, bounds_error=True
+        )(t, x)
 
         mask = numpy.logical_and(den1 > threshold, den2 > threshold)
         values = numpy.zeros_like(den1)
-        values[mask] = 1. - den2[mask] / den1[mask]
+        values[mask] = 1.0 - den2[mask] / den1[mask]
         return t, x, values
     else:
-        mask = numpy.logical_and(gpop1 > threshold, gpop2 > threshold)
+        mask = numpy.logical_and(gpop1 / gpop1.max() > threshold, gpop2 / gpop2.max() > threshold)
         values = numpy.zeros_like(gpop1)
-        # values[mask] = 1. - gpop2[mask] / gpop1[mask]
-        values[mask] = (gpop1[mask] - gpop2[mask]) / (
-            numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask]))
+        values[mask] = 1. - gpop2[mask] / gpop1[mask]
+        # values[mask] = (gpop1[mask] - gpop2[mask]) / (
+        #     numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask])
+        # )
         return time1.copy(), grid1.copy(), values
 
 
 def compute_integrated_absolute_gpop_diff(time, grid, weights, gpop1, gpop2):
-    _, _, diffs = compute_absolute_gpop_diff(time, time, grid, grid, gpop1,
-                                             gpop2)
-    return time.copy(), numpy.sum(numpy.abs(diffs * weights), axis=1) / 2.
+    _, _, diffs = compute_absolute_gpop_diff(time, time, grid, grid, gpop1, gpop2)
+    return time.copy(), numpy.sum(numpy.abs(diffs * weights), axis=1) / 2.0
 
 
-def compute_integrated_relative_gpop_diff(time,
-                                          grid,
-                                          weights,
-                                          gpop1,
-                                          gpop2,
-                                          threshold=1e-3):
+def compute_integrated_relative_gpop_diff(
+    time, grid, weights, gpop1, gpop2, threshold=1e-3
+):
     # _, _, diffs = compute_relative_gpop_diff(time, time, grid, grid, gpop1,
     #                                          gpop2, threshold)
     # return time.copy(), numpy.sum(diffs, axis=1)
-    mask = numpy.logical_and(gpop1 > threshold, gpop2 > threshold)
+    mask = numpy.logical_and(
+        gpop1 / gpop1.max() > threshold, gpop2 / gpop2.max() > threshold
+    )
     diff = numpy.zeros_like(gpop1)
     # diff[mask] = numpy.abs(gpop1[mask] - gpop2[mask]) / (
     #     numpy.abs(gpop1[mask]) + numpy.abs(gpop2[mask]))
-    diff[mask] = numpy.abs(1. - gpop2[mask] / gpop1[mask])
+    diff[mask] = numpy.abs(1.0 - gpop2[mask] / gpop1[mask])
     return time.copy(), numpy.sum(weights * diff, axis=1)

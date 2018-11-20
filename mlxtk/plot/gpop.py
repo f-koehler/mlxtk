@@ -6,13 +6,14 @@ from ..tools.gpop_diff import compute_absolute_gpop_diff, compute_relative_gpop_
 from .. import log
 
 
-def plot_gpop(plot, path, dof):
+def plot_gpop(plot, path, dof, **kwargs):
     times, grids, densities = read_gpop(path)
     density = numpy.transpose(densities[dof])
     t, x = numpy.meshgrid(times, grids[dof])
-    heatmap = plot.axes.pcolormesh(t, x, density, cmap="gnuplot")
+    heatmap = plot.axes.pcolormesh(t, x, density, cmap="gnuplot", shading="gouraud" if kwargs.get("smooth", False) else "flat")
     plot.axes.set_xlabel("$t$")
     plot.axes.set_ylabel("$x$")
+
     cbar = plot.figure.colorbar(heatmap)
     cbar.ax.set_ylabel(r"$\rho_1(x)$")
 

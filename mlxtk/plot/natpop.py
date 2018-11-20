@@ -10,7 +10,7 @@ def plot_natpop(plot, path):
     for column in data.columns[1:]:
         plot.axes.plot(data["time"], data[column] / 1000.)
     plot.axes.set_xlabel("$t$")
-    plot.axes.set_ylabel(r"$\lambda_i$")
+    plot.axes.set_ylabel(r"$\lambda_i(t)$")
 
 
 def plot_natpop_diff(plot, path1, path2, relative=False, threshold=1e-2):

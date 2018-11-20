@@ -29,6 +29,7 @@ def main():
 
     def init_plot(plot):
         plot_natpop(plot, args.input_file)
+        plot.figure.set_tight_layout(True)
 
     program = SimplePlotProgram("Natural Populations", init_plot)
     program.main(args)

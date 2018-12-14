@@ -132,22 +132,20 @@ class MBOperatorSpecification:
         return op
 
 
-def create_many_body_operator(name: str, *args,
-                              **kwargs) -> List[Callable[[], Dict[str, Any]]]:
+def create_mb_operator(name: str, *args,
+                       **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     if "specification" in kwargs:
-        return create_many_body_operator_impl(name, kwargs["specification"])
+        return create_mb_operator_impl(name, kwargs["specification"])
 
     if isinstance(args[0], MBOperatorSpecification):
-        return create_many_body_operator_impl(name, args[0])
+        return create_mb_operator_impl(name, args[0])
 
-    return create_many_body_operator_impl(name,
-                                          MBOperatorSpecification(
-                                              *args, **kwargs))
+    return create_mb_operator_impl(name,
+                                   MBOperatorSpecification(*args, **kwargs))
 
 
-def create_many_body_operator_impl(name: str,
-                                   specification: MBOperatorSpecification
-                                   ) -> List[Callable[[], Dict[str, Any]]]:
+def create_mb_operator_impl(name: str, specification: MBOperatorSpecification
+                            ) -> List[Callable[[], Dict[str, Any]]]:
 
     path_pickle = name + ".mb_opr_pickle"
 

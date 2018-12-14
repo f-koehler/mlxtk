@@ -37,8 +37,7 @@ def create_mctdhb_wave_function(name,
                 pickle.dump(obj, fp)
 
         return {
-            "name":
-            "create_mctdhb_wave_function:{}:write_parameters".format(name),
+            "name": "wfn_mctdhb:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
@@ -80,8 +79,7 @@ def create_mctdhb_wave_function(name,
             save_wave_function(targets[0], wfn)
 
         return {
-            "name":
-            "create_mctdhb_wave_function:{}:write_wave_function".format(name),
+            "name": "wfn_mctdhb:{}:create".format(name),
             "actions": [action_write_wave_function],
             "targets": [path, path_basis],
             "file_dep": [path_pickle, path_matrix],
@@ -105,7 +103,7 @@ def mctdhb_add_momentum(name: str,
                 pickle.dump(obj, fp)
 
         return {
-            "name": "mctdhb_add_momentum:{}:write_parameters".format(name),
+            "name": "wfn_mctdhb_add_momentum:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
@@ -126,7 +124,7 @@ def mctdhb_add_momentum(name: str,
             save_wave_function(path, wfn)
 
         return {
-            "name": "mctdhb_add_momentum:{}:add_momentum".format(name),
+            "name": "wfn_mctdhb_add_momentum:{}:add_momentum".format(name),
             "actions": [action_add_momentum],
             "targets": [path],
             "file_dep": [path_pickle],

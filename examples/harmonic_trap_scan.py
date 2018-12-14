@@ -25,13 +25,9 @@ if __name__ == "__main__":
         sim += mlxtk.tasks.create_many_body_operator(
             "com", system.get_center_of_mass_operator())
         sim += mlxtk.tasks.create_many_body_operator(
-            "com2", system.get_center_of_mass_operator_squared())
+            "com_2", system.get_center_of_mass_operator_squared())
         sim += mlxtk.tasks.create_mctdhb_wave_function(
             "initial", "hamiltonian_1b", parameters.N, parameters.m)
-        sim += mlxtk.tasks.create_many_body_operator(
-            "com", system_quenched.get_center_of_mass_operator())
-        sim += mlxtk.tasks.create_many_body_operator(
-            "com_2", system_quenched.get_center_of_mass_operator_squared())
         sim += mlxtk.tasks.improved_relax(
             "gs_relax", "initial", "hamiltonian", "1", tfinal=1000.0, dt=0.01)
         sim += mlxtk.tasks.propagate(
@@ -42,13 +38,9 @@ if __name__ == "__main__":
             dt=0.05,
             psi=True,
             keep_psi=True, )
-        with mlxtk.tasks.ExtractedPsi(sim, "propagate/psi"):
-            sim += mlxtk.tasks.compute_expectation_value(
-                "propagate/psi", "com")
-            sim += mlxtk.tasks.compute_expectation_value(
-                "propagate/psi", "com_2")
-            sim += mlxtk.tasks.compute_variance("propagate/com",
-                                                "propagate/com_2")
+        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
+        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
+        sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
 
         return sim
 

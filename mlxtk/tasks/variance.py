@@ -3,7 +3,7 @@ from typing import List
 import numpy
 
 from ..doit_compat import DoitAction
-from ..inout.expval import read_expval, write_expval_hdf5
+from ..inout.expval import read_expval_ascii, write_expval_ascii
 
 
 def compute_variance(exp_op: str, exp_op2: str, **kwargs):
@@ -14,19 +14,19 @@ def compute_variance(exp_op: str, exp_op2: str, **kwargs):
         def action_compute(targets: List[str]):
             del targets
 
-            t1, exp = read_expval(exp_op + ".exp.hdf5")
-            t2, exp2 = read_expval(exp_op2 + ".exp.hdf5")
+            t1, exp = read_expval_ascii(exp_op + ".exp")
+            t2, exp2 = read_expval_ascii(exp_op2 + ".exp")
 
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")
 
-            write_expval_hdf5(name + ".var.hdf5", (t1, exp2 - (exp**2)))
+            write_expval_ascii(name + ".var", (t1, exp2 - (exp**2)))
 
         return {
             "name": "variance:{}:compute".format(name),
             "actions": [action_compute],
-            "targets": [name + ".var.hdf5"],
-            "file_dep": [exp_op + ".exp.hdf5", exp_op2 + ".exp.hdf5"],
+            "targets": [name + ".var"],
+            "file_dep": [exp_op + ".exp", exp_op2 + ".exp"],
         }
 
     return [task_compute]

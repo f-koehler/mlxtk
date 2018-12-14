@@ -36,8 +36,7 @@ class SingleSpeciesSystem(ABC):
             (self.grid_1b, ),
             {"kinetic_coeff": -0.5},
             {"kinetic": self.grid_1b.get_d2()},
-            "kinetic_coeff | 1 kinetic",
-        )
+            "kinetic_coeff | 1 kinetic", )
 
     def get_kinetic_operator(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
@@ -50,5 +49,4 @@ class SingleSpeciesSystem(ABC):
                     "fft": self.grid.is_fft()
                 }
             },
-            "kinetic_coeff | 1 kinetic",
-        )
+            "kinetic_coeff | 1 kinetic", )

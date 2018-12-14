@@ -40,12 +40,10 @@ if __name__ == "__main__":
         tfinal=5.0,
         dt=0.05,
         psi=True,
-        keep_psi=True,
-    )
+        keep_psi=True, )
 
-    with mlxtk.tasks.ExtractedPsi(sim, "propagate/psi"):
-        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
-        sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
-        sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
+    sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
+    sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
+    sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
 
     sim.main()

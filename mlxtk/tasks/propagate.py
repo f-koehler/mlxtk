@@ -2,6 +2,7 @@ import copy
 import gzip
 import os
 import pickle
+import shutil
 import subprocess
 from typing import Any, Callable, Dict, List
 
@@ -139,21 +140,14 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
         path_output = os.path.join(name, "output")
         path_gpop = os.path.join(name, "gpop")
         path_natpop = os.path.join(name, "natpop")
-        path_final = os.path.join(name, "restart")
-        path_final_gz = os.path.join(name, "final.wfn.gz")
+        path_restart = os.path.join(name, "restart")
+        path_final = os.path.join(name, "final.wfn")
         path_psi = os.path.join(name, "psi")
         path_energies = os.path.join(name, "eigenenergies")
         path_eigenvectors = os.path.join(name, "eigenvectors")
 
-        path_output_hdf5 = path_output + ".hdf5"
-        path_gpop_hdf5 = path_gpop + ".hdf5"
-        path_natpop_hdf5 = path_natpop + ".hdf5"
-        path_psi_hdf5 = os.path.join(name, "psi.hdf5")
-        path_energies_hdf5 = path_energies + ".hdf5"
-        path_eigenvectors_hdf5 = path_eigenvectors + ".hdf5"
-
-        path_wfn = wave_function + ".wfn.gz"
-        path_opr = hamiltonian + ".mb_opr.gz"
+        path_wfn = wave_function + ".wfn"
+        path_opr = hamiltonian + ".mb_opr"
         path_wfn_tmp = os.path.join(name, "initial.wfn")
         path_opr_tmp = os.path.join(name, "hamiltonian.mb_opr")
 
@@ -168,17 +162,13 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
         def action_copy_initial_wave_function(targets: List[str]):
             del targets
             LOGGER.info("copy initial wave function")
-            with gzip.open(path_wfn, "rb") as fp_in:
-                with open(path_wfn_tmp, "w") as fp_out:
-                    fp_out.write(fp_in.read().decode())
+            shutil.copy2(path_wfn, path_wfn_tmp)
 
         @DoitAction
         def action_copy_hamiltonian(targets: List[str]):
             del targets
             LOGGER.info("copy Hamiltonian")
-            with gzip.open(path_opr, "rb") as fp_in:
-                with open(path_opr_tmp, "w") as fp_out:
-                    fp_out.write(fp_in.read().decode())
+            shutil.copy2(path_opr, path_opr_tmp)
 
         @DoitAction
         def action_run(targets: List[str]):
@@ -190,44 +180,6 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                 LOGGER.info("command: %s", " ".join(cmd))
                 subprocess.run(cmd, env=env)
-
-        @DoitAction
-        def action_convert_output(targets: List[str]):
-            del targets
-            LOGGER.info("convert ouput to HDF5")
-            write_output_hdf5(path_output_hdf5, read_output_ascii(path_output))
-            os.remove(path_output)
-
-        @DoitAction
-        def action_convert_gpop(targets: List[str]):
-            del targets
-            LOGGER.info("convert one-body densities to HDF5")
-            write_gpop_hdf5(path_gpop_hdf5, read_gpop_ascii(path_gpop))
-            os.remove(path_gpop)
-
-        @DoitAction
-        def action_convert_natpop(targets: List[str]):
-            del targets
-            LOGGER.info("convert natural populations to HDF5")
-            write_natpop_hdf5(path_natpop_hdf5, read_natpop_ascii(path_natpop))
-            os.remove(path_natpop)
-
-        @DoitAction
-        def action_convert_psi(targets: List[str]):
-            del targets
-            LOGGER.info("convert psi file to HDF5")
-            write_psi_hdf5(path_psi_hdf5, read_psi_ascii(path_psi))
-            if not keep_psi:
-                os.remove(path_psi)
-
-        @DoitAction
-        def action_convert_final_wfn(targets: List[str]):
-            del targets
-            LOGGER.info("compress final wave function")
-            with gzip.open(path_final_gz, "wb") as fout:
-                with open(path_final, "r") as fin:
-                    fout.write(fin.read().encode())
-            os.remove(path_final)
 
         @DoitAction
         def action_remove_hamiltonian(targets: List[str]):
@@ -242,23 +194,14 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
             os.remove(path_wfn_tmp)
 
         @DoitAction
-        def action_convert_eigenenergies(targets: List[str]):
+        def action_move_final_wave_function(targets: List[str]):
             del targets
-            LOGGER.info("convert eigenenergies to HDF5")
-            write_eigenenergies_hdf5(path_energies_hdf5,
-                                     read_eigenenergies_ascii(path_energies))
-            os.remove(path_energies)
-
-        @DoitAction
-        def action_convert_eigenvectors(targets: List[str]):
-            del targets
-            LOGGER.info("convert eigenstates to HDF5")
-            write_psi_hdf5(path_eigenvectors_hdf5,
-                           read_psi_ascii(path_eigenvectors))
-            os.remove(path_eigenvectors)
+            LOGGER.info("move final wave function %s -> %s", path_restart,
+                        path_final)
+            shutil.move(path_restart, path_final)
 
         if flags["exact_diag"]:
-            targets = [path_energies_hdf5, path_eigenvectors_hdf5]
+            targets = [path_energies, path_eigenvectors]
             actions = [
                 action_create_dir,
                 action_copy_initial_wave_function,
@@ -266,18 +209,16 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 action_propagate,
                 action_remove_hamiltonian,
                 action_remove_initial_wave_function,
-                action_convert_eigenenergies,
-                action_convert_eigenvectors,
             ]
         else:
             targets = [
-                path_output_hdf5,
-                path_gpop_hdf5,
-                path_natpop_hdf5,
-                path_final_gz,
+                path_output,
+                path_gpop,
+                path_natpop,
+                path_final,
             ]
             if flags["psi"]:
-                targets.append(path_psi_hdf5)
+                targets.append(path_psi)
 
             actions = [
                 action_create_dir,
@@ -286,13 +227,8 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 action_run,
                 action_remove_hamiltonian,
                 action_remove_initial_wave_function,
-                action_convert_output,
-                action_convert_gpop,
-                action_convert_natpop,
-                action_convert_final_wfn,
+                action_move_final_wave_function,
             ]
-            if flags["psi"]:
-                actions.append(action_convert_psi)
 
         return {
             "name": "{}:{}:run".format(basename, name),
@@ -313,7 +249,9 @@ def relax(name: str, wave_function: str, hamiltonian: str,
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def improved_relax(name: str, wave_function: str, hamiltonian: str,
+def improved_relax(name: str,
+                   wave_function: str,
+                   hamiltonian: str,
                    eig_index: int,
                    **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["improved_relax"] = True
@@ -326,7 +264,10 @@ def improved_relax(name: str, wave_function: str, hamiltonian: str,
     return propagate(name, wave_function, hamiltonian, **kwargs)
 
 
-def diagonalize(name: str, wave_function: str, hamiltonian: str, states: int,
+def diagonalize(name: str,
+                wave_function: str,
+                hamiltonian: str,
+                states: int,
                 **kwargs) -> List[Callable[[], Dict[str, Any]]]:
     kwargs["exact_diag"] = True
     kwargs["eig_tot"] = states

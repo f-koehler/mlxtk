@@ -9,11 +9,9 @@ import pandas
 from . import tools
 
 
-def read_natpop(
-        path: str, node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.
-                                     ndarray], Dict[int, Dict[int, numpy.
-                                                              ndarray]]]]:
+def read_natpop(path: str, node: int=0,
+                dof: int=0) -> Tuple[numpy.ndarray, Union[Dict[
+                    int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_natpop_hdf5(path, interior_path, node, dof)
@@ -22,10 +20,8 @@ def read_natpop(
 
 
 def read_natpop_ascii(
-        path: str, node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.
-                                     ndarray], Dict[int, Dict[int, numpy.
-                                                              ndarray]]]]:
+        path: str, node: int=0, dof: int=0) -> Tuple[numpy.ndarray, Union[Dict[
+            int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]]:
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
     re_node_info = re.compile(r"^node:\s+(\d+)\s+layer:\s+(\d+)$")
@@ -109,24 +105,23 @@ def read_natpop_ascii(
 
 
 def read_natpop_hdf5(
-        path: str, interior_path: str = "/", node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[numpy.ndarray, Dict[int, numpy.ndarray],
-                                Dict[int, Dict[int, numpy.ndarray]]], ]:
+        path: str, interior_path: str="/", node: int=0,
+        dof: int=0) -> Tuple[numpy.ndarray, Union[numpy.ndarray, Dict[
+            int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]], ]:
     with h5py.File(path, "r") as fp:
         time = fp[interior_path]["time"][:]
 
         if node:
             if dof:
-                return (
-                    time,
-                    fp[interior_path]["node_" + str(node)]["dof_" +
-                                                           str(dof)][:, :],
-                )
+                return (time,
+                        fp[interior_path]["node_"
+                                          + str(node)]["dof_"
+                                                       + str(dof)][:, :], )
             node_str = "node_" + str(node)
             data = {}
             for entry in fp[interior_path][node_str]:
-                data[int(entry.replace(
-                    "dof_", ""))] = fp[interior_path][node_str][entry][:, :]
+                data[int(entry.replace("dof_", ""))] = fp[interior_path][
+                    node_str][entry][:, :]
             return (time, data)
 
         if dof is not None:
@@ -157,6 +152,5 @@ def write_natpop_hdf5(
                     "dof_" + str(dof),
                     data[node][dof].shape,
                     dtype=numpy.float64,
-                    compression="gzip",
-                )
+                    compression="gzip", )
                 dset[:, :] = data[node][dof][:, :]

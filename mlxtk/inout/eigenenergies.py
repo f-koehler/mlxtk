@@ -22,7 +22,7 @@ def read_eigenenergies_ascii(path: str) -> numpy.ndarray:
 
 
 def read_eigenenergies_hdf5(path: str,
-                            interior_path: str = "/") -> numpy.ndarray:
+                            interior_path: str="/") -> numpy.ndarray:
     with h5py.File(path, "r") as fp:
         return fp[interior_path]["eigenenergies"][:]
 

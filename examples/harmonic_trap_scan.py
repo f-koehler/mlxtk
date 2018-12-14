@@ -41,8 +41,7 @@ if __name__ == "__main__":
             tfinal=5.0,
             dt=0.05,
             psi=True,
-            keep_psi=True,
-        )
+            keep_psi=True, )
         with mlxtk.tasks.ExtractedPsi(sim, "propagate/psi"):
             sim += mlxtk.tasks.compute_expectation_value(
                 "propagate/psi", "com")
@@ -56,6 +55,5 @@ if __name__ == "__main__":
     scan = mlxtk.ParameterScan(
         "harmonic_trap_scan",
         create_simulation,
-        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 5]}),
-    )
+        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 5]}), )
     scan.main()

@@ -28,8 +28,7 @@ class OperatorSpecification:
             dofs: List[DVRSpecification],
             coefficients: List[Any],
             terms: List[Any],
-            table: Union[str, List[str]],
-    ):
+            table: Union[str, List[str]], ):
         self.dofs = dofs
         self.coefficients = coefficients
         self.terms = terms
@@ -143,23 +142,21 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                 pickle.dump(obj, fp)
 
         return {
-            "name": "create_operator:{}:write_parameters".format(name),
+            "name": "operator:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
 
     def task_write_operator():
-        path = name + ".opr.gz"
+        path = name + ".opr"
         path_matrix = name + ".opr_mat.hdf5"
 
         @DoitAction
         def action_write_operator(targets):
             op = specification.get_operator()
 
-            with gzip.open(targets[0], "wb") as fp:
-                with io.StringIO() as sio:
-                    op.createOperatorFile(sio)
-                    fp.write(sio.getvalue().encode())
+            with open(path, "w") as fp:
+                op.createOperatorFile(fp)
 
             matrix = get_operator_matrix(op)
             with h5py.File(path_matrix, "w") as fp:
@@ -176,8 +173,7 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                         "grid_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip",
-                    )
+                        compression="gzip", )
                     dset[:] = grid
 
                     weights = dof.get_weights()
@@ -185,12 +181,11 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                         "weights_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip",
-                    )
+                        compression="gzip", )
                     dset[:] = weights
 
         return {
-            "name": "create_operator:{}:write_operator".format(name),
+            "name": "operator:{}:create".format(name),
             "actions": [action_write_operator],
             "targets": [path, path_matrix],
             "file_dep": [path_pickle],

@@ -12,28 +12,23 @@ try:
     logging.addLevelName(
         logging.INFO,
         colorama.Fore.GREEN + logging.getLevelName(logging.INFO) +
-        colorama.Style.RESET_ALL,
-    )
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.DEBUG,
         colorama.Fore.WHITE + logging.getLevelName(logging.DEBUG) +
-        colorama.Style.RESET_ALL,
-    )
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.WARNING,
         colorama.Fore.YELLOW + logging.getLevelName(logging.WARNING) +
-        colorama.Style.RESET_ALL,
-    )
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.ERROR,
         colorama.Fore.RED + logging.getLevelName(logging.ERROR) +
-        colorama.Style.RESET_ALL,
-    )
+        colorama.Style.RESET_ALL, )
     logging.addLevelName(
         logging.CRITICAL,
         colorama.Fore.RED + logging.getLevelName(logging.ERROR) +
-        colorama.Style.RESET_ALL,
-    )
+        colorama.Style.RESET_ALL, )
 except ImportError:
     pass
 
@@ -68,7 +63,7 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def open_log_file(path: str, mode: str = "a"):
+def open_log_file(path: str, mode: str="a"):
     """Open the log file
 
     Args:

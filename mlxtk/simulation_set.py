@@ -59,8 +59,7 @@ class SimulationSet:
             self,
             name: str,
             simulations: List[Simulation],
-            working_dir: Optional[str] = None,
-    ):
+            working_dir: Optional[str]=None, ):
         self.name = name
         self.simulations = simulations
         self.working_dir = name if working_dir is None else working_dir
@@ -131,8 +130,7 @@ class SimulationSet:
                     "sqlite3",
                     "--db-file",
                     "doit.sqlite3",
-                ],
-            )
+                ], )
 
     def run_index(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -165,7 +163,7 @@ class SimulationSet:
                 sge_dir=self.working_dir,
                 job_name=simulation.name)
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, args: Iterable[str]=sys.argv[1:]):
 
         args = self.argparser.parse_args(args)
 

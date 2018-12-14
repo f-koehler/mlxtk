@@ -43,8 +43,8 @@ class DoitAction:
 
         if isinstance(ret, dict):
             ret[self.func.__name__] = ret.get(self.func.__name__, {})
-            ret[self.func.
-                __name__]["monotonic_time"] = timer.get_monotonic_time()
+            ret[self.func.__name__][
+                "monotonic_time"] = timer.get_monotonic_time()
             ret[self.func.__name__]["perf_time"] = timer.get_perf_time()
             ret[self.func.__name__]["process_time"] = timer.get_process_time()
             return ret

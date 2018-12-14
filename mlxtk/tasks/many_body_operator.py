@@ -19,8 +19,7 @@ class MBOperatorSpecification:
             grids: Iterable[DVRSpecification],
             coefficients: List[Any],
             terms: List[Any],
-            table: Union[str, List[str]],
-    ):
+            table: Union[str, List[str]], ):
         self.dofs = dofs
         self.grids = grids
         self.coefficients = coefficients
@@ -141,8 +140,9 @@ def create_many_body_operator(name: str, *args,
     if isinstance(args[0], MBOperatorSpecification):
         return create_many_body_operator_impl(name, args[0])
 
-    return create_many_body_operator_impl(
-        name, MBOperatorSpecification(*args, **kwargs))
+    return create_many_body_operator_impl(name,
+                                          MBOperatorSpecification(
+                                              *args, **kwargs))
 
 
 def create_many_body_operator_impl(name: str,
@@ -178,26 +178,21 @@ def create_many_body_operator_impl(name: str,
                 pickle.dump(obj, fp)
 
         return {
-            "name":
-            "create_many_body_operator:{}:write_parameters".format(name),
+            "name": "mb_operator:{}:write_parameters".format(name),
             "actions": [action_write_parameters],
             "targets": [path_pickle],
         }
 
     def task_write_operator() -> Dict[str, Any]:
-        path = name + ".mb_opr.gz"
+        path = name + ".mb_opr"
 
         @DoitAction
         def action_write_operator(targets: List[str]):
             op = specification.get_operator()
-
-            with gzip.open(targets[0], "wb") as fp:
-                with io.StringIO() as sio:
-                    op.createOperatorFileb(sio)
-                    fp.write(sio.getvalue().encode())
+            op.createOperatorFileb(path)
 
         return {
-            "name": "create_many_body_operator:{}:write_operator".format(name),
+            "name": "mb_operator:{}:create".format(name),
             "actions": [action_write_operator],
             "targets": [path],
             "file_dep": [path_pickle],

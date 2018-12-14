@@ -13,17 +13,14 @@ class Parameters:
     All parameters are exposed as member variables of this class.
     """
 
-    def __init__(self, params: List[Dict[str, Any]] = []):
+    def __init__(self, params: List[Dict[str, Any]]=[]):
         self.names = []  # type: List[str]
         self.docs = {}  # type: Dict[str, str]
 
         for param in params:
             Parameters.__iadd__(self, param)
 
-    def add_parameter(self,
-                      name: str,
-                      value: Optional[Any] = None,
-                      doc: str = ""):
+    def add_parameter(self, name: str, value: Optional[Any]=None, doc: str=""):
         """Add a new parameter
 
         Args:
@@ -51,7 +48,8 @@ class Parameters:
     def copy(self):
         p = Parameters()
         for name in self.names:
-            p.add_parameter(name, copy.deepcopy(self.__getitem__(name)),
+            p.add_parameter(name,
+                            copy.deepcopy(self.__getitem__(name)),
                             self.docs[name])
         return p
 
@@ -114,7 +112,7 @@ def generate_all(parameters: Parameters,
         values[name] = values.get(name, [parameters[name]])
 
     for combination in itertools.product(
-            *[values[name] for name in parameters.names]):
+            * [values[name] for name in parameters.names]):
         p = copy.deepcopy(parameters)
         p.set_values(combination)
         yield p

@@ -56,11 +56,11 @@ def find_degeneracies(energies, tolerance=1e-8):
     Returns:
         list: A list of tuples containing the indices of equal eigenvalues.
     """
-    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) +
-                 0.5) * tolerance
+    converted = (numpy.floor(energies / tolerance).astype(numpy.int64) + 0.5
+                 ) * tolerance
     unique = (
-        numpy.unique(numpy.floor(energies / tolerance).astype(
-            numpy.int64)) + 0.5) * tolerance
+        numpy.unique(numpy.floor(energies / tolerance).astype(numpy.int64)) +
+        0.5) * tolerance
     degeneracies = []
     for energy in unique:
         degeneracies.append(list(numpy.nonzero(converted == energy)[0]))

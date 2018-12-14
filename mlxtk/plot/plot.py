@@ -8,8 +8,7 @@ def add_argparse_2d_args(parser):
         "--no-logx",
         action="store_false",
         dest="logx",
-        help="do not use log scale on the x-axis",
-    )
+        help="do not use log scale on the x-axis", )
     parser.add_argument(
         "--logy",
         action="store_true",
@@ -19,8 +18,7 @@ def add_argparse_2d_args(parser):
         "--no-logy",
         action="store_false",
         dest="logy",
-        help="do not use log scale on the y-axis",
-    )
+        help="do not use log scale on the y-axis", )
     parser.add_argument("--xmin", type=float, help="minimum for the x axis")
     parser.add_argument("--xmax", type=float, help="maximum for the x axis")
     parser.add_argument("--ymin", type=float, help="minimum for the y axis")

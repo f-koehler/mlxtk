@@ -11,7 +11,7 @@ LOGGER = log.get_logger(__name__)
 
 
 class Simulation:
-    def __init__(self, name: str, working_dir: Optional[str] = None):
+    def __init__(self, name: str, working_dir: Optional[str]=None):
         self.name = name
         self.working_dir = name if working_dir is None else working_dir
         self.task_generators = []
@@ -73,8 +73,7 @@ class Simulation:
                         "sqlite3",
                         "--db-file",
                         "doit.sqlite3",
-                    ],
-                )
+                    ], )
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -108,10 +107,9 @@ class Simulation:
                     "--db-file",
                     "doit.sqlite3",
                     args.name,
-                ],
-            )
+                ], )
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, args: Iterable[str]=sys.argv[1:]):
         parser = argparse.ArgumentParser(
             description="This is a mlxtk simulation")
         subparsers = parser.add_subparsers(dest="subcommand")

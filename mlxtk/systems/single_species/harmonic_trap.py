@@ -20,8 +20,7 @@ class HarmonicTrap(SingleSpeciesSystem):
             (self.grid_1b, ),
             {"potential_coeff": 0.5 * (self.parameters.omega**2)},
             {"potential": self.grid_1b.get_x()**2},
-            "potential_coeff | 1 potential",
-        )
+            "potential_coeff | 1 potential", )
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b(
@@ -33,8 +32,7 @@ class HarmonicTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"potential_coeff": 0.5 * (self.parameters.omega**2)},
             {"potential": self.grid.get_x()**2},
-            "potential_coeff | 1 potential",
-        )
+            "potential_coeff | 1 potential", )
 
     def get_interaction_operator(self) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
@@ -42,8 +40,7 @@ class HarmonicTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"interaction_coeff": self.parameters.g},
             {"interaction": self.grid.get_delta()},
-            "interaction_coeff | {1:1} interaction",
-        )
+            "interaction_coeff | {1:1} interaction", )
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
@@ -59,8 +56,7 @@ class HarmonicTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"center_of_mass_coeff": 1.0},
             {"center_of_mass": self.grid.get_x()},
-            "center_of_mass_coeff | 1 center_of_mass",
-        )
+            "center_of_mass_coeff | 1 center_of_mass", )
 
     def get_center_of_mass_operator_squared(
             self) -> tasks.MBOperatorSpecification:
@@ -78,5 +74,4 @@ class HarmonicTrap(SingleSpeciesSystem):
             [
                 "center_of_mass_squared_coeff_1 | 1 center_of_mass_squared_x",
                 "center_of_mass_squared_coeff_2 |1 center_of_mass_squared_x^2",
-            ],
-        )
+            ], )

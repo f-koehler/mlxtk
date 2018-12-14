@@ -28,8 +28,7 @@ class GaussianTrap(SingleSpeciesSystem):
             (self.grid_1b, ),
             {"potential_coeff": -self.parameters.V0},
             {"potential": gaussian(self.grid.get_x(), self.grid.get_x())},
-            ["potential_coeff | 1 potential"],
-        )
+            ["potential_coeff | 1 potential"], )
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b(
@@ -41,8 +40,7 @@ class GaussianTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"potential_coeff": -self.parameters.V0},
             {"potential": gaussian(self.grid.get_x(), self.parameters.x0)},
-            "potential_coeff | 1 potential",
-        )
+            "potential_coeff | 1 potential", )
 
     def get_interaction_operator(self) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
@@ -50,8 +48,7 @@ class GaussianTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"interaction_coeff": self.parameters.g},
             {"interaction": self.grid.get_delta()},
-            "interaction_coeff | {1:1} interaction",
-        )
+            "interaction_coeff | {1:1} interaction", )
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:

@@ -118,8 +118,7 @@ class GUI(QObject):
                 numpy.real(self.spfs[index]),
                 xlabel="$x$",
                 ylabel=r"$\mathrm{Re}\left[\varphi_{" + str(index) +
-                r"}(x)\right]$",
-            )
+                r"}(x)\right]$", )
         replace_widget(self.plot_real, self.cache_plot_real[index])
         self.plot_real = self.cache_plot_real[index]
 
@@ -130,8 +129,7 @@ class GUI(QObject):
                 numpy.imag(self.spfs[index]),
                 xlabel="$x$",
                 ylabel=r"$\mathrm{Im}\left[\varphi_{" + str(index) +
-                r"}(x)\right]$",
-            )
+                r"}(x)\right]$", )
         replace_widget(self.plot_imag, self.cache_plot_imag[index])
         self.plot_imag = self.cache_plot_imag[index]
 
@@ -175,15 +173,13 @@ def main():
         dest="min_",
         type=int,
         default=0,
-        help="minimum index of the eigenstate",
-    )
+        help="minimum index of the eigenstate", )
     parser.add_argument(
         "--max",
         dest="max_",
         type=int,
         default=None,
-        help="maximum index of the eigenstate",
-    )
+        help="maximum index of the eigenstate", )
 
     args = parser.parse_args()
 

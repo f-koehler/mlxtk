@@ -18,11 +18,9 @@ def read_expval(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(
         path, delim_whitespace=True, names=["time", "real", "imag"])
-    return (
-        numpy.array(df["time"].values, dtype=numpy.float64),
-        numpy.array(df["real"].values, dtype=numpy.complex128) +
-        1j * numpy.array(df["imag"].values, dtype=numpy.complex128),
-    )
+    return (numpy.array(df["time"].values, dtype=numpy.float64),
+            numpy.array(df["real"].values, dtype=numpy.complex128) +
+            1j * numpy.array(df["imag"].values, dtype=numpy.complex128), )
 
 
 def read_expval_hdf5(
@@ -43,3 +41,11 @@ def write_expval_hdf5(path: str, data: Tuple[numpy.ndarray, numpy.ndarray]):
             dtype=numpy.complex128,
             compression="gzip")
         dset[:] = data[1]
+
+
+def write_expval_ascii(path: str, data: Tuple[numpy.ndarray, numpy.ndarray]):
+    pandas.DataFrame(
+        numpy.column_stack((data[0], numpy.real(data[1]),
+                            numpy.imag(data[1]))),
+        columns=["time", "real", "imag"], ).to_csv(
+            path, sep="\t", index=False, header=False)

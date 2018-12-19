@@ -12,7 +12,7 @@ def main():
     parser.add_argument(
         "path",
         nargs="?",
-        default="output.hdf5",
+        default="output",
         help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()

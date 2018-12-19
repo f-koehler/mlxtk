@@ -12,7 +12,7 @@ def main():
     parser.add_argument(
         "path",
         nargs="?",
-        default="natpop.hdf5",
+        default="natpop",
         help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(

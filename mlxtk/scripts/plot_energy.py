@@ -11,16 +11,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "path",
-        nargs="?",
-        default="output",
+        nargs="+",
+        default=["output"],
         help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
     _, ax = plt.subplots(1, 1)
 
-    time, _, energy, _ = read_output(args.path)
-    plot_energy(ax, time, energy)
+    for path in args.path:
+        time, _, energy, _ = read_output(path)
+        plot_energy(ax, time, energy)
 
     apply_2d_args(ax, args)
 

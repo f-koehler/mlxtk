@@ -13,8 +13,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "path",
-        nargs="?",
-        default="natpop.hdf5",
+        nargs="*",
+        default=["natpop"],
         help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(
@@ -24,9 +24,10 @@ def main():
 
     _, ax = plt.subplots(1, 1)
 
-    time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
-    entropy = compute_entropy(natpop)
-    plot_entropy(ax, time, entropy)
+    for path in args.path:
+        time, natpop = read_natpop(path, node=args.node, dof=args.dof)
+        entropy = compute_entropy(natpop)
+        plot_entropy(ax, time, entropy)
 
     apply_2d_args(ax, args)
 

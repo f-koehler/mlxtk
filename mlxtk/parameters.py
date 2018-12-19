@@ -58,6 +58,7 @@ class Parameters:
             self.add_parameter(**param)
         else:
             self.add_parameter(*param)
+        return self
 
     def __getstate__(self) -> Dict[str, Any]:
         return {

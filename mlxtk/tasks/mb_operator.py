@@ -110,6 +110,7 @@ class MBOperatorSpecification:
 
         term_kwargs["tf_label"] = term["td_name"]
         term_kwargs["tf_switch"] = term.get("td_switch", [0])
+        term_kwargs["td"] = True
 
         if "td_args" in term:
             term_kwargs["tf_args"] = term["td_args"]

@@ -27,7 +27,7 @@ class GaussianTrap(SingleSpeciesSystem):
         return tasks.OperatorSpecification(
             (self.grid_1b, ),
             {"potential_coeff": -self.parameters.V0},
-            {"potential": gaussian(self.grid.get_x(), self.grid.get_x())},
+            {"potential": gaussian(self.grid.get_x(), self.parameters.x0)},
             ["potential_coeff | 1 potential"], )
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:

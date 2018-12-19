@@ -152,16 +152,21 @@ class SimulationSet:
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
 
+        set_dir = os.path.abspath(self.working_dir)
+        script_dir = os.path.abspath(sys.argv[0])
+
         for index, simulation in enumerate(self.simulations):
-            sge.submit(
-                " ".join([
-                    sys.executable,
-                    os.path.abspath(sys.argv[0]), "run-index",
-                    str(index)
-                ]),
-                args,
-                sge_dir=self.working_dir,
-                job_name=simulation.name)
+            simulation_dir = os.path.join(set_dir, simulation.working_dir)
+            if not os.path.exists(simulation_dir):
+                os.makedirs(simulation_dir)
+            with cwd.WorkingDir(simulation_dir):
+                sge.submit(
+                    " ".join(
+                        [sys.executable, script_dir, "run-index",
+                         str(index)]),
+                    args,
+                    sge_dir=simulation_dir,
+                    job_name=simulation.name)
 
     def main(self, args: Iterable[str]=sys.argv[1:]):
 

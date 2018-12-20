@@ -24,20 +24,16 @@ class GaussianTrap(SingleSpeciesSystem):
         ])
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
-        return self.create_gaussian_potential_operator(
-            self, self.parameters.x0, self.parameters.V0)
+        return self.create_gaussian_potential_operator_1b(
+            self.parameters.x0, self.parameters.V0)
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
         return self.get_kinetic_operator_1b() + self.get_potential_operator_1b(
         )
 
     def get_potential_operator(self) -> tasks.MBOperatorSpecification:
-        return tasks.MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
-            {"potential_coeff": -self.parameters.V0},
-            {"potential": gaussian(self.grid.get_x(), self.parameters.x0)},
-            "potential_coeff | 1 potential", )
+        return self.create_gaussian_potential_operator(self.parameters.x0,
+                                                       self.parameters.V0)
 
     def get_interaction_operator(self) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
@@ -55,8 +51,16 @@ class GaussianTrap(SingleSpeciesSystem):
 
         return self.get_kinetic_operator() + self.get_potential_operator_1b()
 
+    def create_gaussian_potential_operator_1b(
+            self, x0: float, V0: float) -> tasks.OperatorSpecification:
+        return tasks.OperatorSpecification(
+            (self.grid_1b, ),
+            {"potential_coeff": -V0},
+            {"potential": gaussian(self.grid.get_x(), x0)},
+            "potential_coeff | 1 potential", )
+
     def create_gaussian_potential_operator(
-            self, x0: float, V0: float) -> task.MBOperatorSpecification:
+            self, x0: float, V0: float) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
             (1, ),
             (self.grid, ),

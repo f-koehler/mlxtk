@@ -10,10 +10,7 @@ from ..plot.plot import add_argparse_2d_args, apply_2d_args
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path",
-        nargs="?",
-        default="natpop",
-        help="path to the natpop file")
+        "path", nargs="?", default="natpop", help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")

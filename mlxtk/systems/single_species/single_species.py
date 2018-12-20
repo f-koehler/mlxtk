@@ -50,3 +50,8 @@ class SingleSpeciesSystem(ABC):
                 }
             },
             "kinetic_coeff | 1 kinetic", )
+
+    def get_com_operator(self) -> MBOperatorSpecification:
+        return MBOperatorSpecification((1, ), (self.grid, ), {"com_coeff": 1.},
+                                       {"com": self.grid.get_x()},
+                                       "com_coeff | 1 com")

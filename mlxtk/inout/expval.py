@@ -12,7 +12,7 @@ def read_expval(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if is_hdf5:
         return read_expval_hdf5(path, interior_path)
 
-    return read_expval(path)
+    return read_expval_ascii(path)
 
 
 def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:

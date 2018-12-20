@@ -52,7 +52,8 @@ class MBOperatorSpecification:
 
         if not set(self.coefficients.keys()).isdisjoint(
                 set(other.coefficients.keys())):
-            raise ValueError("coefficient names are not unique")
+            raise ValueError("coefficient names are not unique\n" + str(
+                self.coefficients) + "\n" + str(other.coefficients))
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")

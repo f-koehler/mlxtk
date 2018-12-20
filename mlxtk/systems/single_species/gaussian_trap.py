@@ -51,19 +51,25 @@ class GaussianTrap(SingleSpeciesSystem):
 
         return self.get_kinetic_operator() + self.get_potential_operator_1b()
 
-    def create_gaussian_potential_operator_1b(
-            self, x0: float, V0: float) -> tasks.OperatorSpecification:
+    def create_gaussian_potential_operator_1b(self,
+                                              x0: float,
+                                              V0: float,
+                                              name: str="potential"
+                                              ) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
             (self.grid_1b, ),
-            {"potential_coeff": -V0},
-            {"potential": gaussian(self.grid.get_x(), x0)},
-            "potential_coeff | 1 potential", )
+            {name + "_coeff": -V0},
+            {name: gaussian(self.grid.get_x(), x0)},
+            name + "_coeff | 1 " + name, )
 
-    def create_gaussian_potential_operator(
-            self, x0: float, V0: float) -> tasks.MBOperatorSpecification:
+    def create_gaussian_potential_operator(self,
+                                           x0: float,
+                                           V0: float,
+                                           name: str="potential"
+                                           ) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
             (1, ),
             (self.grid, ),
-            {"potential_coeff": -V0},
-            {"potential": gaussian(self.grid.get_x(), x0)},
-            "potential_coeff | 1 potential", )
+            {name + "_coeff": -V0},
+            {name: gaussian(self.grid.get_x(), x0)},
+            name + "_coeff | 1 " + name, )

@@ -8,3 +8,5 @@
 .ctags
 .mypy_cache/
 \#*\#
+build/
+dist/

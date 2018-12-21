@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="mlxtk",
-    version="0.3.0",
+    version="0.3.1",
     author="Fabian Köhler",
     author_email="fkoehler@physnet.uni-hamburg.de",
     description="Toolkit to design, run and analyze ML-MCTDH(X) simulations",
@@ -55,9 +55,9 @@ simulation outcome.
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
         "Environment :: MacOS X",
-        "Environment :: X11Applications :: Qt",
+        "Environment :: X11 Applications :: Qt",
         "Intended Audience :: Education",
-        "Indended Audience :: Science/Research",
+        "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
         "Natural Language :: English",
         "Operating System :: MacOS",
@@ -69,8 +69,8 @@ simulation outcome.
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Education",
-        "Topic :: Scientific Engineering",
-        "Topic :: Scientific Engineering :: Physics",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Physics",
     ],
     python_requires=">=3.5",
     zip_safe=True, )

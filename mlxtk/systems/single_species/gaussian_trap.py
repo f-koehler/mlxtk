@@ -49,7 +49,7 @@ class GaussianTrap(SingleSpeciesSystem):
                 self.get_kinetic_operator() + self.get_potential_operator() +
                 self.get_interaction_operator())
 
-        return self.get_kinetic_operator() + self.get_potential_operator_1b()
+        return self.get_kinetic_operator() + self.get_potential_operator()
 
     def create_gaussian_potential_operator_1b(self,
                                               x0: float,

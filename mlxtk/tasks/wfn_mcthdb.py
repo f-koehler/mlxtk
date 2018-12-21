@@ -9,8 +9,8 @@ from QDTK.Wavefunction import Wavefunction as WaveFunction
 from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..tools.diagonalize import diagonalize_1b_operator
-from ..tools.wave_function import (add_momentum, load_wave_function,
-                                   save_wave_function)
+from ..tools.wave_function import (add_momentum, add_momentum_split,
+                                   load_wave_function, save_wave_function)
 
 
 def create_mctdhb_wave_function(name,
@@ -131,3 +131,51 @@ def mctdhb_add_momentum(name: str,
         }
 
     return [task_write_parameters, task_add_momentum]
+
+
+def mctdhb_add_momentum_split(name: str,
+                              initial: str,
+                              momentum: float,
+                              x0: float,
+                              grid: DVRSpecification):
+    path_pickle = name + ".wfn_pickle"
+
+    def task_write_parameters() -> Dict[str, Any]:
+        @DoitAction
+        def action_write_parameters(targets: Iterable[str]):
+            del targets
+            obj = [name, initial, momentum, x0]
+            with open(path_pickle, "wb") as fp:
+                pickle.dump(obj, fp)
+
+        return {
+            "name":
+            "wfn_mctdhb_add_momentum_split:{}:write_parameters".format(name),
+            "actions": [action_write_parameters],
+            "targets": [path_pickle],
+        }
+
+    def task_add_momentum_split() -> Dict[str, Any]:
+        path = name + ".wfn"
+        initial_path = initial + ".wfn"
+
+        @DoitAction
+        def action_add_momentum_split(targets: Iterable[str]):
+            del targets
+
+            # pylint: disable=protected-access
+
+            wfn = load_wave_function(initial_path)
+            wfn.tree._topNode._pgrid[0] = grid.get_x()
+            add_momentum_split(wfn, momentum, x0)
+            save_wave_function(path, wfn)
+
+        return {
+            "name":
+            "wfn_mctdhb_add_momentum_split:{}:add_momentum".format(name),
+            "actions": [action_add_momentum_split],
+            "targets": [path],
+            "file_dep": [path_pickle],
+        }
+
+    return [task_write_parameters, task_add_momentum_split]

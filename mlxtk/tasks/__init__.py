@@ -3,7 +3,7 @@ from .mb_operator import (MBOperatorSpecification, create_mb_operator)
 from .operator import OperatorSpecification, create_operator
 from .propagate import diagonalize, improved_relax, propagate, relax
 from .variance import compute_variance
-from .wfn_mcthdb import create_mctdhb_wave_function, mctdhb_add_momentum
+from .wfn_mcthdb import create_mctdhb_wave_function, mctdhb_add_momentum, mctdhb_add_momentum_split
 
 assert compute_expectation_value
 assert create_mb_operator
@@ -15,6 +15,7 @@ assert relax
 assert compute_variance
 assert create_mctdhb_wave_function
 assert mctdhb_add_momentum
+assert mctdhb_add_momentum_split
 
 assert MBOperatorSpecification
 assert OperatorSpecification

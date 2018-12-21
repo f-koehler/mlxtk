@@ -21,21 +21,25 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         parser (argparse.ArgumentParser): parser to modify
     """
     parser.add_argument(
+        "-q",
         "--queues",
         default="none",
         help=("comma separated list of queues for the SGE batch system,"
               ' "none" if you do not want to specify a queue'), )
     parser.add_argument(
+        "-m",
         "--memory",
         default="2G",
         help="amount of memory available to the job(s)")
     parser.add_argument(
+        "-t",
         "--time",
         default="00:10:00",
         help="maximum computation time for the job(s)")
     parser.add_argument(
-        "--cpus", default="1", help="number of cpus to use for SMP")
+        "-c", "--cpus", default="1", help="number of cpus to use for SMP")
     parser.add_argument(
+        "-e",
         "--email",
         default="none",
         help=("email address to notify about finished, aborted and suspended"

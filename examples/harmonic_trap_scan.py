@@ -8,12 +8,13 @@ if __name__ == "__main__":
 
     parameters = HarmonicTrap.create_parameters()
     parameters.g = 0.1
-    parameters_quenched = parameters.copy()
-    parameters_quenched.g = 0.2
 
     def create_simulation(p):
+        p_quenched = p.copy()
+        p_quenched.g = 0.2
+
         system = HarmonicTrap(p, x)
-        system_quenched = HarmonicTrap(parameters_quenched, x)
+        system_quenched = HarmonicTrap(p_quenched, x)
 
         sim = mlxtk.Simulation("harmonic_trap")
         sim += mlxtk.tasks.create_operator("hamiltonian_1b",
@@ -27,7 +28,7 @@ if __name__ == "__main__":
         sim += mlxtk.tasks.create_mb_operator(
             "com_2", system.get_center_of_mass_operator_squared())
         sim += mlxtk.tasks.create_mctdhb_wave_function(
-            "initial", "hamiltonian_1b", parameters.N, parameters.m)
+            "initial", "hamiltonian_1b", p.N, p.m)
         sim += mlxtk.tasks.improved_relax(
             "gs_relax", "initial", "hamiltonian", "1", tfinal=1000.0, dt=0.01)
         sim += mlxtk.tasks.propagate(

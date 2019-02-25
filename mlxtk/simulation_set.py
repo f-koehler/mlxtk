@@ -133,10 +133,7 @@ class SimulationSet:
                 ], )
 
     def run_index(self, args: argparse.Namespace):
-        self.create_working_dir()
-
-        with cwd.WorkingDir(self.working_dir):
-            self.simulations[args.index].main(["run"])
+        self.simulations[args.index].main(["run"])
 
     def qdel(self, args: argparse.Namespace):
         del args
@@ -188,5 +185,7 @@ class SimulationSet:
             self.qsub(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "run-index":
+            self.run_index(args)
         elif args.subcommand == "task-info":
             self.task_info(args)

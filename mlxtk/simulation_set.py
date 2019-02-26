@@ -133,7 +133,8 @@ class SimulationSet:
                 ], )
 
     def run_index(self, args: argparse.Namespace):
-        self.simulations[args.index].main(["run"])
+        with cwd.WorkingDir(os.path.join(os.pardir, os.pardir)):
+            self.simulations[args.index].main(["run"])
 
     def qdel(self, args: argparse.Namespace):
         del args

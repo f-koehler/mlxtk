@@ -63,6 +63,9 @@ class ParameterScan(SimulationSet):
                     with open("parameters.json", "w") as fp:
                         fp.write(combination.to_json() + "\n")
 
+            with open("scan.pickle", "wb") as fp:
+                pickle.dump([combination for combination in self.combinations], fp)
+
             names = self.combinations[0].names
             data = pandas.DataFrame({
                 name: pandas.Series([comb[name] for comb in self.combinations])

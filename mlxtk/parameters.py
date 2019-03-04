@@ -48,6 +48,24 @@ class Parameters:
         for name, value in zip(self.names, values):
             self.__setitem__(name, value)
 
+    def get_common_parameters(self, other) -> List[str]:
+        if not isinstance(other, Parameters):
+            raise NotImplementedError
+
+        return list(set(self.names) & set(other.names))
+
+    def has_same_common_parameters(
+            self, other, common_parameters: List[str] = None) -> bool:
+        if common_parameters:
+            names = common_parameters
+        else:
+            names = self.get_common_parameters(other)
+
+        for name in names:
+            if self[name] != other[name]:
+                return False
+        return True
+
     def copy(self):
         p = Parameters()
         for name in self.names:
@@ -87,17 +105,17 @@ class Parameters:
         ]) + "\n}")
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, Parameters):
-            if self.names != other.names:
+        if not isinstance(other, Parameters):
+            raise NotImplementedError
+
+        if self.names != other.names:
+            return False
+
+        for name in self.names:
+            if self.__getitem__(name) != other.__getitem__(name):
                 return False
 
-            for name in self.names:
-                if self.__getitem__(name) != other.__getitem__(name):
-                    return False
-
-            return True
-
-        raise NotImplementedError
+        return True
 
     def __ne__(self, other) -> bool:
         return not self.__eq__(other)

@@ -9,7 +9,7 @@ import pickle
 import sqlite3
 import subprocess
 import sys
-from typing import Callable, Generator, Iterable, List, Optional
+from typing import Callable, Generator, Iterable, List
 
 import pandas
 
@@ -29,7 +29,8 @@ class ParameterScan(SimulationSet):
             name: str,
             func: Callable[[Parameters], Simulation],
             parameters: Generator[Parameters, None, None],
-            working_dir: Optional[str]=None, ):
+            working_dir: str = None,
+    ):
         super().__init__(name, [], working_dir)
         self.func = func
         self.parameters = parameters
@@ -64,7 +65,8 @@ class ParameterScan(SimulationSet):
                         fp.write(combination.to_json() + "\n")
 
             with open("scan.pickle", "wb") as fp:
-                pickle.dump([combination for combination in self.combinations], fp)
+                pickle.dump([combination for combination in self.combinations],
+                            fp)
 
             names = self.combinations[0].names
             data = pandas.DataFrame({
@@ -128,7 +130,7 @@ class ParameterScan(SimulationSet):
 
         super().qsub(args)
 
-    def main(self, args: Iterable[str]=sys.argv[1:]):
+    def main(self, args: Iterable[str] = sys.argv[1:]):
         self.compute_simulations()
 
         super().main(args)

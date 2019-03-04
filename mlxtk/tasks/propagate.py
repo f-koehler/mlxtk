@@ -1,5 +1,4 @@
 import copy
-import gzip
 import os
 import pickle
 import shutil
@@ -8,12 +7,6 @@ from typing import Any, Callable, Dict, List
 
 from .. import cwd, log
 from ..doit_compat import DoitAction
-from ..inout.eigenenergies import (read_eigenenergies_ascii,
-                                   write_eigenenergies_hdf5)
-from ..inout.gpop import read_gpop_ascii, write_gpop_hdf5
-from ..inout.natpop import read_natpop_ascii, write_natpop_hdf5
-from ..inout.output import read_output_ascii, write_output_hdf5
-from ..inout.psi import read_psi_ascii, write_psi_hdf5
 
 LOGGER = log.get_logger(__name__)
 
@@ -107,7 +100,6 @@ def create_flags(**kwargs):
 
 def propagate(name: str, wave_function: str, hamiltonian: str,
               **kwargs) -> List[Callable[[], Dict[str, Any]]]:
-    keep_psi = kwargs.get("keep_psi", False)
     flags, flag_list = create_flags(**kwargs)
     flag_list += ["-rst", "initial.wfn", "-opr", "hamiltonian.mb_opr"]
 
@@ -206,7 +198,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
                 action_create_dir,
                 action_copy_initial_wave_function,
                 action_copy_hamiltonian,
-                action_propagate,
+                action_run,
                 action_remove_hamiltonian,
                 action_remove_initial_wave_function,
             ]

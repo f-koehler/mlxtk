@@ -9,7 +9,7 @@ import pickle
 import sqlite3
 import subprocess
 import sys
-from typing import Callable, Generator, Iterable, List
+from typing import Callable, List
 
 import pandas
 
@@ -28,19 +28,17 @@ class ParameterScan(SimulationSet):
             self,
             name: str,
             func: Callable[[Parameters], Simulation],
-            parameters: Generator[Parameters, None, None],
+            combinations: List[Parameters],
             working_dir: str = None,
     ):
         super().__init__(name, [], working_dir)
         self.func = func
-        self.parameters = parameters
         self.logger = get_logger(__name__)
         self.simulations = []  # type: List[Simulation]
-        self.combinations = []  # type: List[Parameters]
+        self.combinations = combinations
 
     def compute_simulations(self):
         self.simulations = []
-        self.combinations = list(self.parameters)
 
         for combination in self.combinations:
             self.simulations.append(self.func(combination))
@@ -124,13 +122,24 @@ class ParameterScan(SimulationSet):
 
         super().run(args)
 
+    def run_by_param(self, parameters: Parameters):
+        self.compute_simulations()
+        for i, combination in enumerate(self.combinations):
+            if combination != parameters:
+                continue
+
+            self.main(["run-index", str(i)])
+            return
+
+        raise ValueError("Parameters not included: "+str(parameters))
+
     def qsub(self, args: argparse.Namespace):
         self.store_parameters()
         self.link_simulations()
 
         super().qsub(args)
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, args: List[str] = sys.argv[1:]):
         self.compute_simulations()
 
         super().main(args)

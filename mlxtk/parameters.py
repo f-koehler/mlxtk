@@ -132,53 +132,13 @@ def generate_all(parameters: Parameters,
     for name in parameters.names:
         values[name] = values.get(name, [parameters[name]])
 
+    ret = []
     for combination in itertools.product(
             *[values[name] for name in parameters.names]):
-        p = copy.deepcopy(parameters)
-        p.set_values(combination)
-        yield p
+        ret.append(copy.deepcopy(parameters))
+        ret[-1].set_values(combination)
 
-
-def chain(*args):
-    return itertools.chain(*args)
-
-
-def select(
-        combinations: Generator[Parameters, None, None],
-        condition: Callable[[Parameters], bool],
-) -> Generator[Parameters, None, None]:
-    for combination in combinations:
-        if condition(combination):
-            yield combination
-
-
-def add(combinations: Generator[Parameters, None, None],
-        new_combination: Parameters) -> Generator[Parameters, None, None]:
-    for combination in combinations:
-        yield combination
-    yield new_combination
-
-
-def add_multiple(
-        combinations: Generator[Parameters, None, None],
-        new_combinations: Iterable[Parameters],
-) -> Generator[Parameters, None, None]:
-    for combination in combinations:
-        yield combination
-
-    for combination in new_combinations:
-        yield combination
-
-
-def merge(
-        combinations1: Generator[Parameters, None, None],
-        combinations2: Generator[Parameters, None, None],
-) -> Generator[Parameters, None, None]:
-    for combination in combinations1:
-        yield combination
-
-    for combination in combinations2:
-        yield combination
+    return ret
 
 
 def get_variables(parameters: List[Parameters]) -> Tuple[List[str], List[str]]:

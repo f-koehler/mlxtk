@@ -1,8 +1,10 @@
+from typing import Callable, Generator
 import copy
 import importlib.util
 import os.path
+import pathlib
 import pickle
-from typing import Callable, Generator
+import time
 
 from .parameters import Parameters
 from .parameter_scan import ParameterScan
@@ -12,10 +14,37 @@ from .simulation import Simulation
 
 
 class MissingWfnError(Exception):
-    def __init__(self, parameters):
+    def __init__(self, parameters: Parameters):
         self.parameters = copy.deepcopy(parameters)
         super().__init__("Missing wave function for parameters: " +
                          str(parameters))
+
+
+class WaveFunctionDBLockError(Exception):
+    def __init__(self, path: str):
+        super().__init__("Could not lock wave function db: " + path)
+
+
+class WaveFunctionDBLock:
+    def __init__(self, path: str):
+        self.path = path
+
+    def __enter__(self):
+        p = pathlib.Path(self.path)
+        for i in range(1024):
+            try:
+                p.touch(exist_ok=False)
+                return
+            except FileExistsError:
+                time.sleep(1)
+                continue
+        raise WaveFunctionDBLockError(self.path)
+
+    def __exit__(self, _type, value, traceback):
+        del _type
+        del value
+        del traceback
+        os.remove(self.path)
 
 
 class WaveFunctionDB(ParameterScan):
@@ -30,17 +59,15 @@ class WaveFunctionDB(ParameterScan):
         self.missing_wave_functions = []
         self.wfn_path = wfn_path
 
-        def generator() -> Generator[Parameters, None, None]:
-            for p in self.stored_wave_functions:
-                yield p
-
-            for p in self.missing_wave_functions:
-                yield p
-
-        super().__init__(name, func, generator(), working_dir)
+        super().__init__(name, func, [], working_dir)
 
         self.load_missing_wave_functions()
         self.load_stored_wave_functions()
+
+        super().__init__(
+            name, func,
+            self.missing_wave_functions + self.stored_wave_functions,
+            working_dir)
 
     def load_missing_wave_functions(self):
         self.create_working_dir()
@@ -56,10 +83,10 @@ class WaveFunctionDB(ParameterScan):
         self.create_working_dir()
 
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("scan.pickle"):
+            if not os.path.exists("stored_wave_functions.pickle"):
                 return
 
-            with open("scan.pickle", "rb") as fp:
+            with open("stored_wave_functions.pickle", "rb") as fp:
                 self.stored_wave_functions = pickle.load(fp)
 
     def store_missing_wave_functions(self):
@@ -69,7 +96,14 @@ class WaveFunctionDB(ParameterScan):
             with open("missing_wave_functions.pickle", "wb") as fp:
                 pickle.dump(self.missing_wave_functions, fp)
 
-    def request(self, parameters: Parameters):
+    def store_stored_wave_functions(self):
+        self.create_working_dir()
+
+        with cwd.WorkingDir(self.working_dir):
+            with open("stored_wave_functions.pickle", "wb") as fp:
+                pickle.dump(self.stored_wave_functions, fp)
+
+    def request(self, parameters: Parameters, compute: bool = True):
         common_parameters = parameters.get_common_parameters(self.prototype)
 
         for p in self.stored_wave_functions:
@@ -86,7 +120,20 @@ class WaveFunctionDB(ParameterScan):
         if p not in self.missing_wave_functions:
             self.missing_wave_functions.append(p)
             self.store_missing_wave_functions()
-        raise MissingStateError(p)
+
+        if not compute:
+            raise MissingWfnError(p)
+
+        self._compute(p)
+
+    def _compute(self, parameters: Parameters):
+        self.run_by_param(parameters)
+
+        with WaveFunctionDBLock("wave_function_db.lock"):
+            self.stored_wave_functions.append(parameters)
+            self.missing_wave_functions.remove(parameters)
+            self.store_missing_wave_functions()
+            self.stored_wave_functions()
 
 
 def load_db(path: str, variable_name: str = "db") -> WaveFunctionDB:

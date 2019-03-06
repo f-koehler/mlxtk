@@ -121,7 +121,6 @@ class SimulationSet:
 
         self.create_working_dir()
 
-        # with cwd.WorkingDir(self.working_dir):
         tasks = []  # type: List[Callable[[], Dict[str, Any]]]
         for simulation in self.simulations:
             tasks += run_simulation(simulation)

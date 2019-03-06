@@ -94,6 +94,9 @@ class Parameters:
             self.add_parameter(name, state["values"][name], state["docs"].get(
                 name, ""))
 
+    def __hash__(self):
+        return hash(self.__repr__())
+
     def __repr__(self) -> str:
         return "_".join([name + "=" + str(self[name]) for name in self.names])
 

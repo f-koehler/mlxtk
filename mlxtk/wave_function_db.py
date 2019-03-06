@@ -90,19 +90,77 @@ class WaveFunctionDB(ParameterScan):
             with open("stored_wave_functions.pickle", "rb") as fp:
                 self.stored_wave_functions = pickle.load(fp)
 
-    def store_missing_wave_functions(self):
-        self.create_working_dir()
-
+    def store_missing_wave_function(self, parameters: Parameters):
         with cwd.WorkingDir(self.working_dir):
+            entries = []
+            if os.path.exists("missing_wave_functions.pickle"):
+                with open("missing_wave_functions.pickle", "rb") as fp:
+                    entries = pickle.load(fp)
+
+            if parameters in entries:
+                return
+
+            entries.append(parameters)
+
             with open("missing_wave_functions.pickle", "wb") as fp:
-                pickle.dump(self.missing_wave_functions, fp)
+                pickle.dump(entries, fp)
 
-    def store_stored_wave_functions(self):
-        self.create_working_dir()
-
+    def remove_missing_wave_function(self, parameters: Parameters):
         with cwd.WorkingDir(self.working_dir):
+            if not os.path.exists("missing_wave_functions.pickle"):
+                return
+
+            with open("missing_wave_functions.pickle", "rb") as fp:
+                entries = pickle.load(fp)
+
+            if parameters not in entries:
+                return
+
+            entries.remove(parameters)
+
+            with open("missing_wave_functions.pickle", "wb") as fp:
+                pickle.dump(entries, fp)
+
+    def store_wave_function(self, parameters: Parameters):
+        with cwd.WorkingDir(self.working_dir):
+            entries = []
+            if os.path.exists("stored_wave_functions.pickle"):
+                with open("stored_wave_functions.pickle", "rb") as fp:
+                    entries = pickle.load(fp)
+
+            if parameters in entries:
+                return
+
+            entries.append(parameters)
+
             with open("stored_wave_functions.pickle", "wb") as fp:
-                pickle.dump(self.stored_wave_functions, fp)
+                pickle.dump(entries, fp)
+
+    # def store_missing_wave_functions(self):
+    #     self.create_working_dir()
+
+    #     with cwd.WorkingDir(self.working_dir):
+    #         if os.path.exists("missing_wave_functions.pickle"):
+    #             with open("missing_wave_functions.pickle", "rb") as fp:
+    #                 self.missing_wave_functions = list(
+    #                     set(self.missing_wave_functions)
+    #                     | set(pickle.load(fp)))
+
+    #         with open("missing_wave_functions.pickle", "wb") as fp:
+    #             pickle.dump(self.missing_wave_functions, fp)
+
+    # def store_stored_wave_functions(self):
+    #     self.create_working_dir()
+
+    #     with cwd.WorkingDir(self.working_dir):
+    #         if os.path.exists("stored_wave_functions.pickle"):
+    #             with open("stored_wave_functions.pickle", "rb") as fp:
+    #                 self.stored_wave_functions = list(
+    #                     set(self.stored_wave_functions)
+    #                     | set(pickle.load(fp)))
+
+    #         with open("stored_wave_functions.pickle", "wb") as fp:
+    #             pickle.dump(self.stored_wave_functions, fp)
 
     def request(self, parameters: Parameters, compute: bool = True):
         self.logger.info("request wave function for parameters %s",
@@ -125,7 +183,7 @@ class WaveFunctionDB(ParameterScan):
 
         if p not in self.missing_wave_functions:
             self.missing_wave_functions.append(p)
-            self.store_missing_wave_functions()
+            self.store_missing_wave_function(p)
             self.combinations = self.stored_wave_functions + self.missing_wave_functions
 
         if not compute:
@@ -144,10 +202,10 @@ class WaveFunctionDB(ParameterScan):
 
         with WaveFunctionDBLock(
                 os.path.join(self.working_dir, "wave_function_db.lock")):
+            self.remove_missing_wave_function(parameters)
+            self.store_wave_function(parameters)
             self.stored_wave_functions.append(parameters)
             self.missing_wave_functions.remove(parameters)
-            self.store_missing_wave_functions()
-            self.store_stored_wave_functions()
 
 
 def load_db(path: str, variable_name: str = "db") -> WaveFunctionDB:

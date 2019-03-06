@@ -44,12 +44,17 @@ class ParameterScan(SimulationSet):
             self.simulations.append(self.func(combination))
             self.simulations[-1].name = repr(combination)
             self.simulations[-1].working_dir = os.path.join(
-                "sim", hash_string(self.simulations[-1].name))
+                self.working_dir, "sim",
+                hash_string(self.simulations[-1].name))
             self.simulations[-1].name = self.name + \
                 "_" + self.simulations[-1].name
 
     def store_parameters(self):
+        self.logger.info("storing scan parameters")
         self.create_working_dir()
+
+        if not self.combinations:
+            return
 
         with cwd.WorkingDir(self.working_dir):
             for combination, simulation in zip(self.combinations,
@@ -78,6 +83,10 @@ class ParameterScan(SimulationSet):
             con.close()
 
     def link_simulations(self):
+        if not self.combinations:
+            return
+
+        self.logger.info("create simulation symlinks")
         self.create_working_dir()
 
         # link by index
@@ -123,6 +132,7 @@ class ParameterScan(SimulationSet):
         super().run(args)
 
     def run_by_param(self, parameters: Parameters):
+        self.logger.info("run simulation for parameters %s", repr(parameters))
         self.compute_simulations()
         for i, combination in enumerate(self.combinations):
             if combination != parameters:
@@ -131,7 +141,7 @@ class ParameterScan(SimulationSet):
             self.main(["run-index", str(i)])
             return
 
-        raise ValueError("Parameters not included: "+str(parameters))
+        raise ValueError("Parameters not included: " + str(parameters))
 
     def qsub(self, args: argparse.Namespace):
         self.store_parameters()

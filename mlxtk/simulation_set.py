@@ -59,10 +59,12 @@ class SimulationSet:
             self,
             name: str,
             simulations: List[Simulation],
-            working_dir: Optional[str]=None, ):
+            working_dir: Optional[str] = None,
+    ):
         self.name = name
         self.simulations = simulations
-        self.working_dir = name if working_dir is None else working_dir
+        self.working_dir = os.path.abspath(
+            name) if working_dir is None else working_dir
 
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
@@ -115,26 +117,29 @@ class SimulationSet:
             self.simulations[args.index].main(["task-info", args.name])
 
     def run(self, args: argparse.Namespace):
+        self.logger.info("running simulation set")
+
         self.create_working_dir()
 
-        with cwd.WorkingDir(self.working_dir):
-            tasks = []  # type: List[Callable[[], Dict[str, Any]]]
-            for simulation in self.simulations:
-                tasks += run_simulation(simulation)
-            doit_compat.run_doit(
-                tasks,
-                [
-                    "-n",
-                    str(args.jobs),
-                    "--backend",
-                    "sqlite3",
-                    "--db-file",
-                    "doit.sqlite3",
-                ], )
+        # with cwd.WorkingDir(self.working_dir):
+        tasks = []  # type: List[Callable[[], Dict[str, Any]]]
+        for simulation in self.simulations:
+            tasks += run_simulation(simulation)
+        doit_compat.run_doit(
+            tasks,
+            [
+                "-n",
+                str(args.jobs),
+                "--backend",
+                "sqlite3",
+                "--db-file",
+                os.path.join(self.working_dir, "doit.sqlite3"),
+            ],
+        )
 
     def run_index(self, args: argparse.Namespace):
-        with cwd.WorkingDir(os.path.join(os.pardir, os.pardir)):
-            self.simulations[args.index].main(["run"])
+        self.logger.info("run simulation with index %d", args.index)
+        self.simulations[args.index].main(["run"])
 
     def qdel(self, args: argparse.Namespace):
         del args
@@ -148,6 +153,7 @@ class SimulationSet:
                 simulation.main(["qdel"])
 
     def qsub(self, args: argparse.Namespace):
+        self.logger.info("submitting simulation set to SGE scheduler")
         self.create_working_dir()
 
         set_dir = os.path.abspath(self.working_dir)
@@ -166,7 +172,7 @@ class SimulationSet:
                     sge_dir=simulation_dir,
                     job_name=simulation.name)
 
-    def main(self, args: Iterable[str]=sys.argv[1:]):
+    def main(self, args: Iterable[str] = sys.argv[1:]):
 
         args = self.argparser.parse_args(args)
 

@@ -41,7 +41,7 @@ LOGGERS = set()
 FILE_HANDLER = None
 """logging.FileHandler: Handler for the log file"""
 
-logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
+logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
 
 
 def get_logger(name: str) -> logging.Logger:

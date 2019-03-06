@@ -1,6 +1,7 @@
 """Change the working directory properly.
 """
 import os
+import traceback
 
 from . import log
 
@@ -29,6 +30,10 @@ class WorkingDir:
     def __enter__(self):
         """Enter this context.
         """
+        # if self.path == "../..":
+        #     stack = traceback.format_stack()
+        #     for line in stack:
+        #         LOGGER.warning("\t" + line.strip())
         LOGGER.debug("set new cwd: %s", self.path)
         os.chdir(self.path)
 

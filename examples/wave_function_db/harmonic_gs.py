@@ -9,6 +9,7 @@ x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 parameters = HarmonicTrap.create_parameters()
 parameters.g = 0.1
 parameters.m = 5
+parameters.N = 2
 
 
 def create_simulation(p: mlxtk.parameters.Parameters):
@@ -37,7 +38,6 @@ db = mlxtk.WaveFunctionDB(
     parameters,
     create_simulation,
 )
-# p = copy.deepcopy(parameters)
-# p.g = 0.1
-# db.request(p)
-db.main()
+
+if __name__ == "__main__":
+    db.main()

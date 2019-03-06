@@ -11,12 +11,13 @@
 {%- endif %}
 #$ -S /bin/bash
 #$ -cwd
-#$ -o {{args.sge_dir}}
 #$ -j y
 #$ -V
 #$ -l h_vmem={{args.memory}}
 #$ -l h_cpu={{args.time}}
 #$ -pe smp {{args.cpus}}
+
+cd {{args.sge_dir}}
 
 export OMP_NUM_THREADS={{args.cpus}}
 {{args.command}}

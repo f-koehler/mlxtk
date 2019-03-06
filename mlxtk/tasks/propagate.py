@@ -165,7 +165,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
         @DoitAction
         def action_run(targets: List[str]):
             del targets
-            with cwd.WorkingDir(name):
+            with cwd.WorkingDir(os.path.abspath(name)):
                 LOGGER.info("propagate wave function")
                 cmd = ["qdtk_propagate.x"] + flag_list
                 env = os.environ.copy()
@@ -227,6 +227,7 @@ def propagate(name: str, wave_function: str, hamiltonian: str,
             "actions": actions,
             "targets": targets,
             "file_dep": [path_pickle, path_wfn, path_opr],
+            "verbosity": 2,
         }
 
     return [task_write_parameters, task_propagate]

@@ -48,5 +48,5 @@ if __name__ == "__main__":
     scan = mlxtk.ParameterScan(
         "harmonic_trap_scan",
         create_simulation,
-        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 5]}), )
+        mlxtk.parameters.generate_all(parameters, {"m": [1, 2]}), )
     scan.main()

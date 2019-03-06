@@ -48,7 +48,7 @@ class Parameters:
         for name, value in zip(self.names, values):
             self.__setitem__(name, value)
 
-    def get_common_parameters(self, other) -> List[str]:
+    def get_common_parameter_names(self, other) -> List[str]:
         if not isinstance(other, Parameters):
             raise NotImplementedError
 

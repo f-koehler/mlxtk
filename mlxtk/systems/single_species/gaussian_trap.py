@@ -8,8 +8,8 @@ from mlxtk.parameters import Parameters
 from .single_species import SingleSpeciesSystem
 
 
-def gaussian(x: Union[float, numpy.ndarray], x0: float):
-    return numpy.exp(-((x - x0)**2))
+def gaussian(x: Union[float, numpy.ndarray], x0: float, alpha: float = 1.0):
+    return numpy.exp(-((x - x0)**2) / (alpha**2))
 
 
 class GaussianTrap(SingleSpeciesSystem):
@@ -41,7 +41,8 @@ class GaussianTrap(SingleSpeciesSystem):
             (self.grid, ),
             {"interaction_coeff": self.parameters.g},
             {"interaction": self.grid.get_delta()},
-            "interaction_coeff | {1:1} interaction", )
+            "interaction_coeff | {1:1} interaction",
+        )
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
@@ -51,25 +52,29 @@ class GaussianTrap(SingleSpeciesSystem):
 
         return self.get_kinetic_operator() + self.get_potential_operator()
 
-    def create_gaussian_potential_operator_1b(self,
-                                              x0: float,
-                                              V0: float,
-                                              name: str="potential"
-                                              ) -> tasks.OperatorSpecification:
+    def create_gaussian_potential_operator_1b(
+            self,
+            x0: float,
+            V0: float,
+            name: str = "potential",
+            alpha: float = 1.0) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
             (self.grid_1b, ),
             {name + "_coeff": -V0},
-            {name: gaussian(self.grid.get_x(), x0)},
-            name + "_coeff | 1 " + name, )
+            {name: gaussian(self.grid.get_x(), x0, alpha)},
+            name + "_coeff | 1 " + name,
+        )
 
-    def create_gaussian_potential_operator(self,
-                                           x0: float,
-                                           V0: float,
-                                           name: str="potential"
-                                           ) -> tasks.MBOperatorSpecification:
+    def create_gaussian_potential_operator(
+            self,
+            x0: float,
+            V0: float,
+            name: str = "potential",
+            alpha: float = 1.0) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
             (1, ),
             (self.grid, ),
             {name + "_coeff": -V0},
-            {name: gaussian(self.grid.get_x(), x0)},
-            name + "_coeff | 1 " + name, )
+            {name: gaussian(self.grid.get_x(), x0, alpha)},
+            name + "_coeff | 1 " + name,
+        )

@@ -91,6 +91,8 @@ class WaveFunctionDB(ParameterScan):
                 self.stored_wave_functions = pickle.load(fp)
 
     def store_missing_wave_function(self, parameters: Parameters):
+        self.create_working_dir()
+
         with cwd.WorkingDir(self.working_dir):
             entries = []
             if os.path.exists("missing_wave_functions.pickle"):
@@ -106,6 +108,8 @@ class WaveFunctionDB(ParameterScan):
                 pickle.dump(entries, fp)
 
     def remove_missing_wave_function(self, parameters: Parameters):
+        self.create_working_dir()
+
         with cwd.WorkingDir(self.working_dir):
             if not os.path.exists("missing_wave_functions.pickle"):
                 return
@@ -122,6 +126,8 @@ class WaveFunctionDB(ParameterScan):
                 pickle.dump(entries, fp)
 
     def store_wave_function(self, parameters: Parameters):
+        self.create_working_dir()
+
         with cwd.WorkingDir(self.working_dir):
             entries = []
             if os.path.exists("stored_wave_functions.pickle"):

@@ -84,10 +84,10 @@ def submit(command: str, args, sge_dir: str=os.path.curdir,
     Returns:
         int: job id of the new job
     """
-    id_file = os.path.join(sge_dir, "sge.id")
-    job_script = os.path.join(sge_dir, "sge_job")
-    stop_script = os.path.join(sge_dir, "sge_stop")
-    epilogue_script = os.path.join(sge_dir, "sge_epilogue")
+    id_file = "sge.id"
+    job_script = "sge_job"
+    stop_script = "sge_stop"
+    epilogue_script = "sge_epilogue"
 
     # check if job is already running
     if os.path.exists(id_file):

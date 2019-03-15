@@ -137,8 +137,10 @@ class SimulationSet:
         )
 
     def run_index(self, args: argparse.Namespace):
-        self.logger.info("run simulation with index %d", args.index)
-        self.simulations[args.index].main(["run"])
+        script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+        with cwd.WorkingDir(script_dir):
+            self.logger.info("run simulation with index %d", args.index)
+            self.simulations[args.index].main(["run"])
 
     def qdel(self, args: argparse.Namespace):
         del args
@@ -156,7 +158,7 @@ class SimulationSet:
         self.create_working_dir()
 
         set_dir = os.path.abspath(self.working_dir)
-        script_dir = os.path.abspath(sys.argv[0])
+        script_path = os.path.abspath(sys.argv[0])
 
         for index, simulation in enumerate(self.simulations):
             simulation_dir = os.path.join(set_dir, simulation.working_dir)
@@ -165,10 +167,10 @@ class SimulationSet:
             with cwd.WorkingDir(simulation_dir):
                 sge.submit(
                     " ".join(
-                        [sys.executable, script_dir, "run-index",
+                        [sys.executable, script_path, "run-index",
                          str(index)]),
                     args,
-                    sge_dir=simulation_dir,
+                    sge_dir=os.path.dirname(script_path),
                     job_name=simulation.name)
 
     def main(self, args: Iterable[str] = sys.argv[1:]):

@@ -13,7 +13,7 @@ LOGGER = log.get_logger(__name__)
 class Simulation:
     def __init__(self, name: str, working_dir: Optional[str] = None):
         self.name = name
-        self.working_dir = name if working_dir is None else working_dir
+        self.working_dir = os.path.abspath(name if working_dir is None else working_dir)
         self.task_generators = []
         self.logger = log.get_logger(__name__)
 
@@ -78,12 +78,14 @@ class Simulation:
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
-        sge.submit(
-            " ".join([sys.executable,
-                      os.path.abspath(sys.argv[0]), "run"]),
-            args,
-            sge_dir=self.working_dir,
-            job_name=self.name)
+        call_dir = os.path.abspath(os.getcwd())
+        script_path = os.path.abspath(sys.argv[0])
+        with cwd.WorkingDir(self.working_dir):
+            sge.submit(
+                " ".join([sys.executable, script_path, "run"]),
+                args,
+                sge_dir=call_dir,
+                job_name=self.name)
 
     def qdel(self, args: argparse.Namespace):
         del args

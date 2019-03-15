@@ -1,0 +1,26 @@
+#!/bin/bash
+# -*- mode: sh -*-
+{% if args.job_name -%}
+#$ -N {{args.job_name}}
+{%- endif %}
+{% if args.queues -%}
+#$ -q {{args.queues}}
+{%- endif %}
+{% if args.email -%}
+#$ -M {{args.email}} -m aes
+{%- endif %}
+#$ -S /bin/bash
+#$ -cwd
+#$ -j y
+#$ -V
+#$ -l h_vmem={{args.memory}}
+#$ -l h_cpu={{args.time}}
+#$ -pe smp {{args.cpus}}
+#$ -t 1-{{args.number_of_tasks}}
+
+TASK_ID=$(expr $SGE_TASK_ID - 1)
+
+cd {{args.sge_dir}}
+
+export OMP_NUM_THREADS={{args.cpus}}
+{{args.command}} ${TASK_ID}

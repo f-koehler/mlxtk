@@ -173,6 +173,22 @@ class SimulationSet:
                     sge_dir=os.path.dirname(script_path),
                     job_name=simulation.name)
 
+    def qsub_array(self, args: argparse.Namespace):
+        self.logger.info(
+            "submitting simulation set as an array to SGE scheduler")
+        self.create_working_dir()
+
+        script_path = os.path.abspath(sys.argv[0])
+        command = " ".join([sys.executable, script_path, "run-index"])
+
+        with cwd.WorkingDir(self.working_dir):
+            sge.submit_array(
+                command,
+                len(self.simulations),
+                args,
+                sge_dir=os.path.dirname(script_path),
+                job_name=self.name)
+
     def main(self, args: Iterable[str] = sys.argv[1:]):
 
         args = self.argparser.parse_args(args)
@@ -190,7 +206,7 @@ class SimulationSet:
         elif args.subcommand == "qdel":
             self.qdel(args)
         elif args.subcommand == "qsub":
-            self.qsub(args)
+            self.qsub_array(args)
         elif args.subcommand == "run":
             self.run(args)
         elif args.subcommand == "run-index":

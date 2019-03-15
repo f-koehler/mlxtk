@@ -149,6 +149,12 @@ class ParameterScan(SimulationSet):
 
         super().qsub(args)
 
+    def qsub_array(self, args: argparse.Namespace):
+        self.store_parameters()
+        self.link_simulations()
+
+        super().qsub_array(args)
+
     def main(self, args: List[str] = sys.argv[1:]):
         self.compute_simulations()
 

@@ -25,7 +25,8 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "--queues",
         default="none",
         help=("comma separated list of queues for the SGE batch system,"
-              ' "none" if you do not want to specify a queue'), )
+              ' "none" if you do not want to specify a queue'),
+    )
     parser.add_argument(
         "-m",
         "--memory",
@@ -43,7 +44,8 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "--email",
         default="none",
         help=("email address to notify about finished, aborted and suspended"
-              "jobs"), )
+              "jobs"),
+    )
 
 
 def get_jobs_in_queue() -> List[int]:
@@ -61,7 +63,9 @@ def get_jobs_in_queue() -> List[int]:
     return job_ids
 
 
-def submit(command: str, args, sge_dir: str=os.path.curdir,
+def submit(command: str,
+           args: argparse.Namespace,
+           sge_dir: str = os.path.curdir,
            job_name="") -> int:
     """Create a jobfile for a command and submit it.
 
@@ -147,3 +151,37 @@ def submit(command: str, args, sge_dir: str=os.path.curdir,
     LOGGER.debug("done")
 
     return job_id
+
+
+def submit_array(command: str,
+                 number_of_tasks: int,
+                 args: argparse.Namespace,
+                 sge_dir: str = os.path.curdir,
+                 job_name: str = ""):
+    array_script = "sge_array"
+
+    args = {
+        "command": command,
+        "cpus": args.cpus,
+        "email": args.email,
+        "memory": args.memory,
+        "number_of_tasks": number_of_tasks,
+        "queues": args.queues,
+        "sge_dir": sge_dir,
+        "time": args.time,
+    }
+    if job_name:
+        args["job_name"] = job_name
+
+    # create job array script
+    LOGGER.debug("create job array script")
+    with open(array_script, "w") as fp:
+        fp.write(templates.get_template("sge_array.j2").render(args=args))
+    LOGGER.debug("done")
+
+    # submit array
+    LOGGER.debug("submit job array")
+    for line in subprocess.check_output(["qsub",
+                                         array_script]).decode().splitlines():
+        LOGGER.debug(line)
+    LOGGER.debug("done")

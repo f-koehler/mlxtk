@@ -1,5 +1,5 @@
 import pickle
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 
 import h5py
 import numpy
@@ -38,7 +38,7 @@ class CreateMCTDHBWaveFunction(Task):
         self.path_basis = name + ".wfn_basis.hdf5"
         self.path_matrix = self.hamiltonian_1b + ".opr_mat.hdf5"
 
-    def task_write_parameters(self):
+    def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_parameters(targets: List[str]):
             del targets
@@ -57,7 +57,7 @@ class CreateMCTDHBWaveFunction(Task):
             "targets": [self.path_pickle],
         }
 
-    def task_write_wave_function(self):
+    def task_write_wave_function(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_wave_function(targets: List[str]):
             with h5py.File(self.path_matrix, "r") as fp:
@@ -97,7 +97,7 @@ class CreateMCTDHBWaveFunction(Task):
             "file_dep": [self.path_pickle, self.path_matrix],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_wave_function]
 
 
@@ -149,7 +149,7 @@ class MCTDHBAddMomentum(Task):
             "file_dep": [self.path_pickle],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum]
 
 
@@ -203,5 +203,5 @@ class MCTDHBAddMomentumSplit(Task):
             "file_dep": [self.path_pickle],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum_split]

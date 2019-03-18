@@ -1,5 +1,5 @@
 import os
-from typing import Union
+from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
@@ -37,7 +37,7 @@ class ComputeSpectrum(Task):
         self.path_matrix = self.name + ".opr_mat.hdf5"
         self.path_matrix_hash = self.name + ".opr_mat.hash"
 
-    def task_check_num_spfs(self):
+    def task_check_num_spfs(self) -> Dict[str, Any]:
         @DoitAction
         def action_check_num_spfs(targets):
             del targets
@@ -53,7 +53,7 @@ class ComputeSpectrum(Task):
             "actions": [action_check_num_spfs]
         }
 
-    def task_hash_matrix(self):
+    def task_hash_matrix(self) -> Dict[str, Any]:
         @DoitAction
         def action_matrix_hash(targets):
             del targets
@@ -106,7 +106,7 @@ class ComputeSpectrum(Task):
             "file_dep": [self.path_matrix_hash],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         if self.from_spec:
             return [
                 self.task_check_num_spfs, self.task_hash_matrix,

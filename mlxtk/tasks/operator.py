@@ -1,7 +1,7 @@
 """Create operators acting on distinguishable degrees of freedom.
 """
 import pickle
-from typing import Any, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
@@ -96,7 +96,7 @@ class OperatorSpecification:
         cpy.__itruediv__(other)
         return cpy
 
-    def get_operator(self):
+    def get_operator(self) -> Operator:
         op = Operator()
         op.define_grids([dof.get() for dof in self.dofs])
 
@@ -127,7 +127,7 @@ class CreateOperator(Task):
         self.path_matrix = name + ".opr_mat.hdf5"
         self.path_pickle = name + ".opr_pickle"
 
-    def task_write_parameters(self):
+    def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_parameters(targets: List[str]):
             del targets
@@ -151,7 +151,7 @@ class CreateOperator(Task):
             "targets": [self.path_pickle]
         }
 
-    def task_write_operator(self):
+    def task_write_operator(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_operator(targets):
             op = self.specification.get_operator()
@@ -194,5 +194,5 @@ class CreateOperator(Task):
             "file_dep": [self.path_pickle],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_operator]

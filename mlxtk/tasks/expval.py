@@ -1,7 +1,7 @@
 import os
 import shutil
 import subprocess
-from typing import List
+from typing import Any, Callable, Dict, List
 
 from .. import cwd, log
 from ..doit_compat import DoitAction
@@ -30,7 +30,7 @@ class ComputeExpectationValue(Task):
         self.path_expval = self.name + ".exp"
         self.path_wave_function = os.path.join(self.dirname, "final.wfn")
 
-    def task_compute(self):
+    def task_compute(self) -> Dict[str, Any]:
         @DoitAction
         def action_copy_operator(targets: List[str]):
             del targets
@@ -86,5 +86,5 @@ class ComputeExpectationValue(Task):
                 "file_dep": [self.path_psi, self.path_operator],
             }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_compute]

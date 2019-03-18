@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Callable, Dict, List
 
 import numpy
 
@@ -18,7 +18,7 @@ class ComputeVariance(Task):
         self.path_expectation_value_squared = self.expectation_value_squared + ".exp"
         self.path_variance = self.name + ".var"
 
-    def task_compute(self):
+    def task_compute(self) -> Dict[str, Any]:
         @DoitAction
         def action_compute(targets: List[str]):
             del targets
@@ -40,5 +40,5 @@ class ComputeVariance(Task):
             [self.path_expectation_value, self.path_expectation_value_squared],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_compute]

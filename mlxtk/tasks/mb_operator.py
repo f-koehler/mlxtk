@@ -1,5 +1,5 @@
 import pickle
-from typing import Any, Dict, Iterable, List, Union
+from typing import Any, Callable, Dict, Iterable, List, Union
 
 from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
@@ -122,7 +122,7 @@ class MBOperatorSpecification:
 
         op.addLabel(name, Term(**term_kwargs))
 
-    def get_operator(self):
+    def get_operator(self) -> Operator:
         op = Operator()
         op.define_dofs_and_grids(self.dofs,
                                  [grid.get() for grid in self.grids])
@@ -200,5 +200,5 @@ class CreateMBOperator(Task):
             "file_dep": [self.path_pickle],
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_operator]

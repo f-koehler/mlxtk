@@ -1,6 +1,7 @@
 import shutil
 import os
 import sys
+from typing import Any, Callable, Dict, List
 
 from ..parameters import Parameters
 from ..wave_function_db import load_db
@@ -32,7 +33,7 @@ class RequestWaveFunction(Task):
         self.compute = compute
         self.path = self.name + ".wfn"
 
-    def task_request_wave_function(self):
+    def task_request_wave_function(self) -> Dict[str, Any]:
         db = load_db(self.db_path, self.variable_name)
         db.working_dir = os.path.join(os.path.dirname(self.db_path), db.name)
 
@@ -57,5 +58,5 @@ class RequestWaveFunction(Task):
             "verbosity": 2
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_request_wave_function]

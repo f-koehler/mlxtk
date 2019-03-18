@@ -3,7 +3,7 @@ import os
 import pickle
 import shutil
 import subprocess
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
 from .. import cwd, log
 from ..doit_compat import DoitAction
@@ -237,7 +237,7 @@ class Propagate(Task):
             "verbosity": 2,
         }
 
-    def get_tasks_run(self):
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_propagate]
 
 

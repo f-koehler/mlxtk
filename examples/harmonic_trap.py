@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     sim += mlxtk.tasks.create_mctdhb_wave_function("initial", "hamiltonian_1b",
                                                    parameters.N, parameters.m)
-    sim += mlxtk.tasks.improved_relax(
-        "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01)
-    sim += mlxtk.tasks.propagate(
+    sim += mlxtk.tasks.ImprovedRelax(
+        "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01)()
+    sim += mlxtk.tasks.Propagate(
         "propagate",
         "gs_relax/final",
         "hamiltonian_quenched",
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         dt=0.05,
         psi=True,
         keep_psi=True,
-    )
+    )()
 
     sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")()
     sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")()

@@ -1,7 +1,7 @@
 from .expval import ComputeExpectationValue
 from .mb_operator import (MBOperatorSpecification, CreateMBOperator)
 from .operator import OperatorSpecification, CreateOperator
-from .propagate import diagonalize, improved_relax, propagate, relax
+from .propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from .spectrum import compute_spectrum
 from .variance import ComputeVariance
 from .wave_function import request_wave_function
@@ -13,12 +13,12 @@ assert ComputeVariance
 assert CreateMBOperator
 assert create_mctdhb_wave_function
 assert CreateOperator
-assert diagonalize
-assert improved_relax
+assert Diagonalize
+assert ImprovedRelax
 assert mctdhb_add_momentum
 assert mctdhb_add_momentum_split
-assert propagate
-assert relax
+assert Propagate
+assert Relax
 assert request_wave_function
 
 assert MBOperatorSpecification

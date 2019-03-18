@@ -27,11 +27,11 @@ if __name__ == "__main__":
             "com", system.get_center_of_mass_operator())
         sim += mlxtk.tasks.CreateMBOperator(
             "com_2", system.get_center_of_mass_operator_squared())
-        sim += mlxtk.tasks.create_mctdhb_wave_function(
-            "initial", "hamiltonian_1b", p.N, p.m)
-        sim += mlxtk.tasks.improved_relax(
+        sim += mlxtk.tasks.CreateMCTDHBWaveFunction("initial",
+                                                    "hamiltonian_1b", p.N, p.m)
+        sim += mlxtk.tasks.ImprovedRelax(
             "gs_relax", "initial", "hamiltonian", "1", tfinal=1000.0, dt=0.01)
-        sim += mlxtk.tasks.propagate(
+        sim += mlxtk.tasks.Propagate(
             "propagate",
             "gs_relax/final",
             "hamiltonian_quenched",
@@ -40,10 +40,9 @@ if __name__ == "__main__":
             psi=True,
             keep_psi=True,
         )
-        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")()
-        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")()
-        sim += mlxtk.tasks.ComputeVariance("propagate/com",
-                                           "propagate/com_2")()
+        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")
+        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")
+        sim += mlxtk.tasks.ComputeVariance("propagate/com", "propagate/com_2")
 
         return sim
 

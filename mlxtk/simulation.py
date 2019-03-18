@@ -13,12 +13,13 @@ LOGGER = log.get_logger(__name__)
 class Simulation:
     def __init__(self, name: str, working_dir: Optional[str] = None):
         self.name = name
-        self.working_dir = os.path.abspath(name if working_dir is None else working_dir)
+        self.working_dir = os.path.abspath(
+            name if working_dir is None else working_dir)
         self.task_generators = []
         self.logger = log.get_logger(__name__)
 
-    def __iadd__(self, generators):
-        self.task_generators += generators
+    def __iadd__(self, generator):
+        self.task_generators += generator()
         return self
 
     def create_working_dir(self):

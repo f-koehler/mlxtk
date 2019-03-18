@@ -17,6 +17,6 @@ if __name__ == "__main__":
     sim = mlxtk.Simulation("spectrum_from_spec")
 
     sim += mlxtk.tasks.ComputeSpectrum(system.get_hamiltonian_1b(),
-                                       parameters.m, "hamiltonian_1b")()
+                                       parameters.m, "hamiltonian_1b")
 
     sim.main()

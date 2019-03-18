@@ -1,5 +1,5 @@
 from .expval import ComputeExpectationValue
-from .mb_operator import (MBOperatorSpecification, create_mb_operator)
+from .mb_operator import (MBOperatorSpecification, CreateMBOperator)
 from .operator import OperatorSpecification, CreateOperator
 from .propagate import diagonalize, improved_relax, propagate, relax
 from .spectrum import compute_spectrum
@@ -10,7 +10,7 @@ from .wfn_mcthdb import create_mctdhb_wave_function, mctdhb_add_momentum, mctdhb
 assert ComputeExpectationValue
 assert compute_spectrum
 assert ComputeVariance
-assert create_mb_operator
+assert CreateMBOperator
 assert create_mctdhb_wave_function
 assert CreateOperator
 assert diagonalize

@@ -38,15 +38,18 @@ if __name__ == "__main__":
             tfinal=5.0,
             dt=0.05,
             psi=True,
-            keep_psi=True, )
-        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")
-        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")
-        sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
+            keep_psi=True,
+        )
+        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")()
+        sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")()
+        sim += mlxtk.tasks.ComputeVariance("propagate/com",
+                                           "propagate/com_2")()
 
         return sim
 
     scan = mlxtk.ParameterScan(
         "harmonic_trap_scan",
         create_simulation,
-        mlxtk.parameters.generate_all(parameters, {"m": [1, 2]}), )
+        mlxtk.parameters.generate_all(parameters, {"m": [1, 2]}),
+    )
     scan.main()

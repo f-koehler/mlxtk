@@ -3,13 +3,13 @@ from .mb_operator import (MBOperatorSpecification, create_mb_operator)
 from .operator import OperatorSpecification, create_operator
 from .propagate import diagonalize, improved_relax, propagate, relax
 from .spectrum import compute_spectrum
-from .variance import compute_variance
+from .variance import ComputeVariance
 from .wave_function import request_wave_function
 from .wfn_mcthdb import create_mctdhb_wave_function, mctdhb_add_momentum, mctdhb_add_momentum_split
 
 assert ComputeExpectationValue
 assert compute_spectrum
-assert compute_variance
+assert ComputeVariance
 assert create_mb_operator
 assert create_mctdhb_wave_function
 assert create_operator

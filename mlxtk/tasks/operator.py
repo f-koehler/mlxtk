@@ -1,9 +1,7 @@
 """Create operators acting on distinguishable degrees of freedom.
 """
-import gzip
-import io
 import pickle
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, List, Union
 
 import h5py
 import numpy
@@ -16,6 +14,7 @@ from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
 from ..tools.operator import get_operator_matrix
+from .task import Task
 
 
 class OperatorSpecification:
@@ -28,7 +27,8 @@ class OperatorSpecification:
             dofs: List[DVRSpecification],
             coefficients: List[Any],
             terms: List[Any],
-            table: Union[str, List[str]], ):
+            table: Union[str, List[str]],
+    ):
         self.dofs = dofs
         self.coefficients = coefficients
         self.terms = terms
@@ -111,55 +111,56 @@ class OperatorSpecification:
         return op
 
 
-def create_operator(name: str, *args, **kwargs):
-    if "specification" in kwargs:
-        return create_operator_impl(name, kwargs["specification"])
+class CreateOperator(Task):
+    def __init__(self, name: str, *args, **kwargs):
+        self.name = name
 
-    if isinstance(args[0], OperatorSpecification):
-        return create_operator_impl(name, args[0])
+        if "specification" in kwargs:
+            self.specification = kwargs["specification"]
+        else:
+            if isinstance(args[0], OperatorSpecification):
+                self.specification = args[0]
+            else:
+                self.specification = OperatorSpecification(*args, **kwargs)
 
-    return create_operator_impl(name, OperatorSpecification(*args, **kwargs))
+        self.path = name + ".opr"
+        self.path_matrix = name + ".opr_mat.hdf5"
+        self.path_pickle = name + ".opr_pickle"
 
-
-def create_operator_impl(name: str, specification: OperatorSpecification
-                         ) -> List[Callable[[], Dict[str, Any]]]:
-    path_pickle = name + ".opr_pickle"
-
-    def task_write_parameters():
+    def task_write_parameters(self):
         @DoitAction
-        def action_write_parameters(targets):
-            obj = [
-                name,
-                specification.dofs,
-                specification.coefficients,
-                {},
-                specification.table,
-            ]
-            for term in specification.terms:
-                obj[3][term] = inaccurate_hash(specification.terms[term])
+        def action_write_parameters(targets: List[str]):
+            del targets
 
-            with open(targets[0], "wb") as fp:
+            obj = [
+                self.name,
+                self.specification.dofs,
+                self.specification.coefficients,
+                {},
+                self.specification.table,
+            ]
+            for term in self.specification.terms:
+                obj[3][term] = inaccurate_hash(self.specification.terms[term])
+
+            with open(self.path_pickle, "wb") as fp:
                 pickle.dump(obj, fp)
 
         return {
-            "name": "operator:{}:write_parameters".format(name),
+            "name": "operator:{}:write_parameters".format(self.name),
             "actions": [action_write_parameters],
-            "targets": [path_pickle],
+            "targets": [self.path_pickle]
         }
 
-    def task_write_operator():
-        path = name + ".opr"
-        path_matrix = name + ".opr_mat.hdf5"
-
+    def task_write_operator(self):
         @DoitAction
         def action_write_operator(targets):
-            op = specification.get_operator()
+            op = self.specification.get_operator()
 
-            with open(path, "w") as fp:
+            with open(self.path, "w") as fp:
                 op.createOperatorFile(fp)
 
             matrix = get_operator_matrix(op)
-            with h5py.File(path_matrix, "w") as fp:
+            with h5py.File(self.path_matrix, "w") as fp:
                 dset = fp.create_dataset(
                     "matrix",
                     matrix.shape,
@@ -167,13 +168,14 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                     compression="gzip")
                 dset[:, :] = matrix
 
-                for i, dof in enumerate(specification.dofs):
+                for i, dof in enumerate(self.specification.dofs):
                     grid = dof.get_x()
                     dset = fp.create_dataset(
                         "grid_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip", )
+                        compression="gzip",
+                    )
                     dset[:] = grid
 
                     weights = dof.get_weights()
@@ -181,14 +183,16 @@ def create_operator_impl(name: str, specification: OperatorSpecification
                         "weights_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
-                        compression="gzip", )
+                        compression="gzip",
+                    )
                     dset[:] = weights
 
         return {
-            "name": "operator:{}:create".format(name),
+            "name": "operator:{}:create".format(self.name),
             "actions": [action_write_operator],
-            "targets": [path, path_matrix],
-            "file_dep": [path_pickle],
+            "targets": [self.path, self.path_matrix],
+            "file_dep": [self.path_pickle],
         }
 
-    return [task_write_parameters, task_write_operator]
+    def get_tasks_run(self):
+        return [self.task_write_parameters, self.task_write_operator]

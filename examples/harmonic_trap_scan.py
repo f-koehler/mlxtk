@@ -17,8 +17,8 @@ if __name__ == "__main__":
         system_quenched = HarmonicTrap(p_quenched, x)
 
         sim = mlxtk.Simulation("harmonic_trap")
-        sim += mlxtk.tasks.create_operator("hamiltonian_1b",
-                                           system.get_hamiltonian_1b())
+        sim += mlxtk.tasks.CreateOperator("hamiltonian_1b",
+                                          system.get_hamiltonian_1b())
         sim += mlxtk.tasks.create_mb_operator("hamiltonian",
                                               system.get_hamiltonian())
         sim += mlxtk.tasks.create_mb_operator(

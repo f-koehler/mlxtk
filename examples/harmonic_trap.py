@@ -18,8 +18,8 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("harmonic_trap")
 
-    sim += mlxtk.tasks.create_operator("hamiltonian_1b",
-                                       system.get_hamiltonian_1b())
+    sim += mlxtk.tasks.CreateOperator("hamiltonian_1b",
+                                      system.get_hamiltonian_1b())()
     sim += mlxtk.tasks.create_mb_operator("hamiltonian",
                                           system.get_hamiltonian())
     sim += mlxtk.tasks.create_mb_operator("hamiltonian_quenched",
@@ -40,7 +40,8 @@ if __name__ == "__main__":
         tfinal=5.0,
         dt=0.05,
         psi=True,
-        keep_psi=True, )
+        keep_psi=True,
+    )
 
     sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")()
     sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")()

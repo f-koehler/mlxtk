@@ -42,8 +42,8 @@ if __name__ == "__main__":
         psi=True,
         keep_psi=True, )
 
-    sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com")
-    sim += mlxtk.tasks.compute_expectation_value("propagate/psi", "com_2")
+    sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")()
+    sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")()
     sim += mlxtk.tasks.compute_variance("propagate/com", "propagate/com_2")
 
     sim.main()

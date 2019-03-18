@@ -1,4 +1,3 @@
-import gzip
 import os
 import shutil
 import subprocess
@@ -6,70 +5,86 @@ from typing import List
 
 from .. import cwd, log
 from ..doit_compat import DoitAction
-from ..inout.expval import read_expval_ascii, write_expval_hdf5
+from .task import Task
 
 LOGGER = log.get_logger(__name__)
 
 
-def compute_expectation_value(psi: str, operator: str, **kwargs):
-    name = kwargs.get("name",
-                      os.path.join(
-                          os.path.dirname(psi), os.path.basename(operator)))
+class ComputeExpectationValue(Task):
+    def __init__(self, psi: str, operator: str, **kwargs):
+        self.psi = psi
+        self.operator = operator
+        self.dirname = os.path.dirname(psi)
 
-    dirname = os.path.dirname(psi)
+        # compute the name of the expectation value based on the operator name,
+        # when no name is explicitly specified
+        self.name = kwargs.get(
+            "name",
+            os.path.join(os.path.dirname(psi), os.path.basename(operator)))
 
-    def task_compute():
-        path_opr = operator + ".mb_opr"
-        path_opr_tmp = os.path.join(dirname, operator + ".mb_opr")
-        path_psi = psi
-        path_expval = name + ".exp"
-        path_wfn = os.path.join(dirname, "final.wfn")
+        # compute required paths
+        self.path_operator = self.operator + ".mb_opr"
+        self.path_operator_copy = os.path.join(
+            os.path.dirname(psi), self.operator + ".mb_opr")
+        self.path_psi = self.psi
+        self.path_expval = self.name + ".exp"
+        self.path_wave_function = os.path.join(self.dirname, "final.wfn")
 
+    def task_compute(self):
         @DoitAction
         def action_copy_operator(targets: List[str]):
             del targets
+
             LOGGER.info("copy operator")
-            shutil.copy2(path_opr, path_opr_tmp)
-
-        @DoitAction
-        def action_compute(targets: List[str]):
-            del targets
-
-            with cwd.WorkingDir(dirname):
-                LOGGER.info("compute expectation value")
-                cmd = [
-                    "qdtk_expect.x",
-                    "-psi",
-                    os.path.basename(path_psi),
-                    "-opr",
-                    os.path.basename(path_opr_tmp),
-                    "-rst",
-                    os.path.basename(path_wfn),
-                    "-save",
-                    os.path.basename(path_expval),
-                ]
-                LOGGER.info("command: %s", " ".join(cmd))
-                env = os.environ.copy()
-                env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
-                subprocess.run(cmd, env=env)
+            shutil.copy2(self.path_operator, self.path_operator_copy)
 
         @DoitAction
         def action_remove_operator(targets: List[str]):
             del targets
 
             LOGGER.info("remove operator")
-            os.remove(path_opr_tmp)
+            os.remove(self.path_operator_copy)
 
-        return {
-            "name":
-            "expval:{}:compute".format(name),
-            "actions": [
-                action_copy_operator,
-                action_compute,
-                action_remove_operator,
-            ],
-            "targets": [path_expval],
-            "file_dep": [path_psi, path_opr],
-        }
+        @DoitAction
+        def action_compute(targets: List[str]):
+            del targets
 
-    return [task_compute]
+            with cwd.WorkingDir(self.dirname):
+                LOGGER.info("compute expectation value")
+                cmd = [
+                    "qdtk_expect.x",
+                    "-psi",
+                    os.path.basename(self.path_psi),
+                    "-opr",
+                    os.path.basename(self.path_operator_copy),
+                    "-rst",
+                    os.path.basename(self.path_wave_function),
+                    "-save",
+                    os.path.basename(self.path_expval),
+                ]
+                LOGGER.info("command: %s", " ".join(cmd))
+                env = os.environ.copy()
+                env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                subprocess.run(cmd, env=env)
+
+        # add the copy and remove actions only when neccessary
+        if os.path.realpath(self.path_operator) != os.path.realpath(
+                self.path_operator_copy):
+            return {
+                "name":
+                "expval:{}:compute".format(self.name),
+                "actions":
+                [action_copy_operator, action_compute, action_remove_operator],
+                "targets": [self.path_expval],
+                "file_dep": [self.path_psi, self.path_operator],
+            }
+        else:
+            return {
+                "name": "expval:{}:compute".format(self.name),
+                "actions": [action_compute],
+                "targets": [self.path_expval],
+                "file_dep": [self.path_psi, self.path_operator],
+            }
+
+    def get_tasks_run(self):
+        return [self.task_compute]

@@ -14,15 +14,14 @@ if __name__ == "__main__":
         p_quenched = p.copy()
         p_quenched.g = 0.0
 
-        system = HarmonicTrap(p, x)
         system_quenched = HarmonicTrap(p_quenched, x)
 
         sim = mlxtk.Simulation("harmonic_trap")
-        sim += mlxtk.tasks.create_mb_operator(
-            "hamiltonian_quenched", system_quenched.get_hamiltonian())
-        sim += mlxtk.tasks.request_wave_function("initial", p,
-                                                 "harmonic_gs.py")
-        sim += mlxtk.tasks.propagate(
+        sim += mlxtk.tasks.CreateMBOperator(
+            "hamiltonian_quenched", system_quenched.get_hamiltonian())()
+        sim += mlxtk.tasks.RequestWaveFunction("initial", p,
+                                               "harmonic_gs.py")()
+        sim += mlxtk.tasks.Propagate(
             "propagate",
             "initial",
             "hamiltonian_quenched",
@@ -30,7 +29,7 @@ if __name__ == "__main__":
             dt=0.05,
             psi=True,
             keep_psi=True,
-        )
+        )()
 
         return sim
 

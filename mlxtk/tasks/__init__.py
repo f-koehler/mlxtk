@@ -4,7 +4,7 @@ from .operator import OperatorSpecification, CreateOperator
 from .propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from .spectrum import ComputeSpectrum
 from .variance import ComputeVariance
-from .wave_function import request_wave_function
+from .wave_function import RequestWaveFunction
 from .wfn_mcthdb import create_mctdhb_wave_function, mctdhb_add_momentum, mctdhb_add_momentum_split
 
 assert ComputeExpectationValue
@@ -19,7 +19,7 @@ assert mctdhb_add_momentum
 assert mctdhb_add_momentum_split
 assert Propagate
 assert Relax
-assert request_wave_function
+assert RequestWaveFunction
 
 assert MBOperatorSpecification
 assert OperatorSpecification

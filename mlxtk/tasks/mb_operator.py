@@ -8,6 +8,7 @@ from QDTK.Operatorb import OTerm as Term
 from ..doit_compat import DoitAction
 from ..dvr import DVRSpecification
 from ..hashing import inaccurate_hash
+from ..log import get_logger
 from .task import Task
 
 
@@ -140,6 +141,7 @@ class MBOperatorSpecification:
 class CreateMBOperator(Task):
     def __init__(self, name: str, *args, **kwargs):
         self.name = name
+        self.logger = get_logger(__name__)
 
         if "specification" in kwargs:
             self.specification = kwargs["specification"]

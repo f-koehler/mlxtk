@@ -6,12 +6,12 @@ import numpy
 
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
-from ..doit_compat import DoitAction
-from ..dvr import DVRSpecification
-from ..tools.diagonalize import diagonalize_1b_operator
-from ..tools.wave_function import (add_momentum, add_momentum_split,
-                                   load_wave_function, save_wave_function)
-from .task import Task
+from mlxtk.doit_compat import DoitAction
+from mlxtk.dvr import DVRSpecification
+from mlxtk.tools.diagonalize import diagonalize_1b_operator
+from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
+                                       load_wave_function, save_wave_function)
+from mlxtk.tasks.task import Task
 
 
 class CreateMCTDHBWaveFunction(Task):
@@ -100,6 +100,9 @@ class CreateMCTDHBWaveFunction(Task):
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_wave_function]
 
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []
+
 
 class MCTDHBAddMomentum(Task):
     def __init__(self, name: str, initial: str, momentum: float,
@@ -151,6 +154,9 @@ class MCTDHBAddMomentum(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []
 
 
 class MCTDHBAddMomentumSplit(Task):
@@ -205,3 +211,6 @@ class MCTDHBAddMomentumSplit(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum_split]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []

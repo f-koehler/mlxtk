@@ -1,5 +1,6 @@
 """Create operators acting on distinguishable degrees of freedom.
 """
+import os.path
 import pickle
 from typing import Any, Callable, Dict, List, Union
 
@@ -153,7 +154,7 @@ class CreateOperator(Task):
 
     def task_write_operator(self) -> Dict[str, Any]:
         @DoitAction
-        def action_write_operator(targets):
+        def action_write_operator(targets: List[str]):
             op = self.specification.get_operator()
 
             with open(self.path, "w") as fp:
@@ -194,5 +195,24 @@ class CreateOperator(Task):
             "file_dep": [self.path_pickle],
         }
 
+    def task_remove_operator(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_remove_operator(targets: List[str]):
+            del targets
+
+            if os.path.exists(self.path):
+                os.remove(self.path)
+
+            if os.path.exists(self.path_matrix):
+                os.remove(self.path_matrix)
+
+        return {
+            "name": "operator:{}:remove".format(self.name),
+            "actions": [action_remove_operator]
+        }
+
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_operator]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_remove_operator]

@@ -42,3 +42,6 @@ class ComputeVariance(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_compute]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []

@@ -3,8 +3,8 @@ import os
 import sys
 from typing import Any, Callable, Dict, List
 
-from ..parameters import Parameters
 from ..wave_function_db import load_db
+from ..parameters import Parameters
 from ..doit_compat import DoitAction
 from ..log import get_logger
 from ..cwd import WorkingDir
@@ -60,3 +60,6 @@ class RequestWaveFunction(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_request_wave_function]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []

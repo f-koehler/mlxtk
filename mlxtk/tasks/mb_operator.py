@@ -1,3 +1,4 @@
+import os
 import pickle
 from typing import Any, Callable, Dict, Iterable, List, Union
 
@@ -200,5 +201,21 @@ class CreateMBOperator(Task):
             "file_dep": [self.path_pickle],
         }
 
+    def task_remove_operator(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_remove_operator(targets: List[str]):
+            del targets
+
+            if os.path.exists(self.path):
+                os.remove(self.path)
+
+        return {
+            "name": "mb_operator:{}:remove".format(self.name),
+            "actions": [action_remove_operator]
+        }
+
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_operator]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_remove_operator]

@@ -3,11 +3,12 @@ import shutil
 import subprocess
 from typing import Any, Callable, Dict, List
 
-from .. import cwd, log
+from .. import cwd
+from ..log import get_logger
 from ..doit_compat import DoitAction
 from .task import Task
 
-LOGGER = log.get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 
 class ComputeExpectationValue(Task):
@@ -88,3 +89,6 @@ class ComputeExpectationValue(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_compute]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []

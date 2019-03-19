@@ -5,11 +5,12 @@ import shutil
 import subprocess
 from typing import Any, Callable, Dict, List, Tuple
 
-from .. import cwd, log
+from .. import cwd
+from ..log import get_logger
 from ..doit_compat import DoitAction
 from .task import Task
 
-LOGGER = log.get_logger(__name__)
+LOGGER = get_logger(__name__)
 
 FLAG_TYPES = {
     "MBop_apply": bool,
@@ -239,6 +240,9 @@ class Propagate(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_propagate]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []
 
 
 class Relax(Propagate):

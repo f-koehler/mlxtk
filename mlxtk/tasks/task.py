@@ -7,5 +7,9 @@ class Task(ABC):
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         pass
 
+    @abstractmethod
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        pass
+
     def __call__(self) -> List[Callable[[], Dict[str, Any]]]:
         return self.get_tasks_run()

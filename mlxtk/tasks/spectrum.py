@@ -114,3 +114,6 @@ class ComputeSpectrum(Task):
             ]
         else:
             return [self.task_check_num_spfs, self.task_compute]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []

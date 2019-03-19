@@ -15,11 +15,13 @@ class Simulation:
         self.name = name
         self.working_dir = os.path.abspath(
             name if working_dir is None else working_dir)
-        self.task_generators = []
+        self.tasks_run = []
+        self.tasks_clean = []
         self.logger = log.get_logger(__name__)
 
     def __iadd__(self, generator):
-        self.task_generators += generator()
+        self.tasks_run += generator()
+        self.tasks_clean += generator.get_tasks_clean()
         return self
 
     def create_working_dir(self):
@@ -34,7 +36,7 @@ class Simulation:
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
-                self.task_generators,
+                self.tasks_run,
                 ["graph", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
             )
 
@@ -57,7 +59,7 @@ class Simulation:
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
-                self.task_generators,
+                self.tasks_run,
                 ["list", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
             )
 
@@ -66,7 +68,23 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             with lock.LockFile("run.lock"):
                 doit_compat.run_doit(
-                    self.task_generators,
+                    self.tasks_run,
+                    [
+                        "-n",
+                        str(args.jobs),
+                        "--backend",
+                        "sqlite3",
+                        "--db-file",
+                        "doit.sqlite3",
+                    ],
+                )
+
+    def clean(self, args: argparse.Namespace):
+        self.create_working_dir()
+        with cwd.WorkingDir(self.working_dir):
+            with lock.LockFile("run.lock"):
+                doit_compat.run_doit(
+                    self.tasks_clean,
                     [
                         "-n",
                         str(args.jobs),
@@ -103,7 +121,7 @@ class Simulation:
     def task_info(self, args: argparse.Namespace):
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
-                self.task_generators,
+                self.tasks_run,
                 [
                     "info",
                     "--backend",
@@ -133,6 +151,15 @@ class Simulation:
             default=1,
             help="number of parallel workers")
 
+        # parser for clean
+        parser_clean = subparsers.add_parser("clean")
+        parser_clean.add_argument(
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of parallel workers")
+
         # parser for task-info
         parser_task_info = subparsers.add_parser("task-info")
         parser_task_info.add_argument("name")
@@ -156,6 +183,8 @@ class Simulation:
             self.graph(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "clean":
+            self.clean(args)
         elif args.subcommand == "qsub":
             self.qsub(args)
         elif args.subcommand == "qdel":

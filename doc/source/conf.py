@@ -14,9 +14,9 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(os.getcwd()), os.pardir)))
+sys.path.insert(
+    0, os.path.realpath(os.path.join(os.path.dirname(os.getcwd()), os.pardir)))
 # sys.path.insert(0, os.path.join(oos.path.abspath(__name__))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -28,7 +28,6 @@ author = 'Fabian Köhler'
 version = ''
 # The full version, including alpha/beta/rc tags
 release = '0.0.0'
-
 
 # -- General configuration ---------------------------------------------------
 
@@ -79,7 +78,6 @@ exclude_patterns = []
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -108,12 +106,10 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
-
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'mlxtkdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------------
 
@@ -139,20 +135,15 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'mlxtk.tex', 'mlxtk Documentation',
-     'Fabian Köhler', 'manual'),
+    (master_doc, 'mlxtk.tex', 'mlxtk Documentation', 'Fabian Köhler',
+     'manual'),
 ]
-
 
 # -- Options for manual page output ------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'mlxtk', 'mlxtk Documentation',
-     [author], 1)
-]
-
+man_pages = [(master_doc, 'mlxtk', 'mlxtk Documentation', [author], 1)]
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -160,11 +151,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'mlxtk', 'mlxtk Documentation',
-     author, 'mlxtk', 'One line description of project.',
-     'Miscellaneous'),
+    (master_doc, 'mlxtk', 'mlxtk Documentation', author, 'mlxtk',
+     'One line description of project.', 'Miscellaneous'),
 ]
-
 
 # -- Options for Epub output -------------------------------------------------
 
@@ -183,13 +172,18 @@ epub_title = project
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
 
-
 # -- Extension configuration -------------------------------------------------
 
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None, 'numpy': ('https://docs.scipy.org/doc/numpy/', None), 'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None), 'matplotlib': ('https://matplotlib.org/', None), 'h5py': ('http://docs.h5py.org/en/latest/', None)}
+intersphinx_mapping = {
+    'https://docs.python.org/': None,
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'h5py': ('http://docs.h5py.org/en/latest/', None)
+}
 
 # -- Options for todo extension ----------------------------------------------
 

@@ -73,4 +73,5 @@ simulation outcome.
         "Topic :: Scientific/Engineering :: Physics",
     ],
     python_requires=">=3.5",
-    zip_safe=True, )
+    zip_safe=True,
+)

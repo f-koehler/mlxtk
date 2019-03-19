@@ -9,9 +9,7 @@ def plot_energy(ax: Axes, time: numpy.ndarray, energy: numpy.ndarray,
     ax.set_ylabel("$E(t)$")
 
 
-def plot_energy_diff(ax: Axes,
-                     time: numpy.ndarray,
-                     energy1: numpy.ndarray,
+def plot_energy_diff(ax: Axes, time: numpy.ndarray, energy1: numpy.ndarray,
                      energy2: numpy.ndarray):
     ax.plot(time, energy1 - energy2)
     ax.set_xlabel("$t$")

@@ -38,8 +38,8 @@ def read_psi_ascii(path):
 
     tape = numpy.array(tape, dtype=numpy.int64)
     times = numpy.array(times)
-    psis = numpy.array(
-        [numpy.array(psi).transpose() for psi in psis], dtype=numpy.complex128)
+    psis = numpy.array([numpy.array(psi).transpose() for psi in psis],
+                       dtype=numpy.complex128)
 
     return [tape, times, psis]
 

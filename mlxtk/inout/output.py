@@ -33,22 +33,30 @@ def read_output_ascii(
     """
     df = pandas.read_csv(
         path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
-    return (df["time"].values, df["norm"].values, df["energy"].values,
-            df["overlap"].values, )
+    return (
+        df["time"].values,
+        df["norm"].values,
+        df["energy"].values,
+        df["overlap"].values,
+    )
 
 
 def read_output_hdf5(
-        path: str, interior_path: str="/"
+        path: str, interior_path: str = "/"
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fp:
-        return (fp[interior_path]["time"][:], fp[interior_path]["norm"][:],
-                fp[interior_path]["energy"][:],
-                fp[interior_path]["overlap"][:], )
+        return (
+            fp[interior_path]["time"][:],
+            fp[interior_path]["norm"][:],
+            fp[interior_path]["energy"][:],
+            fp[interior_path]["overlap"][:],
+        )
 
 
-def write_output_hdf5(path: str,
-                      data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                                  numpy.ndarray]):
+def write_output_hdf5(
+        path: str,
+        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(
             "time", data[0].shape, dtype=data[0].dtype, compression="gzip")

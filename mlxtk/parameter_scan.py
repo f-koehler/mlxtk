@@ -125,7 +125,25 @@ class ParameterScan(SimulationSet):
                     subprocess.run(["rm", link])
                 subprocess.run(["ln", "-s", "-f", "-r", path, link])
 
+    def unlink_simulations(self):
+        if not os.path.exists(self.working_dir):
+            return
+
+        with cwd.WorkingDir(self.working_dir):
+            if os.path.exists("by_index"):
+                with cwd.WorkingDir("by_index"):
+                    for entry in os.listdir(os.getcwd()):
+                        if os.path.islink(entry):
+                            os.unlink(entry)
+
+            if os.path.exists("by_param"):
+                with cwd.WorkingDir("by_param"):
+                    for entry in os.listdir(os.getcwd()):
+                        if os.path.islink(entry):
+                            os.unlink(entry)
+
     def run(self, args: argparse.Namespace):
+        self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
@@ -144,12 +162,14 @@ class ParameterScan(SimulationSet):
         raise ValueError("Parameters not included: " + str(parameters))
 
     def qsub(self, args: argparse.Namespace):
+        self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
         super().qsub(args)
 
     def qsub_array(self, args: argparse.Namespace):
+        self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 

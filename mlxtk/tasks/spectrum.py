@@ -18,18 +18,7 @@ class ComputeSpectrum(Task):
                  hamiltonian_1b: Union[str, OperatorSpecification],
                  num_spfs: int,
                  hamiltonian_1b_name: str = None):
-        if isinstance(hamiltonian_1b, OperatorSpecification):
-            if hamiltonian_1b_name is None:
-                raise ValueError(
-                    "hamiltonian_1b_name is required when using an OperatorSpecification"
-                )
-            else:
-                self.name = hamiltonian_1b_name
-                self.from_spec = True
-        else:
-            self.name = hamiltonian_1b
-            self.from_spec = False
-
+        self.name = hamiltonian_1b
         self.hamiltonian_1b = hamiltonian_1b
         self.num_spfs = num_spfs
 
@@ -53,22 +42,6 @@ class ComputeSpectrum(Task):
             "actions": [action_check_num_spfs]
         }
 
-    def task_hash_matrix(self) -> Dict[str, Any]:
-        @DoitAction
-        def action_matrix_hash(targets):
-            del targets
-
-            self.matrix = get_operator_matrix(
-                self.hamiltonian_1b.get_operator())
-            with open(self.path_matrix_hash, "w") as fp:
-                hsh = inaccurate_hash(self.matrix)
-                fp.write(hsh)
-
-        return {
-            "name": "spectrum:{}:write_matrix_hash".format(self.name),
-            "actions": [action_matrix_hash],
-        }
-
     def task_compute(self):
         @DoitAction
         def action_compute(targets):
@@ -89,31 +62,8 @@ class ComputeSpectrum(Task):
             "file_dep": [self.path_matrix],
         }
 
-    def task_compute_from_spec(self):
-        @DoitAction
-        def action_compute(targets):
-            del targets
-
-            energies, spfs = diagonalize_1b_operator(self.matrix,
-                                                     self.num_spfs)
-            spfs_arr = numpy.array(spfs)
-            write_spectrum(self.path, energies, spfs_arr)
-
-        return {
-            "name": "spectrum:{}:compute_from_spec".format(self.name),
-            "actions": [action_compute],
-            "targets": [self.path],
-            "file_dep": [self.path_matrix_hash],
-        }
-
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
-        if self.from_spec:
-            return [
-                self.task_check_num_spfs, self.task_hash_matrix,
-                self.task_compute_from_spec
-            ]
-        else:
-            return [self.task_check_num_spfs, self.task_compute]
+        return [self.task_check_num_spfs, self.task_compute]
 
     def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
         return []

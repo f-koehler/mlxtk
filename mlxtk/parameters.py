@@ -59,7 +59,7 @@ class Parameters:
         if common_parameters:
             names = common_parameters
         else:
-            names = self.get_common_parameters(other)
+            names = self.get_common_parameter_names(other)
 
         for name in names:
             if self[name] != other[name]:

@@ -81,7 +81,7 @@ class MBOperatorSpecification:
         return cpy
 
     def __rmul__(self, other):
-        return self.__mul__(self, other)
+        return self.__mul__(other)
 
     def __itruediv__(self, other):
         for name in self.coefficients:

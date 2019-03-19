@@ -139,7 +139,7 @@ class MCTDHBAddMomentum(Task):
 
             # pylint: disable=protected-access
 
-            wfn = load_wave_function(self.initial_path)
+            wfn = load_wave_function(self.path_initial)
             wfn.tree._topNode._pgrid[0] = self.grid.get_x()
             add_momentum(wfn, self.momentum)
             save_wave_function(self.path, wfn)
@@ -196,7 +196,7 @@ class MCTDHBAddMomentumSplit(Task):
 
             # pylint: disable=protected-access
 
-            wfn = load_wave_function(self.initial_path)
+            wfn = load_wave_function(self.path_initial)
             wfn.tree._topNode._pgrid[0] = self.grid.get_x()
             add_momentum_split(wfn, self.momentum, self.x0)
             save_wave_function(self.path, wfn)

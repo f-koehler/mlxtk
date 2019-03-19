@@ -66,6 +66,8 @@ class SimulationSet:
         self.working_dir = os.path.abspath(
             name) if working_dir is None else working_dir
 
+        self.logger = get_logger(__name__)
+
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
         subparsers = self.argparser.add_subparsers(dest="subcommand")

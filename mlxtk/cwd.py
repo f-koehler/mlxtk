@@ -1,7 +1,6 @@
 """Change the working directory properly.
 """
 import os
-import traceback
 
 from . import log
 

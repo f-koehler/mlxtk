@@ -1,14 +1,22 @@
+"""Compute expecation values of operators.
+
+This module hosts the implementation of a task to compute the expectation value
+of an arbitary operator.
+
+Todo:
+    * Compute a static expectation value from a restart file
+    * Implement case of distinguishable degrees of freedom
+"""
+
 import os
 import shutil
 import subprocess
 from typing import Any, Callable, Dict, List
 
 from .. import cwd
-from ..log import get_logger
 from ..doit_compat import DoitAction
+from ..log import get_logger
 from .task import Task
-
-LOGGER = get_logger(__name__)
 
 
 class ComputeExpectationValue(Task):
@@ -16,6 +24,8 @@ class ComputeExpectationValue(Task):
         self.psi = psi
         self.operator = operator
         self.dirname = os.path.dirname(psi)
+
+        self.logger = get_logger(__name__)
 
         # compute the name of the expectation value based on the operator name,
         # when no name is explicitly specified
@@ -36,14 +46,14 @@ class ComputeExpectationValue(Task):
         def action_copy_operator(targets: List[str]):
             del targets
 
-            LOGGER.info("copy operator")
+            self.logger.info("copy operator")
             shutil.copy2(self.path_operator, self.path_operator_copy)
 
         @DoitAction
         def action_remove_operator(targets: List[str]):
             del targets
 
-            LOGGER.info("remove operator")
+            self.logger.info("remove operator")
             os.remove(self.path_operator_copy)
 
         @DoitAction
@@ -51,7 +61,7 @@ class ComputeExpectationValue(Task):
             del targets
 
             with cwd.WorkingDir(self.dirname):
-                LOGGER.info("compute expectation value")
+                self.logger.info("compute expectation value")
                 cmd = [
                     "qdtk_expect.x",
                     "-psi",
@@ -63,7 +73,7 @@ class ComputeExpectationValue(Task):
                     "-save",
                     os.path.basename(self.path_expval),
                 ]
-                LOGGER.info("command: %s", " ".join(cmd))
+                self.logger.info("command: %s", " ".join(cmd))
                 env = os.environ.copy()
                 env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                 subprocess.run(cmd, env=env)
@@ -79,13 +89,13 @@ class ComputeExpectationValue(Task):
                 "targets": [self.path_expval],
                 "file_dep": [self.path_psi, self.path_operator],
             }
-        else:
-            return {
-                "name": "expval:{}:compute".format(self.name),
-                "actions": [action_compute],
-                "targets": [self.path_expval],
-                "file_dep": [self.path_psi, self.path_operator],
-            }
+
+        return {
+            "name": "expval:{}:compute".format(self.name),
+            "actions": [action_compute],
+            "targets": [self.path_expval],
+            "file_dep": [self.path_psi, self.path_operator],
+        }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_compute]

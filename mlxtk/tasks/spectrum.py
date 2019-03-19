@@ -5,21 +5,16 @@ import h5py
 import numpy
 
 from ..doit_compat import DoitAction
-from ..hashing import inaccurate_hash
 from ..inout.spectrum import read_spectrum, write_spectrum
 from ..tools.diagonalize import diagonalize_1b_operator
-from ..tools.operator import get_operator_matrix
 from .operator import OperatorSpecification
 from .task import Task
 
 
 class ComputeSpectrum(Task):
-    def __init__(self,
-                 hamiltonian_1b: Union[str, OperatorSpecification],
-                 num_spfs: int,
-                 hamiltonian_1b_name: str = None):
+    def __init__(self, hamiltonian_1b: Union[str, OperatorSpecification],
+                 num_spfs: int):
         self.name = hamiltonian_1b
-        self.hamiltonian_1b = hamiltonian_1b
         self.num_spfs = num_spfs
 
         self.path = self.name + ".spectrum.hdf5"
@@ -48,10 +43,9 @@ class ComputeSpectrum(Task):
             del targets
 
             with h5py.File(self.path_matrix, "r") as fp:
-                self.matrix = fp["matrix"][:, :]
+                matrix = fp["matrix"][:, :]
 
-            energies, spfs = diagonalize_1b_operator(self.matrix,
-                                                     self.num_spfs)
+            energies, spfs = diagonalize_1b_operator(matrix, self.num_spfs)
             spfs_arr = numpy.array(spfs)
             write_spectrum(self.path, energies, spfs_arr)
 

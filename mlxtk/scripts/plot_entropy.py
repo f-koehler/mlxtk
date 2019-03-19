@@ -1,7 +1,6 @@
 import argparse
 
 import matplotlib.pyplot as plt
-import numpy
 
 from ..inout.natpop import read_natpop
 from ..plot.entropy import plot_entropy

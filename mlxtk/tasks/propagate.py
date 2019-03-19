@@ -6,8 +6,8 @@ import subprocess
 from typing import Any, Callable, Dict, List, Tuple
 
 from .. import cwd
-from ..log import get_logger
 from ..doit_compat import DoitAction
+from ..log import get_logger
 from .task import Task
 
 LOGGER = get_logger(__name__)

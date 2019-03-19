@@ -1,3 +1,8 @@
+"""Compatibility layer for the DoIt library.
+
+This module provides various helper functions and classes to use the
+`DoIt <http://pydoit.org/>`_ library in a way that is adequate for mlxtk.
+"""
 from doit.cmd_base import TaskLoader
 from doit.doit_cmd import DoitMain
 from doit.task import dict_to_task
@@ -9,6 +14,8 @@ class CustomTaskLoader(TaskLoader):
     def __init__(self, task_generators):
         self.task_generators = task_generators
 
+        super().__init__()
+
     def load_tasks(self, cmd, opt_values, pos_args):
         del cmd
         del opt_values
@@ -19,7 +26,9 @@ class CustomTaskLoader(TaskLoader):
         return tasks, {}
 
 
-def run_doit(task_generators, arguments=[]):
+def run_doit(task_generators, arguments=None) -> int:
+    if arguments is None:
+        raise ValueError("No arguments passed to DoitMain")
     return DoitMain(CustomTaskLoader(task_generators)).run(arguments)
 
 

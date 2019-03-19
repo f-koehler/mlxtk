@@ -93,8 +93,6 @@ def open_log_file(path: str, mode: str = "a"):
 def close_log_file():
     """Close the log file
     """
-    global FILE_HANDLER
-
     if FILE_HANDLER is not None:
         for logger in LOGGERS:
             logger.removeHandler(FILE_HANDLER)

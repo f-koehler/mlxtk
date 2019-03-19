@@ -1,3 +1,11 @@
+"""A simple lock file implementation.
+
+This module contains a simple class to represent a lock file that can be used
+to prevent simultaneous accesses.
+
+Todo:
+    * Use ``pathlib.Path.touch`` with ``exist_ok=False`` to create file.
+"""
 import json
 import os
 import platform
@@ -8,6 +16,14 @@ LOGGER = get_logger(__name__)
 
 
 class LockFileExistsError(Exception):
+    """Error that is thrown when a lock file already exists.
+
+    Args:
+        path: path of the lock file
+        host: host on which the file is locked
+        pid: id of the process that locked the file
+    """
+
     def __init__(self, path: str, host: str, pid: int):
         message = "Lock file {} exists (locked by PID {} on host {})".format(
             path, pid, host)

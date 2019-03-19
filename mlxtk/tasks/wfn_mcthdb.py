@@ -4,14 +4,13 @@ from typing import Any, Callable, Dict, List
 import h5py
 import numpy
 
-from QDTK.Wavefunction import Wavefunction as WaveFunction
-
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
+from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
                                        load_wave_function, save_wave_function)
-from mlxtk.tasks.task import Task
+from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 
 class CreateMCTDHBWaveFunction(Task):

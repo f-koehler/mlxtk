@@ -191,6 +191,8 @@ class CreateMBOperator(Task):
     def task_write_operator(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_operator(targets: List[str]):
+            del targets
+
             op = self.specification.get_operator()
             op.createOperatorFileb(self.path)
 

@@ -1,8 +1,7 @@
 import copy
 import itertools
 import json
-from typing import (Any, Callable, Dict, Generator, Iterable, List, Optional,
-                    Tuple, Union)
+from typing import Any, Dict, Generator, Iterable, List, Optional, Tuple, Union
 
 
 class Parameters:

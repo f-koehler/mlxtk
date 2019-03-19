@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euf -o pipefail
+
+FILES=`find mlxtk examples -name "*.py"`
+
+echo "Run isort"
+isort -j $(nproc) ${FILES} || exit
+
+echo "Run yapf"
+yapf --parallel --in-place --style=pep8 ${FILES} || exit

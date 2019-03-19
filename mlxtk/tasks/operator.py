@@ -155,6 +155,8 @@ class CreateOperator(Task):
     def task_write_operator(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_operator(targets: List[str]):
+            del targets
+
             op = self.specification.get_operator()
 
             with open(self.path, "w") as fp:

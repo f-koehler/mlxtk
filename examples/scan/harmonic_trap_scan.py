@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
     parameters = HarmonicTrap.create_parameters()
     parameters.g = 0.1
+    parameters.N = 2
 
     def create_simulation(p):
         p_quenched = p.copy()
@@ -49,6 +50,6 @@ if __name__ == "__main__":
     scan = mlxtk.ParameterScan(
         "harmonic_trap_scan",
         create_simulation,
-        mlxtk.parameters.generate_all(parameters, {"m": [1, 2]}),
+        mlxtk.parameters.generate_all(parameters, {"m": [1, 2, 3, 4, 5]}),
     )
     scan.main()

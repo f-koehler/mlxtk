@@ -4,7 +4,7 @@ import os.path
 import pathlib
 import pickle
 import time
-from typing import Callable
+from typing import Callable, List
 
 from . import cwd
 from .hashing import hash_string
@@ -12,6 +12,8 @@ from .log import get_logger
 from .parameter_scan import ParameterScan
 from .parameters import Parameters
 from .simulation import Simulation
+
+assert List
 
 LOGGER = get_logger(__name__)
 
@@ -59,8 +61,8 @@ class WaveFunctionDB(ParameterScan):
                  working_dir: str = None):
         self.logger = get_logger(__name__)
         self.prototype = prototype
-        self.stored_wave_functions = []
-        self.missing_wave_functions = []
+        self.stored_wave_functions = []  # type: List[Parameters]
+        self.missing_wave_functions = []  # type: List[Parameters]
         self.wfn_path = wfn_path
 
         super().__init__(name, func, [], working_dir)
@@ -77,8 +79,8 @@ class WaveFunctionDB(ParameterScan):
             if not os.path.exists("missing_wave_functions.pickle"):
                 return
 
-            with open("missing_wave_functions.pickle", "rb") as fp:
-                self.missing_wave_functions = pickle.load(fp)
+            with open("missing_wave_functions.pickle", "rb") as fptr:
+                self.missing_wave_functions = pickle.load(fptr)
 
     def load_stored_wave_functions(self):
         self.create_working_dir()
@@ -87,25 +89,25 @@ class WaveFunctionDB(ParameterScan):
             if not os.path.exists("stored_wave_functions.pickle"):
                 return
 
-            with open("stored_wave_functions.pickle", "rb") as fp:
-                self.stored_wave_functions = pickle.load(fp)
+            with open("stored_wave_functions.pickle", "rb") as fptr:
+                self.stored_wave_functions = pickle.load(fptr)
 
     def store_missing_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
         with cwd.WorkingDir(self.working_dir):
-            entries = []
+            entries = []  # type: List[Parameters]
             if os.path.exists("missing_wave_functions.pickle"):
-                with open("missing_wave_functions.pickle", "rb") as fp:
-                    entries = pickle.load(fp)
+                with open("missing_wave_functions.pickle", "rb") as fptr:
+                    entries = pickle.load(fptr)
 
             if parameters in entries:
                 return
 
             entries.append(parameters)
 
-            with open("missing_wave_functions.pickle", "wb") as fp:
-                pickle.dump(entries, fp)
+            with open("missing_wave_functions.pickle", "wb") as fptr:
+                pickle.dump(entries, fptr)
 
     def remove_missing_wave_function(self, parameters: Parameters):
         self.create_working_dir()
@@ -114,33 +116,33 @@ class WaveFunctionDB(ParameterScan):
             if not os.path.exists("missing_wave_functions.pickle"):
                 return
 
-            with open("missing_wave_functions.pickle", "rb") as fp:
-                entries = pickle.load(fp)
+            with open("missing_wave_functions.pickle", "rb") as fptr:
+                entries = pickle.load(fptr)
 
             if parameters not in entries:
                 return
 
             entries.remove(parameters)
 
-            with open("missing_wave_functions.pickle", "wb") as fp:
-                pickle.dump(entries, fp)
+            with open("missing_wave_functions.pickle", "wb") as fptr:
+                pickle.dump(entries, fptr)
 
     def store_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
         with cwd.WorkingDir(self.working_dir):
-            entries = []
+            entries = []  # type: List[Parameters]
             if os.path.exists("stored_wave_functions.pickle"):
-                with open("stored_wave_functions.pickle", "rb") as fp:
-                    entries = pickle.load(fp)
+                with open("stored_wave_functions.pickle", "rb") as fptr:
+                    entries = pickle.load(fptr)
 
             if parameters in entries:
                 return
 
             entries.append(parameters)
 
-            with open("stored_wave_functions.pickle", "wb") as fp:
-                pickle.dump(entries, fp)
+            with open("stored_wave_functions.pickle", "wb") as fptr:
+                pickle.dump(entries, fptr)
 
     def request(self, parameters: Parameters, compute: bool = True):
         self.logger.info("request wave function for parameters %s",

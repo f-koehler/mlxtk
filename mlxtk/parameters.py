@@ -1,7 +1,7 @@
 import copy
 import itertools
 import json
-from typing import Any, Dict, Generator, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 
 class Parameters:
@@ -66,11 +66,11 @@ class Parameters:
         return True
 
     def copy(self):
-        p = Parameters()
+        parameter = Parameters()
         for name in self.names:
-            p.add_parameter(name, copy.deepcopy(self.__getitem__(name)),
-                            self.docs[name])
-        return p
+            parameter.add_parameter(name, copy.deepcopy(
+                self.__getitem__(name)), self.docs[name])
+        return parameter
 
     def __iadd__(self, param: Union[dict, list]):
         if isinstance(param, dict):
@@ -130,7 +130,7 @@ class Parameters:
 
 
 def generate_all(parameters: Parameters,
-                 values: Dict[str, Any]) -> Generator[Parameters, None, None]:
+                 values: Dict[str, Any]) -> List[Parameters]:
     for name in parameters.names:
         values[name] = values.get(name, [parameters[name]])
 

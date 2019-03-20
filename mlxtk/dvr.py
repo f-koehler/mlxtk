@@ -1,7 +1,15 @@
+from typing import Any, Dict, Tuple
+
 import numpy
 
-from QDTK.Primitive import (FFT, Expdvr, Harmdvr, Laguerredvr, Legendredvr,
-                            Sindvr, rHarmdvr)
+from QDTK.Primitive import (FFT, Dvr, Expdvr, Harmdvr, Laguerredvr,
+                            Legendredvr, Sindvr, rHarmdvr)
+
+assert Any
+assert Dict
+assert Tuple
+
+assert Dvr
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
@@ -12,7 +20,9 @@ DVR_CLASSES = {
     "LaguerreDVR": Laguerredvr,
     "FFT": FFT,
 }
-DVR_CACHE = {CLASS: {} for CLASS in DVR_CLASSES}
+DVR_CACHE = {CLASS: {}
+             for CLASS in DVR_CLASSES
+             }  # type: Dict[Any, Dict[Tuple[Any], Dvr]]
 
 for dvr_class in DVR_CLASSES:
 

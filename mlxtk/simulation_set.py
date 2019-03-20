@@ -3,7 +3,7 @@
 import argparse
 import os
 import sys
-from typing import Any, Callable, Dict, Iterable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from . import cwd, doit_compat, sge
 from .log import get_logger
@@ -16,7 +16,8 @@ assert Dict
 LOGGER = get_logger(__name__)
 
 
-def run_simulation(simulation: Simulation) -> List[Dict[str, Any]]:
+def run_simulation(
+        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     """Create a task for running the given simulation.
 
     Args:
@@ -191,9 +192,11 @@ class SimulationSet:
                 sge_dir=os.path.dirname(script_path),
                 job_name=self.name)
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, argv: List[str]):
+        if argv is None:
+            argv = sys.argv[1:]
 
-        args = self.argparser.parse_args(args)
+        args = self.argparser.parse_args(argv)
 
         if args.subcommand is None:
             LOGGER.error("No subcommand specified!")

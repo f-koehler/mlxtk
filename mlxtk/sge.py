@@ -64,7 +64,7 @@ def get_jobs_in_queue() -> List[int]:
 
 
 def submit(command: str,
-           args: argparse.Namespace,
+           namespace: argparse.Namespace,
            sge_dir: str = os.path.curdir,
            job_name="") -> int:
     """Create a jobfile for a command and submit it.
@@ -95,8 +95,8 @@ def submit(command: str,
 
     # check if job is already running
     if os.path.exists(id_file):
-        with open(id_file) as fp:
-            job_id = int(fp.read())
+        with open(id_file) as fptr:
+            job_id = int(fptr.read())
             if job_id in get_jobs_in_queue():
                 LOGGER.error(
                     "job seems to be in the queue already (with id %d)",
@@ -106,46 +106,48 @@ def submit(command: str,
     # set up args for the job script
     args = {
         "command": command,
-        "cpus": args.cpus,
-        "email": args.email,
-        "memory": args.memory,
-        "queues": args.queues,
+        "cpus": namespace.cpus,
+        "email": namespace.email,
+        "memory": namespace.memory,
+        "queues": namespace.queues,
         "sge_dir": sge_dir,
-        "time": args.time,
+        "time": namespace.time,
     }
     if job_name:
         args["job_name"] = job_name
 
     # create job script
     LOGGER.debug("create job script")
-    with open(job_script, "w") as fp:
-        fp.write(templates.get_template("sge_job.j2").render(args=args))
+    with open(job_script, "w") as fptr:
+        fptr.write(templates.get_template("sge_job.j2").render(args=args))
     os.chmod(job_script, 0o755)
     LOGGER.debug("done")
 
     # submit job
     LOGGER.debug("submit job")
     output = subprocess.check_output(["qsub", job_script]).decode()
-    m = REGEX_QSUB.match(output)
-    job_id = int(m.group(1))
+    match = REGEX_QSUB.match(output)
+    if not match:
+        raise RuntimeError("Cannot parse job id from qsub command output")
+    job_id = int(match.group(1))
     LOGGER.debug("done")
 
     LOGGER.debug("write id to file")
-    with open(id_file, "w") as fp:
-        fp.write(str(job_id) + "\n")
+    with open(id_file, "w") as fptr:
+        fptr.write(str(job_id) + "\n")
     LOGGER.debug("done")
 
     # write stop script
     LOGGER.debug("create stop script")
-    with open(stop_script, "w") as fp:
-        fp.write(templates.get_template("sge_stop.j2").render(job_id=job_id))
+    with open(stop_script, "w") as fptr:
+        fptr.write(templates.get_template("sge_stop.j2").render(job_id=job_id))
     os.chmod(stop_script, 0o755)
     LOGGER.debug("done")
 
     # write epilogue script
     LOGGER.debug("create epilogue script")
-    with open(epilogue_script, "w") as fp:
-        fp.write(
+    with open(epilogue_script, "w") as fptr:
+        fptr.write(
             templates.get_template("sge_epilogue.j2").render(job_id=job_id))
     os.chmod(epilogue_script, 0o755)
     LOGGER.debug("done")
@@ -155,28 +157,28 @@ def submit(command: str,
 
 def submit_array(command: str,
                  number_of_tasks: int,
-                 args: argparse.Namespace,
+                 namespace: argparse.Namespace,
                  sge_dir: str = os.path.curdir,
                  job_name: str = ""):
     array_script = "sge_array"
 
     args = {
         "command": command,
-        "cpus": args.cpus,
-        "email": args.email,
-        "memory": args.memory,
+        "cpus": namespace.cpus,
+        "email": namespace.email,
+        "memory": namespace.memory,
         "number_of_tasks": number_of_tasks,
-        "queues": args.queues,
+        "queues": namespace.queues,
         "sge_dir": sge_dir,
-        "time": args.time,
+        "time": namespace.time,
     }
     if job_name:
         args["job_name"] = job_name
 
     # create job array script
     LOGGER.debug("create job array script")
-    with open(array_script, "w") as fp:
-        fp.write(templates.get_template("sge_array.j2").render(args=args))
+    with open(array_script, "w") as fptr:
+        fptr.write(templates.get_template("sge_array.j2").render(args=args))
     LOGGER.debug("done")
 
     # submit array

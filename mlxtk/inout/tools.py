@@ -55,5 +55,5 @@ def is_hdf5_file(path: str) -> bool:
     if not os.path.isfile(path):
         return False
 
-    with open(path, "rb") as fp:
-        return fp.read(8) == HDF5_MAGIC_NUMBER
+    with open(path, "rb") as fptr:
+        return fptr.read(8) == HDF5_MAGIC_NUMBER

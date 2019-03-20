@@ -92,10 +92,7 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
         if FLAG_TYPES[flag] == bool:
             if flags[flag]:
                 flag_list.append("-" + flag)
-        elif FLAG_TYPES[flag] == str:
-            flag_list += ["-" + flag, flags[flag]]
-        else:
-            flag_list += ["-" + flag, str(flags[flag])]
+        flag_list += ["-" + flag, str(flags[flag])]
 
     return flags, flag_list
 

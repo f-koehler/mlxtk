@@ -47,8 +47,8 @@ class CreateMCTDHBWaveFunction(Task):
                 self.number_of_spfs,
                 self.number_state.tolist()
             ]
-            with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr)
 
         return {
             "name": "wfn_mctdhb:{}:write_parameters".format(self.name),
@@ -59,21 +59,21 @@ class CreateMCTDHBWaveFunction(Task):
     def task_write_wave_function(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_wave_function(targets: List[str]):
-            with h5py.File(self.path_matrix, "r") as fp:
-                matrix = fp["matrix"][:, :]
+            with h5py.File(self.path_matrix, "r") as fptr:
+                matrix = fptr["matrix"][:, :]
 
             energies, spfs = diagonalize_1b_operator(matrix,
                                                      self.number_of_spfs)
             spfs_arr = numpy.array(spfs)
 
-            with h5py.File(targets[1], "w") as fp:
-                dset = fp.create_dataset(
+            with h5py.File(targets[1], "w") as fptr:
+                dset = fptr.create_dataset(
                     "energies", (self.number_of_spfs, ),
                     dtype=numpy.float64,
                     compression="gzip")
                 dset[:] = energies
 
-                dset = fp.create_dataset(
+                dset = fptr.create_dataset(
                     "spfs",
                     spfs_arr.shape,
                     dtype=numpy.complex128,
@@ -121,8 +121,8 @@ class MCTDHBAddMomentum(Task):
             del targets
 
             obj = [self.name, self.initial, self.momentum]
-            with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr)
 
         return {
             "name":

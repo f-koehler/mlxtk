@@ -31,25 +31,25 @@ def read_output_ascii(
           simulation times. The other entries contain the norm, energy and
           maximum SPF overlap of the wave function at all times.
     """
-    df = pandas.read_csv(
+    dataFrame = pandas.read_csv(
         path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
     return (
-        df["time"].values,
-        df["norm"].values,
-        df["energy"].values,
-        df["overlap"].values,
+        dataFrame["time"].values,
+        dataFrame["norm"].values,
+        dataFrame["energy"].values,
+        dataFrame["overlap"].values,
     )
 
 
 def read_output_hdf5(
         path: str, interior_path: str = "/"
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
-    with h5py.File(path, "r") as fp:
+    with h5py.File(path, "r") as fptr:
         return (
-            fp[interior_path]["time"][:],
-            fp[interior_path]["norm"][:],
-            fp[interior_path]["energy"][:],
-            fp[interior_path]["overlap"][:],
+            fptr[interior_path]["time"][:],
+            fptr[interior_path]["norm"][:],
+            fptr[interior_path]["energy"][:],
+            fptr[interior_path]["overlap"][:],
         )
 
 
@@ -57,19 +57,19 @@ def write_output_hdf5(
         path: str,
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ):
-    with h5py.File(path, "w") as fp:
-        dset = fp.create_dataset(
+    with h5py.File(path, "w") as fptr:
+        dset = fptr.create_dataset(
             "time", data[0].shape, dtype=data[0].dtype, compression="gzip")
         dset[:] = data[0]
 
-        dset = fp.create_dataset(
+        dset = fptr.create_dataset(
             "norm", data[1].shape, dtype=data[1].dtype, compression="gzip")
         dset[:] = data[1]
 
-        dset = fp.create_dataset(
+        dset = fptr.create_dataset(
             "energy", data[2].shape, dtype=data[2].dtype, compression="gzip")
         dset[:] = data[2]
 
-        dset = fp.create_dataset(
+        dset = fptr.create_dataset(
             "overlap", data[3].shape, dtype=data[3].dtype, compression="gzip")
         dset[:] = data[3]

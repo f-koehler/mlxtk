@@ -3,7 +3,7 @@ import os
 import re
 import subprocess
 import sys
-from typing import Iterable, Optional
+from typing import List, Optional
 
 from . import cwd, doit_compat, lock, log, sge
 
@@ -40,18 +40,17 @@ class Simulation:
                 ["graph", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
             )
 
-            with open("tasks.dot") as fp:
-                code = fp.readlines()
+            with open("tasks.dot") as fptr:
+                code = fptr.readlines()
 
             for i, _ in enumerate(code):
-                m = regex.match(code[i])
-                if not m:
+                if not regex.match(code[i]):
                     continue
 
                 code[i] = code[i].replace(":", "\\n")
 
-            with open("tasks.dot", "w") as fp:
-                fp.writelines(code)
+            with open("tasks.dot", "w") as fptr:
+                fptr.writelines(code)
 
     def list(self, args: argparse.Namespace):
         del args
@@ -132,7 +131,10 @@ class Simulation:
                 ],
             )
 
-    def main(self, args: Iterable[str] = sys.argv[1:]):
+    def main(self, argv: List[str] = None):
+        if argv is None:
+            argv = sys.argv[1:]
+
         parser = argparse.ArgumentParser(
             description="This is a mlxtk simulation")
         subparsers = parser.add_subparsers(dest="subcommand")
@@ -171,7 +173,7 @@ class Simulation:
         # parser for qdel
         subparsers.add_parser("qdel")
 
-        args = parser.parse_args(args)
+        args = parser.parse_args(argv)
 
         if args.subcommand is None:
             self.logger.error("No subcommand specified!")

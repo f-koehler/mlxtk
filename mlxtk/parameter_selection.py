@@ -12,12 +12,13 @@ class ParameterSelection:
 
     def fix_parameter(self, name: str, value: Any):
         return ParameterSelection(
-            [entry for entry in self.parameters if entry[1][name]], self.path)
+            [entry[1] for entry in self.parameters if entry[1][name] == value],
+            self.path)
 
     def select_parameter(self, name: str, values: Iterable[Any]):
-        return ParameterSelection(
-            [entry for entry in self.parameters if entry[1][name] in values],
-            self.path)
+        return ParameterSelection([
+            entry[1] for entry in self.parameters if entry[1][name] in values
+        ], self.path)
 
     def get_values(self, name: str) -> Set[Any]:
         return set((entry[1][name] for entry in self.parameters))
@@ -46,6 +47,6 @@ class ParameterSelection:
 
 
 def load_scan(path: str) -> ParameterSelection:
-    with open(os.path.join(path, "scan.pickle"), "rb") as fp:
-        obj = pickle.load(fp)
+    with open(os.path.join(path, "scan.pickle"), "rb") as fptr:
+        obj = pickle.load(fptr)
         return ParameterSelection((parameter for parameter in obj), path)

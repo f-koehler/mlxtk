@@ -13,7 +13,9 @@ from typing import Callable, List
 
 import pandas
 
-from . import cwd, parameters
+import mlxtk.parameters
+
+from . import cwd
 from .hashing import hash_string
 from .log import get_logger
 from .parameters import Parameters
@@ -61,15 +63,15 @@ class ParameterScan(SimulationSet):
                                                self.simulations):
                 simulation.create_working_dir()
                 with cwd.WorkingDir(simulation.working_dir):
-                    with open("parameters.pickle", "wb") as fp:
-                        pickle.dump(combination, fp)
+                    with open("parameters.pickle", "wb") as fptr:
+                        pickle.dump(combination, fptr)
 
-                    with open("parameters.json", "w") as fp:
-                        fp.write(combination.to_json() + "\n")
+                    with open("parameters.json", "w") as fptr:
+                        fptr.write(combination.to_json() + "\n")
 
-            with open("scan.pickle", "wb") as fp:
+            with open("scan.pickle", "wb") as fptr:
                 pickle.dump([combination for combination in self.combinations],
-                            fp)
+                            fptr)
 
             names = self.combinations[0].names
             data = pandas.DataFrame({
@@ -107,7 +109,8 @@ class ParameterScan(SimulationSet):
             if not os.path.exists("by_param"):
                 os.makedirs("by_param")
 
-            variables, constants = parameters.get_variables(self.combinations)
+            variables, constants = mlxtk.parameters.get_variables(
+                self.combinations)
             for combination, simulation in zip(self.combinations,
                                                self.simulations):
                 if not variables:
@@ -149,7 +152,7 @@ class ParameterScan(SimulationSet):
 
         super().run(args)
 
-    def run_by_param(self, parameters: Parameters):
+    def run_by_param(self, parameters: mlxtk.parameters.Parameters):
         self.logger.info("run simulation for parameters %s", repr(parameters))
         self.compute_simulations()
         for i, combination in enumerate(self.combinations):
@@ -175,7 +178,7 @@ class ParameterScan(SimulationSet):
 
         super().qsub_array(args)
 
-    def main(self, args: List[str] = sys.argv[1:]):
+    def main(self, argv: List[str] = None):
         self.compute_simulations()
 
-        super().main(args)
+        super().main(argv)

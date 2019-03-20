@@ -1,0 +1,3 @@
+#!/bin/bash
+
+mypy --ignore-missing-imports -p mlxtk

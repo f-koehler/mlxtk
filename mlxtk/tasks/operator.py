@@ -143,8 +143,8 @@ class CreateOperator(Task):
             for term in self.specification.terms:
                 obj[3][term] = inaccurate_hash(self.specification.terms[term])
 
-            with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr)
 
         return {
             "name": "operator:{}:write_parameters".format(self.name),
@@ -159,12 +159,12 @@ class CreateOperator(Task):
 
             op = self.specification.get_operator()
 
-            with open(self.path, "w") as fp:
-                op.createOperatorFile(fp)
+            with open(self.path, "w") as fptr:
+                op.createOperatorFile(fptr)
 
             matrix = get_operator_matrix(op)
-            with h5py.File(self.path_matrix, "w") as fp:
-                dset = fp.create_dataset(
+            with h5py.File(self.path_matrix, "w") as fptr:
+                dset = fptr.create_dataset(
                     "matrix",
                     matrix.shape,
                     dtype=numpy.complex128,
@@ -173,7 +173,7 @@ class CreateOperator(Task):
 
                 for i, dof in enumerate(self.specification.dofs):
                     grid = dof.get_x()
-                    dset = fp.create_dataset(
+                    dset = fptr.create_dataset(
                         "grid_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,
@@ -182,7 +182,7 @@ class CreateOperator(Task):
                     dset[:] = grid
 
                     weights = dof.get_weights()
-                    dset = fp.create_dataset(
+                    dset = fptr.create_dataset(
                         "weights_{}".format(i + 1),
                         grid.shape,
                         dtype=numpy.float64,

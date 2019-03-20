@@ -36,12 +36,12 @@ class LockFile:
 
     def __enter__(self):
         if os.path.exists(self.path):
-            with open(self.path, "r") as fp:
-                lock = json.load(fp)
+            with open(self.path, "r") as fptr:
+                lock = json.load(fptr)
                 raise LockFileExistsError(self.path, lock["host"], lock["pid"])
 
-        with open(self.path, "w") as fp:
-            json.dump({"host": platform.node(), "pid": os.getpid()}, fp)
+        with open(self.path, "w") as fptr:
+            json.dump({"host": platform.node(), "pid": os.getpid()}, fptr)
 
     def __exit__(self, exc_type, exc_value, traceback):
         del exc_type

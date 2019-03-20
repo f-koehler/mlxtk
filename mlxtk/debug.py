@@ -1,3 +1,5 @@
+"""Helpers for debugging
+"""
 import traceback
 
 from .log import get_logger

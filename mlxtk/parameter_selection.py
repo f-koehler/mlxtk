@@ -1,3 +1,5 @@
+"""Selecting simulations from a scan based on parameters.
+"""
 import os.path
 import pickle
 from typing import Any, Callable, Iterable, List, Set
@@ -11,19 +13,53 @@ class ParameterSelection:
         self.path = path
 
     def fix_parameter(self, name: str, value: Any):
+        """Select by the value of a single parameter.
+
+        Args:
+            name: Name of the parameter to fix.
+            value: Desired value for the parameter.
+
+        Returns:
+            A new ParameterSelection containing only matching parameter sets.
+        """
         return ParameterSelection(
             [entry[1] for entry in self.parameters if entry[1][name] == value],
             self.path)
 
     def select_parameter(self, name: str, values: Iterable[Any]):
+        """Select by multiple values of a single parameter.
+
+        Args:
+            name: Name of the parameter to fix.
+            value: Desired values for the parameter.
+
+        Returns:
+            A new ParameterSelection containing only matching parameter sets.
+        """
         return ParameterSelection([
             entry[1] for entry in self.parameters if entry[1][name] in values
         ], self.path)
 
     def get_values(self, name: str) -> Set[Any]:
+        """Get all unique values for a parameter.
+
+        Args:
+            name: Name of the parameter.
+
+        Returns:
+            All unique values of the given parameter.
+        """
         return set((entry[1][name] for entry in self.parameters))
 
     def get_paths(self) -> List[str]:
+        """Compute the paths for all included parameter sets.
+
+        Raises:
+            ValueError: No path is provided for this ParameterSelection
+
+        Returns:
+            Paths of all included parameter sets.
+        """
         if not self.path:
             raise ValueError("No path is specified for ParameterSelection")
 
@@ -33,10 +69,27 @@ class ParameterSelection:
         ]
 
     def get_parameters(self) -> List[Parameters]:
+        """Get all included parameters sets.
+
+        Returns:
+            A list of all included parameter sets.
+        """
         return [parameter for _, parameter in self.parameters]
 
     def foreach(self,
                 func: Callable[[int, str, Parameters], Any]) -> List[Any]:
+        """Call a function for each included parameter set.
+
+        Args:
+            func: Function to call for each parameter set. It takes the index
+                of the parameter set as the first argument, the path as a
+                second argument and the parameter set as the third argument.
+
+        Returns:
+            The provided function may return values. This function returns a
+            list of all return values created by calling the function for each
+            parameter set.
+        """
         return [
             func(entry[0], path, entry[1])
             for entry, path in zip(self.parameters, self.get_paths())
@@ -47,6 +100,11 @@ class ParameterSelection:
 
 
 def load_scan(path: str) -> ParameterSelection:
+    """Load all parameter sets of a parameter scan.
+
+    Args:
+        path: Path to the parameter scan containing the file ``scan.pickle``.
+    """
     with open(os.path.join(path, "scan.pickle"), "rb") as fptr:
         obj = pickle.load(fptr)
         return ParameterSelection((parameter for parameter in obj), path)

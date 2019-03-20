@@ -9,8 +9,6 @@ assert Any
 assert Dict
 assert Tuple
 
-assert Dvr
-
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
     "RadialHarmonicDVR": rHarmdvr,
@@ -55,6 +53,12 @@ class DVRSpecification:
                 "ExponentialDVR requires an odd number of grid points")
 
     def compute(self):
+        """Compute the dvr.
+
+        This creates the corresponding :py:class:`QDTK.Primitive.Dvr` object
+        if it does not exist in the cache variable
+        :py:data:`mlxtk.dvr.DVR_CACHE`
+        """
         if self.dvr is not None:
             return
 
@@ -65,38 +69,82 @@ class DVRSpecification:
             self.dvr = class_(*self.args)
             DVR_CACHE[self.type_][self.args] = self.dvr
 
-    def get(self):
+    def get(self) -> Dvr:
+        """Return the associated :py:class:`QDTK.Primitive.Dvr` object.
+
+        Returns:
+            The DVR object.
+        """
         self.compute()
         return self.dvr
 
     def get_x(self) -> numpy.ndarray:
+        """Return the x operator with respect to the primitive basis.
+
+        Returns:
+            The x operator.
+        """
         self.compute()
         return self.dvr.x
 
     def get_weights(self) -> numpy.ndarray:
+        """Return the DVR weights.
+
+        Returns:
+            The DVR weights.
+        """
         self.compute()
         return self.dvr.weights
 
     def get_d1(self) -> numpy.ndarray:
+        """Return the first derivative with respect to the primitive basis.
+
+        Returns:
+            The first spatial derivative.
+        """
         self.compute()
         if self.is_fft():
             return self.dvr.d1fft
         return self.dvr.d1dvr
 
     def get_d2(self) -> numpy.ndarray:
+        """Return the second derivative with respect to the primitive basis.
+
+        Returns:
+            The second spatial derivative.
+        """
         self.compute()
         if self.is_fft():
             return self.dvr.d2fft
         return self.dvr.d2dvr
 
     def get_delta(self) -> numpy.ndarray:
+        """Return the Dirac delta with respect to the primitive basis.
+
+        Returns:
+            The dirac delta.
+        """
         self.compute()
         return self.dvr.delta_w()
 
     def is_fft(self) -> bool:
+        """Check whether this DVR is a FFT.
+
+        Returns:
+            :code:`True` if the DVR is a FFT, :code:`False` otherwise.
+        """
         return self.type_ == "FFT"
 
     def get_expdvr(self):
+        """Add an exponential DVR.
+
+        This is a workaround as :py:mod:`QDTK` does not allow the
+        diagonalization of one-body operators that use FFT.
+
+        Returns:
+            The :py:class:`mxltk.dvr.DVRSpecification` for the corresponding
+            exponential DVR.
+        """
         if not self.is_fft():
             raise RuntimeError("get_expdvr() makes only sense for a FFT grid")
 

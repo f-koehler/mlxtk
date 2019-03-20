@@ -42,6 +42,23 @@ def run_simulation(
     return [task_run_simulation]
 
 
+def clean_simulation(
+        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+    def task_clean_simulation():
+        def action_clean_simulation(targets):
+            del targets
+            simulation.main(["clean"])
+
+        task_name = simulation.name.replace("=", ":")
+
+        return {
+            "name": "clean_simulation:{}".format(task_name),
+            "actions": [action_clean_simulation],
+        }
+
+    return [task_clean_simulation]
+
+
 class SimulationSet:
     """A collection of simulations.
 
@@ -80,6 +97,7 @@ class SimulationSet:
         self.argparser_qsub = subparsers.add_parser("qsub")
         self.argparser_run = subparsers.add_parser("run")
         self.argparser_run_index = subparsers.add_parser("run-index")
+        self.argparser_clean = subparsers.add_parser("clean")
 
         sge.add_parser_arguments(self.argparser_qsub)
 
@@ -92,6 +110,12 @@ class SimulationSet:
         self.argparser_task_info.add_argument(
             "name", type=str, help="name of the task")
         self.argparser_run.add_argument(
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of parallel workers")
+        self.argparser_clean.add_argument(
             "-j",
             "--jobs",
             type=int,
@@ -127,6 +151,26 @@ class SimulationSet:
         tasks = []  # type: List[Callable[[], Dict[str, Any]]]
         for simulation in self.simulations:
             tasks += run_simulation(simulation)
+        doit_compat.run_doit(
+            tasks,
+            [
+                "-n",
+                str(args.jobs),
+                "--backend",
+                "sqlite3",
+                "--db-file",
+                os.path.join(self.working_dir, "doit.sqlite3"),
+            ],
+        )
+
+    def clean(self, args: argparse.Namespace):
+        self.logger.info("cleaning simulation set")
+
+        self.create_working_dir()
+
+        tasks = []  # type: List[Callable[[], Dict[str, Any]]]
+        for simulation in self.simulations:
+            tasks += clean_simulation(simulation)
         doit_compat.run_doit(
             tasks,
             [
@@ -214,6 +258,8 @@ class SimulationSet:
             self.qsub_array(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "clean":
+            self.clean(args)
         elif args.subcommand == "run-index":
             self.run_index(args)
         elif args.subcommand == "task-info":

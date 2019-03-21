@@ -49,7 +49,7 @@ class ParameterSelection:
         Returns:
             All unique values of the given parameter.
         """
-        return set((entry[1][name] for entry in self.parameters))
+        return list(set((entry[1][name] for entry in self.parameters)))
 
     def get_paths(self) -> List[str]:
         """Compute the paths for all included parameter sets.

@@ -71,9 +71,9 @@ DEFAULT_FLAGS = {
 def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     flags = copy.copy(DEFAULT_FLAGS)
 
-    for flag in FLAG_TYPES:
-        if flag not in kwargs:
-            continue
+    for flag in kwargs:
+        if flag not in FLAG_TYPES:
+            raise RuntimeError("Unknown flag \"{}\"".format(flag))
         flags[flag] = kwargs[flag]
 
     if flags["relax"]:
@@ -82,7 +82,7 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     if flags["improved_relax"]:
         flags["statsteps"] = flags.get("statsteps", 40)
         flags["eig_index"] = flags.get("eig_index", 1)
-        flags["nstep_diag"] = flags.get("nstep_diag", 50)
+        flags["nstep_diag"] = flags.get("nstep_diag", 30)
 
     if flags["itg"] == "zvode":
         flags["zvode_mf"] = flags.get("zvode_mf", 10)
@@ -92,7 +92,8 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
         if FLAG_TYPES[flag] == bool:
             if flags[flag]:
                 flag_list.append("-" + flag)
-        flag_list += ["-" + flag, str(flags[flag])]
+        else:
+            flag_list += ["-" + flag, str(flags[flag])]
 
     return flags, flag_list
 
@@ -261,7 +262,7 @@ class ImprovedRelax(Propagate):
         kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
         kwargs["stat_npop_tol"] = kwargs.get("stat_npop_tol", 1e-6)
         kwargs["nstep_diag"] = kwargs.get("nstep_diag", 50)
-        kwargs["stat_steps"] = kwargs.get("stat_steps", 80)
+        kwargs["statsteps"] = kwargs.get("stat_steps", 80)
         kwargs["eig_index"] = eig_index
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)

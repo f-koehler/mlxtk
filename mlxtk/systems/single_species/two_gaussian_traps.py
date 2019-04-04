@@ -31,3 +31,17 @@ class TwoGaussianTraps(GaussianTrap):
             "potential_left") + self.create_gaussian_potential_operator(
                 self.parameters.x0R, self.parameters.V0R, "potential_right",
                 self.parameters.alpha)
+
+    def get_hamiltonian_left_well_1b(self) -> tasks.OperatorSpecification:
+        return self.get_kinetic_operator_1b(
+        ) + self.create_gaussian_potential_operator_1b(
+            self.parameters.x0L, self.parameters.V0L, "potential_left")
+
+    def get_hamiltonian_left_well(self) -> tasks.MBOperatorSpecification:
+        if self.parameters.g != 0.0:
+            return (self.get_kinetic_operator() +
+                    self.create_gaussian_potential_operator(
+                        self.parameters.x0L, self.parameters.V0L,
+                        "potential_left") + self.get_interaction_operator())
+
+        return self.get_kinetic_operator() + self.get_potential_operator()

@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "com", system.get_center_of_mass_operator())
         sim += mlxtk.tasks.CreateMBOperator(
             "com_2", system.get_center_of_mass_operator_squared())
-        sim += mlxtk.tasks.CreateMCTDHBWaveFunction("initial",
+        sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial",
                                                     "hamiltonian_1b", p.N, p.m)
         sim += mlxtk.tasks.ImprovedRelax(
             "gs_relax", "initial", "hamiltonian", "1", tfinal=1000.0, dt=0.01)

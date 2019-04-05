@@ -22,7 +22,7 @@ def create_simulation(p: mlxtk.parameters.Parameters):
                                       system.get_hamiltonian_1b())
     sim += mlxtk.tasks.CreateMBOperator("hamiltonian",
                                         system.get_hamiltonian())
-    sim += mlxtk.tasks.CreateMCTDHBWaveFunction("initial", "hamiltonian_1b",
+    sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
                                                 p.N, p.m)
     sim += mlxtk.tasks.ImprovedRelax(
         "gs_relax", "initial", "hamiltonian", "1", tfinal=1000.0, dt=0.01)

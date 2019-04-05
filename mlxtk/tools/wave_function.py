@@ -1,6 +1,7 @@
 import gzip
 import io
 import os
+from typing import List
 
 import numpy
 
@@ -60,3 +61,16 @@ def add_momentum_split(wfn: Wavefunction, momentum: float,
         wfn.PSI[start:stop] = phase * wfn.PSI[start:stop]
 
     return wfn
+
+
+def get_spfs(wfn: Wavefunction) -> List[numpy.ndarray]:
+    num_spfs = wfn.tree._subnodes[0]._dim  # type: int
+    len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
+    spfs = []
+
+    for i in range(num_spfs):
+        start = wfn.tree._subnodes[0]._z0 + i * len_spfs
+        stop = start + len_spfs
+        spfs.append(wfn.PSI[start:stop])
+
+    return spfs

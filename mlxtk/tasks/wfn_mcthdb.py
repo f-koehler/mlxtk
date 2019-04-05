@@ -9,11 +9,15 @@ from mlxtk.dvr import DVRSpecification
 from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
-                                       load_wave_function, save_wave_function)
+                                       load_wave_function, save_wave_function,
+                                       get_spfs)
+from mlxtk.log import get_logger
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
+LOGGER = get_logger(__name__)
 
-class CreateMCTDHBWaveFunction(Task):
+
+class MCTDHBCreateWaveFunction(Task):
     def __init__(self,
                  name: str,
                  hamiltonian_1b: str,
@@ -210,6 +214,85 @@ class MCTDHBAddMomentumSplit(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum_split]
+
+    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
+        return []
+
+
+class MCTDHBExtendGrid(Task):
+    def __init__(self,
+                 name: str,
+                 initial: str,
+                 nleft: int,
+                 nright: int,
+                 value: complex = 0.):
+        self.name = name
+        self.initial = initial
+        self.nleft = nleft
+        self.nright = nright
+        self.value = value
+
+        self.path = name + ".wfn"
+        self.path_initial = self.initial + ".wfn"
+        self.path_pickle = self.name + ".wfn_pickle"
+
+    def task_write_parameters(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_parameters(targets: List[str]):
+            del targets
+
+            obj = [
+                self.name, self.initial, self.nleft, self.nright, self.value
+            ]
+            with open(self.path_pickle, "wb") as fp:
+                pickle.dump(obj, fp)
+
+        return {
+            "name":
+            "wfn_mctdhb_extend_grid:{}:write_parameters".format(self.name),
+            "actions": [action_write_parameters],
+            "targets": [self.path_pickle]
+        }
+
+    def task_extend_grid(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_extend_grid(targets: List[str]):
+            del targets
+
+            # pylint: disable=protected-access
+            wfn = load_wave_function(self.path_initial)
+            tape = list(wfn._tape)
+            tape[8] += self.nleft + self.nright
+            wfn_new = WaveFunction(tape=tuple(tape))
+            spfs = get_spfs(wfn)
+            for i, spf in enumerate(spfs):
+                spfs[i] = numpy.pad(
+                    spf, (self.nleft, self.nright),
+                    "constant",
+                    constant_values=(self.value, self.value))
+
+            N = wfn._tape[1]
+            m = wfn._tape[3]
+
+            number_state = numpy.zeros(m, dtype=numpy.int64)
+            number_state[0] = N
+            wfn_new.init_coef_sing_spec_B(
+                number_state, spfs, 1e-15, 1e-15, full_spf=True)
+
+            wfn_new.PSI[0:wfn_new.tree._subnodes[0].
+                        _z0] = wfn.PSI[0:wfn.tree._subnodes[0]._z0]
+
+            save_wave_function(self.path, wfn_new)
+
+        return {
+            "name": "wfn_mctdhb_extend_grid:{}:extend_grid".format(self.name),
+            "actions": [action_extend_grid],
+            "targets": [self.path],
+            "file_dep": [self.path_pickle]
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_write_parameters, self.task_extend_grid]
 
     def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
         return []

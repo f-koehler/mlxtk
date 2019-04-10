@@ -4,13 +4,14 @@ import os.path
 import pickle
 from typing import Any, Callable, Iterable, List, Set
 
+from .cwd import WorkingDir
 from .parameters import Parameters
 
 
 class ParameterSelection:
     def __init__(self, parameters: Iterable[Parameters], path: str = None):
         self.parameters = [(i, p) for i, p in enumerate(parameters)]
-        self.path = path
+        self.path = os.path.abspath(path)
 
     def fix_parameter(self, name: str, value: Any):
         """Select by the value of a single parameter.
@@ -94,6 +95,18 @@ class ParameterSelection:
             func(entry[0], path, entry[1])
             for entry, path in zip(self.parameters, self.get_paths())
         ]
+
+    def plot_foreach(self, name: str,
+                     func: Callable[[int, str, Parameters], None]) -> None:
+        if not self.path:
+            raise RuntimeError("No path set for parameter selection")
+
+        plot_dir = os.path.join(self.path, "plots", name)
+        if not os.path.exists(plot_dir):
+            os.makedirs(plot_dir)
+
+        with WorkingDir(plot_dir):
+            self.foreach(func)
 
     def __str__(self):
         return "\n".join("{}: {}".format(i, p) for i, p in self.parameters)

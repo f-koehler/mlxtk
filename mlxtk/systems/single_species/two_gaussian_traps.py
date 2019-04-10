@@ -2,6 +2,7 @@ from mlxtk import tasks
 from mlxtk.parameters import Parameters
 
 from .gaussian_trap import GaussianTrap
+import math
 
 
 class TwoGaussianTraps(GaussianTrap):
@@ -45,3 +46,36 @@ class TwoGaussianTraps(GaussianTrap):
                         "potential_left") + self.get_interaction_operator())
 
         return self.get_kinetic_operator() + self.get_potential_operator()
+
+    def get_hamiltonian_colliding_wells(
+            self,
+            vL: float = 1.0,
+            aL: float = 0.0,
+            vR: float = None,
+            aR: float = None) -> tasks.MBOperatorSpecification:
+        if vR is None:
+            vR = -vL
+
+        if aR is None:
+            aR = -aL
+
+        left_potential = tasks.MBOperatorSpecification(
+            (1, ), (self.grid, ), {"potential_left_coeff": 1.0}, {
+                "potential_left": {
+                    "td_name": "moving_gaussian",
+                    "td_args":
+                    [-self.parameters.V0L, self.parameters.x0L, vL, aL]
+                }
+            }, "potential_left_coeff | 1 potential_left")
+
+        right_potential = tasks.MBOperatorSpecification(
+            (1, ), (self.grid, ), {"potential_right_coeff": 1.0}, {
+                "potential_right": {
+                    "td_name": "moving_gaussian",
+                    "td_args":
+                    [-self.parameters.V0R, self.parameters.x0R, vR, aR]
+                }
+            }, "potential_right_coeff | 1 potential_right")
+
+        return self.get_kinetic_operator(
+        ) + left_potential + right_potential + self.get_interaction_operator()

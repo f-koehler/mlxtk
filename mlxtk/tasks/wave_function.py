@@ -7,7 +7,7 @@ from ..cwd import WorkingDir
 from ..doit_compat import DoitAction
 from ..log import get_logger
 from ..parameters import Parameters
-from ..wave_function_db import load_db
+from ..wave_function_db import load_db, MissingWfnError
 from .task import Task
 
 LOGGER = get_logger(__name__)
@@ -58,8 +58,28 @@ class RequestWaveFunction(Task):
             "verbosity": 2
         }
 
+    def task_request_wave_function_dry_run(self) -> Dict[str, Any]:
+        db = load_db(self.db_path, self.variable_name)
+        db.working_dir = os.path.join(os.path.dirname(self.db_path), db.name)
+
+        with WorkingDir(os.path.dirname(self.db_path)):
+            try:
+                db.request(self.parameters, False)
+            except MissingWfnError:
+                pass
+
+        @DoitAction
+        def action_noop(targets):
+            pass
+
+        return {
+            "name": "wfn:{}:request_dry_run".format(self.name),
+            "actions": [action_noop],
+            "verbosity": 2
+        }
+
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_request_wave_function]
 
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []
+    def get_tasks_dry_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_request_wave_function_dry_run]

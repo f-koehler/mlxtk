@@ -39,7 +39,6 @@ if __name__ == "__main__":
             tfinal=5.0,
             dt=0.05,
             psi=True,
-            keep_psi=True,
         )
         sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")
         sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")

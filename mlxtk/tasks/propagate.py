@@ -239,9 +239,6 @@ class Propagate(Task):
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_propagate]
 
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []
-
 
 class Relax(Propagate):
     def __init__(self, name: str, wave_function: str, hamiltonian: str,

@@ -42,6 +42,32 @@ def run_simulation(
     return [task_run_simulation]
 
 
+def dry_run_simulation(
+        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+    """Create a task for running the given simulation dry.
+
+    Args:
+        simulation (Simulation): simulation to run
+
+    Returns:
+        list: list with a single doit task description for simulation run
+    """
+
+    def task_dry_run_simulation():
+        def action_dry_run_simulation(targets):
+            del targets
+            simulation.main(["dry-run"])
+
+        task_name = simulation.name.replace("=", ":")
+
+        return {
+            "name": "dry_run_simulation:{}".format(task_name),
+            "actions": [action_dry_run_simulation],
+        }
+
+    return [task_dry_run_simulation]
+
+
 def clean_simulation(
         simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     def task_clean_simulation():
@@ -96,6 +122,7 @@ class SimulationSet:
         subparsers.add_parser("qdel")
         self.argparser_qsub = subparsers.add_parser("qsub")
         self.argparser_run = subparsers.add_parser("run")
+        self.argparser_dry_run = subparsers.add_parser("dry-run")
         self.argparser_run_index = subparsers.add_parser("run-index")
         self.argparser_clean = subparsers.add_parser("clean")
 
@@ -156,6 +183,24 @@ class SimulationSet:
             [
                 "-n",
                 str(args.jobs),
+                "--backend",
+                "sqlite3",
+                "--db-file",
+                os.path.join(self.working_dir, "doit.sqlite3"),
+            ],
+        )
+
+    def dry_run(self, args: argparse.Namespace):
+        self.logger.info("running simulation set (dry)")
+
+        self.create_working_dir()
+
+        tasks = []  # type: List[Callable[[], Dict[str, Any]]]
+        for simulation in self.simulations:
+            tasks += dry_run_simulation(simulation)
+        doit_compat.run_doit(
+            tasks,
+            [
                 "--backend",
                 "sqlite3",
                 "--db-file",
@@ -258,6 +303,8 @@ class SimulationSet:
             self.qsub_array(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "dry-run":
+            self.dry_run(args)
         elif args.subcommand == "clean":
             self.clean(args)
         elif args.subcommand == "run-index":

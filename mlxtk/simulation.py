@@ -17,11 +17,13 @@ class Simulation:
             name if working_dir is None else working_dir)
         self.tasks_run = []
         self.tasks_clean = []
+        self.tasks_dry_run = []
         self.logger = log.get_logger(__name__)
 
     def __iadd__(self, generator):
         self.tasks_run += generator()
         self.tasks_clean += generator.get_tasks_clean()
+        self.tasks_dry_run += generator.get_tasks_dry_run()
         return self
 
     def create_working_dir(self):
@@ -71,6 +73,20 @@ class Simulation:
                     [
                         "-n",
                         str(args.jobs),
+                        "--backend",
+                        "sqlite3",
+                        "--db-file",
+                        "doit.sqlite3",
+                    ],
+                )
+
+    def dry_run(self, args: argparse.Namespace):
+        self.create_working_dir()
+        with cwd.WorkingDir(self.working_dir):
+            with lock.LockFile("run.lock"):
+                doit_compat.run_doit(
+                    self.tasks_dry_run,
+                    [
                         "--backend",
                         "sqlite3",
                         "--db-file",
@@ -153,6 +169,9 @@ class Simulation:
             default=1,
             help="number of parallel workers")
 
+        # parser for dry-run
+        subparsers.add_parser("dry-run")
+
         # parser for clean
         parser_clean = subparsers.add_parser("clean")
         parser_clean.add_argument(
@@ -185,6 +204,8 @@ class Simulation:
             self.graph(args)
         elif args.subcommand == "run":
             self.run(args)
+        elif args.subcommand == "dry-run":
+            self.dry_run(args)
         elif args.subcommand == "clean":
             self.clean(args)
         elif args.subcommand == "qsub":

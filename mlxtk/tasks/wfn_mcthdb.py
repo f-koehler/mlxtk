@@ -103,9 +103,6 @@ class MCTDHBCreateWaveFunction(Task):
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_wave_function]
 
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []
-
 
 class MCTDHBAddMomentum(Task):
     def __init__(self, name: str, initial: str, momentum: float,
@@ -157,9 +154,6 @@ class MCTDHBAddMomentum(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum]
-
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []
 
 
 class MCTDHBAddMomentumSplit(Task):
@@ -214,9 +208,6 @@ class MCTDHBAddMomentumSplit(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum_split]
-
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []
 
 
 class MCTDHBExtendGrid(Task):
@@ -293,6 +284,3 @@ class MCTDHBExtendGrid(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_extend_grid]
-
-    def get_tasks_clean(self) -> List[Callable[[], Dict[str, Any]]]:
-        return []

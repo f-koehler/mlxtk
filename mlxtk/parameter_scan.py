@@ -145,6 +145,13 @@ class ParameterScan(SimulationSet):
                         if os.path.islink(entry):
                             os.unlink(entry)
 
+    def dry_run(self, args: argparse.Namespace):
+        self.unlink_simulations()
+        self.store_parameters()
+        self.link_simulations()
+
+        super().dry_run(args)
+
     def run(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()

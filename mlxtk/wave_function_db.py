@@ -1,10 +1,12 @@
+import argparse
 import copy
 import importlib.util
 import os.path
 import pathlib
 import pickle
 import time
-from typing import Callable, List
+from typing import Any, Callable, Dict, List
+from functools import partial
 
 from . import cwd
 from .hashing import hash_string
@@ -12,6 +14,7 @@ from .log import get_logger
 from .parameter_scan import ParameterScan
 from .parameters import Parameters
 from .simulation import Simulation
+from . import doit_compat
 
 assert List
 
@@ -59,14 +62,14 @@ class WaveFunctionDB(ParameterScan):
                  prototype: Parameters,
                  func: Callable[[Parameters], Simulation],
                  working_dir: str = None):
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".WaveFunctionDB")
         self.prototype = prototype
         self.stored_wave_functions = []  # type: List[Parameters]
         self.missing_wave_functions = []  # type: List[Parameters]
         self.wfn_path = wfn_path
 
         super().__init__(name, func, [], working_dir)
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".WaveFunctionDB")
 
         self.load_missing_wave_functions()
         self.load_stored_wave_functions()
@@ -109,6 +112,8 @@ class WaveFunctionDB(ParameterScan):
             with open("missing_wave_functions.pickle", "wb") as fptr:
                 pickle.dump(entries, fptr)
 
+            self.missing_wave_functions.append(parameters)
+
     def remove_missing_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
@@ -127,6 +132,8 @@ class WaveFunctionDB(ParameterScan):
             with open("missing_wave_functions.pickle", "wb") as fptr:
                 pickle.dump(entries, fptr)
 
+            self.missing_wave_functions.remove(parameters)
+
     def store_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
@@ -144,9 +151,12 @@ class WaveFunctionDB(ParameterScan):
             with open("stored_wave_functions.pickle", "wb") as fptr:
                 pickle.dump(entries, fptr)
 
-    def request(self, parameters: Parameters, compute: bool = True):
+            self.stored_wave_functions.append(parameters)
+
+    def request(self, parameters: Parameters, compute: bool = True) -> str:
         self.logger.info("request wave function for parameters %s",
                          repr(parameters))
+
         common_parameter_names = parameters.get_common_parameter_names(
             self.prototype)
 
@@ -159,18 +169,17 @@ class WaveFunctionDB(ParameterScan):
                     hash_string(repr(p)), self.wfn_path)
                 return path
 
+        self.logger.info("wave function is not present")
+
         p = copy.deepcopy(self.prototype)
         for name in common_parameter_names:
             p[name] = parameters[name]
 
         if p not in self.missing_wave_functions:
-            self.missing_wave_functions.append(p)
             self.store_missing_wave_function(p)
             self.combinations = self.stored_wave_functions + self.missing_wave_functions
 
         if not compute:
-            self.logger.error(
-                "wave function is not present and computation is disabled")
             raise MissingWfnError(p)
 
         self._compute(p)
@@ -186,13 +195,52 @@ class WaveFunctionDB(ParameterScan):
                 os.path.join(self.working_dir, "wave_function_db.lock")):
             self.remove_missing_wave_function(parameters)
             self.store_wave_function(parameters)
-            self.stored_wave_functions.append(parameters)
-            self.missing_wave_functions.remove(parameters)
+
+    def run_index(self, args: argparse.Namespace):
+        super().run_index(args)
+        parameters = self.combinations[args.index]
+        with WaveFunctionDBLock(
+                os.path.join(self.working_dir, "wave_function_db.lock")):
+            self.remove_missing_wave_function(parameters)
+            self.store_wave_function(parameters)
+
+    def run(self, args: argparse.Namespace):
+        self.logger.info("running wave function db")
+
+        self.unlink_simulations()
+        self.store_parameters()
+        self.link_simulations()
+
+        self.create_working_dir()
+
+        tasks = []
+        def task_run_simulation(parameters: Parameters,
+                                name: str) -> Dict[str, Any]:
+            @doit_compat.DoitAction
+            def action_run_simulation(targets: List[str]):
+                del targets
+                self.request(parameters, compute=True)
+
+            return {
+                "name": "run_simulation:" + name.replace("=", ":"),
+                "actions": [action_run_simulation]
+            }
+
+        tasks = []  # type: List[Callable[[], Dict[str, Any]]]
+        for simulation, parameter in zip(self.simulations, self.combinations):
+            tasks += [partial(task_run_simulation, parameter, simulation.name)]
+
+        doit_compat.run_doit(tasks, [
+            "-n",
+            str(args.jobs), "--backend", "sqlite3", "--db-file",
+            os.path.join(self.working_dir, "doit.sqlite3")
+        ])
 
 
 def load_db(path: str, variable_name: str = "db") -> WaveFunctionDB:
-    spec = importlib.util.spec_from_file_location("db", path)
-    db_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(db_module)
-    db = getattr(db_module, variable_name)
-    return db
+    with cwd.WorkingDir(os.path.dirname(path)):
+        spec = importlib.util.spec_from_file_location("db", path)
+        db_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(db_module)
+        db = getattr(db_module, variable_name)
+        return db

@@ -18,7 +18,7 @@ class Simulation:
         self.tasks_run = []
         self.tasks_clean = []
         self.tasks_dry_run = []
-        self.logger = log.get_logger(__name__)
+        self.logger = log.get_logger(__name__ + ".Simulation")
 
     def __iadd__(self, generator):
         self.tasks_run += generator()
@@ -130,7 +130,7 @@ class Simulation:
             return
         with cwd.WorkingDir(self.working_dir):
             if os.path.exists("sge_stop"):
-                LOGGER.warning("stopping job")
+                self.logger.warning("stopping job")
                 subprocess.check_output("sge_stop")
 
     def task_info(self, args: argparse.Namespace):

@@ -28,7 +28,8 @@ def run_simulation(
     """
 
     def task_run_simulation():
-        def action_run_simulation(targets):
+        @doit_compat.DoitAction
+        def action_run_simulation(targets: List[str]):
             del targets
             simulation.main(["run"])
 
@@ -54,7 +55,8 @@ def dry_run_simulation(
     """
 
     def task_dry_run_simulation():
-        def action_dry_run_simulation(targets):
+        @doit_compat.DoitAction
+        def action_dry_run_simulation(targets: List[str]):
             del targets
             simulation.main(["dry-run"])
 
@@ -71,7 +73,8 @@ def dry_run_simulation(
 def clean_simulation(
         simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     def task_clean_simulation():
-        def action_clean_simulation(targets):
+        @doit_compat.DoitAction
+        def action_clean_simulation(targets: List[str]):
             del targets
             simulation.main(["clean"])
 
@@ -110,13 +113,13 @@ class SimulationSet:
         self.working_dir = os.path.abspath(
             name) if working_dir is None else working_dir
 
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".SimulationSet")
 
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
         subparsers = self.argparser.add_subparsers(dest="subcommand")
 
-        subparsers.add_parser("list")
+        self.argparser_list = subparsers.add_parser("list")
         self.argparser_list_tasks = subparsers.add_parser("list-tasks")
         self.argparser_task_info = subparsers.add_parser("task-info")
         subparsers.add_parser("qdel")
@@ -127,6 +130,9 @@ class SimulationSet:
         self.argparser_clean = subparsers.add_parser("clean")
 
         sge.add_parser_arguments(self.argparser_qsub)
+
+        self.argparser_list.add_argument(
+            "-d", "--directory", action="store_true")
 
         self.argparser_list_tasks.add_argument(
             "index",
@@ -156,10 +162,12 @@ class SimulationSet:
             os.makedirs(self.working_dir)
 
     def list_(self, args: argparse.Namespace):
-        del args
-
-        for i, simulation in enumerate(self.simulations):
-            print(i, simulation.name)
+        if args.directory:
+            for i, simulation in enumerate(self.simulations):
+                print(i, simulation.working_dir)
+        else:
+            for i, simulation in enumerate(self.simulations):
+                print(i, simulation.name)
 
     def list_tasks(self, args: argparse.Namespace):
         self.simulations[args.index].main(["list"])
@@ -238,8 +246,8 @@ class SimulationSet:
         del args
 
         if not os.path.exists(self.working_dir):
-            LOGGER.warning("working dir %s does not exist, do nothing",
-                           self.working_dir)
+            self.logger.warning("working dir %s does not exist, do nothing",
+                                self.working_dir)
 
         with cwd.WorkingDir(self.working_dir):
             for simulation in self.simulations:
@@ -288,7 +296,7 @@ class SimulationSet:
         args = self.argparser.parse_args(argv)
 
         if args.subcommand is None:
-            LOGGER.error("No subcommand specified!")
+            self.logger.error("No subcommand specified!")
             print()
             self.argparser.print_help(sys.stderr)
             exit(1)

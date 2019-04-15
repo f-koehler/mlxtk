@@ -25,7 +25,7 @@ class ComputeExpectationValue(Task):
         self.operator = operator
         self.dirname = os.path.dirname(psi)
 
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".ComputeExpectationValue")
 
         # compute the name of the expectation value based on the operator name,
         # when no name is explicitly specified

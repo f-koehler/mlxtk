@@ -142,7 +142,7 @@ class MBOperatorSpecification:
 class CreateMBOperator(Task):
     def __init__(self, name: str, *args, **kwargs):
         self.name = name
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".CreateMBOperator")
 
         if "specification" in kwargs:
             self.specification = kwargs["specification"]

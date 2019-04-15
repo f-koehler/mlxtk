@@ -35,7 +35,7 @@ class ParameterScan(SimulationSet):
     ):
         super().__init__(name, [], working_dir)
         self.func = func
-        self.logger = get_logger(__name__)
+        self.logger = get_logger(__name__ + ".ParameterScan")
         self.simulations = []  # type: List[Simulation]
         self.combinations = combinations
 

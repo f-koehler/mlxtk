@@ -3,8 +3,12 @@
 This modules provides facility to log status, warning and error messages
 within mlxtk.
 """
+import contextlib
 import logging
 import os
+import sys
+
+from tqdm import tqdm
 
 try:
     import colorama
@@ -46,7 +50,7 @@ LOGGERS = set()
 FILE_HANDLER = None
 """logging.FileHandler: Handler for the log file"""
 
-logging.basicConfig(format=LOG_FORMAT, level=logging.DEBUG)
+logging.basicConfig(format=LOG_FORMAT, level=logging.INFO)
 
 
 def get_logger(name: str) -> logging.Logger:
@@ -97,3 +101,27 @@ def close_log_file():
         for logger in LOGGERS:
             logger.removeHandler(FILE_HANDLER)
         FILE_HANDLER.close()
+
+
+class TqdmRedirectionFile:
+    def __init__(self, original):
+        self.original = original
+
+    def write(self, x: str):
+        if len(x.strip()) > 0:
+            tqdm.write(x, file=self.original)
+
+    def flush(self):
+        return getattr(self.original, "flush", lambda: None)()
+
+
+@contextlib.contextmanager
+def redirect_for_tqdm():
+    originals = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = map(TqdmRedirectionFile, originals)
+        yield originals[0]
+    except Exception as ex:
+        raise ex
+    finally:
+        sys.stdout, sys.stderr = originals

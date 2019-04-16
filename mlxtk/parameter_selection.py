@@ -2,7 +2,7 @@
 """
 import os.path
 import pickle
-from typing import Any, Callable, Iterable, List, Set
+from typing import Any, Callable, Iterable, List, Optional, Set
 
 from .cwd import WorkingDir
 from .parameters import Parameters
@@ -101,13 +101,9 @@ class ParameterSelection:
                 results.append(func(entry[0], path, entry[1]))
 
             return results
-        # return [
-        #     func(entry[0], path, entry[1])
-        #     for entry, path in zip(self.parameters, self.get_paths())
-        # ]
 
     def plot_foreach(self, name: str,
-                     func: Callable[[int, str, Parameters], None]) -> None:
+                     func: Callable[[int, str, Parameters], None]) -> Optional[List[Any]]:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
 
@@ -116,7 +112,7 @@ class ParameterSelection:
             os.makedirs(plot_dir)
 
         with WorkingDir(plot_dir):
-            self.foreach(func)
+            return self.foreach(func)
 
     def __str__(self):
         return "\n".join("{}: {}".format(i, p) for i, p in self.parameters)

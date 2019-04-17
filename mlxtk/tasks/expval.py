@@ -26,6 +26,9 @@ class ComputeExpectationValue(Task):
         self.dirname = os.path.dirname(psi_or_restart)
         self.static = kwargs.get("static", False)
 
+        if not self.dirname:
+            self.dirname = os.path.curdir
+
         self.logger = get_logger(__name__ + ".ComputeExpectationValue")
 
         # compute the name of the expectation value based on the operator name,

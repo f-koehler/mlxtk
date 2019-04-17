@@ -16,8 +16,15 @@ def read_expval(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 
 def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    with open(path, "r") as fp:
+        line = fp.readline().split()
+        if len(line) == 2:
+            return numpy.array([0.]), numpy.array(
+                [float(line[0]) + 1j * float(line[1])])
+
     df = pandas.read_csv(
         path, delim_whitespace=True, names=["time", "real", "imag"])
+    print(df)
     return (
         numpy.array(df["time"].values, dtype=numpy.float64),
         numpy.array(df["real"].values, dtype=numpy.complex128) +

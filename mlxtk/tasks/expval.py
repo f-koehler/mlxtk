@@ -20,26 +20,40 @@ from .task import Task
 
 
 class ComputeExpectationValue(Task):
-    def __init__(self, psi: str, operator: str, **kwargs):
-        self.psi = psi
+    def __init__(self, psi_or_restart: str, operator: str, **kwargs):
+        self.psi_or_restart = psi_or_restart
         self.operator = operator
-        self.dirname = os.path.dirname(psi)
+        self.dirname = os.path.dirname(psi_or_restart)
+        self.static = kwargs.get("static", False)
 
         self.logger = get_logger(__name__ + ".ComputeExpectationValue")
 
         # compute the name of the expectation value based on the operator name,
         # when no name is explicitly specified
-        self.name = kwargs.get(
-            "name",
-            os.path.join(os.path.dirname(psi), os.path.basename(operator)))
+        if self.static:
+            self.name = kwargs.get(
+                "name",
+                os.path.join(
+                    os.path.dirname(psi_or_restart),
+                    os.path.basename(psi_or_restart) + "_" +
+                    os.path.basename(operator)))
+        else:
+            self.name = kwargs.get(
+                "name",
+                os.path.join(
+                    os.path.dirname(psi_or_restart),
+                    os.path.basename(operator)))
 
         # compute required paths
         self.path_operator = self.operator + ".mb_opr"
         self.path_operator_copy = os.path.join(
-            os.path.dirname(psi), self.operator + ".mb_opr")
-        self.path_psi = self.psi
+            os.path.dirname(psi_or_restart), self.operator + ".mb_opr")
+        self.path_psi_or_restart = self.psi_or_restart
         self.path_expval = self.name + ".exp"
         self.path_wave_function = os.path.join(self.dirname, "final.wfn")
+
+        if self.static:
+            self.path_psi_or_restart += ".wfn"
 
     def task_compute(self) -> Dict[str, Any]:
         @DoitAction
@@ -62,17 +76,28 @@ class ComputeExpectationValue(Task):
 
             with cwd.WorkingDir(self.dirname):
                 self.logger.info("compute expectation value")
-                cmd = [
-                    "qdtk_expect.x",
-                    "-psi",
-                    os.path.basename(self.path_psi),
-                    "-opr",
-                    os.path.basename(self.path_operator_copy),
-                    "-rst",
-                    os.path.basename(self.path_wave_function),
-                    "-save",
-                    os.path.basename(self.path_expval),
-                ]
+                if self.static:
+                    cmd = [
+                        "qdtk_expect.x",
+                        "-opr",
+                        os.path.basename(self.path_operator_copy),
+                        "-rst",
+                        os.path.basename(self.path_psi_or_restart),
+                        "-save",
+                        os.path.basename(self.path_expval),
+                    ]
+                else:
+                    cmd = [
+                        "qdtk_expect.x",
+                        "-psi",
+                        os.path.basename(self.path_psi_or_restart),
+                        "-opr",
+                        os.path.basename(self.path_operator_copy),
+                        "-rst",
+                        os.path.basename(self.path_wave_function),
+                        "-save",
+                        os.path.basename(self.path_expval),
+                    ]
                 self.logger.info("command: %s", " ".join(cmd))
                 env = os.environ.copy()
                 env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
@@ -87,14 +112,14 @@ class ComputeExpectationValue(Task):
                 "actions":
                 [action_copy_operator, action_compute, action_remove_operator],
                 "targets": [self.path_expval],
-                "file_dep": [self.path_psi, self.path_operator],
+                "file_dep": [self.path_psi_or_restart, self.path_operator],
             }
 
         return {
             "name": "expval:{}:compute".format(self.name),
             "actions": [action_compute],
             "targets": [self.path_expval],
-            "file_dep": [self.path_psi, self.path_operator],
+            "file_dep": [self.path_psi_or_restart, self.path_operator],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

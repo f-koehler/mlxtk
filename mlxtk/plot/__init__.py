@@ -20,14 +20,23 @@ def make_headless():
     matplotlib.use("agg")
 
 
-def save_pdf(figure: matplotlib.figure.Figure, path: str, crop: bool = True):
+def save_pdf(figure: matplotlib.figure.Figure,
+             path: str,
+             crop: bool = True,
+             optimize: bool = True):
     figure.savefig(path)
 
-    if not crop:
-        return
+    if crop:
+        crop_pdf(path)
 
+    if optimize:
+        optimize_pdf(path)
+
+
+def crop_pdf(path: str):
     if not shutil.which("pdfcrop"):
         LOGGER.error("Cannot find pdfcrop, skip cropping")
+        return
 
     gs = shutil.which("gs")
     if gs:
@@ -44,6 +53,15 @@ def save_pdf(figure: matplotlib.figure.Figure, path: str, crop: bool = True):
 
     LOGGER.info("Cropping PDF file: %s", path)
     subprocess.check_output(["pdfcrop", "--hires", path, path])
+
+def optimize_pdf(path: str):
+    if not shutil.which("pdftocairo"):
+        LOGGER.error("Cannot find pdftocairo, skip PDF optimization")
+        return
+
+    tmp_path = path + "_tmp"
+    subprocess.check_output(["pdftocairo", "-pdf", path, tmp_path])
+    shutil.move(tmp_path, path)
 
 
 def close_figure(figure: matplotlib.figure.Figure):

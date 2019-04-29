@@ -11,7 +11,7 @@ def plot_gpop(ax, time, grid, density):
     ax.set_ylabel(r"$x$")
 
 
-def create_model(time, grid, density):
+def create_gpop_model(time, grid, density):
     Y, X = numpy.meshgrid(grid / grid.max(), time / time.max())
     Z = density / density.max()
 

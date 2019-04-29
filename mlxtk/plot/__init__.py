@@ -1,11 +1,23 @@
 import shutil
 import subprocess
 
+import matplotlib
 import matplotlib.figure
+import matplotlib.pyplot
 
 from ..log import get_logger
 
+from .energy import plot_energy, plot_energy_diff
+from .entropy import plot_entropy, plot_entropy_diff
+from .expval import plot_expval
+from .gpop import plot_gpop, create_gpop_model
+from .natpop import plot_natpop
+
 LOGGER = get_logger(__name__)
+
+
+def make_headless():
+    matplotlib.use("agg")
 
 
 def save_pdf(figure: matplotlib.figure.Figure, path: str, crop: bool = True):
@@ -32,3 +44,11 @@ def save_pdf(figure: matplotlib.figure.Figure, path: str, crop: bool = True):
 
     LOGGER.info("Cropping PDF file: %s", path)
     subprocess.check_output(["pdfcrop", "--hires", path, path])
+
+
+def close_figure(figure: matplotlib.figure.Figure):
+    matplotlib.pyplot.close(figure)
+
+
+def create_subplots(*args, **kwargs):
+    return matplotlib.pyplot.subplots(*args, **kwargs)

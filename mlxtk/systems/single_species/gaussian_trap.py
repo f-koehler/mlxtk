@@ -78,3 +78,15 @@ class GaussianTrap(SingleSpeciesSystem):
             {name: gaussian(self.grid.get_x(), x0, alpha)},
             name + "_coeff | 1 " + name,
         )
+
+    def get_hamiltonian_moving_well(self, v: float = 1.0, a: float = 0.0
+                                    ) -> tasks.MBOperatorSpecification:
+        potential = tasks.MBOperatorSpecification(
+            (1, ), (self.grid, ), {"potential_coeff": 1.0}, {
+                "potential": {
+                    "td_name": "moving_gaussian",
+                    "td_args": [-self.parameters.V0, self.parameters.x0, v, a]
+                }
+            }, "potential_coeff | 1 potential")
+        return self.get_kinetic_operator(
+        ) + potential + self.get_interaction_operator()

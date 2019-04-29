@@ -52,31 +52,3 @@ class HarmonicTrap(SingleSpeciesSystem):
                 self.get_interaction_operator())
 
         return self.get_kinetic_operator() + self.get_potential_operator()
-
-    def get_center_of_mass_operator(self) -> tasks.MBOperatorSpecification:
-        return tasks.MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
-            {"center_of_mass_coeff": 1.0},
-            {"center_of_mass": self.grid.get_x()},
-            "center_of_mass_coeff | 1 center_of_mass",
-        )
-
-    def get_center_of_mass_operator_squared(
-            self) -> tasks.MBOperatorSpecification:
-        return tasks.MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
-            {
-                "center_of_mass_squared_coeff_1": 1.0,
-                "center_of_mass_squared_coeff_2": 2.0,
-            },
-            {
-                "center_of_mass_squared_x": self.grid.get_x(),
-                "center_of_mass_squared_x^2": self.grid.get_x()**2,
-            },
-            [
-                "center_of_mass_squared_coeff_1 | 1 center_of_mass_squared_x",
-                "center_of_mass_squared_coeff_2 |1 center_of_mass_squared_x^2",
-            ],
-        )

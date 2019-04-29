@@ -24,7 +24,6 @@ def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
     df = pandas.read_csv(
         path, delim_whitespace=True, names=["time", "real", "imag"])
-    print(df)
     return (
         numpy.array(df["time"].values, dtype=numpy.float64),
         numpy.array(df["real"].values, dtype=numpy.complex128) +

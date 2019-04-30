@@ -35,6 +35,7 @@ simulation outcome.
         "pandas",
         "scipy",
         "tabulate",
+        "pyyaml",
     ],
     packages=["mlxtk"],
     entry_points={

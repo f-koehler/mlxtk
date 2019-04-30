@@ -6,7 +6,7 @@ from .util import memoize
 
 
 @memoize
-def get_settings(start_directory: str = os.getcwd()) -> Dict[Any, Any]:
+def load_settings(start_directory: str = os.getcwd()) -> Dict[Any, Any]:
     start_directory = os.path.abspath(os.path.realpath(start_directory))
     while True:
         path = os.path.join(start_directory, ".mlxtkrc")
@@ -19,7 +19,3 @@ def get_settings(start_directory: str = os.getcwd()) -> Dict[Any, Any]:
             return {}
 
         start_directory = new_directory
-
-
-def fetch_unit(quantity: str, working_directory: str = os.getcwd()) -> str:
-    return get_settings(working_directory).get("units", {}).get(quantity, "")

@@ -59,6 +59,7 @@ def optimize_pdf(path: str):
         LOGGER.error("Cannot find pdftocairo, skip PDF optimization")
         return
 
+    LOGGER.info("Optimizing PDF file: %s", path)
     tmp_path = path + "_tmp"
     subprocess.check_output(["pdftocairo", "-pdf", path, tmp_path])
     shutil.move(tmp_path, path)

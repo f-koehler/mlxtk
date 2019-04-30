@@ -6,7 +6,7 @@ import stl
 
 def plot_gpop(ax, time, grid, density):
     Y, X = numpy.meshgrid(grid, time)
-    ax.pcolormesh(X, Y, density, cmap="gnuplot")
+    ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
     ax.set_xlabel("$t$")
     ax.set_ylabel(r"$x$")
 

@@ -2,9 +2,8 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.gpop import read_gpop
-from ..plot.gpop import plot_gpop
-from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..inout import read_gpop
+from ..plot import add_argparse_2d_args, apply_2d_args, plot_gpop
 
 
 def main():

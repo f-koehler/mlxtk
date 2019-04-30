@@ -2,8 +2,8 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout.gpop import read_gpop
-from ..plot.gpop import create_model
+from ..inout import read_gpop
+from ..plot import create_gpop_model
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
     args = parser.parse_args()
 
     time, grid, density = read_gpop(args.path, dof=args.dof)
-    create_model(time, grid, density)
+    create_gpop_model(time, grid, density)
 
     plt.show()
 

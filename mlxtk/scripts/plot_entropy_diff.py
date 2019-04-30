@@ -3,9 +3,8 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy
 
-from ..inout.natpop import read_natpop
-from ..plot.entropy import plot_entropy_diff
-from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..inout import read_natpop
+from ..plot import add_argparse_2d_args, apply_2d_args, plot_entropy_diff
 from ..tools.entropy import compute_entropy
 
 

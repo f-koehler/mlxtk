@@ -3,9 +3,8 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy
 
-from ..inout.output import read_output
-from ..plot.energy import plot_energy_diff
-from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..inout import read_output
+from ..plot import add_argparse_2d_args, apply_2d_args, plot_energy_diff
 
 
 def main():

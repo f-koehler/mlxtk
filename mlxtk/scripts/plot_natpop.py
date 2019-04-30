@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 from ..inout.natpop import read_natpop
 from ..plot.natpop import plot_natpop
-from ..plot.plot import add_argparse_2d_args, apply_2d_args
+from ..plot import add_argparse_2d_args, apply_2d_args
 
 
 def main():

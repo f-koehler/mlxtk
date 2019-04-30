@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ..inout.natpop import read_natpop
 from ..plot.natpop import plot_natpop
 from ..plot import add_argparse_2d_args, apply_2d_args
+from .. import units
 
 
 def main():
@@ -21,6 +22,8 @@ def main():
 
     time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
     plot_natpop(ax, time, natpop)
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path))
 
     apply_2d_args(ax, args)
 

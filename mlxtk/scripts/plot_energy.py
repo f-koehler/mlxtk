@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ..inout import read_output
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_energy
 from ..util import labels_from_paths
+from .. import units
 
 
 def main():
@@ -24,6 +25,9 @@ def main():
 
     if len(args.path) > 1:
         ax.legend()
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path[0]))
+    ax.set_ylabel(units.get_energy_label(working_directory=args.path[0]))
 
     apply_2d_args(ax, args)
 

@@ -6,6 +6,7 @@ import numpy
 from ..inout import read_natpop
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_entropy_diff
 from ..tools.entropy import compute_entropy
+from .. import units
 
 
 def main():
@@ -32,6 +33,8 @@ def main():
     entropy2 = compute_entropy(natpop2)
 
     plot_entropy_diff(ax, time1, entropy1, entropy2)
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path))
 
     apply_2d_args(ax, args)
 

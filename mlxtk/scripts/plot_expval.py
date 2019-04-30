@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from ..inout import read_expval
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_expval
 from ..util import labels_from_paths
+from .. import units
 
 
 def main():
@@ -19,6 +20,8 @@ def main():
     for path, label in zip(args.path, labels):
         time, values = read_expval(path)
         plot_expval(ax, time, values, label=label)
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path[0]))
 
     apply_2d_args(ax, args)
 

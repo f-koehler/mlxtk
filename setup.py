@@ -33,9 +33,10 @@ simulation outcome.
         "numpy",
         "numpy-stl",
         "pandas",
-        "scipy",
-        "tabulate",
         "pyyaml",
+        "scipy",
+        "sympy",
+        "tabulate",
     ],
     packages=["mlxtk"],
     entry_points={

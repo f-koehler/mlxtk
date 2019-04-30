@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from ..inout import read_gpop
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_gpop
+from .. import units
 
 
 def main():
@@ -19,6 +20,9 @@ def main():
 
     time, grid, density = read_gpop(args.path, dof=args.dof)
     plot_gpop(ax, time, grid, density)
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path))
+    ax.set_ylabel(units.get_length_label(working_directory=args.path))
 
     apply_2d_args(ax, args)
 

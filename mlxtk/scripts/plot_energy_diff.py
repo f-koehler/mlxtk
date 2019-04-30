@@ -5,6 +5,7 @@ import numpy
 
 from ..inout import read_output
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_energy_diff
+from .. import units
 
 
 def main():
@@ -25,6 +26,11 @@ def main():
         raise ValueError("different time points")
 
     plot_energy_diff(ax, time1, energy1, energy2)
+
+    ax.set_xlabel(units.get_time_label(working_directory=args.path[0]))
+    ax.set_ylabel(
+        units.get_energy_label(
+            quantity=r"\Delta E", working_directory=args.path[0]))
 
     apply_2d_args(ax, args)
 

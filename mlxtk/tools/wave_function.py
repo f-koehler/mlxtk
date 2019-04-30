@@ -9,6 +9,8 @@ import scipy.special
 
 from QDTK.Wavefunction import Wavefunction
 
+from ..util import memoize
+
 
 def load_wave_function(path: str) -> Wavefunction:
     _, ext = os.path.splitext(path)
@@ -89,7 +91,7 @@ class Memoize:
         return self.memo[args]
 
 
-@Memoize
+@memoize
 def binom(n: int, k: int) -> int:
     return int(scipy.special.binom(n, k))
 

@@ -117,14 +117,14 @@ def apply_2d_args(ax, args):
     if args.logy:
         ax.set_yscale("log")
 
-    xlims = ax.get_xlim()
+    xlims = list(ax.get_xlim())
     if args.xmin is not None:
         xlims[0] = args.xmin
     if args.xmax is not None:
         xlims[1] = args.xmax
     ax.set_xlim(xlims)
 
-    ylims = ax.get_ylim()
+    ylims = list(ax.get_ylim())
     if args.ymin is not None:
         ylims[0] = args.ymin
     if args.ymax is not None:

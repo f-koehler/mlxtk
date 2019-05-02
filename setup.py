@@ -49,6 +49,7 @@ simulation outcome.
             "plot_expval = mlxtk.scripts.plot_expval:main",
             "plot_gpop = mlxtk.scripts.plot_gpop:main",
             "plot_natpop = mlxtk.scripts.plot_natpop:main",
+            "scan_plot_gpop = mlxtk.scripts.scan_plot_gpop:main",
             "spectrum_1b = mlxtk.scripts.spectrum_1b:main",
         ]
     },

@@ -2,10 +2,10 @@ import gzip
 import io
 import os
 from typing import Any, Dict, List
-from numba import jit
 
 import numpy
 import scipy.special
+from numba import jit
 
 from QDTK.Wavefunction import Wavefunction
 

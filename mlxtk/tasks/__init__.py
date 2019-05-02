@@ -5,8 +5,8 @@ from .propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from .spectrum import ComputeSpectrum
 from .variance import ComputeVariance
 from .wave_function import RequestWaveFunction
-from .wfn_mcthdb import (MCTDHBCreateWaveFunction, MCTDHBAddMomentum,
-                         MCTDHBAddMomentumSplit, MCTDHBExtendGrid)
+from .wfn_mcthdb import (MCTDHBAddMomentum, MCTDHBAddMomentumSplit,
+                         MCTDHBCreateWaveFunction, MCTDHBExtendGrid)
 
 assert ComputeExpectationValue
 assert ComputeSpectrum

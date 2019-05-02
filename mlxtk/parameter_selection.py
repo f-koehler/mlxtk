@@ -5,8 +5,8 @@ import pickle
 from typing import Any, Callable, Iterable, List, Optional, Set
 
 from .cwd import WorkingDir
-from .parameters import Parameters
 from .log import redirect_for_tqdm, tqdm
+from .parameters import Parameters
 
 
 class ParameterSelection:
@@ -103,7 +103,8 @@ class ParameterSelection:
             return results
 
     def plot_foreach(self, name: str,
-                     func: Callable[[int, str, Parameters], None]) -> Optional[List[Any]]:
+                     func: Callable[[int, str, Parameters], None]
+                     ) -> Optional[List[Any]]:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
 

@@ -38,7 +38,7 @@ def get_length_label(quantity: str = "x",
 
 
 def get_time_label(quantity: str = "t",
-                     working_directory: str = os.getcwd()) -> str:
+                   working_directory: str = os.getcwd()) -> str:
     unit = load_unit("time", working_directory)
     if unit:
         return format_label(quantity, latex(simplify(unit)))

@@ -7,7 +7,7 @@ from ..cwd import WorkingDir
 from ..doit_compat import DoitAction
 from ..log import get_logger
 from ..parameters import Parameters
-from ..wave_function_db import load_db, MissingWfnError
+from ..wave_function_db import MissingWfnError, load_db
 from .task import Task
 
 LOGGER = get_logger(__name__)

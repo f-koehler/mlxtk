@@ -1,6 +1,7 @@
 import os
-import yaml
 from typing import Any, Dict
+
+import yaml
 
 from .util import memoize
 

@@ -2,10 +2,10 @@ import argparse
 
 import matplotlib.pyplot as plt
 
+from .. import units
 from ..inout import read_output
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_energy
 from ..util import labels_from_paths
-from .. import units
 
 
 def main():

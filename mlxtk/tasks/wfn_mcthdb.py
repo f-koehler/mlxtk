@@ -6,12 +6,12 @@ import numpy
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
+from mlxtk.log import get_logger
 from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
-                                       load_wave_function, save_wave_function,
-                                       get_spfs)
-from mlxtk.log import get_logger
+                                       get_spfs, load_wave_function,
+                                       save_wave_function)
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 LOGGER = get_logger(__name__)

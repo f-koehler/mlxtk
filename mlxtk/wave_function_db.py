@@ -5,16 +5,15 @@ import os.path
 import pathlib
 import pickle
 import time
-from typing import Any, Callable, Dict, List
 from functools import partial
+from typing import Any, Callable, Dict, List
 
-from . import cwd
+from . import cwd, doit_compat
 from .hashing import hash_string
 from .log import get_logger
 from .parameter_scan import ParameterScan
 from .parameters import Parameters
 from .simulation import Simulation
-from . import doit_compat
 
 assert List
 
@@ -214,6 +213,7 @@ class WaveFunctionDB(ParameterScan):
         self.create_working_dir()
 
         tasks = []
+
         def task_run_simulation(parameters: Parameters,
                                 name: str) -> Dict[str, Any]:
             @doit_compat.DoitAction

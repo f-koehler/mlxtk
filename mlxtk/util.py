@@ -1,8 +1,8 @@
+import collections
+import functools
 import os.path
 from pathlib import Path
 from typing import List
-import collections
-import functools
 
 import numpy
 

@@ -1,17 +1,16 @@
+import os.path
 import shutil
 import subprocess
-import os.path
 
 import matplotlib
 import matplotlib.figure
 import matplotlib.pyplot
 
 from ..log import get_logger
-
 from .energy import plot_energy, plot_energy_diff
 from .entropy import plot_entropy, plot_entropy_diff
 from .expval import plot_expval
-from .gpop import plot_gpop, create_gpop_model
+from .gpop import create_gpop_model, plot_gpop
 from .natpop import plot_natpop
 
 LOGGER = get_logger(__name__)

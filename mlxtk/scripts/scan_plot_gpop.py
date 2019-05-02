@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 import argparse
-from functools import partial
 import os.path
+from functools import partial
 
-from .. import plot
-from .. import inout
-from .. import log
-from .. import units
-from ..parameters import Parameters
+from .. import inout, log, plot, units
 from ..parameter_selection import load_scan
+from ..parameters import Parameters
 
 LOGGER = log.get_logger(__name__)
 plot.make_headless()

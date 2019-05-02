@@ -2,9 +2,9 @@ import argparse
 
 import matplotlib.pyplot as plt
 
+from .. import units
 from ..inout import read_gpop
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_gpop
-from .. import units
 
 
 def main():

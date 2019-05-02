@@ -3,10 +3,10 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy
 
+from .. import units
 from ..inout import read_natpop
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_entropy_diff
 from ..tools.entropy import compute_entropy
-from .. import units
 
 
 def main():

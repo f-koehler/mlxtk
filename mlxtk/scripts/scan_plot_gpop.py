@@ -19,6 +19,7 @@ def plot_gpop(index: int,
               parameters: Parameters,
               file_path: str,
               dof: int = 1,
+              extension: str = ".pdf",
               modfunc=None):
     total_path = os.path.join(path, file_path)
     try:
@@ -29,7 +30,7 @@ def plot_gpop(index: int,
         ax.set_ylabel(units.get_length_label())
         if modfunc:
             modfunc(fig, ax)
-        plot.save_pdf(fig, str(index) + ".pdf")
+        plot.save(fig, str(index) + extension)
         plot.close_figure(fig)
     except FileNotFoundError:
         LOGGER.warning("file does not exist: %s", total_path)
@@ -48,6 +49,12 @@ def main():
         help="relative path within each simulation")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")
+    parser.add_argument(
+        "-e",
+        "--extension",
+        type=str,
+        default=".pdf",
+        help="file extensions for the plots")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -58,7 +65,11 @@ def main():
     load_scan(args.scan_dir).plot_foreach(
         "gpop",
         partial(
-            plot_gpop, file_path=args.file, modfunc=apply_args, dof=args.dof))
+            plot_gpop,
+            file_path=args.file,
+            modfunc=apply_args,
+            dof=args.dof,
+            extension=args.extension))
 
 
 if __name__ == "__main__":

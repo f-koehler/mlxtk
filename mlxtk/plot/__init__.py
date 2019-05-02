@@ -1,5 +1,6 @@
 import shutil
 import subprocess
+import os.path
 
 import matplotlib
 import matplotlib.figure
@@ -18,6 +19,20 @@ LOGGER = get_logger(__name__)
 
 def make_headless():
     matplotlib.use("agg")
+
+
+def save(figure: matplotlib.figure.Figure,
+         path: str,
+         crop: bool = True,
+         optimize: bool = True):
+    if os.path.splitext(path) == ".pdf":
+        save_pdf(figure, path, crop, optimize)
+        return
+
+    if crop:
+        figure.savefig(path, bbox_inches="tight")
+    else:
+        figure.savefig(path)
 
 
 def save_pdf(figure: matplotlib.figure.Figure,

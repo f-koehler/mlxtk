@@ -15,20 +15,21 @@ LOGGER = log.get_logger(__name__)
 plot.make_headless()
 
 
-def plot_gpop(index: int,
-              path: str,
-              parameters: Parameters,
-              file_path: str,
-              dof: int = 1,
-              extension: str = ".pdf",
-              modfunc: Callable[[Figure, Axes, Parameters], None] = None):
+def plot_natpop(index: int,
+                path: str,
+                parameters: Parameters,
+                file_path: str,
+                dof: int = 1,
+                node: int = 1,
+                extension: str = ".pdf",
+                modfunc: Callable[[Figure, Axes, Parameters], None] = None):
     total_path = os.path.join(path, file_path)
     try:
         fig, ax = plot.create_subplots(1, 1)
-        plot.plot_gpop(ax, *inout.read_gpop(total_path, dof=dof))
-        ax.set_title(r"$\rho_1(x,t)$")
+        plot.plot_natpop(ax,
+                         *inout.read_natpop(total_path, dof=dof, node=node))
         ax.set_xlabel(units.get_time_label())
-        ax.set_ylabel(units.get_length_label())
+        ax.set_ylabel(r"$\lambda_i(t)$")
         if modfunc:
             modfunc(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
@@ -47,10 +48,11 @@ def main():
         "-f",
         "--file",
         type=str,
-        default=os.path.join("propagate", "gpop"),
+        default=os.path.join("propagate", "natpop"),
         help="relative path within each simulation")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")
+    parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(
         "-e",
         "--extension",
@@ -63,7 +65,7 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = "gpop_{}".format(args.dof)
+        args.output = "natpop_{}_{}".format(args.dof, args.node)
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
         del fig
@@ -73,10 +75,11 @@ def main():
     load_scan(args.scan_dir).plot_foreach(
         args.output,
         partial(
-            plot_gpop,
+            plot_natpop,
             file_path=args.file,
             modfunc=apply_args,
             dof=args.dof,
+            node=args.node,
             extension=args.extension))
 
 

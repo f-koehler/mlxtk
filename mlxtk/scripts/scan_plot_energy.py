@@ -15,20 +15,20 @@ LOGGER = log.get_logger(__name__)
 plot.make_headless()
 
 
-def plot_gpop(index: int,
-              path: str,
-              parameters: Parameters,
-              file_path: str,
-              dof: int = 1,
-              extension: str = ".pdf",
-              modfunc: Callable[[Figure, Axes, Parameters], None] = None):
+def plot_energy(index: int,
+                path: str,
+                parameters: Parameters,
+                file_path: str,
+                dof: int = 1,
+                extension: str = ".pdf",
+                modfunc: Callable[[Figure, Axes, Parameters], None] = None):
     total_path = os.path.join(path, file_path)
     try:
         fig, ax = plot.create_subplots(1, 1)
-        plot.plot_gpop(ax, *inout.read_gpop(total_path, dof=dof))
-        ax.set_title(r"$\rho_1(x,t)$")
+        time, _, energy, _ = inout.read_output(total_path)
+        plot.plot_energy(ax, time, energy)
         ax.set_xlabel(units.get_time_label())
-        ax.set_ylabel(units.get_length_label())
+        ax.set_ylabel(units.get_energy_label())
         if modfunc:
             modfunc(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
@@ -47,10 +47,8 @@ def main():
         "-f",
         "--file",
         type=str,
-        default=os.path.join("propagate", "gpop"),
+        default=os.path.join("propagate", "output"),
         help="relative path within each simulation")
-    parser.add_argument(
-        "-d", "--dof", type=int, default=1, help="degree of freedom")
     parser.add_argument(
         "-e",
         "--extension",
@@ -58,12 +56,13 @@ def main():
         default=".pdf",
         help="file extensions for the plots")
     parser.add_argument(
-        "-o", "--output", type=str, help="name of the output directory")
+        "-o",
+        "--output",
+        type=str,
+        default="energy",
+        help="name of the output directory")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
-
-    if not args.output:
-        args.output = "gpop_{}".format(args.dof)
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
         del fig
@@ -73,10 +72,9 @@ def main():
     load_scan(args.scan_dir).plot_foreach(
         args.output,
         partial(
-            plot_gpop,
+            plot_energy,
             file_path=args.file,
             modfunc=apply_args,
-            dof=args.dof,
             extension=args.extension))
 
 

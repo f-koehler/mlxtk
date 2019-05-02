@@ -18,6 +18,7 @@ def plot_gpop(index: int,
               path: str,
               parameters: Parameters,
               file_path: str,
+              dof: int = 1,
               modfunc=None):
     total_path = os.path.join(path, file_path)
     try:
@@ -38,11 +39,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "scan_dir",
+        type=str,
         help="directory of the scan containing the file scan.pickle")
     parser.add_argument(
         "--file",
+        type=str,
         default=os.path.join("propagate/gpop"),
         help="relative path within each simulation")
+    parser.add_argument(
+        "-d", "--dof", type=int, default=1, help="degree of freedom")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -51,7 +56,9 @@ def main():
         plot.apply_2d_args(ax, args)
 
     load_scan(args.scan_dir).plot_foreach(
-        "gpop", partial(plot_gpop, file_path=args.file, modfunc=apply_args))
+        "gpop",
+        partial(
+            plot_gpop, file_path=args.file, modfunc=apply_args, dof=args.dof))
 
 
 if __name__ == "__main__":

@@ -42,6 +42,7 @@ simulation outcome.
     entry_points={
         "console_scripts": [
             "gpop_model = mlxtk.scripts.gpop_model:main",
+            "gpop_slider = mlxtk.scripts.gpop_slider:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",
             "plot_energy_diff = mlxtk.scripts.plot_energy_diff:main",
             "plot_entropy = mlxtk.scripts.plot_entropy:main",

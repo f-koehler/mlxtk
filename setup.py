@@ -41,6 +41,7 @@ simulation outcome.
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [
+            "dmat2_slider = mlxtk.scripts.dmat2_slider:main",
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "gpop_slider = mlxtk.scripts.gpop_slider:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",

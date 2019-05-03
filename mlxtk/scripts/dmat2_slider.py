@@ -3,25 +3,27 @@ import os
 import sys
 
 import matplotlib
+import numpy
+from matplotlib.collections import QuadMesh
 from PySide2 import QtWidgets
 
 from .. import inout, plot, units
 from ..ui import MatplotlibWidget, load_ui
 
 
-class GpopSlider(QtWidgets.QWidget):
-    def __init__(self, times, grids, gpops, plot_args, parent=None):
+class Dmat2Slider(QtWidgets.QWidget):
+    def __init__(self, times, x1, x2, dmat2, plot_args, parent=None):
         super().__init__(parent)
 
         self.times = times
-        self.grids = grids
-        self.gpops = gpops
+        self.x1 = x1
+        self.x2 = x2
+        self.dmat2 = dmat2
         self.plot_args = plot_args
         self.time_index = 0
-        self.dof = 1
-        self.line = None  # type: Line2D
+        self.mesh = None  # type: QuadMesh
 
-        self.window = load_ui("gpop_slider.ui")
+        self.window = load_ui("dmat2_slider.ui")
 
         self.plot = self.window.findChild(MatplotlibWidget,
                                           "plot")  # type: MatplotlibWidget
@@ -31,10 +33,6 @@ class GpopSlider(QtWidgets.QWidget):
             QtWidgets.QSpinBox, "spin_time")  # type: QtWidgets.QSpinBox
         self.label_time = self.window.findChild(
             QtWidgets.QLabel, "label_time")  # type: QtWidgets.QLabel
-        self.spin_dof = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_dof")  # type: QtWidgets.QSpinBox
-        self.dof_control = self.window.findChild(
-            QtWidgets.QWidget, "dof_control")  # type: QtWidgets.QWidget
 
         self.axes = self.plot.figure.subplots(1, 1)
         self.plot.figure.set_tight_layout(True)
@@ -48,10 +46,6 @@ class GpopSlider(QtWidgets.QWidget):
         self.spin_time.valueChanged.connect(self.set_time)
         self.spin_time.valueChanged.connect(self.update_plot)
 
-        self.spin_dof.setMaximum(len(self.grids))
-        if len(self.grids) < 2:
-            self.dof_control.hide()
-
         self.set_time(self.time_index)
         self.init_plot()
 
@@ -62,38 +56,35 @@ class GpopSlider(QtWidgets.QWidget):
         self.label_time.setText("Time: {:.4E}".format(self.times[index]))
 
     def init_plot(self):
-        if self.line:
-            self.line.remove()
-            self.line = None
+        if self.mesh:
+            self.mesh.remove()
+            self.mesh = None
 
-        self.line = self.axes.plot(self.grids[self.dof],
-                                   self.gpops[self.dof][self.time_index])[0]
-        self.axes.set_xlabel(units.get_length_label())
-        self.axes.set_ylabel(r"$\rho_1(x,t)$")
+        X2, X1 = numpy.meshgrid(self.x2, self.x1)
+        self.mesh = self.axes.pcolormesh(
+            X1,
+            X2,
+            self.dmat2[self.time_index],
+            cmap="gnuplot",
+            rasterized=True)
+        self.axes.set_xlabel(units.get_length_label("x_1"))
+        self.axes.set_ylabel(units.get_length_label("x_2"))
         plot.apply_2d_args(self.axes, self.plot_args)
-        self.axes.set_ylim([
-            self.axes.get_ylim()[0],
-            1.02 * self.gpops[self.dof][self.time_index].max()
-        ])
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):
-        self.line.set_ydata(self.gpops[self.dof][self.time_index])
-        self.axes.set_ylim([
-            self.axes.get_ylim()[0],
-            1.02 * self.gpops[self.dof][self.time_index].max()
-        ])
+        self.mesh.set_array(self.dmat2[index, :-1, :-1].ravel())
         self.plot.canvas.draw()
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", help="path to the gpop file")
+    parser.add_argument("path", help="path to the dmat2 file")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
     app = QtWidgets.QApplication(sys.argv)
-    form = GpopSlider(*inout.read_gpop(args.path), args)
+    Dmat2Slider(*inout.read_dmat2_gridrep(args.path), args)
     sys.exit(app.exec_())
 
 

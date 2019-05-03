@@ -1,6 +1,7 @@
-import pandas
 from typing import Tuple
+
 import numpy
+import pandas
 
 from . import tools
 

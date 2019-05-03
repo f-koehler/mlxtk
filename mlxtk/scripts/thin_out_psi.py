@@ -1,8 +1,10 @@
 import argparse
+import os.path
+
+import numpy
+
 from ..inout import read_psi_ascii, write_psi_ascii
 from ..log import get_logger
-import numpy
-import os.path
 
 LOGGER = get_logger(__name__)
 

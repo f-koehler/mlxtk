@@ -3,11 +3,15 @@
 This module provides various helper functions and classes to use the
 `DoIt <http://pydoit.org/>`_ library in a way that is adequate for mlxtk.
 """
+import doit
 from doit.cmd_base import TaskLoader
 from doit.doit_cmd import DoitMain
 from doit.task import dict_to_task
 
+from .log import get_logger
 from .timing import Timer
+
+LOGGER = get_logger(__name__)
 
 
 class CustomTaskLoader(TaskLoader):
@@ -29,6 +33,8 @@ class CustomTaskLoader(TaskLoader):
 def run_doit(task_generators, arguments=None) -> int:
     if arguments is None:
         raise ValueError("No arguments passed to DoitMain")
+    LOGGER.debug("arguments for DoitMain: %s", str(arguments))
+    LOGGER.debug("doit module: %s", doit.__file__)
     return DoitMain(CustomTaskLoader(task_generators)).run(arguments)
 
 

@@ -189,12 +189,9 @@ class SimulationSet:
         doit_compat.run_doit(
             tasks,
             [
-                "-n",
-                str(args.jobs),
-                "--backend",
-                "sqlite3",
-                "--db-file",
-                os.path.join(self.working_dir, "doit.sqlite3"),
+                "--process=" + str(args.jobs),
+                "--backend=sqlite3",
+                "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3"),
             ],
         )
 
@@ -209,10 +206,8 @@ class SimulationSet:
         doit_compat.run_doit(
             tasks,
             [
-                "--backend",
-                "sqlite3",
-                "--db-file",
-                os.path.join(self.working_dir, "doit.sqlite3"),
+                "--backend=sqlite3",
+                "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3"),
             ],
         )
 
@@ -227,12 +222,9 @@ class SimulationSet:
         doit_compat.run_doit(
             tasks,
             [
-                "-n",
-                str(args.jobs),
-                "--backend",
-                "sqlite3",
-                "--db-file",
-                os.path.join(self.working_dir, "doit.sqlite3"),
+                "--process=" + str(args.jobs),
+                "--backend=sqlite3",
+                "--db-file" + os.path.join(self.working_dir, "doit.sqlite3"),
             ],
         )
 

@@ -231,9 +231,8 @@ class WaveFunctionDB(ParameterScan):
             tasks += [partial(task_run_simulation, parameter, simulation.name)]
 
         doit_compat.run_doit(tasks, [
-            "-n",
-            str(args.jobs), "--backend", "sqlite3", "--db-file",
-            os.path.join(self.working_dir, "doit.sqlite3")
+            "--process=" + str(args.jobs), "--backend=sqlite3",
+            "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3")
         ])
 
 

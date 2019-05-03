@@ -39,7 +39,7 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
                 self.tasks_run,
-                ["graph", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
+                ["graph", "--backend=sqlite3", "--db-file=doit.sqlite3"],
             )
 
             with open("tasks.dot") as fptr:
@@ -61,7 +61,7 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
                 self.tasks_run,
-                ["list", "--backend", "sqlite3", "--db-file", "doit.sqlite3"],
+                ["list", "--backend=sqlite3", "--db-file=doit.sqlite3"],
             )
 
     def run(self, args: argparse.Namespace):
@@ -71,12 +71,9 @@ class Simulation:
                 doit_compat.run_doit(
                     self.tasks_run,
                     [
-                        "-n",
-                        str(args.jobs),
-                        "--backend",
-                        "sqlite3",
-                        "--db-file",
-                        "doit.sqlite3",
+                        "--process=" + str(args.jobs),
+                        "--backend=sqlite3",
+                        "--db-file=doit.sqlite3",
                     ],
                 )
 
@@ -87,10 +84,8 @@ class Simulation:
                 doit_compat.run_doit(
                     self.tasks_dry_run,
                     [
-                        "--backend",
-                        "sqlite3",
-                        "--db-file",
-                        "doit.sqlite3",
+                        "--backend=sqlite3",
+                        "--db-file=doit.sqlite3",
                     ],
                 )
 
@@ -101,12 +96,9 @@ class Simulation:
                 doit_compat.run_doit(
                     self.tasks_clean,
                     [
-                        "-n",
-                        str(args.jobs),
-                        "--backend",
-                        "sqlite3",
-                        "--db-file",
-                        "doit.sqlite3",
+                        "--process=" + str(args.jobs),
+                        "--backend=sqlite3",
+                        "--db-file=doit.sqlite3",
                     ],
                 )
 
@@ -139,10 +131,8 @@ class Simulation:
                 self.tasks_run,
                 [
                     "info",
-                    "--backend",
-                    "sqlite3",
-                    "--db-file",
-                    "doit.sqlite3",
+                    "--backend=sqlite3",
+                    "--db-file=doit.sqlite3",
                     args.name,
                 ],
             )

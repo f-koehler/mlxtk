@@ -1,5 +1,6 @@
 import collections
 import functools
+import importlib.util
 import os.path
 from pathlib import Path
 from typing import List
@@ -41,3 +42,11 @@ class memoize:
 
     def __get__(self, obj, objtype):
         return functools.partial(self.__call__, obj)
+
+
+def load_module(path: str):
+    name = os.path.splitext(os.path.basename(path))[0]
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

@@ -54,6 +54,7 @@ simulation outcome.
             "scan_plot_gpop = mlxtk.scripts.scan_plot_gpop:main",
             "scan_plot_natpop = mlxtk.scripts.scan_plot_natpop:main",
             "spectrum_1b = mlxtk.scripts.spectrum_1b:main",
+            "thin_out_psi = mlxtk.scripts.thin_out_psi:main",
         ]
     },
     keywords=["physics quantum dynamics ML-MCTDHX MCTDHB MCTDHF dataflow"],

@@ -8,6 +8,7 @@ from .parameters import Parameters
 from .simulation import Simulation
 from .util import load_module
 from .wave_function_db import WaveFunctionDB
+from . import dvr
 
 assert ParameterScan
 assert ParameterSelection, load_scan

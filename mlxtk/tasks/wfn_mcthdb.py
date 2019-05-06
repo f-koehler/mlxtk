@@ -104,6 +104,104 @@ class MCTDHBCreateWaveFunction(Task):
         return [self.task_write_parameters, self.task_write_wave_function]
 
 
+class MCTDHBCreateWaveFunctionMulti(Task):
+    def __init__(self,
+                 name: str,
+                 hamiltonians_1b: List[str],
+                 num_particles: int,
+                 num_spfs: List[int],
+                 number_state: numpy.ndarray = None):
+        self.name = name
+        self.number_of_particles = num_particles
+        self.number_of_spfs = num_spfs
+        self.hamiltonians_1b = hamiltonians_1b
+
+        if number_state is None:
+            self.number_state = numpy.zeros(
+                sum(self.number_of_spfs), dtype=numpy.int64)
+            self.number_state[0] = self.number_of_particles
+        else:
+            self.number_state = numpy.copy(number_state)
+
+        self.path = name + ".wfn"
+        self.path_pickle = name + ".wfn_pickle"
+        self.path_bases = [
+            name + "_{}.wfn_basis.hdf5".format(i)
+            for i, _ in enumerate(self.hamiltonians_1b)
+        ]
+        self.path_matrices = [
+            name + ".opr_mat.hdf5" for name in self.hamiltonians_1b
+        ]
+
+    def task_write_parameters(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_parameters(targets: List[str]):
+            del targets
+
+            obj = [
+                self.name, self.hamiltonians_1b, self.number_of_particles,
+                self.number_of_spfs,
+                self.number_state.tolist()
+            ]
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr)
+
+        return {
+            "name": "wfn_mctdhb_multi:{}:write_parameters".format(self.name),
+            "actions": [action_write_parameters],
+            "targets": [self.path_pickle],
+        }
+
+    def task_write_wave_function(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_wave_function(targets: List[str]):
+            del targets
+
+            all_spfs = []
+            for m, name, path_matrix, path_basis in zip(
+                    self.number_of_spfs, self.hamiltonians_1b,
+                    self.path_matrices, self.path_bases):
+                with h5py.File(path_matrix, "r") as fptr:
+                    matrix = fptr["matrix"][:, :]
+
+                energies, spfs = diagonalize_1b_operator(matrix, m)
+                spfs_arr = numpy.array(spfs)
+                all_spfs += spfs
+
+                with h5py.File(path_basis, "w") as fptr:
+                    dset = fptr.create_dataset(
+                        "energies", (m, ),
+                        dtype=numpy.float64,
+                        compression="gzip")
+                    dset[:] = energies
+
+                    dset = fptr.create_dataset(
+                        "spfs",
+                        spfs_arr.shape,
+                        dtype=numpy.complex128,
+                        compression="gzip")
+                    dset[:, :] = spfs_arr[-1]
+
+            grid_points = matrix.shape[0]
+            tape = (-10, self.number_of_particles, +1,
+                    sum(self.number_of_spfs), -1, 1, 1, 0, grid_points, -2)
+            wfn = WaveFunction(tape=tape)
+            wfn.init_coef_sing_spec_B(
+                self.number_state, all_spfs, 1e-15, 1e-15, full_spf=True)
+
+            save_wave_function(self.path, wfn)
+
+        return {
+            "name": "wfn_mctdhb_multi:{}:create".format(self.name),
+            "actions": [action_write_wave_function],
+            "targets": [self.path] + self.path_bases,
+            "file_dep": [self.path_pickle] + self.path_matrices,
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_write_parameters, self.task_write_wave_function]
+
+
 class MCTDHBAddMomentum(Task):
     def __init__(self, name: str, initial: str, momentum: float,
                  grid: DVRSpecification):

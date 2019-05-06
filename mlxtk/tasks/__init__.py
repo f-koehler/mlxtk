@@ -6,7 +6,8 @@ from .spectrum import ComputeSpectrum
 from .variance import ComputeVariance
 from .wave_function import RequestWaveFunction
 from .wfn_mcthdb import (MCTDHBAddMomentum, MCTDHBAddMomentumSplit,
-                         MCTDHBCreateWaveFunction, MCTDHBExtendGrid)
+                         MCTDHBCreateWaveFunction,
+                         MCTDHBCreateWaveFunctionMulti, MCTDHBExtendGrid)
 
 assert ComputeExpectationValue
 assert ComputeSpectrum

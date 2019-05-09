@@ -27,9 +27,11 @@ simulation outcome.
     install_requires=[
         "colorama",
         "doit",
+        "future",
         "h5py",
         "jinja2",
         "matplotlib",
+        "numba",
         "numpy",
         "numpy-stl",
         "pandas",
@@ -37,6 +39,7 @@ simulation outcome.
         "scipy",
         "sympy",
         "tabulate",
+        "tqdm",
     ],
     packages=["mlxtk"],
     entry_points={

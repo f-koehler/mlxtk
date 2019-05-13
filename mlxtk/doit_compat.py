@@ -3,10 +3,15 @@
 This module provides various helper functions and classes to use the
 `DoIt <http://pydoit.org/>`_ library in a way that is adequate for mlxtk.
 """
+from typing import Any, Dict, List, Tuple
+import json
+import sqlite3
+
 import doit
 from doit.cmd_base import TaskLoader
 from doit.doit_cmd import DoitMain
 from doit.task import dict_to_task
+from tabulate import tabulate
 
 from .log import get_logger
 from .timing import Timer
@@ -77,3 +82,34 @@ class DoitAction:
 
         raise NotImplementedError(
             "The return type {} is not supported for Doit actions")
+
+
+def load_doit_db(path: str) -> Dict[str, Dict[str, Any]]:
+    db = sqlite3.connect(path)
+    cursor = db.cursor()
+    cursor.execute("SELECT task_id, task_data FROM doit")
+    result = cursor.fetchall()
+    db.close()
+    return {name: json.loads(data) for name, data in result}
+
+
+def load_doit_timings(path: str) -> Dict[str, Dict[str, float]]:
+    timings = {}  # type: Dict[str, Dict[str, float]]
+    data = load_doit_db(path)
+    for task in data:
+        timings[task] = timings.get(task, {})
+        for action in data[task]["_values_:"]:
+            timings[task][action] = data[task]["_values_:"][action][
+                "monotonic_time"]
+    return timings
+
+
+def format_doit_profile(timings: Dict[str, Dict[str, float]],
+                        tablefmt: str = "fancy_grid") -> str:
+    profile = []  # type: List[Tuple[str, str, float]]
+    for task in timings:
+        for action in timings[task]:
+            profile.append((task, action, timings[task][action]))
+    profile.sort(key=lambda x: x[2], reverse=True)
+    return tabulate(
+        profile, headers=["Task", "Action", "Time/s"], tablefmt=tablefmt)

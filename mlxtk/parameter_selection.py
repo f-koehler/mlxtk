@@ -10,8 +10,14 @@ from .parameters import Parameters
 
 
 class ParameterSelection:
-    def __init__(self, parameters: Iterable[Parameters], path: str = None):
-        self.parameters = [(i, p) for i, p in enumerate(parameters)]
+    def __init__(self,
+                 parameters: Iterable[Parameters],
+                 path: str = None,
+                 indices: Iterable[int] = None):
+        if indices is None:
+            self.parameters = [(i, p) for i, p in enumerate(parameters)]
+        else:
+            self.parameters = list(zip(indices, parameters))
         self.path = os.path.abspath(path)
 
     def fix_parameter(self, name: str, value: Any):
@@ -40,7 +46,25 @@ class ParameterSelection:
         """
         return ParameterSelection([
             entry[1] for entry in self.parameters if entry[1][name] in values
-        ], self.path)
+        ], self.path, [
+            entry[0] for entry in self.parameters if entry[1][name] in values
+        ])
+
+    def select_parameters(self, names: Iterable[str],
+                          values: Iterable[Iterable[Any]]):
+        """Select by multiple values of a single parameter.
+
+        Args:
+            name: Name of the parameter to fix.
+            value: Desired values for the parameter.
+
+        Returns:
+            A new ParameterSelection containing only matching parameter sets.
+        """
+        selection = self
+        for name, vals in zip(names, values):
+            selection = selection.select_parameter(name, vals)
+        return selection
 
     def get_values(self, name: str) -> Set[Any]:
         """Get all unique values for a parameter.

@@ -104,6 +104,10 @@ def load_doit_timings(path: str) -> Dict[str, Dict[str, float]]:
     return timings
 
 
+def load_doit_timing(path: str, task: str, action: str) -> float:
+    return load_doit_timings(path)[task][action]
+
+
 def format_doit_profile(timings: Dict[str, Dict[str, float]],
                         tablefmt: str = "fancy_grid") -> str:
     profile = []  # type: List[Tuple[str, str, float]]

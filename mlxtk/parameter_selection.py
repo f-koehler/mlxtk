@@ -77,6 +77,11 @@ class ParameterSelection:
         """
         return list(set((entry[1][name] for entry in self.parameters)))
 
+    def get_path(self, parameters: Parameters) -> str:
+        for entry, path in zip(self.parameters, self.get_paths()):
+            if parameters.has_same_common_parameters(entry[1]):
+                return path
+
     def get_paths(self) -> List[str]:
         """Compute the paths for all included parameter sets.
 

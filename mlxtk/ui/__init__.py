@@ -6,6 +6,7 @@ from matplotlib.backends.backend_qt5agg import \
     NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
+
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
 if os.environ["QT_API"] != "pyside2":

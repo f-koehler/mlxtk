@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 import h5py
 import numpy
@@ -7,14 +8,30 @@ RE_TIME = re.compile(r"^\s+(.+)\s+\[au\]$")
 RE_ELEMENT = re.compile(r"^\s*\((.+)\,(.+)\)$")
 
 
+def read_first_frame(path: str) -> str:
+    frame = []  # type: List[str]
+    encountered_time = False
+
+    with open(path) as fhandle:
+        for line in fhandle:
+            if line.startswith("$time"):
+                if encountered_time:
+                    return "".join(frame)
+                else:
+                    encountered_time = True
+                    frame.append(line)
+                    continue
+            frame.append(line)
+
+    return "".join(frame)
+
+
 def read_psi_ascii(path):
     times = []
     psis = []
     tape = []
     tape_finished = False
     with open(path) as fhandle:
-        line = fhandle.readline()
-
         for line in fhandle:
             if line.startswith("$time"):
                 tape_finished = True

@@ -3,7 +3,6 @@ import os
 import sys
 
 import matplotlib
-
 from PySide2 import QtWidgets
 
 from .. import inout, plot, units

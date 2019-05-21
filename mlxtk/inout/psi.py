@@ -1,8 +1,11 @@
+import io
 import re
-from typing import List
+from typing import List, Tuple
 
 import h5py
 import numpy
+
+from ..tools.wave_function import get_spfs, load_wave_function
 
 RE_TIME = re.compile(r"^\s+(.+)\s+\[au\]$")
 RE_ELEMENT = re.compile(r"^\s*\((.+)\,(.+)\)$")
@@ -26,7 +29,22 @@ def read_first_frame(path: str) -> str:
     return "".join(frame)
 
 
-def read_psi_ascii(path):
+def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    with io.StringIO(read_first_frame(path)) as sio:
+        wfn = load_wave_function(path)
+
+    _, times, psis = read_psi_ascii(path)
+
+    spfs = []
+    for psi in psis:
+        wfn.PSI = psi
+        spfs.append(numpy.array(get_spfs(wfn)))
+
+    return times, numpy.moveaxis(numpy.array(spfs), 1, 0)
+
+
+def read_psi_ascii(
+        path: str) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     times = []
     psis = []
     tape = []

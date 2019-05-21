@@ -56,6 +56,7 @@ simulation outcome.
             "plot_gpop = mlxtk.scripts.plot_gpop:main",
             "plot_natpop = mlxtk.scripts.plot_natpop:main",
             "plot_natpop_vs_dmat_evals = mlxtk.scripts.plot_natpop_vs_dmat_evals:main",
+            "plot_spfs = mlxtk.scripts.plot_spfs:main",
             "scan_plot_energy = mlxtk.scripts.scan_plot_energy:main",
             "scan_plot_gpop = mlxtk.scripts.scan_plot_gpop:main",
             "scan_plot_natpop = mlxtk.scripts.scan_plot_natpop:main",

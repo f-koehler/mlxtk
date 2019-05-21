@@ -1,7 +1,7 @@
 import gzip
 import io
 import os
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TextIO, Union
 
 import numpy
 import scipy.special
@@ -12,14 +12,15 @@ from QDTK.Wavefunction import Wavefunction
 from ..util import memoize
 
 
-def load_wave_function(path: str) -> Wavefunction:
-    _, ext = os.path.splitext(path)
-    if ext == ".gz":
-        with gzip.open(path) as fp:
-            with io.StringIO(fp.read().decode()) as sio:
-                return Wavefunction(wfn_file=sio)
+def load_wave_function(p: Union[str, TextIO]) -> Wavefunction:
+    if isinstance(p, str):
+        _, ext = os.path.splitext(p)
+        if ext == ".gz":
+            with gzip.open(p) as fp:
+                with io.StringIO(fp.read().decode()) as sio:
+                    return Wavefunction(wfn_file=sio)
 
-    return Wavefunction(wfn_file=path)
+    return Wavefunction(wfn_file=p)
 
 
 def save_wave_function(path: str, wfn: Wavefunction):

@@ -180,7 +180,7 @@ def main():
     args = parser.parse_args()
 
     app = QtWidgets.QApplication(sys.argv)
-    DmatEvecSlider(*inout.read_dmat_evecs_grid(args.path), args)
+    window = DmatEvecSlider(*inout.read_dmat_evecs_grid(args.path), args)
     sys.exit(app.exec_())
 
 

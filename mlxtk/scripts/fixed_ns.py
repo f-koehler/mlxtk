@@ -11,6 +11,7 @@ import pandas
 from ..cwd import WorkingDir
 from ..inout.psi import read_first_frame
 from ..log import get_logger
+from ..tools.wave_function import load_wave_function
 
 LOGGER = get_logger(__name__)
 
@@ -21,7 +22,8 @@ def main():
         "basis",
         help="wave function file containing the basis to project onto")
     parser.add_argument(
-        "psi", help="wave function file containing the wave function to analyse")
+        "psi",
+        help="wave function file containing the wave function to analyse")
     parser.add_argument(
         "-o", "--output", help="name of the output file (optional)")
     args = parser.parse_args()
@@ -29,7 +31,8 @@ def main():
     output = args.output
     if not output:
         output = "fixed_ns_{}_{}.hdf5".format(
-            os.path.basename(args.psi), os.path.basename(args.basis))
+            os.path.basename(os.path.splitext(args.psi)[0]),
+            os.path.basename(os.path.splitext(args.basis)[0]))
     output = os.path.abspath(output)
 
     with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdir:
@@ -68,16 +71,22 @@ def main():
             times, indices = numpy.unique(data[:, 0], return_index=True)
             num_times = len(times)
 
+            wfn = load_wave_function("restart")
+
             with h5py.File("result.hdf5", "w") as fp:
-                dset = fp.create_dataset(
+                grp = fp.create_group("fixed_ns")
+                grp.attrs["N"] = wfn._tape[1]
+                grp.attrs["m"] = wfn._tape[3]
+
+                dset = grp.create_dataset(
                     "time", (num_times, ), dtype=numpy.float64)
                 dset[:] = times
 
-                dset = fp.create_dataset(
+                dset = grp.create_dataset(
                     "real", (num_times, num_coefficients), dtype=numpy.float64)
                 dset[:, :] = data[indices, 1:num_coefficients + 1]
 
-                dset = fp.create_dataset(
+                dset = grp.create_dataset(
                     "imag", (num_times, num_coefficients), dtype=numpy.float64)
                 dset[:, :] = data[indices, num_coefficients + 1:]
 

@@ -51,14 +51,20 @@ class TwoGaussianTraps(GaussianTrap):
                         self.parameters.x0L, self.parameters.V0L,
                         "potential_left") + self.get_interaction_operator())
 
+        return self.get_kinetic_operator(
+        ) + self.create_gaussian_potential_operator(
+            self.parameters.x0R, self.parameters.V0R, "potential_left")
+
     def get_hamiltonian_right_well(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
             return (self.get_kinetic_operator() +
                     self.create_gaussian_potential_operator(
                         self.parameters.x0R, self.parameters.V0R,
-                        "potential_left") + self.get_interaction_operator())
+                        "potential_right") + self.get_interaction_operator())
 
-        return self.get_kinetic_operator() + self.get_potential_operator()
+        return self.get_kinetic_operator(
+        ) + self.create_gaussian_potential_operator(
+            self.parameters.x0R, self.parameters.V0R, "potential_right")
 
     def get_hamiltonian_colliding_wells(
             self,

@@ -46,6 +46,7 @@ simulation outcome.
         "console_scripts": [
             "dmat_evec_slider = mlxtk.scripts.dmat_evec_slider:main",
             "dmat2_slider = mlxtk.scripts.dmat2_slider:main",
+            "fixed_ns = mlxtk.scripts.fixed_ns:main",
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "gpop_slider = mlxtk.scripts.gpop_slider:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",

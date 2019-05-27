@@ -5,6 +5,7 @@ import os.path
 from pathlib import Path
 from typing import List
 
+import numba
 import numpy
 
 
@@ -54,3 +55,18 @@ def load_module(path: str):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+@numba.vectorize(
+    [numba.float64(numba.complex128),
+     numba.float32(numba.complex64)])
+def compute_magnitude(x):
+    return x.real**2 + x.imag**2
+
+
+@numba.vectorize([
+    numba.float64(numba.float64, numba.float64),
+    numba.float32(numba.float32, numba.float32)
+])
+def compute_magnitude_split(real, imag):
+    return real**2 + imag**2

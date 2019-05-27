@@ -6,6 +6,7 @@ import tabulate
 
 from ..tools.wave_function import (build_number_state_table_bosonic,
                                    load_wave_function)
+from ..util import compute_magnitude_split
 
 
 def main():
@@ -25,8 +26,9 @@ def main():
                 "this script expects exactly one time instance in the ns analysis"
             )
 
-        magnitudes = numpy.absolute(fp["fixed_ns"]["real"][:, :] + 1j *
-                                    fp["fixed_ns"]["imag"][:, :]).flatten()
+        magnitudes = compute_magnitude_split(
+            fp["fixed_ns"]["real"][:, :].flatten(),
+            fp["fixed_ns"]["imag"][:, :].flatten())
         N = fp["fixed_ns"].attrs["N"]
         m = fp["fixed_ns"].attrs["m"]
 
@@ -39,6 +41,9 @@ def main():
         indices = numpy.argsort(magnitudes)[::-1]
         magnitudes = magnitudes[indices]
         states = numpy.array(states)[indices].tolist()
+
+    print("Sum:", numpy.sum(magnitudes))
+    print()
 
     print(
         tabulate.tabulate({

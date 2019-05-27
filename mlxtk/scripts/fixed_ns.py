@@ -71,7 +71,7 @@ def main():
             times, indices = numpy.unique(data[:, 0], return_index=True)
             num_times = len(times)
 
-            wfn = load_wave_function("restart")
+            wfn = load_wave_function("basis")
 
             with h5py.File("result.hdf5", "w") as fp:
                 grp = fp.create_group("fixed_ns")

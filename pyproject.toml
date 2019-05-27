@@ -56,6 +56,9 @@ sympy = "^1.4"
 tabulate = "^0.8.3"
 tqdm = "^4.32.1"
 
+[tool.poetry.dev-dependencies]
+sphinx = "^2.0.1"
+
 [tool.poetry.scripts]
 dmat2_slider = "mlxtk.scripts.dmat2_slider:main"
 dmat_evec_slider = "mlxtk.scripts.dmat_evec_slider:main"

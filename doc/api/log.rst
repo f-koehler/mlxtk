@@ -1,6 +1,5 @@
-Logging
-=======
+log
+===
 
 .. automodule:: mlxtk.log
    :members:
-   :undoc-members:

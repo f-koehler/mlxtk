@@ -2,8 +2,10 @@
 """
 import os
 from pathlib import Path
+from typing import Union
 
 from . import log
+from .util import make_path
 
 LOGGER = log.get_logger(__name__)
 
@@ -23,9 +25,9 @@ class WorkingDir:
         initial_dir (str): Working directory before changing
     """
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Union[str, Path]):
         self.initial_dir = Path.cwd().resolve()
-        self.path = path.resolve()
+        self.path = make_path(path).resolve()
 
     def __enter__(self):
         """Enter this context.

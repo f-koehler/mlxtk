@@ -1,9 +1,11 @@
 import argparse
-import h5py
-import tabulate
-import numpy
 
-from ..tools.wave_function import load_wave_function, build_number_state_table_bosonic
+import h5py
+import numpy
+import tabulate
+
+from ..tools.wave_function import (build_number_state_table_bosonic,
+                                   load_wave_function)
 
 
 def main():
@@ -23,8 +25,8 @@ def main():
                 "this script expects exactly one time instance in the ns analysis"
             )
 
-        magnitudes = numpy.absolute(fp["fixed_ns"]["real"][:, :] +
-                                    1j * fp["fixed_ns"]["imag"][:, :]).flatten()
+        magnitudes = numpy.absolute(fp["fixed_ns"]["real"][:, :] + 1j *
+                                    fp["fixed_ns"]["imag"][:, :]).flatten()
         N = fp["fixed_ns"].attrs["N"]
         m = fp["fixed_ns"].attrs["m"]
 

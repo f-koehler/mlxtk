@@ -36,6 +36,12 @@ class ParameterSelection:
             [entry[1] for entry in self.parameters if entry[1][name] == value],
             self.path)
 
+    def group_by(self, name: str):
+        return {
+            value: self.fix_parameter(name, value)
+            for value in self.get_values(name)
+        }
+
     def select_parameter(self, name: str, values: Iterable[Any]):
         """Select by multiple values of a single parameter.
 
@@ -79,14 +85,15 @@ class ParameterSelection:
         """
         return list(set((entry[1][name] for entry in self.parameters)))
 
-    def get_path(self, parameters: Parameters) -> str:
+    def get_path(self, parameters: Parameters) -> Path:
         for entry, path in zip(self.parameters, self.get_paths()):
             if parameters.has_same_common_parameters(entry[1]):
                 return path
 
-        return None
+        raise RuntimeError("cannot find path for parameters: " +
+                           str(parameters))
 
-    def get_paths(self) -> List[str]:
+    def get_paths(self) -> List[Path]:
         """Compute the paths for all included parameter sets.
 
         Raises:

@@ -80,7 +80,6 @@ simulation outcome.
         "Operating System :: MacOS",
         "Operating System :: POSIX :: Linux",
         "Operating System :: Unix",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -89,6 +88,6 @@ simulation outcome.
         "Topic :: Scientific/Engineering",
         "Topic :: Scientific/Engineering :: Physics",
     ],
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     zip_safe=True,
 )

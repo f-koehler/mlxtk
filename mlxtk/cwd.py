@@ -1,6 +1,7 @@
 """Change the working directory properly.
 """
 import os
+from pathlib import Path
 
 from . import log
 
@@ -22,15 +23,15 @@ class WorkingDir:
         initial_dir (str): Working directory before changing
     """
 
-    def __init__(self, path: str):
-        self.initial_dir = os.path.abspath(os.getcwd())
-        self.path = path
+    def __init__(self, path: Path):
+        self.initial_dir = Path.cwd().resolve()
+        self.path = path.resolve()
 
     def __enter__(self):
         """Enter this context.
         """
         LOGGER.debug("set new cwd: %s", self.path)
-        os.chdir(self.path)
+        os.chdir(str(self.path))
 
     def __exit__(self, exc_type, exc_value, traceback):
         """Exit this context.
@@ -39,4 +40,4 @@ class WorkingDir:
         del exc_value
         del traceback
         LOGGER.debug("go back to old cwd: %s", self.initial_dir)
-        os.chdir(self.initial_dir)
+        os.chdir(str(self.initial_dir))

@@ -3,7 +3,7 @@ import functools
 import importlib.util
 import os.path
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import numba
 import numpy
@@ -11,6 +11,12 @@ import numpy
 
 def get_common_path(paths: List[Path]) -> Path:
     return Path(os.path.commonpath([str(p) for p in paths]))
+
+
+def make_path(path: Union[str, Path]) -> Path:
+    if isinstance(path, Path):
+        return path
+    return Path(path)
 
 
 def labels_from_paths(paths: List[Path]) -> List[str]:

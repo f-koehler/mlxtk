@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import argparse
-import os.path
 from functools import partial
+from pathlib import Path
 from typing import Callable
 
 from matplotlib.axes import Axes
@@ -16,14 +16,14 @@ plot.make_headless()
 
 
 def plot_natpop(index: int,
-                path: str,
+                path: Path,
                 parameters: Parameters,
-                file_path: str,
+                file_path: Path,
                 dof: int = 1,
                 node: int = 1,
                 extension: str = ".pdf",
                 modfunc: Callable[[Figure, Axes, Parameters], None] = None):
-    total_path = os.path.join(path, file_path)
+    total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
         plot.plot_natpop(ax,
@@ -42,13 +42,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "scan_dir",
-        type=str,
+        type=Path,
         help="directory of the scan containing the file scan.pickle")
     parser.add_argument(
         "-f",
         "--file",
-        type=str,
-        default=os.path.join("propagate", "natpop"),
+        type=Path,
+        default=Path("propagate") / "natpop",
         help="relative path within each simulation")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")

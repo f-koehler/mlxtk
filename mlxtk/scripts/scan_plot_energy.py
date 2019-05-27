@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import argparse
-import os.path
 from functools import partial
+from pathlib import Path
 from typing import Callable
 
 from matplotlib.axes import Axes
@@ -16,13 +16,13 @@ plot.make_headless()
 
 
 def plot_energy(index: int,
-                path: str,
+                path: Path,
                 parameters: Parameters,
-                file_path: str,
+                file_path: Path,
                 dof: int = 1,
                 extension: str = ".pdf",
                 modfunc: Callable[[Figure, Axes, Parameters], None] = None):
-    total_path = os.path.join(path, file_path)
+    total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
         time, _, energy, _ = inout.read_output(total_path)
@@ -46,8 +46,8 @@ def main():
     parser.add_argument(
         "-f",
         "--file",
-        type=str,
-        default=os.path.join("propagate", "output"),
+        type=Path,
+        default=Path("propagate") / "output",
         help="relative path within each simulation")
     parser.add_argument(
         "-e",
@@ -58,7 +58,7 @@ def main():
     parser.add_argument(
         "-o",
         "--output",
-        type=str,
+        type=Path,
         default="energy",
         help="name of the output directory")
     plot.add_argparse_2d_args(parser)

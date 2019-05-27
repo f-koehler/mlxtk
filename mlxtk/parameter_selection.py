@@ -1,24 +1,26 @@
 """Selecting simulations from a scan based on parameters.
 """
-import os.path
+import os
 import pickle
-from typing import Any, Callable, Iterable, List, Optional, Set
+from pathlib import Path
+from typing import Any, Callable, Iterable, List, Optional, Set, Union
 
 from .cwd import WorkingDir
 from .log import redirect_for_tqdm, tqdm
 from .parameters import Parameters
+from .util import make_path
 
 
 class ParameterSelection:
     def __init__(self,
                  parameters: Iterable[Parameters],
-                 path: str = None,
+                 path: Path = None,
                  indices: Iterable[int] = None):
         if indices is None:
             self.parameters = [(i, p) for i, p in enumerate(parameters)]
         else:
             self.parameters = list(zip(indices, parameters))
-        self.path = os.path.abspath(path)
+        self.path = None if path is None else path.resolve()
 
     def fix_parameter(self, name: str, value: Any):
         """Select by the value of a single parameter.
@@ -94,10 +96,7 @@ class ParameterSelection:
         if not self.path:
             raise ValueError("No path is specified for ParameterSelection")
 
-        return [
-            os.path.join(self.path, "by_index", str(i))
-            for i, _ in self.parameters
-        ]
+        return [self.path / "by_index" / str(i) for i, _ in self.parameters]
 
     def get_parameters(self) -> List[Parameters]:
         """Get all included parameters sets.
@@ -137,8 +136,8 @@ class ParameterSelection:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
 
-        plot_dir = os.path.join(self.path, "plots", name)
-        if not os.path.exists(plot_dir):
+        plot_dir = self.path / "plots" / name
+        if not plot_dir.exists():
             os.makedirs(plot_dir)
 
         with WorkingDir(plot_dir):
@@ -148,12 +147,13 @@ class ParameterSelection:
         return "\n".join("{}: {}".format(i, p) for i, p in self.parameters)
 
 
-def load_scan(path: str) -> ParameterSelection:
+def load_scan(path: Union[str, Path]) -> ParameterSelection:
     """Load all parameter sets of a parameter scan.
 
     Args:
         path: Path to the parameter scan containing the file ``scan.pickle``.
     """
-    with open(os.path.join(path, "scan.pickle"), "rb") as fptr:
+    path = make_path(path)
+    with open(path / "scan.pickle", "rb") as fptr:
         obj = pickle.load(fptr)
         return ParameterSelection((parameter for parameter in obj), path)

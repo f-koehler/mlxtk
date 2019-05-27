@@ -4,6 +4,7 @@ import argparse
 import os
 import re
 import subprocess
+from pathlib import Path
 from typing import List
 
 from . import log, templates
@@ -65,7 +66,7 @@ def get_jobs_in_queue() -> List[int]:
 
 def submit(command: str,
            namespace: argparse.Namespace,
-           sge_dir: str = os.path.curdir,
+           sge_dir: Path = Path(os.path.curdir),
            job_name="") -> int:
     """Create a jobfile for a command and submit it.
 
@@ -88,13 +89,13 @@ def submit(command: str,
     Returns:
         int: job id of the new job
     """
-    id_file = "sge.id"
-    job_script = "sge_job"
-    stop_script = "sge_stop"
-    epilogue_script = "sge_epilogue"
+    id_file = Path("sge.id")
+    job_script = Path("sge_job")
+    stop_script = Path("sge_stop")
+    epilogue_script = Path("sge_epilogue")
 
     # check if job is already running
-    if os.path.exists(id_file):
+    if id_file.exists():
         with open(id_file) as fptr:
             job_id = int(fptr.read())
             if job_id in get_jobs_in_queue():
@@ -120,7 +121,7 @@ def submit(command: str,
     LOGGER.debug("create job script")
     with open(job_script, "w") as fptr:
         fptr.write(templates.get_template("sge_job.j2").render(args=args))
-    os.chmod(job_script, 0o755)
+    job_script.chmod(0o755)
     LOGGER.debug("done")
 
     # submit job
@@ -141,7 +142,7 @@ def submit(command: str,
     LOGGER.debug("create stop script")
     with open(stop_script, "w") as fptr:
         fptr.write(templates.get_template("sge_stop.j2").render(job_id=job_id))
-    os.chmod(stop_script, 0o755)
+    stop_script.chmod(0o755)
     LOGGER.debug("done")
 
     # write epilogue script
@@ -149,7 +150,7 @@ def submit(command: str,
     with open(epilogue_script, "w") as fptr:
         fptr.write(
             templates.get_template("sge_epilogue.j2").render(job_id=job_id))
-    os.chmod(epilogue_script, 0o755)
+    epilogue_script.chmod(0o755)
     LOGGER.debug("done")
 
     return job_id
@@ -158,7 +159,7 @@ def submit(command: str,
 def submit_array(command: str,
                  number_of_tasks: int,
                  namespace: argparse.Namespace,
-                 sge_dir: str = os.path.curdir,
+                 sge_dir: Path = Path(os.path.curdir),
                  job_name: str = ""):
     array_script = "sge_array"
 

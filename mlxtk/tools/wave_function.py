@@ -1,6 +1,6 @@
 import gzip
 import io
-import os
+from pathlib import Path
 from typing import Any, Dict, List, TextIO, Union
 
 import numpy
@@ -12,10 +12,9 @@ from QDTK.Wavefunction import Wavefunction
 from ..util import memoize
 
 
-def load_wave_function(p: Union[str, TextIO]) -> Wavefunction:
-    if isinstance(p, str):
-        _, ext = os.path.splitext(p)
-        if ext == ".gz":
+def load_wave_function(p: Union[Path, TextIO]) -> Wavefunction:
+    if isinstance(p, Path):
+        if p.suffix == ".gz":
             with gzip.open(p) as fp:
                 with io.StringIO(fp.read().decode()) as sio:
                     return Wavefunction(wfn_file=sio)
@@ -23,15 +22,15 @@ def load_wave_function(p: Union[str, TextIO]) -> Wavefunction:
     return Wavefunction(wfn_file=p)
 
 
-def save_wave_function(path: str, wfn: Wavefunction):
-    if os.path.splitext(path)[1] == ".gz":
+def save_wave_function(path: Path, wfn: Wavefunction):
+    if path.suffix == ".gz":
         with io.StringIO() as sio:
             wfn.createWfnFile(sio)
             with gzip.open(path, "wb") as fp:
                 fp.write(sio.getvalue().encode())
                 return
 
-    wfn.createWfnFile(path)
+    wfn.createWfnFile(str(path))
 
 
 def add_momentum(wfn: Wavefunction, momentum: float) -> Wavefunction:

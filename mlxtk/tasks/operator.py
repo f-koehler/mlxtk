@@ -1,7 +1,7 @@
 """Create operators acting on distinguishable degrees of freedom.
 """
-import os.path
 import pickle
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
 import h5py
@@ -124,9 +124,9 @@ class CreateOperator(Task):
             else:
                 self.specification = OperatorSpecification(*args, **kwargs)
 
-        self.path = name + ".opr"
-        self.path_matrix = name + ".opr_mat.hdf5"
-        self.path_pickle = name + ".opr_pickle"
+        self.path = Path(name + ".opr")
+        self.path_matrix = Path(name + ".opr_mat.hdf5")
+        self.path_pickle = Path(name + ".opr_pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -202,11 +202,11 @@ class CreateOperator(Task):
         def action_remove_operator(targets: List[str]):
             del targets
 
-            if os.path.exists(self.path):
-                os.remove(self.path)
+            if self.path.exists():
+                self.path.unlink()
 
-            if os.path.exists(self.path_matrix):
-                os.remove(self.path_matrix)
+            if self.path_matrix.exists():
+                self.path_matrix.unlink()
 
         return {
             "name": "operator:{}:remove".format(self.name),

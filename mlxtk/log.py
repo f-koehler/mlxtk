@@ -7,6 +7,7 @@ import contextlib
 import logging
 import os
 import sys
+from pathlib import Path
 
 from tqdm import tqdm
 
@@ -72,7 +73,7 @@ def get_logger(name: str) -> logging.Logger:
     return logger
 
 
-def open_log_file(path: str, mode: str = "a"):
+def open_log_file(path: Path, mode: str = "a"):
     """Open the log file
 
     Args:
@@ -83,9 +84,8 @@ def open_log_file(path: str, mode: str = "a"):
 
     close_log_file()
 
-    dirname = os.path.dirname(path)
-    if dirname and (not os.path.exists(dirname)):
-        os.makedirs(dirname)
+    if path.parent and (not path.parent.exists()):
+        os.makedirs(path.parent)
 
     FILE_HANDLER = logging.FileHandler(path, mode)
     FILE_HANDLER.setFormatter(logging.Formatter(LOG_FORMAT))

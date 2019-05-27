@@ -3,6 +3,7 @@ import os
 import pickle
 import shutil
 import subprocess
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple
 
 from .. import cwd
@@ -118,19 +119,20 @@ class Propagate(Task):
             self.basename = "propagation"
 
         # compute required paths
-        self.path_pickle = self.name + ".prop_pickle"
-        self.path_output = os.path.join(self.name, "output")
-        self.path_gpop = os.path.join(self.name, "gpop")
-        self.path_natpop = os.path.join(self.name, "natpop")
-        self.path_restart = os.path.join(self.name, "restart")
-        self.path_final = os.path.join(self.name, "final.wfn")
-        self.path_psi = os.path.join(self.name, "psi")
-        self.path_energies = os.path.join(self.name, "eigenenergies")
-        self.path_eigenvectors = os.path.join(self.name, "eigenvectors")
+        self.path_name = Path(self.name)
+        self.path_pickle = Path(self.name + ".prop_pickle")
+        self.path_output = self.path_name / "output"
+        self.path_gpop = self.path_name / "gpop"
+        self.path_natpop = self.path_name / "natpop"
+        self.path_restart = self.path_name / "restart"
+        self.path_final = self.path_name / "final.wfn"
+        self.path_psi = self.path_name / "psi"
+        self.path_energies = self.path_name / "eigenenergies"
+        self.path_eigenvectors = self.path_name / "eigenvectors"
         self.path_wfn = self.wave_function + ".wfn"
         self.path_opr = self.hamiltonian + ".mb_opr"
-        self.path_wfn_tmp = os.path.join(self.name, "initial.wfn")
-        self.path_opr_tmp = os.path.join(self.name, "hamiltonian.mb_opr")
+        self.path_wfn_tmp = self.path_name / "initial.wfn"
+        self.path_opr_tmp = self.path_name / "hamiltonian.mb_opr"
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -152,7 +154,7 @@ class Propagate(Task):
         def action_create_dir(targets: List[str]):
             del targets
 
-            if not os.path.exists(self.name):
+            if not self.path_name.exists():
                 LOGGER.info("create propagation directory")
                 os.makedirs(self.name)
 
@@ -171,7 +173,7 @@ class Propagate(Task):
         @DoitAction
         def action_run(targets: List[str]):
             del targets
-            with cwd.WorkingDir(os.path.abspath(self.name)):
+            with cwd.WorkingDir(self.path_name.resolve()):
                 LOGGER.info("propagate wave function")
                 cmd = ["qdtk_propagate.x"] + self.flag_list
                 env = os.environ.copy()
@@ -183,13 +185,13 @@ class Propagate(Task):
         def action_remove_hamiltonian(targets: List[str]):
             del targets
             LOGGER.info("remove Hamiltonian")
-            os.remove(self.path_opr_tmp)
+            self.path_opr_tmp.unlink()
 
         @DoitAction
         def action_remove_initial_wave_function(targets: List[str]):
             del targets
             LOGGER.info("remove initial wave function")
-            os.remove(self.path_wfn_tmp)
+            self.path_wfn_tmp.unlink()
 
         @DoitAction
         def action_move_final_wave_function(targets: List[str]):

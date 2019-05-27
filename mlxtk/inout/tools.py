@@ -3,15 +3,17 @@
 This module provides common functions when working with I/O.
 """
 
-import os
-from typing import Tuple
+from pathlib import Path
+from typing import Tuple, Union
+
+from ..util import make_path
 
 HDF5_MAGIC_NUMBER = bytes([0x89, 0x48, 0x44, 0x46, 0x0D, 0x0A, 0x1A, 0x0A])
 """bytes: Magic number of the HDF5 file format.
 """
 
 
-def is_hdf5_path(path: str) -> Tuple[bool, str, str]:
+def is_hdf5_path(path: Union[str, Path]) -> Tuple[bool, Path, Path]:
     """Parse a path which potentially resides inside a HDF5 file
 
     This function checks wether path points to a regular file on the disk. If
@@ -27,20 +29,23 @@ def is_hdf5_path(path: str) -> Tuple[bool, str, str]:
         Tuple[bool, str, str]: whether this path is a path in a HDF5 file, path
             to the file and interior path.
     """
-    interior_path = ""  # type: str
-    while path not in ["", "/"]:
+    path = make_path(path)
+    full_path = path
+    interior_path = Path()
+
+    while path.parent != path:
         if is_hdf5_file(path):
-            return True, path, os.path.join("/", interior_path)
+            return True, path, interior_path
 
-        path, tail = os.path.split(path)
-        if not interior_path:
-            interior_path = tail
-        else:
-            interior_path = os.path.join(tail, interior_path)
-    return False, path + interior_path, ""
+        if path.is_file():
+            return False, path, Path()
+
+        path = path.parent
+
+    return False, full_path, Path()
 
 
-def is_hdf5_file(path: str) -> bool:
+def is_hdf5_file(path: Path) -> bool:
     """Check if a file is a HDF5 file using the magic number
 
     Args:
@@ -49,10 +54,10 @@ def is_hdf5_file(path: str) -> bool:
     Returns:
         bool: Whether path points to a HDF5 file.
     """
-    if not os.path.exists(path):
+    if not path.exists():
         return False
 
-    if not os.path.isfile(path):
+    if not path.is_file():
         return False
 
     with open(path, "rb") as fptr:

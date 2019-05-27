@@ -1,12 +1,14 @@
-import os.path
 import shutil
 import subprocess
+from pathlib import Path
+from typing import Union
 
 import matplotlib
 import matplotlib.figure
 import matplotlib.pyplot
 
 from ..log import get_logger
+from ..util import make_path
 from .energy import plot_energy, plot_energy_diff
 from .entropy import plot_entropy, plot_entropy_diff
 from .expval import plot_expval
@@ -21,10 +23,12 @@ def make_headless():
 
 
 def save(figure: matplotlib.figure.Figure,
-         path: str,
+         path: Union[str, Path],
          crop: bool = True,
          optimize: bool = True):
-    if os.path.splitext(path) == ".pdf":
+    path = make_path(path)
+
+    if path.suffix == ".pdf":
         save_pdf(figure, path, crop, optimize)
         return
 
@@ -35,9 +39,11 @@ def save(figure: matplotlib.figure.Figure,
 
 
 def save_pdf(figure: matplotlib.figure.Figure,
-             path: str,
+             path: Union[str, Path],
              crop: bool = True,
              optimize: bool = True):
+    path = make_path(path)
+
     figure.savefig(path)
 
     if crop:
@@ -47,7 +53,9 @@ def save_pdf(figure: matplotlib.figure.Figure,
         optimize_pdf(path)
 
 
-def crop_pdf(path: str):
+def crop_pdf(path: Union[str, Path]):
+    path = make_path(path)
+
     if not shutil.which("pdfcrop"):
         LOGGER.error("Cannot find pdfcrop, skip cropping")
         return
@@ -69,7 +77,9 @@ def crop_pdf(path: str):
     subprocess.check_output(["pdfcrop", "--hires", path, path])
 
 
-def optimize_pdf(path: str):
+def optimize_pdf(path: Union[str, Path]):
+    path = str(path)
+
     if not shutil.which("pdftocairo"):
         LOGGER.error("Cannot find pdftocairo, skip PDF optimization")
         return

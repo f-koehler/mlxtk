@@ -1,11 +1,11 @@
 import argparse
 import copy
 import importlib.util
-import os.path
 import pathlib
 import pickle
 import time
 from functools import partial
+from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 from . import cwd, doit_compat
@@ -28,19 +28,18 @@ class MissingWfnError(Exception):
 
 
 class WaveFunctionDBLockError(Exception):
-    def __init__(self, path: str):
-        super().__init__("Could not lock wave function db: " + path)
+    def __init__(self, path: Path):
+        super().__init__("Could not lock wave function db: " + str(path))
 
 
 class WaveFunctionDBLock:
-    def __init__(self, path: str):
+    def __init__(self, path: Path):
         self.path = path
 
     def __enter__(self):
-        p = pathlib.Path(self.path)
         for i in range(1024):
             try:
-                p.touch(exist_ok=False)
+                self.path.touch(exist_ok=False)
                 return
             except FileExistsError:
                 time.sleep(1)
@@ -51,13 +50,13 @@ class WaveFunctionDBLock:
         del _type
         del value
         del traceback
-        os.remove(self.path)
+        self.path.unlink()
 
 
 class WaveFunctionDB(ParameterScan):
     def __init__(self,
                  name: str,
-                 wfn_path: str,
+                 wfn_path: Path,
                  prototype: Parameters,
                  func: Callable[[Parameters], Simulation],
                  working_dir: str = None):
@@ -77,8 +76,9 @@ class WaveFunctionDB(ParameterScan):
     def load_missing_wave_functions(self):
         self.create_working_dir()
 
+        p = Path("missing_wave_functions.pickle")
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("missing_wave_functions.pickle"):
+            if not p.exists():
                 return
 
             with open("missing_wave_functions.pickle", "rb") as fptr:
@@ -87,8 +87,9 @@ class WaveFunctionDB(ParameterScan):
     def load_stored_wave_functions(self):
         self.create_working_dir()
 
+        p = Path("stored_wave_functions.pickle")
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("stored_wave_functions.pickle"):
+            if not p.exists():
                 return
 
             with open("stored_wave_functions.pickle", "rb") as fptr:
@@ -97,10 +98,11 @@ class WaveFunctionDB(ParameterScan):
     def store_missing_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
+        p = Path("missing_wave_functions.pickle")
         with cwd.WorkingDir(self.working_dir):
             entries = []  # type: List[Parameters]
-            if os.path.exists("missing_wave_functions.pickle"):
-                with open("missing_wave_functions.pickle", "rb") as fptr:
+            if p.exists():
+                with open(p, "rb") as fptr:
                     entries = pickle.load(fptr)
 
             if parameters in entries:
@@ -108,7 +110,7 @@ class WaveFunctionDB(ParameterScan):
 
             entries.append(parameters)
 
-            with open("missing_wave_functions.pickle", "wb") as fptr:
+            with open(p, "wb") as fptr:
                 pickle.dump(entries, fptr)
 
             self.missing_wave_functions.append(parameters)
@@ -116,11 +118,12 @@ class WaveFunctionDB(ParameterScan):
     def remove_missing_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
+        p = Path("missing_wave_functions.pickle")
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("missing_wave_functions.pickle"):
+            if not p.exists():
                 return
 
-            with open("missing_wave_functions.pickle", "rb") as fptr:
+            with open(p, "rb") as fptr:
                 entries = pickle.load(fptr)
 
             if parameters not in entries:
@@ -128,7 +131,7 @@ class WaveFunctionDB(ParameterScan):
 
             entries.remove(parameters)
 
-            with open("missing_wave_functions.pickle", "wb") as fptr:
+            with open(p, "wb") as fptr:
                 pickle.dump(entries, fptr)
 
             self.missing_wave_functions.remove(parameters)
@@ -136,10 +139,11 @@ class WaveFunctionDB(ParameterScan):
     def store_wave_function(self, parameters: Parameters):
         self.create_working_dir()
 
+        p = Path("stored_wave_functions.pickle")
         with cwd.WorkingDir(self.working_dir):
             entries = []  # type: List[Parameters]
-            if os.path.exists("stored_wave_functions.pickle"):
-                with open("stored_wave_functions.pickle", "rb") as fptr:
+            if p.exists():
+                with open(p, "rb") as fptr:
                     entries = pickle.load(fptr)
 
             if parameters in entries:
@@ -147,12 +151,12 @@ class WaveFunctionDB(ParameterScan):
 
             entries.append(parameters)
 
-            with open("stored_wave_functions.pickle", "wb") as fptr:
+            with open(p, "wb") as fptr:
                 pickle.dump(entries, fptr)
 
             self.stored_wave_functions.append(parameters)
 
-    def request(self, parameters: Parameters, compute: bool = True) -> str:
+    def request(self, parameters: Parameters, compute: bool = True) -> Path:
         self.logger.info("request wave function for parameters %s",
                          repr(parameters))
 
@@ -163,9 +167,8 @@ class WaveFunctionDB(ParameterScan):
             if p.has_same_common_parameters(parameters,
                                             common_parameter_names):
                 self.logger.info("wave function is present")
-                path = os.path.join(
-                    os.path.abspath(self.working_dir), "sim",
-                    hash_string(repr(p)), self.wfn_path)
+                path = self.working_dir.resolve() / "sim" / hash_string(
+                    repr(p)) / self.wfn_path
                 return path
 
         self.logger.info("wave function is not present")
@@ -190,16 +193,14 @@ class WaveFunctionDB(ParameterScan):
                          repr(parameters))
         self.run_by_param(parameters)
 
-        with WaveFunctionDBLock(
-                os.path.join(self.working_dir, "wave_function_db.lock")):
+        with WaveFunctionDBLock(self.working_dir / "wave_function_db.lock"):
             self.remove_missing_wave_function(parameters)
             self.store_wave_function(parameters)
 
     def run_index(self, args: argparse.Namespace):
         super().run_index(args)
         parameters = self.combinations[args.index]
-        with WaveFunctionDBLock(
-                os.path.join(self.working_dir, "wave_function_db.lock")):
+        with WaveFunctionDBLock(self.working_dir / "wave_function_db.lock"):
             self.remove_missing_wave_function(parameters)
             self.store_wave_function(parameters)
 
@@ -211,8 +212,6 @@ class WaveFunctionDB(ParameterScan):
         self.link_simulations()
 
         self.create_working_dir()
-
-        tasks = []
 
         def task_run_simulation(parameters: Parameters,
                                 name: str) -> Dict[str, Any]:
@@ -232,13 +231,13 @@ class WaveFunctionDB(ParameterScan):
 
         doit_compat.run_doit(tasks, [
             "--process=" + str(args.jobs), "--backend=sqlite3",
-            "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3")
+            "--db-file=" + str(self.working_dir / "doit.sqlite3")
         ])
 
 
-def load_db(path: str, variable_name: str = "db") -> WaveFunctionDB:
-    with cwd.WorkingDir(os.path.dirname(path)):
-        spec = importlib.util.spec_from_file_location("db", path)
+def load_db(path: Path, variable_name: str = "db") -> WaveFunctionDB:
+    with cwd.WorkingDir(path.parent):
+        spec = importlib.util.spec_from_file_location("db", str(path))
         db_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(db_module)
         db = getattr(db_module, variable_name)

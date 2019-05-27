@@ -1,12 +1,14 @@
 import os
 import shutil
 import sys
-from typing import Any, Callable, Dict, List
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Union
 
 from ..cwd import WorkingDir
 from ..doit_compat import DoitAction
 from ..log import get_logger
 from ..parameters import Parameters
+from ..util import make_path
 from ..wave_function_db import MissingWfnError, load_db
 from .task import Task
 
@@ -17,13 +19,13 @@ class RequestWaveFunction(Task):
     def __init__(self,
                  name: str,
                  parameters: Parameters,
-                 db_path: str,
+                 db_path: Union[str, Path],
                  variable_name: str = "db",
                  compute: bool = True):
 
-        if not os.path.isabs(db_path):
-            self.db_path = os.path.join(
-                os.path.dirname(os.path.abspath(sys.argv[0])), db_path)
+        db_path = make_path(db_path)
+        if not db_path.is_absolute():
+            self.db_path = Path(sys.argv[0]).resolve().parent / db_path
         else:
             self.db_path = db_path
 
@@ -31,21 +33,21 @@ class RequestWaveFunction(Task):
         self.parameters = parameters
         self.variable_name = variable_name
         self.compute = compute
-        self.path = self.name + ".wfn"
+        self.path = Path(self.name + ".wfn")
 
     def task_request_wave_function(self) -> Dict[str, Any]:
         db = load_db(self.db_path, self.variable_name)
-        db.working_dir = os.path.join(os.path.dirname(self.db_path), db.name)
+        db.working_dir = self.db_path.parent / db.name
 
-        with WorkingDir(os.path.dirname(self.db_path)):
+        with WorkingDir(self.db_path.parent):
             src_path = db.request(self.parameters, self.compute)
 
         @DoitAction
         def action_copy(targets):
             del targets
 
-            dirname = os.path.dirname(self.path)
-            if dirname and not os.path.exists(dirname):
+            dirname = self.path.parent
+            if dirname and not dirname.exists():
                 os.makedirs(dirname)
 
             shutil.copy2(src_path, self.path)
@@ -60,9 +62,9 @@ class RequestWaveFunction(Task):
 
     def task_request_wave_function_dry_run(self) -> Dict[str, Any]:
         db = load_db(self.db_path, self.variable_name)
-        db.working_dir = os.path.join(os.path.dirname(self.db_path), db.name)
+        db.working_dir = self.db_path.parent / db.name
 
-        with WorkingDir(os.path.dirname(self.db_path)):
+        with WorkingDir(self.db_path.parent):
             try:
                 db.request(self.parameters, False)
             except MissingWfnError:

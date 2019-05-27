@@ -1,5 +1,5 @@
-import os
 import pickle
+from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Union
 
 from QDTK.Operatorb import OCoef as Coeff
@@ -152,8 +152,8 @@ class CreateMBOperator(Task):
             else:
                 self.specification = MBOperatorSpecification(*args, **kwargs)
 
-        self.path = self.name + ".mb_opr"
-        self.path_pickle = self.name + ".mb_opr_pickle"
+        self.path = Path(self.name + ".mb_opr")
+        self.path_pickle = Path(self.name + ".mb_opr_pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -194,7 +194,7 @@ class CreateMBOperator(Task):
             del targets
 
             op = self.specification.get_operator()
-            op.createOperatorFileb(self.path)
+            op.createOperatorFileb(str(self.path))
 
         return {
             "name": "mb_operator:{}:create".format(self.name),
@@ -208,8 +208,8 @@ class CreateMBOperator(Task):
         def action_remove_operator(targets: List[str]):
             del targets
 
-            if os.path.exists(self.path):
-                os.remove(self.path)
+            if self.path.exists():
+                self.path.unlink()
 
         return {
             "name": "mb_operator:{}:remove".format(self.name),

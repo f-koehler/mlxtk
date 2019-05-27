@@ -1,4 +1,5 @@
 import pickle
+from pathlib import Path
 from typing import Any, Callable, Dict, List
 
 import h5py
@@ -36,10 +37,10 @@ class MCTDHBCreateWaveFunction(Task):
         else:
             self.number_state = numpy.copy(number_state)
 
-        self.path = name + ".wfn"
-        self.path_pickle = name + ".wfn_pickle"
-        self.path_basis = name + ".wfn_basis.hdf5"
-        self.path_matrix = self.hamiltonian_1b + ".opr_mat.hdf5"
+        self.path = Path(name + ".wfn")
+        self.path_pickle = Path(name + ".wfn_pickle")
+        self.path_basis = Path(name + ".wfn_basis.hdf5")
+        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.hdf5")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction

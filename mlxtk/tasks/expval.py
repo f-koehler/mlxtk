@@ -11,23 +11,26 @@ Todo:
 import os
 import shutil
 import subprocess
-from typing import Any, Callable, Dict, List
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Union
 
 from .. import cwd
 from ..doit_compat import DoitAction
 from ..log import get_logger
+from ..util import make_path
 from .task import Task
 
 
 class ComputeExpectationValue(Task):
-    def __init__(self, psi_or_restart: str, operator: str, **kwargs):
-        self.psi_or_restart = psi_or_restart
-        self.operator = operator
-        self.dirname = os.path.dirname(psi_or_restart)
+    def __init__(self, psi_or_restart: Union[str, Path],
+                 operator: Union[str, Path], **kwargs):
+        self.psi_or_restart = make_path(psi_or_restart)
+        self.operator = make_path(operator)
+        self.dirname = self.psi_or_restart.parent
         self.static = kwargs.get("static", False)
 
         if not self.dirname:
-            self.dirname = os.path.curdir
+            self.dirname = Path(os.path.curdir)
 
         self.logger = get_logger(__name__ + ".ComputeExpectationValue")
 
@@ -36,27 +39,23 @@ class ComputeExpectationValue(Task):
         if self.static:
             self.name = kwargs.get(
                 "name",
-                os.path.join(
-                    os.path.dirname(psi_or_restart),
-                    os.path.basename(psi_or_restart) + "_" +
-                    os.path.basename(operator)))
+                str(self.psi_or_restart.parent /
+                    (self.psi_or_restart.name + "_" + self.operator.name)))
         else:
             self.name = kwargs.get(
-                "name",
-                os.path.join(
-                    os.path.dirname(psi_or_restart),
-                    os.path.basename(operator)))
+                "name", str(self.psi_or_restart.parent / self.operator.name))
 
         # compute required paths
-        self.path_operator = self.operator + ".mb_opr"
-        self.path_operator_copy = os.path.join(
-            os.path.dirname(psi_or_restart), self.operator + ".mb_opr")
+        self.path_operator = self.operator.with_suffix(".mb_opr")
+        self.path_operator_copy = self.psi_or_restart.parent / self.operator.with_suffix(
+            ".mb_opr")
         self.path_psi_or_restart = self.psi_or_restart
-        self.path_expval = self.name + ".exp"
-        self.path_wave_function = os.path.join(self.dirname, "final.wfn")
+        self.path_expval = Path(self.name + ".exp")
+        self.path_wave_function = self.dirname / "final.wfn"
 
         if self.static:
-            self.path_psi_or_restart += ".wfn"
+            self.path_psi_or_restart = self.path_psi_or_restart.with_suffix(
+                ".wfn")
 
     def task_compute(self) -> Dict[str, Any]:
         @DoitAction
@@ -71,7 +70,7 @@ class ComputeExpectationValue(Task):
             del targets
 
             self.logger.info("remove operator")
-            os.remove(self.path_operator_copy)
+            self.path_operator_copy.unlink()
 
         @DoitAction
         def action_compute(targets: List[str]):
@@ -83,23 +82,23 @@ class ComputeExpectationValue(Task):
                     cmd = [
                         "qdtk_expect.x",
                         "-opr",
-                        os.path.basename(self.path_operator_copy),
+                        self.path_operator_copy.name,
                         "-rst",
-                        os.path.basename(self.path_psi_or_restart),
+                        self.path_psi_or_restart.name,
                         "-save",
-                        os.path.basename(self.path_expval),
+                        self.path_expval.name,
                     ]
                 else:
                     cmd = [
                         "qdtk_expect.x",
                         "-psi",
-                        os.path.basename(self.path_psi_or_restart),
+                        self.path_psi_or_restart.name,
                         "-opr",
-                        os.path.basename(self.path_operator_copy),
+                        self.path_operator_copy.name,
                         "-rst",
-                        os.path.basename(self.path_wave_function),
+                        self.path_wave_function.name,
                         "-save",
-                        os.path.basename(self.path_expval),
+                        self.path_expval.name,
                     ]
                 self.logger.info("command: %s", " ".join(cmd))
                 env = os.environ.copy()
@@ -107,8 +106,7 @@ class ComputeExpectationValue(Task):
                 subprocess.run(cmd, env=env)
 
         # add the copy and remove actions only when neccessary
-        if os.path.realpath(self.path_operator) != os.path.realpath(
-                self.path_operator_copy):
+        if self.path_operator.resolve() != self.path_operator_copy.resolve():
             return {
                 "name":
                 "expval:{}:compute".format(self.name),

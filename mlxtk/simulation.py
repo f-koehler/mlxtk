@@ -3,6 +3,7 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import List, Optional
 
 from . import cwd, doit_compat, lock, log, sge
@@ -11,10 +12,10 @@ LOGGER = log.get_logger(__name__)
 
 
 class Simulation:
-    def __init__(self, name: str, working_dir: Optional[str] = None):
+    def __init__(self, name: Path, working_dir: Optional[Path] = None):
         self.name = name
-        self.working_dir = os.path.abspath(
-            name if working_dir is None else working_dir)
+        self.working_dir = (Path(name)
+                            if working_dir is None else working_dir).resolve()
         self.tasks_run = []
         self.tasks_clean = []
         self.tasks_dry_run = []
@@ -27,7 +28,7 @@ class Simulation:
         return self
 
     def create_working_dir(self):
-        if not os.path.exists(self.working_dir):
+        if not self.working_dir.exists():
             os.makedirs(self.working_dir)
 
     def graph(self, args: argparse.Namespace):
@@ -67,7 +68,7 @@ class Simulation:
     def run(self, args: argparse.Namespace):
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
-            with lock.LockFile("run.lock"):
+            with lock.LockFile(Path("run.lock")):
                 doit_compat.run_doit(
                     self.tasks_run,
                     [
@@ -80,7 +81,7 @@ class Simulation:
     def dry_run(self, args: argparse.Namespace):
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
-            with lock.LockFile("run.lock"):
+            with lock.LockFile(Path("run.lock")):
                 doit_compat.run_doit(
                     self.tasks_dry_run,
                     [
@@ -104,11 +105,12 @@ class Simulation:
 
     def qsub(self, args: argparse.Namespace):
         self.create_working_dir()
-        call_dir = os.path.abspath(os.getcwd())
-        script_path = os.path.abspath(sys.argv[0])
+        call_dir = Path.cwd().absolute()
+        script_path = Path(sys.argv[0]).absolute()
         with cwd.WorkingDir(self.working_dir):
             sge.submit(
-                " ".join([sys.executable, script_path, "run"]),
+                " ".join([sys.executable,
+                          str(script_path), "run"]),
                 args,
                 sge_dir=call_dir,
                 job_name=self.name)
@@ -116,12 +118,12 @@ class Simulation:
     def qdel(self, args: argparse.Namespace):
         del args
 
-        if not os.path.exists(self.working_dir):
+        if not self.working_dir.exists():
             self.logger.warning("working dir %s does not exist, do nothing",
                                 self.working_dir)
             return
         with cwd.WorkingDir(self.working_dir):
-            if os.path.exists("sge_stop"):
+            if Path("sge_stop").exists():
                 self.logger.warning("stopping job")
                 subprocess.check_output("sge_stop")
 

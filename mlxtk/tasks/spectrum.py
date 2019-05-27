@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
 import h5py
@@ -17,20 +18,20 @@ class ComputeSpectrum(Task):
         self.name = hamiltonian_1b
         self.num_spfs = num_spfs
 
-        self.path = self.name + ".spectrum.hdf5"
-        self.path_matrix = self.name + ".opr_mat.hdf5"
-        self.path_matrix_hash = self.name + ".opr_mat.hash"
+        self.path = Path(self.name + ".spectrum.hdf5")
+        self.path_matrix = Path(self.name + ".opr_mat.hdf5")
+        self.path_matrix_hash = Path(self.name + ".opr_mat.hash")
 
     def task_check_num_spfs(self) -> Dict[str, Any]:
         @DoitAction
         def action_check_num_spfs(targets):
             del targets
 
-            if os.path.exists(self.path):
+            if self.path.exists():
                 energies, _ = read_spectrum(self.path)
 
                 if len(energies) != self.num_spfs:
-                    os.remove(self.path)
+                    self.path.unlink()
 
         return {
             "name": "spectrum:{}:check_num_spfs".format(self.name),

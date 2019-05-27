@@ -9,6 +9,7 @@ import pickle
 import sqlite3
 import subprocess
 import sys
+from pathlib import Path
 from typing import Callable, List
 
 import pandas
@@ -45,9 +46,9 @@ class ParameterScan(SimulationSet):
         for combination in self.combinations:
             self.simulations.append(self.func(combination))
             self.simulations[-1].name = repr(combination)
-            self.simulations[-1].working_dir = os.path.join(
-                self.working_dir, "sim",
-                hash_string(self.simulations[-1].name))
+            self.simulations[
+                -1].working_dir = self.working_dir / "sim" / hash_string(
+                    self.simulations[-1].name)
             self.simulations[-1].name = self.name + \
                 "_" + self.simulations[-1].name
 
@@ -78,9 +79,10 @@ class ParameterScan(SimulationSet):
                 name: pandas.Series([comb[name] for comb in self.combinations])
                 for name in names
             })
-            if os.path.exists("scan.sqlite3"):
-                os.remove("scan.sqlite3")
-            con = sqlite3.connect("scan.sqlite3")
+            path_sqlite = Path("scan.sqlite3")
+            if path_sqlite.exists():
+                path_sqlite.unlink()
+            con = sqlite3.connect(str(path_sqlite))
             data.to_sql("combinations", con, index=True, index_label="index")
             con.close()
 
@@ -93,21 +95,23 @@ class ParameterScan(SimulationSet):
 
         # link by index
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("by_index"):
-                os.makedirs("by_index")
+            path_by_index = Path("by_index")
+            if not path_by_index.exists():
+                os.makedirs(path_by_index)
 
             for index, simulation in enumerate(self.simulations):
                 path = simulation.working_dir
-                link = os.path.join("by_index", str(index))
+                link = path_by_index / str(index)
 
-                if os.path.exists(link):
-                    subprocess.run(["rm", link])
+                if link.exists():
+                    link.unlink()
                 subprocess.run(["ln", "-s", "-f", "-r", path, link])
 
         # link by parameters
         with cwd.WorkingDir(self.working_dir):
-            if not os.path.exists("by_param"):
-                os.makedirs("by_param")
+            path_by_param = Path("by_param")
+            if not path_by_param.exists():
+                os.makedirs(path_by_param)
 
             variables, constants = mlxtk.parameters.get_variables(
                 self.combinations)
@@ -122,28 +126,32 @@ class ParameterScan(SimulationSet):
                         (variable + "=" + str(combination[variable])
                          for variable in variables))
                 path = simulation.working_dir
-                link = os.path.join("by_param", name)
+                link = path_by_param / name
 
-                if os.path.exists(link):
-                    subprocess.run(["rm", link])
+                if link.exists():
+                    link.unlink()
                 subprocess.run(["ln", "-s", "-f", "-r", path, link])
 
     def unlink_simulations(self):
-        if not os.path.exists(self.working_dir):
+        if not self.working_dir.exists():
             return
 
         with cwd.WorkingDir(self.working_dir):
-            if os.path.exists("by_index"):
-                with cwd.WorkingDir("by_index"):
+            path_by_index = Path("by_index")
+            if path_by_index.exists():
+                with cwd.WorkingDir(path_by_index):
                     for entry in os.listdir(os.getcwd()):
-                        if os.path.islink(entry):
-                            os.unlink(entry)
+                        path_entry = Path(entry)
+                        if path_entry.is_symlink():
+                            path_entry.unlink()
 
-            if os.path.exists("by_param"):
-                with cwd.WorkingDir("by_param"):
+            path_by_param = Path("by_param")
+            if path_by_param.exists():
+                with cwd.WorkingDir(path_by_param):
                     for entry in os.listdir(os.getcwd()):
-                        if os.path.islink(entry):
-                            os.unlink(entry)
+                        path_entry = Path(entry)
+                        if path_entry.is_symlink():
+                            path_entry.unlink()
 
     def dry_run(self, args: argparse.Namespace):
         self.unlink_simulations()

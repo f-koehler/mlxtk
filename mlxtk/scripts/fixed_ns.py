@@ -1,8 +1,8 @@
 import argparse
-import os
 import shutil
 import subprocess
 import tempfile
+from pathlib import Path
 
 import h5py
 import numpy
@@ -20,31 +20,33 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "basis",
+        type=Path,
         help="wave function file containing the basis to project onto")
     parser.add_argument(
         "psi",
+        type=Path,
         help="wave function file containing the wave function to analyse")
     parser.add_argument(
-        "-o", "--output", help="name of the output file (optional)")
+        "-o", "--output", type=Path, help="name of the output file (optional)")
     args = parser.parse_args()
 
     output = args.output
     if not output:
-        output = "fixed_ns_{}_{}.hdf5".format(
-            os.path.basename(os.path.splitext(args.psi)[0]),
-            os.path.basename(os.path.splitext(args.basis)[0]))
-    output = os.path.abspath(output)
+        output = Path("fixed_ns_{}_{}.hdf5".format(args.psi.stem,
+                                                   args.basis.stem))
 
-    with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdir:
+    output = output.resolve()
+
+    with tempfile.TemporaryDirectory(dir=Path.cwd()) as tmpdir:
         LOGGER.info("create a restart file from psi file")
-        with open(os.path.join(tmpdir, "restart"), "w") as fp:
+        with open(Path(tmpdir) / "restart", "w") as fp:
             fp.write(read_first_frame(args.psi))
 
         LOGGER.info("copy psi file")
-        shutil.copy2(args.psi, os.path.join(tmpdir, "psi"))
+        shutil.copy2(args.psi, Path(tmpdir) / "psi")
 
         LOGGER.info("copy basis")
-        shutil.copy2(args.basis, os.path.join(tmpdir, "basis"))
+        shutil.copy2(args.basis, Path(tmpdir) / "basis")
 
         with WorkingDir(tmpdir):
             cmd = [

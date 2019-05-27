@@ -3,6 +3,7 @@
 import argparse
 import os
 import sys
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 from . import cwd, doit_compat, sge
@@ -106,12 +107,12 @@ class SimulationSet:
             self,
             name: str,
             simulations: List[Simulation],
-            working_dir: Optional[str] = None,
+            working_dir: Optional[Path] = None,
     ):
         self.name = name
         self.simulations = simulations
-        self.working_dir = os.path.abspath(
-            name) if working_dir is None else working_dir
+        self.working_dir = Path(
+            name).resolve() if working_dir is None else working_dir
 
         self.logger = get_logger(__name__ + ".SimulationSet")
 
@@ -158,7 +159,7 @@ class SimulationSet:
             "index", type=int, help="index of the simulation to run")
 
     def create_working_dir(self):
-        if not os.path.exists(self.working_dir):
+        if not self.working_dir.exists():
             os.makedirs(self.working_dir)
 
     def list_(self, args: argparse.Namespace):
@@ -191,7 +192,7 @@ class SimulationSet:
             [
                 "--process=" + str(args.jobs),
                 "--backend=sqlite3",
-                "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3"),
+                "--db-file=" + str(self.working_dir / "doit.sqlite3"),
             ],
         )
 
@@ -207,7 +208,7 @@ class SimulationSet:
             tasks,
             [
                 "--backend=sqlite3",
-                "--db-file=" + os.path.join(self.working_dir, "doit.sqlite3"),
+                "--db-file=" + str(self.working_dir / "doit.sqlite3"),
             ],
         )
 
@@ -224,12 +225,12 @@ class SimulationSet:
             [
                 "--process=" + str(args.jobs),
                 "--backend=sqlite3",
-                "--db-file" + os.path.join(self.working_dir, "doit.sqlite3"),
+                "--db-file" + str(self.working_dir / "doit.sqlite3"),
             ],
         )
 
     def run_index(self, args: argparse.Namespace):
-        script_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
+        script_dir = Path(sys.argv[0]).parent.resolve()
         with cwd.WorkingDir(script_dir):
             self.logger.info("run simulation with index %d", args.index)
             self.simulations[args.index].main(["run"])
@@ -237,7 +238,7 @@ class SimulationSet:
     def qdel(self, args: argparse.Namespace):
         del args
 
-        if not os.path.exists(self.working_dir):
+        if not self.working_dir.exists():
             self.logger.warning("working dir %s does not exist, do nothing",
                                 self.working_dir)
 
@@ -249,20 +250,22 @@ class SimulationSet:
         self.logger.info("submitting simulation set to SGE scheduler")
         self.create_working_dir()
 
-        set_dir = os.path.abspath(self.working_dir)
-        script_path = os.path.abspath(sys.argv[0])
+        set_dir = self.working_dir.resolve()
+        script_path = Path(sys.argv[0]).resolve()
 
         for index, simulation in enumerate(self.simulations):
-            simulation_dir = os.path.join(set_dir, simulation.working_dir)
-            if not os.path.exists(simulation_dir):
+            simulation_dir = set_dir / simulation.working_dir
+            if not simulation_dir.exists():
                 os.makedirs(simulation_dir)
             with cwd.WorkingDir(simulation_dir):
                 sge.submit(
-                    " ".join(
-                        [sys.executable, script_path, "run-index",
-                         str(index)]),
+                    " ".join([
+                        sys.executable,
+                        str(script_path), "run-index",
+                        str(index)
+                    ]),
                     args,
-                    sge_dir=os.path.dirname(script_path),
+                    sge_dir=script_path.parent,
                     job_name=simulation.name)
 
     def qsub_array(self, args: argparse.Namespace):
@@ -270,15 +273,15 @@ class SimulationSet:
             "submitting simulation set as an array to SGE scheduler")
         self.create_working_dir()
 
-        script_path = os.path.abspath(sys.argv[0])
-        command = " ".join([sys.executable, script_path, "run-index"])
+        script_path = Path(sys.argv[0]).resolve()
+        command = " ".join([sys.executable, str(script_path), "run-index"])
 
         with cwd.WorkingDir(self.working_dir):
             sge.submit_array(
                 command,
                 len(self.simulations),
                 args,
-                sge_dir=os.path.dirname(script_path),
+                sge_dir=script_path.parent,
                 job_name=self.name)
 
     def main(self, argv: List[str]):

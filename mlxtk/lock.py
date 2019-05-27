@@ -9,6 +9,7 @@ Todo:
 import json
 import os
 import platform
+from pathlib import Path
 
 from .log import get_logger
 
@@ -24,18 +25,18 @@ class LockFileExistsError(Exception):
         pid: id of the process that locked the file
     """
 
-    def __init__(self, path: str, host: str, pid: int):
+    def __init__(self, path: Path, host: str, pid: int):
         message = "Lock file {} exists (locked by PID {} on host {})".format(
             path, pid, host)
         super().__init__(message)
 
 
 class LockFile:
-    def __init__(self, path: str):
-        self.path = os.path.realpath(os.path.abspath(path))
+    def __init__(self, path: Path):
+        self.path = path.resolve()
 
     def __enter__(self):
-        if os.path.exists(self.path):
+        if self.path.exists():
             with open(self.path, "r") as fptr:
                 lock = json.load(fptr)
                 raise LockFileExistsError(self.path, lock["host"], lock["pid"])
@@ -48,4 +49,4 @@ class LockFile:
         del exc_value
         del traceback
 
-        os.remove(self.path)
+        self.path.unlink()

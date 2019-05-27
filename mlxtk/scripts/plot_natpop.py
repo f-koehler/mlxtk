@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 
@@ -11,7 +12,11 @@ from ..plot.natpop import plot_natpop
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="?", default="natpop", help="path to the natpop file")
+        "path",
+        nargs="?",
+        type=Path,
+        default=Path("natpop"),
+        help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument(
         "-d", "--dof", type=int, default=1, help="degree of freedom")

@@ -8,8 +8,12 @@ from typing import List
 import numpy
 
 
-def labels_from_paths(paths: List[str]) -> List[str]:
-    common = os.path.commonpath(paths)
+def get_common_path(paths: List[Path]) -> Path:
+    return Path(os.path.commonpath([str(p) for p in paths]))
+
+
+def labels_from_paths(paths: List[Path]) -> List[str]:
+    common = get_common_path(paths)
     parts = [Path(os.path.relpath(p, common)).parts for p in paths]
     arr = numpy.full((len(parts), len(max(parts, key=len))), "", dtype=object)
     for i, _ in enumerate(parts):

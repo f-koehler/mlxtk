@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 
@@ -11,23 +12,21 @@ from ..util import labels_from_paths
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="+", default=["output"], help="path to the output file")
+        "path",
+        nargs="?",
+        type=Path,
+        default=Path("output"),
+        help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    labels = labels_from_paths(args.path)
-
     _, ax = plt.subplots(1, 1)
 
-    for path, label in zip(args.path, labels):
-        time, _, energy, _ = read_output(path)
-        plot_energy(ax, time, energy, label=label)
+    time, _, energy, _ = read_output(args.path)
+    plot_energy(ax, time, energy)
 
-    if len(args.path) > 1:
-        ax.legend()
-
-    ax.set_xlabel(units.get_time_label(working_directory=args.path[0]))
-    ax.set_ylabel(units.get_energy_label(working_directory=args.path[0]))
+    ax.set_xlabel(units.get_time_label(working_directory=args.path))
+    ax.set_ylabel(units.get_energy_label(working_directory=args.path))
 
     apply_2d_args(ax, args)
 

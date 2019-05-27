@@ -2,4 +2,4 @@
 
 set -euf -o pipefail
 
-pylint --extension-pkg-whitelist=numpy,PyQt5 -j 0 -f colorized mlxtk
+pylint --extension-pkg-whitelist=numpy,PySide2 -j 0 -f colorized mlxtk

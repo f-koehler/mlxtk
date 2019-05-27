@@ -1,16 +1,17 @@
 import argparse
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 
 from .. import units
 from ..inout import read_expval
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_expval
-from pathlib import Path
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", type=Path, nargs="?", help="path to the output file")
+    parser.add_argument(
+        "path", type=Path, nargs="?", help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

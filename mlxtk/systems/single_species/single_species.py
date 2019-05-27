@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+import numpy
+
 from mlxtk.dvr import DVRSpecification
 from mlxtk.parameters import Parameters
 from mlxtk.tasks import MBOperatorSpecification, OperatorSpecification
@@ -75,3 +77,12 @@ class SingleSpeciesSystem(ABC):
                 "com_squared_coeff_2 | 1 com_squared_x | 1* com_squared_x",
             ],
         )
+
+    def get_truncated_unit_operator(self, xmin: float,
+                                    xmax: float) -> MBOperatorSpecification:
+        term = numpy.zeros_like(self.grid.get_x())
+        term[numpy.logical_and(self.grid.get_x() >= xmin,
+                               self.grid.get_x() <= xmax)] = 1.
+        return MBOperatorSpecification(
+            (1, ), (self.grid, ), {"norm": 1. / self.parameters.N},
+            {"truncated_one": term}, "norm | 1 truncated_one")

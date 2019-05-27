@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import sympy
 import sympy.abc

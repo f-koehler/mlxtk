@@ -19,7 +19,6 @@ def plot_energy(index: int,
                 path: Path,
                 parameters: Parameters,
                 file_path: Path,
-                dof: int = 1,
                 extension: str = ".pdf",
                 modfunc: Callable[[Figure, Axes, Parameters], None] = None):
     total_path = path / file_path

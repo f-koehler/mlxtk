@@ -11,6 +11,7 @@ def read_dmat2_gridrep(
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
+        assert interior_path
         raise NotImplementedError()
 
     return read_dmat2_gridrep_ascii(path)

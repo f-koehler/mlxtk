@@ -20,10 +20,9 @@ def read_first_frame(path: str) -> str:
             if line.startswith("$time"):
                 if encountered_time:
                     return "".join(frame)
-                else:
-                    encountered_time = True
-                    frame.append(line)
-                    continue
+                encountered_time = True
+                frame.append(line)
+                continue
             frame.append(line)
 
     return "".join(frame)
@@ -31,7 +30,7 @@ def read_first_frame(path: str) -> str:
 
 def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with io.StringIO(read_first_frame(path)) as sio:
-        wfn = load_wave_function(path)
+        wfn = load_wave_function(sio)
 
     _, times, psis = read_psi_ascii(path)
 

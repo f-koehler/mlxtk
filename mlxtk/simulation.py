@@ -79,6 +79,8 @@ class Simulation:
                 )
 
     def dry_run(self, args: argparse.Namespace):
+        del args
+
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
             with lock.LockFile(Path("run.lock")):

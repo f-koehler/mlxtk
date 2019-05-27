@@ -4,8 +4,7 @@ import h5py
 import numpy
 import tabulate
 
-from ..tools.wave_function import (build_number_state_table_bosonic,
-                                   load_wave_function)
+from ..tools.wave_function import build_number_state_table_bosonic
 from ..util import compute_magnitude_split
 
 

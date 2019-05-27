@@ -8,7 +8,6 @@ import os
 import pickle
 import sqlite3
 import subprocess
-import sys
 from pathlib import Path
 from typing import Callable, List
 

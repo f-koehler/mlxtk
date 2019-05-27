@@ -1,8 +1,6 @@
 import argparse
-import os
 import sys
 
-import matplotlib
 from PySide2 import QtWidgets
 
 from .. import inout, plot, units
@@ -94,6 +92,7 @@ def main():
 
     app = QtWidgets.QApplication(sys.argv)
     form = GpopSlider(*inout.read_gpop(args.path), args)
+    assert form
     sys.exit(app.exec_())
 
 

@@ -3,8 +3,6 @@ from typing import Tuple
 import numpy
 import pandas
 
-import mlxtk
-
 
 def read_dmat_evals(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with open(path, "r") as fp:

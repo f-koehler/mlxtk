@@ -1,8 +1,6 @@
 import argparse
-import os
 import sys
 
-import matplotlib
 import numpy
 from PySide2 import QtWidgets
 

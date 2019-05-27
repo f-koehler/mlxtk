@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Any, Optional
 
@@ -34,8 +33,7 @@ def get_length_label(quantity: str = "x",
     unit = load_unit("length", working_directory)
     if unit:
         return format_label(quantity, latex(simplify(unit)))
-    else:
-        return format_label(quantity, r"\mathrm{a.u.}")
+    return format_label(quantity, r"\mathrm{a.u.}")
 
 
 def get_time_label(quantity: str = "t",
@@ -43,8 +41,7 @@ def get_time_label(quantity: str = "t",
     unit = load_unit("time", working_directory)
     if unit:
         return format_label(quantity, latex(simplify(unit)))
-    else:
-        return format_label(quantity, r"\mathrm{a.u.}")
+    return format_label(quantity, r"\mathrm{a.u.}")
 
 
 def get_energy_label(quantity: str = "E",
@@ -52,5 +49,4 @@ def get_energy_label(quantity: str = "E",
     unit = load_unit("energy", working_directory)
     if unit:
         return format_label(quantity, latex(simplify(unit)))
-    else:
-        return format_label(quantity, r"\mathrm{a.u.}")
+    return format_label(quantity, r"\mathrm{a.u.}")

@@ -1,7 +1,6 @@
 import argparse
 
 import matplotlib.pyplot as plt
-import numpy
 
 from .. import units
 from ..inout import read_dmat_evals, read_natpop

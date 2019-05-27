@@ -24,6 +24,7 @@ def main():
 
     app = QtWidgets.QApplication(sys.argv)
     window = DmatEvecSlider(times, grid, spfs, args)
+    assert window
     sys.exit(app.exec_())
 
 

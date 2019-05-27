@@ -1,5 +1,3 @@
-import math
-
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
 

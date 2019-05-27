@@ -84,6 +84,8 @@ class ParameterSelection:
             if parameters.has_same_common_parameters(entry[1]):
                 return path
 
+        return None
+
     def get_paths(self) -> List[str]:
         """Compute the paths for all included parameter sets.
 

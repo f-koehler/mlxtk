@@ -72,6 +72,7 @@ class RequestWaveFunction(Task):
 
         @DoitAction
         def action_noop(targets):
+            del targets
             pass
 
         return {

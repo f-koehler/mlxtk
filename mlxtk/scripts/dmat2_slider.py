@@ -1,8 +1,6 @@
 import argparse
-import os
 import sys
 
-import matplotlib
 import numpy
 from matplotlib.collections import QuadMesh
 from PySide2 import QtWidgets

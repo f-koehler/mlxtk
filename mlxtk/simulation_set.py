@@ -197,6 +197,8 @@ class SimulationSet:
         )
 
     def dry_run(self, args: argparse.Namespace):
+        del args
+
         self.logger.info("running simulation set (dry)")
 
         self.create_working_dir()

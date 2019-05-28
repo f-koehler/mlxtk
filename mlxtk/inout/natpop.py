@@ -148,8 +148,10 @@ def write_natpop_hdf5(
         all_data: Tuple[numpy.ndarray, Dict[int, Dict[int, numpy.ndarray]]]):
     time, data = all_data
     with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip")
+        dset = fptr.create_dataset("time",
+                                   time.shape,
+                                   dtype=numpy.float64,
+                                   compression="gzip")
         dset[:] = time
         for node in data:
             grp = fptr.create_group("node_{}".format(node))

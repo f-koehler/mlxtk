@@ -164,11 +164,10 @@ class CreateOperator(Task):
 
             matrix = get_operator_matrix(op)
             with h5py.File(self.path_matrix, "w") as fptr:
-                dset = fptr.create_dataset(
-                    "matrix",
-                    matrix.shape,
-                    dtype=numpy.complex128,
-                    compression="gzip")
+                dset = fptr.create_dataset("matrix",
+                                           matrix.shape,
+                                           dtype=numpy.complex128,
+                                           compression="gzip")
                 dset[:, :] = matrix
 
                 for i, dof in enumerate(self.specification.dofs):

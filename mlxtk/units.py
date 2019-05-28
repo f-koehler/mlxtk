@@ -9,8 +9,8 @@ from .settings import load_settings
 
 def load_unit(quantity: str,
               working_directory: Path = Path.cwd()) -> Optional[Any]:
-    unit = load_settings(working_directory).get("units", {}).get(
-        quantity, None)
+    unit = load_settings(working_directory).get("units",
+                                                {}).get(quantity, None)
     if unit:
         return sympy.sympify(unit, locals=sympy.abc._clash)
     return None

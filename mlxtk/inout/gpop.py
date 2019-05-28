@@ -164,23 +164,23 @@ def write_gpop_hdf5(
     """
     time, grids, densities = data
     with h5py.File(path, "w") as fp:
-        dset = fp.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip")
+        dset = fp.create_dataset("time",
+                                 time.shape,
+                                 dtype=numpy.float64,
+                                 compression="gzip")
         dset[:] = time
 
         for dof in densities:
             grp = fp.create_group("dof_" + str(dof))
 
-            dset = grp.create_dataset(
-                "grid",
-                grids[dof].shape,
-                dtype=numpy.float64,
-                compression="gzip")
+            dset = grp.create_dataset("grid",
+                                      grids[dof].shape,
+                                      dtype=numpy.float64,
+                                      compression="gzip")
             dset[:] = grids[dof]
 
-            dset = grp.create_dataset(
-                "density",
-                densities[dof].shape,
-                dtype=numpy.float64,
-                compression="gzip")
+            dset = grp.create_dataset("density",
+                                      densities[dof].shape,
+                                      dtype=numpy.float64,
+                                      compression="gzip")
             dset[:, :] = densities[dof]

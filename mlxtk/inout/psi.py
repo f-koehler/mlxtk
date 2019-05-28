@@ -42,8 +42,8 @@ def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     return times, numpy.moveaxis(numpy.array(spfs), 1, 0)
 
 
-def read_psi_ascii(
-        path: str) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+def read_psi_ascii(path: str
+                   ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     times = []
     psis = []
     tape = []
@@ -90,16 +90,22 @@ def read_psi_hdf5(path):
 def write_psi_hdf5(path, data):
     tape, time, psis = data
     with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset(
-            "tape", tape.shape, dtype=numpy.int64, compression="gzip")
+        dset = fptr.create_dataset("tape",
+                                   tape.shape,
+                                   dtype=numpy.int64,
+                                   compression="gzip")
         dset[:] = tape
 
-        dset = fptr.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip")
+        dset = fptr.create_dataset("time",
+                                   time.shape,
+                                   dtype=numpy.float64,
+                                   compression="gzip")
         dset[:] = time
 
-        dset = fptr.create_dataset(
-            "psis", psis.shape, dtype=numpy.complex128, compression="gzip")
+        dset = fptr.create_dataset("psis",
+                                   psis.shape,
+                                   dtype=numpy.complex128,
+                                   compression="gzip")
         dset[:, :] = psis[:, :]
 
 
@@ -110,5 +116,6 @@ def write_psi_ascii(path, data):
         fptr.writelines(("\t{}\n".format(entry) for entry in tape))
         for i, time in enumerate(time):
             fptr.write("\n$time\n\t{}  [au]\n$psi\n".format(time))
-            fptr.writelines((" ({},{})\n".format(
-                numpy.real(entry), numpy.imag(entry)) for entry in psis[i]))
+            fptr.writelines((" ({},{})\n".format(numpy.real(entry),
+                                                 numpy.imag(entry))
+                             for entry in psis[i]))

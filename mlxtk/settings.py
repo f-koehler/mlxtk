@@ -17,8 +17,9 @@ def load_settings(start_directory: Path = Path.cwd()) -> Dict[Any, Any]:
 
             if "paths" in settings:
                 for path in settings["paths"]:
-                    settings["paths"][path] = (Path(start_directory) / Path(
-                        settings["paths"][path])).resolve()
+                    settings["paths"][path] = (
+                        Path(start_directory) /
+                        Path(settings["paths"][path])).resolve()
 
             return settings
 

@@ -57,7 +57,9 @@ tabulate = "^0.8.3"
 tqdm = "^4.32.1"
 
 [tool.poetry.dev-dependencies]
+isort = "^4.3.20"
 sphinx = "^2.0.1"
+yapf = "^0.27.0"
 
 [tool.poetry.scripts]
 dmat2_slider = "mlxtk.scripts.dmat2_slider:main"

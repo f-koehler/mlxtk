@@ -31,8 +31,9 @@ def read_output_ascii(
           simulation times. The other entries contain the norm, energy and
           maximum SPF overlap of the wave function at all times.
     """
-    dataFrame = pandas.read_csv(
-        path, sep=r"\s+", names=["time", "norm", "energy", "overlap"])
+    dataFrame = pandas.read_csv(path,
+                                sep=r"\s+",
+                                names=["time", "norm", "energy", "overlap"])
     return (
         dataFrame["time"].values,
         dataFrame["norm"].values,
@@ -58,18 +59,26 @@ def write_output_hdf5(
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ):
     with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset(
-            "time", data[0].shape, dtype=data[0].dtype, compression="gzip")
+        dset = fptr.create_dataset("time",
+                                   data[0].shape,
+                                   dtype=data[0].dtype,
+                                   compression="gzip")
         dset[:] = data[0]
 
-        dset = fptr.create_dataset(
-            "norm", data[1].shape, dtype=data[1].dtype, compression="gzip")
+        dset = fptr.create_dataset("norm",
+                                   data[1].shape,
+                                   dtype=data[1].dtype,
+                                   compression="gzip")
         dset[:] = data[1]
 
-        dset = fptr.create_dataset(
-            "energy", data[2].shape, dtype=data[2].dtype, compression="gzip")
+        dset = fptr.create_dataset("energy",
+                                   data[2].shape,
+                                   dtype=data[2].dtype,
+                                   compression="gzip")
         dset[:] = data[2]
 
-        dset = fptr.create_dataset(
-            "overlap", data[3].shape, dtype=data[3].dtype, compression="gzip")
+        dset = fptr.create_dataset("overlap",
+                                   data[3].shape,
+                                   dtype=data[3].dtype,
+                                   compression="gzip")
         dset[:] = data[3]

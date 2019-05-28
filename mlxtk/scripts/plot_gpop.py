@@ -10,14 +10,16 @@ from ..plot import add_argparse_2d_args, apply_2d_args, plot_gpop
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "path",
-        nargs="?",
-        type=Path,
-        default=Path("gpop"),
-        help="path to the gpop file")
-    parser.add_argument(
-        "-d", "--dof", type=int, default=1, help="degree of freedom")
+    parser.add_argument("path",
+                        nargs="?",
+                        type=Path,
+                        default=Path("gpop"),
+                        help="path to the gpop file")
+    parser.add_argument("-d",
+                        "--dof",
+                        type=int,
+                        default=1,
+                        help="degree of freedom")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

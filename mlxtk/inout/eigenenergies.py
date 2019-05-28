@@ -29,9 +29,8 @@ def read_eigenenergies_hdf5(path: str,
 
 def write_eigenenergies_hdf5(path: str, data: numpy.ndarray):
     with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset(
-            "eigenenergies",
-            data.shape,
-            dtype=numpy.complex128,
-            compression="gzip")
+        dset = fptr.create_dataset("eigenenergies",
+                                   data.shape,
+                                   dtype=numpy.complex128,
+                                   compression="gzip")
         dset[:] = data

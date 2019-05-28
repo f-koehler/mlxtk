@@ -11,14 +11,20 @@ LOGGER = get_logger(__name__)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        metavar="input", dest="input_", type=str, help="input psi file")
+    parser.add_argument(metavar="input",
+                        dest="input_",
+                        type=str,
+                        help="input psi file")
     parser.add_argument("output", type=str, help="output psi file")
-    parser.add_argument(
-        "--imin", default=0, type=int, help="starting index for new psi")
+    parser.add_argument("--imin",
+                        default=0,
+                        type=int,
+                        help="starting index for new psi")
     parser.add_argument("--imax", type=int, help="stopping index for new psi")
-    parser.add_argument(
-        "--di", default=2, type=int, help="index stride for new psi")
+    parser.add_argument("--di",
+                        default=2,
+                        type=int,
+                        help="index stride for new psi")
     args = parser.parse_args()
 
     tape, times, psi = read_psi_ascii(args.input_)

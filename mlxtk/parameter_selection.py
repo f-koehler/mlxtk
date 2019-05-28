@@ -131,10 +131,10 @@ class ParameterSelection:
         """
         with redirect_for_tqdm() as original:
             results = []
-            for entry, path in tqdm(
-                    list(zip(self.parameters, self.get_paths())),
-                    file=original,
-                    dynamic_ncols=True):
+            for entry, path in tqdm(list(zip(self.parameters,
+                                             self.get_paths())),
+                                    file=original,
+                                    dynamic_ncols=True):
                 results.append(func(entry[0], path, entry[1]))
 
             return results

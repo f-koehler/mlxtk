@@ -31,8 +31,8 @@ class MCTDHBCreateWaveFunction(Task):
         self.hamiltonian_1b = hamiltonian_1b
 
         if number_state is None:
-            self.number_state = numpy.zeros(
-                self.number_of_spfs, dtype=numpy.int64)
+            self.number_state = numpy.zeros(self.number_of_spfs,
+                                            dtype=numpy.int64)
             self.number_state[0] = self.number_of_particles
         else:
             self.number_state = numpy.copy(number_state)
@@ -72,25 +72,26 @@ class MCTDHBCreateWaveFunction(Task):
             spfs_arr = numpy.array(spfs)
 
             with h5py.File(targets[1], "w") as fptr:
-                dset = fptr.create_dataset(
-                    "energies", (self.number_of_spfs, ),
-                    dtype=numpy.float64,
-                    compression="gzip")
+                dset = fptr.create_dataset("energies", (self.number_of_spfs, ),
+                                           dtype=numpy.float64,
+                                           compression="gzip")
                 dset[:] = energies
 
-                dset = fptr.create_dataset(
-                    "spfs",
-                    spfs_arr.shape,
-                    dtype=numpy.complex128,
-                    compression="gzip")
+                dset = fptr.create_dataset("spfs",
+                                           spfs_arr.shape,
+                                           dtype=numpy.complex128,
+                                           compression="gzip")
                 dset[:, :] = spfs_arr
 
             grid_points = matrix.shape[0]
             tape = (-10, self.number_of_particles, +1, self.number_of_spfs, -1,
                     1, 1, 0, grid_points, -2)
             wfn = WaveFunction(tape=tape)
-            wfn.init_coef_sing_spec_B(
-                self.number_state, spfs, 1e-15, 1e-15, full_spf=True)
+            wfn.init_coef_sing_spec_B(self.number_state,
+                                      spfs,
+                                      1e-15,
+                                      1e-15,
+                                      full_spf=True)
 
             save_wave_function(self.path, wfn)
 
@@ -118,8 +119,8 @@ class MCTDHBCreateWaveFunctionMulti(Task):
         self.hamiltonians_1b = hamiltonians_1b
 
         if number_state is None:
-            self.number_state = numpy.zeros(
-                sum(self.number_of_spfs), dtype=numpy.int64)
+            self.number_state = numpy.zeros(sum(self.number_of_spfs),
+                                            dtype=numpy.int64)
             self.number_state[0] = self.number_of_particles
         else:
             self.number_state = numpy.copy(number_state)
@@ -170,25 +171,26 @@ class MCTDHBCreateWaveFunctionMulti(Task):
                 all_spfs += spfs
 
                 with h5py.File(path_basis, "w") as fptr:
-                    dset = fptr.create_dataset(
-                        "energies", (m, ),
-                        dtype=numpy.float64,
-                        compression="gzip")
+                    dset = fptr.create_dataset("energies", (m, ),
+                                               dtype=numpy.float64,
+                                               compression="gzip")
                     dset[:] = energies
 
-                    dset = fptr.create_dataset(
-                        "spfs",
-                        spfs_arr.shape,
-                        dtype=numpy.complex128,
-                        compression="gzip")
+                    dset = fptr.create_dataset("spfs",
+                                               spfs_arr.shape,
+                                               dtype=numpy.complex128,
+                                               compression="gzip")
                     dset[:, :] = spfs_arr[-1]
 
             grid_points = matrix.shape[0]
             tape = (-10, self.number_of_particles, +1,
                     sum(self.number_of_spfs), -1, 1, 1, 0, grid_points, -2)
             wfn = WaveFunction(tape=tape)
-            wfn.init_coef_sing_spec_B(
-                self.number_state, all_spfs, 1e-15, 1e-15, full_spf=True)
+            wfn.init_coef_sing_spec_B(self.number_state,
+                                      all_spfs,
+                                      1e-15,
+                                      1e-15,
+                                      full_spf=True)
 
             save_wave_function(self.path, wfn)
 
@@ -356,18 +358,20 @@ class MCTDHBExtendGrid(Task):
             wfn_new = WaveFunction(tape=tuple(tape))
             spfs = get_spfs(wfn)
             for i, spf in enumerate(spfs):
-                spfs[i] = numpy.pad(
-                    spf, (self.nleft, self.nright),
-                    "constant",
-                    constant_values=(self.value, self.value))
+                spfs[i] = numpy.pad(spf, (self.nleft, self.nright),
+                                    "constant",
+                                    constant_values=(self.value, self.value))
 
             N = wfn._tape[1]
             m = wfn._tape[3]
 
             number_state = numpy.zeros(m, dtype=numpy.int64)
             number_state[0] = N
-            wfn_new.init_coef_sing_spec_B(
-                number_state, spfs, 1e-15, 1e-15, full_spf=True)
+            wfn_new.init_coef_sing_spec_B(number_state,
+                                          spfs,
+                                          1e-15,
+                                          1e-15,
+                                          full_spf=True)
 
             wfn_new.PSI[0:wfn_new.tree._subnodes[0].
                         _z0] = wfn.PSI[0:wfn.tree._subnodes[0]._z0]

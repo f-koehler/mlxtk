@@ -168,8 +168,8 @@ class GUI(QObject):
 def main():
     # parse command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "path", help="path to the one body operator matrix file")
+    parser.add_argument("path",
+                        help="path to the one body operator matrix file")
     parser.add_argument(
         "--min",
         dest="min_",

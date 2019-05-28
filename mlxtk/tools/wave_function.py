@@ -56,8 +56,8 @@ def add_momentum_split(wfn: Wavefunction, momentum: float,
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     grid = wfn.tree._topNode._pgrid[0]
 
-    phase = numpy.exp(
-        1j * (2.0 * numpy.heaviside(grid - x0, 0.5) - 1.0) * momentum * grid)
+    phase = numpy.exp(1j * (2.0 * numpy.heaviside(grid - x0, 0.5) - 1.0) *
+                      momentum * grid)
 
     for i in range(0, num_spfs):
         start = wfn.tree._subnodes[0]._z0 + i * len_spfs

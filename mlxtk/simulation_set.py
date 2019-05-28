@@ -17,8 +17,8 @@ assert Dict
 LOGGER = get_logger(__name__)
 
 
-def run_simulation(
-        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+def run_simulation(simulation: Simulation
+                   ) -> List[Callable[[], Dict[str, Any]]]:
     """Create a task for running the given simulation.
 
     Args:
@@ -44,8 +44,8 @@ def run_simulation(
     return [task_run_simulation]
 
 
-def dry_run_simulation(
-        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+def dry_run_simulation(simulation: Simulation
+                       ) -> List[Callable[[], Dict[str, Any]]]:
     """Create a task for running the given simulation dry.
 
     Args:
@@ -71,8 +71,8 @@ def dry_run_simulation(
     return [task_dry_run_simulation]
 
 
-def clean_simulation(
-        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+def clean_simulation(simulation: Simulation
+                     ) -> List[Callable[[], Dict[str, Any]]]:
     def task_clean_simulation():
         @doit_compat.DoitAction
         def action_clean_simulation(targets: List[str]):
@@ -132,29 +132,30 @@ class SimulationSet:
 
         sge.add_parser_arguments(self.argparser_qsub)
 
-        self.argparser_list.add_argument(
-            "-d", "--directory", action="store_true")
+        self.argparser_list.add_argument("-d",
+                                         "--directory",
+                                         action="store_true")
 
         self.argparser_list_tasks.add_argument(
             "index",
             type=int,
             help="index of the simulation whose tasks to list")
-        self.argparser_task_info.add_argument(
-            "index", type=int, help="index of the simulation")
-        self.argparser_task_info.add_argument(
-            "name", type=str, help="name of the task")
-        self.argparser_run.add_argument(
-            "-j",
-            "--jobs",
-            type=int,
-            default=1,
-            help="number of parallel workers")
-        self.argparser_clean.add_argument(
-            "-j",
-            "--jobs",
-            type=int,
-            default=1,
-            help="number of parallel workers")
+        self.argparser_task_info.add_argument("index",
+                                              type=int,
+                                              help="index of the simulation")
+        self.argparser_task_info.add_argument("name",
+                                              type=str,
+                                              help="name of the task")
+        self.argparser_run.add_argument("-j",
+                                        "--jobs",
+                                        type=int,
+                                        default=1,
+                                        help="number of parallel workers")
+        self.argparser_clean.add_argument("-j",
+                                          "--jobs",
+                                          type=int,
+                                          default=1,
+                                          help="number of parallel workers")
         self.argparser_run_index.add_argument(
             "index", type=int, help="index of the simulation to run")
 
@@ -260,15 +261,14 @@ class SimulationSet:
             if not simulation_dir.exists():
                 os.makedirs(simulation_dir)
             with cwd.WorkingDir(simulation_dir):
-                sge.submit(
-                    " ".join([
-                        sys.executable,
-                        str(script_path), "run-index",
-                        str(index)
-                    ]),
-                    args,
-                    sge_dir=script_path.parent,
-                    job_name=simulation.name)
+                sge.submit(" ".join([
+                    sys.executable,
+                    str(script_path), "run-index",
+                    str(index)
+                ]),
+                           args,
+                           sge_dir=script_path.parent,
+                           job_name=simulation.name)
 
     def qsub_array(self, args: argparse.Namespace):
         self.logger.info(
@@ -279,12 +279,11 @@ class SimulationSet:
         command = " ".join([sys.executable, str(script_path), "run-index"])
 
         with cwd.WorkingDir(self.working_dir):
-            sge.submit_array(
-                command,
-                len(self.simulations),
-                args,
-                sge_dir=script_path.parent,
-                job_name=self.name)
+            sge.submit_array(command,
+                             len(self.simulations),
+                             args,
+                             sge_dir=script_path.parent,
+                             job_name=self.name)
 
     def main(self, argv: List[str]):
         if argv is None:

@@ -20,11 +20,10 @@ def read_dmat2_gridrep(
 def read_dmat2_gridrep_ascii(
         path: str
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
-    df = pandas.read_csv(
-        path,
-        header=None,
-        names=["time", "x1", "x2", "dmat2"],
-        delim_whitespace=True)
+    df = pandas.read_csv(path,
+                         header=None,
+                         names=["time", "x1", "x2", "dmat2"],
+                         delim_whitespace=True)
 
     time = numpy.unique(df["time"].values)
     x1 = numpy.unique(df["x1"].values)

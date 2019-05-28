@@ -47,8 +47,8 @@ class HarmonicTrap(SingleSpeciesSystem):
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
-            return (
-                self.get_kinetic_operator() + self.get_potential_operator() +
-                self.get_interaction_operator())
+            return (self.get_kinetic_operator() +
+                    self.get_potential_operator() +
+                    self.get_interaction_operator())
 
         return self.get_kinetic_operator() + self.get_potential_operator()

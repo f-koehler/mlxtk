@@ -43,22 +43,25 @@ def main():
         "scan_dir",
         type=Path,
         help="directory of the scan containing the file scan.pickle")
-    parser.add_argument(
-        "-f",
-        "--file",
-        type=Path,
-        default=Path("propagate") / "gpop",
-        help="relative path within each simulation")
-    parser.add_argument(
-        "-d", "--dof", type=int, default=1, help="degree of freedom")
-    parser.add_argument(
-        "-e",
-        "--extension",
-        type=str,
-        default=".pdf",
-        help="file extensions for the plots")
-    parser.add_argument(
-        "-o", "--output", type=str, help="name of the output directory")
+    parser.add_argument("-f",
+                        "--file",
+                        type=Path,
+                        default=Path("propagate") / "gpop",
+                        help="relative path within each simulation")
+    parser.add_argument("-d",
+                        "--dof",
+                        type=int,
+                        default=1,
+                        help="degree of freedom")
+    parser.add_argument("-e",
+                        "--extension",
+                        type=str,
+                        default=".pdf",
+                        help="file extensions for the plots")
+    parser.add_argument("-o",
+                        "--output",
+                        type=str,
+                        help="name of the output directory")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -72,12 +75,11 @@ def main():
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,
-        partial(
-            plot_gpop,
-            file_path=args.file,
-            modfunc=apply_args,
-            dof=args.dof,
-            extension=args.extension))
+        partial(plot_gpop,
+                file_path=args.file,
+                modfunc=apply_args,
+                dof=args.dof,
+                extension=args.extension))
 
 
 if __name__ == "__main__":

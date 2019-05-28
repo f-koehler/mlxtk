@@ -9,8 +9,10 @@ from .dmat_evec_slider import DmatEvecSlider
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "path", nargs="?", default="psi", help="path to psi file")
+    parser.add_argument("path",
+                        nargs="?",
+                        default="psi",
+                        help="path to psi file")
     parser.add_argument(
         "gpop",
         nargs="?",

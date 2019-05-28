@@ -27,8 +27,8 @@ def load_gs_energies(index: int, path: str,
 
 def load_gs_natpops(index: int, path: str,
                     parameters: mlxtk.Parameters) -> Dict[str, List[float]]:
-    _, natpops = mlxtk.inout.read_natpop(
-        os.path.join(path, "rlx", "natpop"), 1, 1)
+    _, natpops = mlxtk.inout.read_natpop(os.path.join(path, "rlx", "natpop"),
+                                         1, 1)
     return {parameters.gauge: natpops[-1].tolist()}
 
 

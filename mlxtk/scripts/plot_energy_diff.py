@@ -29,8 +29,8 @@ def main():
 
     ax.set_xlabel(units.get_time_label(working_directory=args.path[0]))
     ax.set_ylabel(
-        units.get_energy_label(
-            quantity=r"\Delta E", working_directory=args.path[0]))
+        units.get_energy_label(quantity=r"\Delta E",
+                               working_directory=args.path[0]))
 
     apply_2d_args(ax, args)
 

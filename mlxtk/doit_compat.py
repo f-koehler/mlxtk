@@ -115,5 +115,6 @@ def format_doit_profile(timings: Dict[str, Dict[str, float]],
         for action in timings[task]:
             profile.append((task, action, timings[task][action]))
     profile.sort(key=lambda x: x[2], reverse=True)
-    return tabulate(
-        profile, headers=["Task", "Action", "Time/s"], tablefmt=tablefmt)
+    return tabulate(profile,
+                    headers=["Task", "Action", "Time/s"],
+                    tablefmt=tablefmt)

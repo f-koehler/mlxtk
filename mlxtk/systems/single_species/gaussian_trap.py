@@ -46,18 +46,18 @@ class GaussianTrap(SingleSpeciesSystem):
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
         if self.parameters.g != 0.0:
-            return (
-                self.get_kinetic_operator() + self.get_potential_operator() +
-                self.get_interaction_operator())
+            return (self.get_kinetic_operator() +
+                    self.get_potential_operator() +
+                    self.get_interaction_operator())
 
         return self.get_kinetic_operator() + self.get_potential_operator()
 
-    def create_gaussian_potential_operator_1b(
-            self,
-            x0: float,
-            V0: float,
-            name: str = "potential",
-            alpha: float = 1.0) -> tasks.OperatorSpecification:
+    def create_gaussian_potential_operator_1b(self,
+                                              x0: float,
+                                              V0: float,
+                                              name: str = "potential",
+                                              alpha: float = 1.0
+                                              ) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
             (self.grid_1b, ),
             {name + "_coeff": -V0},
@@ -65,12 +65,12 @@ class GaussianTrap(SingleSpeciesSystem):
             name + "_coeff | 1 " + name,
         )
 
-    def create_gaussian_potential_operator(
-            self,
-            x0: float,
-            V0: float,
-            name: str = "potential",
-            alpha: float = 1.0) -> tasks.MBOperatorSpecification:
+    def create_gaussian_potential_operator(self,
+                                           x0: float,
+                                           V0: float,
+                                           name: str = "potential",
+                                           alpha: float = 1.0
+                                           ) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
             (1, ),
             (self.grid, ),

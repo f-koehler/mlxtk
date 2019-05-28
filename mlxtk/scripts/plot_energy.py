@@ -10,12 +10,11 @@ from ..plot import add_argparse_2d_args, apply_2d_args, plot_energy
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "path",
-        nargs="?",
-        type=Path,
-        default=Path("output"),
-        help="path to the output file")
+    parser.add_argument("path",
+                        nargs="?",
+                        type=Path,
+                        default=Path("output"),
+                        help="path to the output file")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

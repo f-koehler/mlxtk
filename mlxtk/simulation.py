@@ -110,12 +110,11 @@ class Simulation:
         call_dir = Path.cwd().absolute()
         script_path = Path(sys.argv[0]).absolute()
         with cwd.WorkingDir(self.working_dir):
-            sge.submit(
-                " ".join([sys.executable,
-                          str(script_path), "run"]),
-                args,
-                sge_dir=call_dir,
-                job_name=self.name)
+            sge.submit(" ".join([sys.executable,
+                                 str(script_path), "run"]),
+                       args,
+                       sge_dir=call_dir,
+                       job_name=self.name)
 
     def qdel(self, args: argparse.Namespace):
         del args
@@ -156,24 +155,22 @@ class Simulation:
 
         # parser for run
         parser_run = subparsers.add_parser("run")
-        parser_run.add_argument(
-            "-j",
-            "--jobs",
-            type=int,
-            default=1,
-            help="number of parallel workers")
+        parser_run.add_argument("-j",
+                                "--jobs",
+                                type=int,
+                                default=1,
+                                help="number of parallel workers")
 
         # parser for dry-run
         subparsers.add_parser("dry-run")
 
         # parser for clean
         parser_clean = subparsers.add_parser("clean")
-        parser_clean.add_argument(
-            "-j",
-            "--jobs",
-            type=int,
-            default=1,
-            help="number of parallel workers")
+        parser_clean.add_argument("-j",
+                                  "--jobs",
+                                  type=int,
+                                  default=1,
+                                  help="number of parallel workers")
 
         # parser for task-info
         parser_task_info = subparsers.add_parser("task-info")

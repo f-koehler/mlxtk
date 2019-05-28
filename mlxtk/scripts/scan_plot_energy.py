@@ -42,24 +42,21 @@ def main():
         "scan_dir",
         type=str,
         help="directory of the scan containing the file scan.pickle")
-    parser.add_argument(
-        "-f",
-        "--file",
-        type=Path,
-        default=Path("propagate") / "output",
-        help="relative path within each simulation")
-    parser.add_argument(
-        "-e",
-        "--extension",
-        type=str,
-        default=".pdf",
-        help="file extensions for the plots")
-    parser.add_argument(
-        "-o",
-        "--output",
-        type=Path,
-        default="energy",
-        help="name of the output directory")
+    parser.add_argument("-f",
+                        "--file",
+                        type=Path,
+                        default=Path("propagate") / "output",
+                        help="relative path within each simulation")
+    parser.add_argument("-e",
+                        "--extension",
+                        type=str,
+                        default=".pdf",
+                        help="file extensions for the plots")
+    parser.add_argument("-o",
+                        "--output",
+                        type=Path,
+                        default="energy",
+                        help="name of the output directory")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -70,11 +67,10 @@ def main():
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,
-        partial(
-            plot_energy,
-            file_path=args.file,
-            modfunc=apply_args,
-            extension=args.extension))
+        partial(plot_energy,
+                file_path=args.file,
+                modfunc=apply_args,
+                extension=args.extension))
 
 
 if __name__ == "__main__":

@@ -26,8 +26,10 @@ def main():
         "psi",
         type=Path,
         help="wave function file containing the wave function to analyse")
-    parser.add_argument(
-        "-o", "--output", type=Path, help="name of the output file (optional)")
+    parser.add_argument("-o",
+                        "--output",
+                        type=Path,
+                        help="name of the output file (optional)")
     args = parser.parse_args()
 
     output = args.output
@@ -64,12 +66,11 @@ def main():
                 "real_" + str(i) for i in range(num_coefficients)
             ] + ["imag_" + str(i) for i in range(num_coefficients)]
             usecols = [i for i in range(2 * num_coefficients + 1)]
-            data = pandas.read_csv(
-                "result",
-                delim_whitespace=True,
-                header=None,
-                names=names,
-                usecols=usecols)[names].values
+            data = pandas.read_csv("result",
+                                   delim_whitespace=True,
+                                   header=None,
+                                   names=names,
+                                   usecols=usecols)[names].values
             times, indices = numpy.unique(data[:, 0], return_index=True)
             num_times = len(times)
 
@@ -80,16 +81,18 @@ def main():
                 grp.attrs["N"] = wfn._tape[1]
                 grp.attrs["m"] = wfn._tape[3]
 
-                dset = grp.create_dataset(
-                    "time", (num_times, ), dtype=numpy.float64)
+                dset = grp.create_dataset("time", (num_times, ),
+                                          dtype=numpy.float64)
                 dset[:] = times
 
-                dset = grp.create_dataset(
-                    "real", (num_times, num_coefficients), dtype=numpy.float64)
+                dset = grp.create_dataset("real",
+                                          (num_times, num_coefficients),
+                                          dtype=numpy.float64)
                 dset[:, :] = data[indices, 1:num_coefficients + 1]
 
-                dset = grp.create_dataset(
-                    "imag", (num_times, num_coefficients), dtype=numpy.float64)
+                dset = grp.create_dataset("imag",
+                                          (num_times, num_coefficients),
+                                          dtype=numpy.float64)
                 dset[:, :] = data[indices, num_coefficients + 1:]
 
             LOGGER.info("copy result")

@@ -53,8 +53,10 @@ class Parameters:
 
         return list(set(self.names) & set(other.names))
 
-    def has_same_common_parameters(
-            self, other, common_parameters: List[str] = None) -> bool:
+    def has_same_common_parameters(self,
+                                   other,
+                                   common_parameters: List[str] = None
+                                   ) -> bool:
         if common_parameters:
             names = common_parameters
         else:
@@ -68,8 +70,9 @@ class Parameters:
     def copy(self):
         parameter = Parameters()
         for name in self.names:
-            parameter.add_parameter(name, copy.deepcopy(
-                self.__getitem__(name)), self.docs[name])
+            parameter.add_parameter(name,
+                                    copy.deepcopy(self.__getitem__(name)),
+                                    self.docs[name])
         return parameter
 
     def __iadd__(self, param: Union[dict, list]):
@@ -90,8 +93,8 @@ class Parameters:
         self.names = []
         self.docs = {}
         for name in state["values"]:
-            self.add_parameter(name, state["values"][name], state["docs"].get(
-                name, ""))
+            self.add_parameter(name, state["values"][name],
+                               state["docs"].get(name, ""))
 
     def __hash__(self):
         return hash(self.__repr__())

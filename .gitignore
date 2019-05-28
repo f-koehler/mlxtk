@@ -1,6 +1,5 @@
 *.cover
 *.egg-info
-*.gitignore
 *.orig
 *.pyc
 *.swp

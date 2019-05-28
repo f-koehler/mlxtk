@@ -9,6 +9,7 @@ from .settings import load_path
 from .simulation import Simulation
 from .util import load_module
 from .wave_function_db import WaveFunctionDB
+from . import systems
 
 assert ParameterScan
 assert ParameterSelection, load_scan

@@ -65,7 +65,7 @@ def create_simulation(p):
 
 
 scan = mlxtk.ParameterScan(
-    "ho_gauges", create_simulation,
+    "ho", create_simulation,
     mlxtk.parameters.generate_all(
         parameters, {"gauge": ["standard", "norb", "one_body", "identity"]}))
 

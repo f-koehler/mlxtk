@@ -95,7 +95,7 @@ class Simulation:
     def clean(self, args: argparse.Namespace):
         self.create_working_dir()
         with cwd.WorkingDir(self.working_dir):
-            with lock.LockFile("run.lock"):
+            with lock.LockFile(Path("run.lock")):
                 doit_compat.run_doit(
                     self.tasks_clean,
                     [

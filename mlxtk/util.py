@@ -1,9 +1,15 @@
 import collections
 import functools
 import importlib.util
+import itertools
 import os.path
 from pathlib import Path
 from typing import List, Union
+from multiprocessing import cpu_count
+from pathos.pools import ProcessPool as Pool
+import tqdm
+from typing import Any, List, Iterable
+import signal
 
 import numba
 import numpy
@@ -77,3 +83,26 @@ def compute_magnitude(x):
 ])
 def compute_magnitude_split(real, imag):
     return real**2 + imag**2
+
+
+def round_robin(*iterables) -> Iterable[Any]:
+    num_non_empty = len(iterables)
+    cycles = itertools.cycle(iter(it).__next__ for it in iterables)
+    while num_non_empty:
+        try:
+            for cycle in cycles:
+                yield cycle()
+        except StopIteration:
+            num_non_empty -= 1
+            cycles = itertools.cycle(itertools.islice(cycles, num_non_empty))
+
+
+def map_parallel_progress(func, items: List[Any],
+                          processes: int = cpu_count()):
+    with Pool(processes=processes) as pool:
+        with tqdm.tqdm(total=len(items)) as pbar:
+            results = []
+            for result in pool.imap(func, items):
+                pbar.update()
+                results.append(result)
+            return results

@@ -8,7 +8,7 @@ from typing import Any, Callable, Iterable, List, Optional, Set, Union
 from .cwd import WorkingDir
 from .log import redirect_for_tqdm, tqdm
 from .parameters import Parameters
-from .util import make_path
+from .util import make_path, map_parallel_progress
 
 
 class ParameterSelection:
@@ -129,15 +129,21 @@ class ParameterSelection:
             list of all return values created by calling the function for each
             parameter set.
         """
-        with redirect_for_tqdm() as original:
-            results = []
-            for entry, path in tqdm(list(zip(self.parameters,
-                                             self.get_paths())),
-                                    file=original,
-                                    dynamic_ncols=True):
-                results.append(func(entry[0], path, entry[1]))
+        # with redirect_for_tqdm() as original:
+        #     results = []
+        #     for entry, path in tqdm(list(zip(self.parameters,
+        #                                      self.get_paths())),
+        #                             file=original,
+        #                             dynamic_ncols=True):
+        #         results.append(func(entry[0], path, entry[1]))
 
-            return results
+        #     return results
+        def helper(item):
+            return func(item[0], item[1], item[2])
+
+        work = [[entry[0], path, entry[1]]
+                for entry, path in zip(self.parameters, self.get_paths())]
+        return map_parallel_progress(helper, work)
 
     def plot_foreach(self, name: str,
                      func: Callable[[int, str, Parameters], None]

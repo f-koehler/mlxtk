@@ -35,6 +35,7 @@ simulation outcome.
         "numpy",
         "numpy-stl",
         "pandas",
+        "pathos",
         "pyside2",
         "pyyaml",
         "scipy",

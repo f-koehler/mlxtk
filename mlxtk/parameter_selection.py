@@ -129,6 +129,7 @@ class ParameterSelection:
             list of all return values created by calling the function for each
             parameter set.
         """
+
         # with redirect_for_tqdm() as original:
         #     results = []
         #     for entry, path in tqdm(list(zip(self.parameters,

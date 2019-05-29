@@ -3,16 +3,15 @@ import functools
 import importlib.util
 import itertools
 import os.path
-from pathlib import Path
-from typing import List, Union
-from multiprocessing import cpu_count
-from pathos.pools import ProcessPool as Pool
-import tqdm
-from typing import Any, List, Iterable
 import signal
+from multiprocessing import cpu_count
+from pathlib import Path
+from typing import Any, Iterable, List, Union
 
 import numba
 import numpy
+import tqdm
+from pathos.pools import ProcessPool as Pool
 
 
 def get_common_path(paths: List[Path]) -> Path:

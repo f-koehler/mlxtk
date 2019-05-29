@@ -10,16 +10,15 @@ from .util import memoize
 def load_settings(start_directory: Path = Path.cwd()) -> Dict[Any, Any]:
     start_directory = start_directory.resolve()
     while True:
-        path = start_directory / ".mlxtkrc"
+        path = start_directory / "mlxtkrc"
         if path.exists():
             with open(path, "r") as fp:
                 settings = yaml.load(fp, Loader=yaml.CLoader)
 
             if "paths" in settings:
                 for path in settings["paths"]:
-                    settings["paths"][path] = (
-                        Path(start_directory) /
-                        Path(settings["paths"][path])).resolve()
+                    settings["paths"][path] = (Path(start_directory) / Path(
+                        settings["paths"][path])).resolve()
 
             return settings
 

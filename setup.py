@@ -52,6 +52,7 @@ simulation outcome.
             "fixed_ns_table = mlxtk.scripts.fixed_ns_table:main",
             "gpop_model = mlxtk.scripts.gpop_model:main",
             "gpop_slider = mlxtk.scripts.gpop_slider:main",
+            "mlxtkenv = mlxtk.scripts.mlxtkenv:main",
             "plot_energy = mlxtk.scripts.plot_energy:main",
             "plot_energy_diff = mlxtk.scripts.plot_energy_diff:main",
             "plot_entropy = mlxtk.scripts.plot_entropy:main",

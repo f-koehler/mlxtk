@@ -1,6 +1,6 @@
-# [build-system]
-# requires = ["poetry>=0.12"]
-# build-backend = "poetry.masonry.api"
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "mlxtk"
@@ -69,6 +69,7 @@ fixed_ns = "mlxtk.scripts.fixed_ns:main"
 fixed_ns_table = "mlxtk.scripts.fixed_ns_table:main"
 gpop_model = "mlxtk.scripts.gpop_model:main"
 gpop_slider = "mlxtk.scripts.gpop_slider:main"
+mlxtkenv = "mlxtkenv_script:main"
 plot_energy = "mlxtk.scripts.plot_energy:main"
 plot_energy_diff = "mlxtk.scripts.plot_energy_diff:main"
 plot_entropy = "mlxtk.scripts.plot_entropy:main"

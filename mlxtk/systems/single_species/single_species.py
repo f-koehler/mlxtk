@@ -86,3 +86,33 @@ class SingleSpeciesSystem(ABC):
         return MBOperatorSpecification(
             (1, ), (self.grid, ), {"norm": 1. / self.parameters.N},
             {"truncated_one": term}, "norm | 1 truncated_one")
+
+    def get_truncated_com_operator(self, xmin: float,
+                                   xmax: float) -> MBOperatorSpecification:
+        term = numpy.copy(self.grid.get_x())
+        term[numpy.logical_or(term < xmin, term > xmax)] = 0.
+        return MBOperatorSpecification((1, ), (self.grid, ), {"com_coeff": 1.},
+                                       {"com": term}, "com_coeff | 1 com")
+
+    def get_truncated_com_operator_squared(self, xmin: float, xmax: float
+                                           ) -> MBOperatorSpecification:
+        term = numpy.copy(self.grid.get_x())
+        term[numpy.logical_or(term < xmin, term > xmax)] = 0.
+
+        term2 = term**2
+        return MBOperatorSpecification(
+            (1, ),
+            (self.grid, ),
+            {
+                "com_squared_coeff_1": 1.0,
+                "com_squared_coeff_2": 2.0,
+            },
+            {
+                "com_squared_x": term,
+                "com_squared_x^2": term2,
+            },
+            [
+                "com_squared_coeff_1 | 1 com_squared_x^2",
+                "com_squared_coeff_2 | 1 com_squared_x | 1* com_squared_x",
+            ],
+        )

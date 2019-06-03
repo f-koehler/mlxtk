@@ -32,6 +32,24 @@ class MBOperatorSpecification:
         else:
             self.table = table
 
+    def __str__(self):
+        output = ["Many-Body Operator:"]  # type: List[str]
+        output.append("\tDoFs: " + str(self.dofs))
+        output.append("\tGrids:")
+        for i, grid in enumerate(self.grids):
+            output.append("\t\t{}: {}".format(i, grid))
+        output.append("\tCoefficients:")
+        for i, coefficient in enumerate(self.coefficients):
+            output.append("\t\t{}: {} = {}".format(
+                i, coefficient, self.coefficients[coefficient]))
+        output.append("\tTerms:")
+        for i, term in enumerate(self.terms):
+            output.append("\t\t{}: {}".format(i, term))
+        output.append("\tTable:")
+        for line in self.table:
+            output.append("\t\t" + line)
+        return "\n".join(output)
+
     def __add__(self, other):
         cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
                                       self.terms, self.table)

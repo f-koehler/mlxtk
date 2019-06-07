@@ -6,8 +6,8 @@ if __name__ == "__main__":
     x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 
     parameters = HarmonicTrap.create_parameters()
-    parameters.N = 10
-    parameters.m = 3
+    parameters.N = 5
+    parameters.m = 5
     parameters.g = 0.5
 
     parameters_quenched = parameters.copy()
@@ -51,5 +51,7 @@ if __name__ == "__main__":
     sim += mlxtk.tasks.ComputeVariance("propagate/com", "propagate/com_2")
 
     sim += mlxtk.tasks.ComputeExpectationValueStatic("propagate/final", "com")
+
+    sim += mlxtk.tasks.NumberStateAnalysisStatic("propagate/final", "initial")
 
     sim.main()

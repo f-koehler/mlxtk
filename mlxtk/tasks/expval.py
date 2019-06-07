@@ -35,8 +35,8 @@ class ComputeExpectationValue(Task):
             self.expval = self.psi.with_name(
                 self.psi.stem + "_" + self.operator.stem).with_suffix(".exp")
         else:
-            self.expval = (
-                self.psi.parent / self.operator.stem).with_suffix(".exp")
+            self.expval = (self.psi.parent /
+                           self.operator.stem).with_suffix(".exp")
 
         self.wave_function = make_path(
             kwargs.get("wave_function",

@@ -3,6 +3,7 @@ import functools
 import importlib.util
 import itertools
 import os.path
+import shutil
 import signal
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -12,6 +13,17 @@ import numba
 import numpy
 import tqdm
 from pathos.pools import ProcessPool as Pool
+
+from .log import get_logger
+
+LOGGER = get_logger(__name__)
+
+
+def copy_file(src: Union[str, Path], dst: Union[str, Path]):
+    src = str(src)
+    dst = str(dst)
+    LOGGER.debug("copy file: %s -> %s", src, dst)
+    shutil.copy2(src, dst)
 
 
 def get_common_path(paths: List[Path]) -> Path:

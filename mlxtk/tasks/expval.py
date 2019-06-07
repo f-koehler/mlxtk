@@ -11,116 +11,120 @@ Todo:
 import os
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
 from .. import cwd
 from ..doit_compat import DoitAction
 from ..log import get_logger
-from ..util import make_path
+from ..util import copy_file, make_path
 from .task import Task
 
 
 class ComputeExpectationValue(Task):
-    def __init__(self, psi_or_restart: Union[str, Path],
-                 operator: Union[str, Path], **kwargs):
-        self.psi_or_restart = make_path(psi_or_restart)
-        self.operator = make_path(operator)
-        self.dirname = self.psi_or_restart.parent
-        self.static = kwargs.get("static", False)
-
-        if not self.dirname:
-            self.dirname = Path(os.path.curdir)
-
+    def __init__(self, psi: Union[str, Path], operator: Union[str, Path],
+                 **kwargs):
         self.logger = get_logger(__name__ + ".ComputeExpectationValue")
-
-        # compute the name of the expectation value based on the operator name,
-        # when no name is explicitly specified
-        if self.static:
-            self.name = kwargs.get(
-                "name",
-                str(self.psi_or_restart.parent /
-                    (self.psi_or_restart.name + "_" + self.operator.name)))
-        else:
-            self.name = kwargs.get(
-                "name", str(self.psi_or_restart.parent / self.operator.name))
+        self.unique_name = kwargs.get("unique_name", False)
 
         # compute required paths
-        self.path_operator = self.operator.with_suffix(".mb_opr")
-        self.path_operator_copy = self.psi_or_restart.parent / self.operator.with_suffix(
-            ".mb_opr")
-        self.path_psi_or_restart = self.psi_or_restart
-        self.path_expval = Path(self.name + ".exp")
-        self.path_wave_function = self.dirname / "final.wfn"
+        self.operator = make_path(operator).with_suffix(".mb_opr")
+        self.psi = make_path(psi)
+        if self.unique_name:
+            self.expval = self.psi.with_name(
+                self.psi.name + "_" + self.operator.name).with_suffix(".exp")
+        else:
+            self.expval = (self.psi.parent /
+                           self.operator.stem).with_suffix(".exp")
 
-        if self.static:
-            self.path_psi_or_restart = self.path_psi_or_restart.with_suffix(
-                ".wfn")
+        self.wave_function = make_path(
+            kwargs.get("wave_function",
+                       self.psi.parent / "final")).with_suffix(".wfn")
+
+        self.name = str(self.expval.with_suffix(""))
 
     def task_compute(self) -> Dict[str, Any]:
-        @DoitAction
-        def action_copy_operator(targets: List[str]):
-            del targets
-
-            self.logger.info("copy operator")
-            shutil.copy2(self.path_operator, self.path_operator_copy)
-
-        @DoitAction
-        def action_remove_operator(targets: List[str]):
-            del targets
-
-            self.logger.info("remove operator")
-            self.path_operator_copy.unlink()
-
         @DoitAction
         def action_compute(targets: List[str]):
             del targets
 
-            with cwd.WorkingDir(self.dirname):
-                self.logger.info("compute expectation value")
-                if self.static:
-                    cmd = [
-                        "qdtk_expect.x",
-                        "-opr",
-                        self.path_operator_copy.name,
-                        "-rst",
-                        self.path_psi_or_restart.name,
-                        "-save",
-                        self.path_expval.name,
-                    ]
-                else:
-                    cmd = [
-                        "qdtk_expect.x",
-                        "-psi",
-                        self.path_psi_or_restart.name,
-                        "-opr",
-                        self.path_operator_copy.name,
-                        "-rst",
-                        self.path_wave_function.name,
-                        "-save",
-                        self.path_expval.name,
-                    ]
-                self.logger.info("command: %s", " ".join(cmd))
-                env = os.environ.copy()
-                env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
-                subprocess.run(cmd, env=env)
+            operator = self.operator.resolve()
+            psi = self.psi.resolve()
+            expval = self.expval.resolve()
+            wave_function = self.wave_function.resolve()
 
-        # add the copy and remove actions only when neccessary
-        if self.path_operator.resolve() != self.path_operator_copy.resolve():
-            return {
-                "name":
-                "expval:{}:compute".format(self.name),
-                "actions":
-                [action_copy_operator, action_compute, action_remove_operator],
-                "targets": [self.path_expval],
-                "file_dep": [self.path_psi_or_restart, self.path_operator],
-            }
+            with tempfile.TemporaryDirectory() as tmpdir:
+                with cwd.WorkingDir(tmpdir):
+                    self.logger.info("compute expectation value")
+                    copy_file(operator, "operator")
+                    copy_file(psi, "psi")
+                    copy_file(wave_function, "restart")
+                    cmd = [
+                        "qdtk_expect.x", "-opr", "operator", "-rst", "restart",
+                        "-psi", "psi", "-save", "expval"
+                    ]
+                    self.logger.info("command: %s", " ".join(cmd))
+                    env = os.environ.copy()
+                    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                    subprocess.run(cmd, env=env)
+                    copy_file("expval", expval)
 
         return {
             "name": "expval:{}:compute".format(self.name),
             "actions": [action_compute],
-            "targets": [self.path_expval],
-            "file_dep": [self.path_psi_or_restart, self.path_operator],
+            "targets": [str(self.expval)],
+            "file_dep": [str(self.psi), str(self.operator)],
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_compute]
+
+
+class ComputeExpectationValueStatic(Task):
+    def __init__(self, wave_function: Union[str, Path],
+                 operator: Union[str, Path]):
+        self.logger = get_logger(__name__ + ".ComputeExpectationValueStatic")
+
+        # compute required paths
+        self.operator = make_path(operator).with_suffix(".mb_opr")
+        self.wave_function = make_path(wave_function).with_suffix(".wfn")
+        self.expval = self.wave_function.with_name(
+            self.wave_function.name + "_" +
+            self.operator.name).with_suffix(".exp")
+
+        self.name = str(self.expval.with_suffix(""))
+
+    def task_compute(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_compute(targets: List[str]):
+            del targets
+
+            operator = self.operator.resolve()
+            expval = self.expval.resolve()
+            wave_function = self.wave_function.resolve()
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                with cwd.WorkingDir(tmpdir):
+                    self.logger.info("compute expectation value (static)")
+                    copy_file(operator, "operator")
+                    copy_file(wave_function, "restart")
+                    cmd = [
+                        "qdtk_expect.x", "-opr", "operator", "-rst", "restart",
+                        "-save", "expval"
+                    ]
+                    self.logger.info("command: %s", " ".join(cmd))
+                    env = os.environ.copy()
+                    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                    subprocess.run(cmd, env=env)
+                    copy_file("expval", expval)
+
+        return {
+            "name": "expval_static:{}:compute".format(self.name),
+            "actions": [action_compute],
+            "targets": [str(self.expval)],
+            "file_dep": [str(self.wave_function),
+                         str(self.operator)],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

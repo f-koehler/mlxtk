@@ -50,8 +50,6 @@ if __name__ == "__main__":
     sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")
     sim += mlxtk.tasks.ComputeVariance("propagate/com", "propagate/com_2")
 
-    sim += mlxtk.tasks.ComputeExpectationValue("propagate/final",
-                                               "com",
-                                               static=True)
+    sim += mlxtk.tasks.ComputeExpectationValueStatic("propagate/final", "com")
 
     sim.main()

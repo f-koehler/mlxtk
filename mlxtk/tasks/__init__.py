@@ -1,4 +1,4 @@
-from .expval import ComputeExpectationValue
+from .expval import ComputeExpectationValue, ComputeExpectationValueStatic
 from .mb_operator import CreateMBOperator, MBOperatorSpecification
 from .operator import CreateOperator, OperatorSpecification
 from .propagate import Diagonalize, ImprovedRelax, Propagate, Relax

@@ -13,7 +13,7 @@ from .energy import plot_energy, plot_energy_diff
 from .entropy import plot_entropy, plot_entropy_diff
 from .expval import plot_expval
 from .gpop import create_gpop_model, plot_gpop
-from .natpop import plot_natpop
+from .natpop import plot_depletion, plot_natpop
 
 LOGGER = get_logger(__name__)
 

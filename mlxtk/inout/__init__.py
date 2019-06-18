@@ -1,4 +1,4 @@
-from .dmat import read_dmat_evals, read_dmat_evecs_grid
+from .dmat import read_dmat_evals, read_dmat_evecs_grid, read_dmat_spfrep
 from .dmat2 import read_dmat2_gridrep
 from .eigenenergies import read_eigenenergies
 from .expval import read_expval

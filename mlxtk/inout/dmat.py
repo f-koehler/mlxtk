@@ -1,7 +1,10 @@
-from typing import Tuple
+from pathlib import Path
+from typing import Tuple, Union
 
 import numpy
 import pandas
+
+from ..util import make_path
 
 
 def read_dmat_evals(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
@@ -40,3 +43,18 @@ def read_dmat_evecs_grid(
     times = df["time"].values[::grid_size]
 
     return times, grid, evecs.T.reshape(m, len(times), len(grid))
+
+
+def read_dmat_spfrep(path: Union[str, Path]):
+    df = pandas.read_csv(str(path),
+                         delim_whitespace=True,
+                         header=None,
+                         names=["time", "i", "j", "real", "imag"])
+
+    time = numpy.unique(df["time"].values)
+    num_times = len(time)
+    num_i = len(numpy.unique(df["i"].values))
+    num_j = len(numpy.unique(df["j"].values))
+    elements = df["real"].values + 1j * df["imag"].values
+
+    return time, elements.reshape((num_times, num_i, num_j))

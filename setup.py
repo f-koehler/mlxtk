@@ -47,6 +47,7 @@ simulation outcome.
     entry_points={
         "console_scripts": [
             "dmat_evec_slider = mlxtk.scripts.dmat_evec_slider:main",
+            "dmat_spf_slider = mlxtk.scripts.dmat_spf_slider:main",
             "dmat2_slider = mlxtk.scripts.dmat2_slider:main",
             "fixed_ns = mlxtk.scripts.fixed_ns:main",
             "fixed_ns_table = mlxtk.scripts.fixed_ns_table:main",
@@ -62,6 +63,7 @@ simulation outcome.
             "plot_natpop = mlxtk.scripts.plot_natpop:main",
             "plot_natpop_vs_dmat_evals = mlxtk.scripts.plot_natpop_vs_dmat_evals:main",
             "plot_spfs = mlxtk.scripts.plot_spfs:main",
+            "plot_spfs_vs_norbs = mlxtk.scripts.plot_spfs_vs_norbs:main",
             "scan_plot_depletion = mlxtk.scripts.scan_plot_depletion:main",
             "scan_plot_energy = mlxtk.scripts.scan_plot_energy:main",
             "scan_plot_expval = mlxtk.scripts.scan_plot_expval:main",

@@ -5,6 +5,11 @@ import yaml
 
 from .util import memoize
 
+try:
+    from yaml import CLoader as YamlLoader
+except ImportError:
+    from yaml import Loader as YamlLoader
+
 
 def create_empty_settings() -> Dict[Any, Any]:
     return {"env": {}, "paths": {}, "units": {}}
@@ -28,7 +33,7 @@ def find_settings(start_directory: Path = Path.cwd()) -> Optional[List[Path]]:
 def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
     directory = settings_path.parent
     with open(settings_path, "r") as fp:
-        settings = yaml.load(fp, Loader=yaml.CLoader)
+        settings = yaml.load(fp, Loader=YamlLoader)
 
     if "paths" in settings:
         for path in settings["paths"]:

@@ -6,7 +6,7 @@ if __name__ == "__main__":
     x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 
     parameters = HarmonicTrap.create_parameters()
-    parameters.N = 5
+    parameters.N = 2
     parameters.m = 5
     parameters.g = 0.5
 

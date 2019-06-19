@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
-
 from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term

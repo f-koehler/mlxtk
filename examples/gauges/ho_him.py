@@ -7,7 +7,7 @@ x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 parameters = HarmonicTrapHim.create_parameters()
 parameters.N = 3
 parameters.m = 5
-parameters.g = 0.1
+parameters.g = 0.01
 parameters.add_parameter("gauge", "standard", "The gauge to use.")
 
 
@@ -29,14 +29,21 @@ def create_simulation(p):
 
     sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
                                                 p.N, p.m)
-    sim += mlxtk.tasks.Relax(
-        "rlx",
-        "initial",
-        "hamiltonian",
-        tfinal=1000.0,
-        dt=0.01,
-        psi=True,
-        gauge=p.gauge)
+    sim += mlxtk.tasks.Propagate("propagate_0",
+                                 "initial",
+                                 "hamiltonian",
+                                 tfinal=5.0,
+                                 dt=0.05,
+                                 psi=True,
+                                 gauge=p.gauge)
+    # sim += mlxtk.tasks.Relax(
+    #     "rlx",
+    #     "initial",
+    #     "hamiltonian",
+    #     tfinal=1000.0,
+    #     dt=0.01,
+    #     psi=True,
+    #     gauge=p.gauge)
     # sim += mlxtk.tasks.ImprovedRelax(
     #     "imprlx",
     #     "initial",

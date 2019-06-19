@@ -7,7 +7,7 @@ x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 parameters = HarmonicTrap.create_parameters()
 parameters.N = 3
 parameters.m = 5
-parameters.g = 0.5
+parameters.g = 1.5
 parameters.add_parameter("gauge", "standard", "The gauge to use.")
 
 
@@ -29,6 +29,13 @@ def create_simulation(p):
 
     sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
                                                 p.N, p.m)
+    sim += mlxtk.tasks.Propagate("propagate_0",
+                                 "initial",
+                                 "hamiltonian",
+                                 tfinal=5.0,
+                                 dt=0.05,
+                                 psi=True,
+                                 gauge=p.gauge)
     sim += mlxtk.tasks.Relax("rlx",
                              "initial",
                              "hamiltonian",
@@ -36,22 +43,21 @@ def create_simulation(p):
                              dt=0.01,
                              psi=True,
                              gauge=p.gauge)
-    # sim += mlxtk.tasks.ImprovedRelax(
-    #     "imprlx",
-    #     "initial",
-    #     "hamiltonian",
-    #     1,
-    #     tfinal=1000.0,
-    #     dt=0.01,
-    #     psi=True,
-    #     gauge=p.gauge)
-    sim += mlxtk.tasks.Propagate("propagate_rlx",
-                                 "rlx/final",
-                                 "hamiltonian_quenched",
-                                 tfinal=5.0,
-                                 dt=0.05,
-                                 psi=True,
-                                 gauge=p.gauge)
+    sim += mlxtk.tasks.ImprovedRelax("imprlx",
+                                     "initial",
+                                     "hamiltonian",
+                                     1,
+                                     tfinal=1000.0,
+                                     dt=0.01,
+                                     psi=True,
+                                     gauge=p.gauge)
+    # sim += mlxtk.tasks.Propagate("propagate_rlx",
+    #                              "rlx/final",
+    #                              "hamiltonian_quenched",
+    #                              tfinal=5.0,
+    #                              dt=0.05,
+    #                              psi=True,
+    #                              gauge=p.gauge)
     # sim += mlxtk.tasks.Propagate(
     #     "propagate_imprlx",
     #     "imprlx/final",
@@ -66,8 +72,7 @@ def create_simulation(p):
 
 scan = mlxtk.ParameterScan(
     "ho", create_simulation,
-    mlxtk.parameters.generate_all(
-        parameters, {"gauge": ["standard", "norb", "one_body", "identity"]}))
+    mlxtk.parameters.generate_all(parameters, {"gauge": ["standard", "norb"]}))
 
 if __name__ == "__main__":
     scan.main()

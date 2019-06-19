@@ -3,8 +3,10 @@ import functools
 import importlib.util
 import itertools
 import os.path
+import re
 import shutil
 import signal
+import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any, Iterable, List, Union
@@ -14,7 +16,8 @@ import numpy
 import tqdm
 from pathos.pools import ProcessPool as Pool
 
-from .log import get_logger
+from . import cwd
+from .log import get_logger, redirect_for_tqdm
 
 LOGGER = get_logger(__name__)
 
@@ -94,6 +97,97 @@ def compute_magnitude(x):
 ])
 def compute_magnitude_split(real, imag):
     return real**2 + imag**2
+
+
+REGEX_FOLDER_SIZE = re.compile(r"^(\d+)\s+")
+
+
+def get_folder_size(path: Union[str, Path]) -> int:
+    path = str(path)
+    m = REGEX_FOLDER_SIZE.match(
+        subprocess.check_output(["du", "-s", "-b", path]).decode())
+    if not m:
+        raise RuntimeError("Error getting folder size for \"{}\"".format(path))
+    return int(m.group(1))
+
+
+def compress_folder(path: Union[str, Path],
+                    compression: int = 9,
+                    jobs: int = 1):
+    path = make_path(path)
+    folder = path.name
+    archive = path.with_suffix(".tar.gz").name
+
+    exe_pv = shutil.which("pv")
+    exe_tar = shutil.which("tar")
+    exe_gzip = shutil.which("tar")
+    exe_pigz = shutil.which("pigz")
+
+    with cwd.WorkingDir(path.parent):
+        if exe_pigz:
+            if exe_pv:
+                with open(archive, "wb") as fptr:
+                    size = get_folder_size(folder)
+                    process_tar = subprocess.Popen(
+                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE)
+                    process_pv = subprocess.Popen(
+                        [exe_pv, "-s", str(size)],
+                        stdin=process_tar.stdout,
+                        stdout=subprocess.PIPE)
+                    process_pigz = subprocess.Popen(
+                        [exe_pigz, "-" + str(compression), "-p",
+                         str(jobs)],
+                        stdin=process_pv.stdout,
+                        stdout=fptr)
+                    process_tar.wait()
+                    process_pv.wait()
+                    process_pigz.wait()
+            else:
+                LOGGER.warning("cannot find pv, no progress will be displayed")
+                with open(archive, "wb") as fptr:
+                    process_tar = subprocess.Popen(
+                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE)
+                    process_pigz = subprocess.Popen(
+                        [exe_pigz, "-" + str(compression), "-p",
+                         str(jobs)],
+                        stdin=process_tar.stdout,
+                        stdout=fptr)
+                    process_tar.wait()
+                    process_pigz.wait()
+        elif exe_gzip:
+            if jobs > 1:
+                LOGGER.warning(
+                    "gzip does not support parallel compression, using one thread only"
+                )
+            if exe_pv:
+                with open(archive, "wb") as fptr:
+                    size = get_folder_size(folder)
+                    process_tar = subprocess.Popen(
+                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE)
+                    process_pv = subprocess.Popen(
+                        [exe_pv, "-s", str(size)],
+                        stdin=process_tar.stdout,
+                        stdout=subprocess.PIPE)
+                    process_gzip = subprocess.Popen(
+                        [exe_gzip, "-" + str(compression)],
+                        stdin=process_pv.stdout,
+                        stdout=fptr)
+                    process_tar.wait()
+                    process_pv.wait()
+                    process_gzip.wait()
+            else:
+                LOGGER.warning("cannot find pv, no progress will be displayed")
+                with open(archive, "wb") as fptr:
+                    process_tar = subprocess.Popen(
+                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE)
+                    process_gzip = subprocess.Popen(
+                        [exe_gzip, "-" + str(compression)],
+                        stdin=process_gzip.stdout,
+                        stdout=fptr)
+                    process_tar.wait()
+                    process_gzip.wait()
+        else:
+            raise RuntimeError("Cannot find either pigz or gzip")
 
 
 def round_robin(*iterables) -> Iterable[Any]:

@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from . import cwd, doit_compat, sge
+from . import cwd, doit_compat, sge, util
 from .log import get_logger
 from .simulation import Simulation
 
@@ -129,6 +129,7 @@ class SimulationSet:
         self.argparser_dry_run = subparsers.add_parser("dry-run")
         self.argparser_run_index = subparsers.add_parser("run-index")
         self.argparser_clean = subparsers.add_parser("clean")
+        self.argparser_archive = subparsers.add_parser("archive")
 
         sge.add_parser_arguments(self.argparser_qsub)
 
@@ -158,6 +159,19 @@ class SimulationSet:
                                           help="number of parallel workers")
         self.argparser_run_index.add_argument(
             "index", type=int, help="index of the simulation to run")
+
+        self.argparser_archive.add_argument(
+            "-c",
+            "--compression",
+            type=int,
+            default=9,
+            help="compression level [1-9] (1: fastest, 9: best)")
+        self.argparser_archive.add_argument(
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of jobs (when pigz is available)")
 
     def create_working_dir(self):
         if not self.working_dir.exists():
@@ -285,6 +299,13 @@ class SimulationSet:
                              sge_dir=script_path.parent,
                              job_name=self.name)
 
+    def archive(self, args: argparse.Namespace):
+        self.create_working_dir()
+        with cwd.WorkingDir(self.working_dir.resolve().parent):
+            util.compress_folder(self.working_dir.name,
+                                 compression=args.compression,
+                                 jobs=args.jobs)
+
     def main(self, argv: List[str]):
         if argv is None:
             argv = sys.argv[1:]
@@ -297,21 +318,17 @@ class SimulationSet:
             self.argparser.print_help(sys.stderr)
             exit(1)
 
-        if args.subcommand == "list":
-            self.list_(args)
-        if args.subcommand == "list-tasks":
-            self.list_tasks(args)
-        elif args.subcommand == "qdel":
-            self.qdel(args)
-        elif args.subcommand == "qsub":
-            self.qsub_array(args)
-        elif args.subcommand == "run":
-            self.run(args)
-        elif args.subcommand == "dry-run":
-            self.dry_run(args)
-        elif args.subcommand == "clean":
-            self.clean(args)
-        elif args.subcommand == "run-index":
-            self.run_index(args)
-        elif args.subcommand == "task-info":
-            self.task_info(args)
+        subcommand_map = {
+            "archive": self.archive,
+            "clean": self.clean,
+            "dry-run": self.dry_run,
+            "list": self.list_,
+            "list-tasks": self.list_tasks,
+            "qdel": self.qdel,
+            "qsub": self.qsub,
+            "run": self.run,
+            "run-index": self.run_index,
+            "task-info": self.task_info,
+        }
+
+        subcommand_map[args.subcommand](args)

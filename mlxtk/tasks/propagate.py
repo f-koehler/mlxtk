@@ -3,15 +3,15 @@ import os
 import pickle
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union
 
 from .. import cwd
 from ..doit_compat import DoitAction
 from ..log import get_logger
+from ..util import copy_file, make_path
 from .task import Task
-
-LOGGER = get_logger(__name__)
 
 FLAG_TYPES = {
     "MBop_apply": bool,
@@ -100,14 +100,15 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
 
 
 class Propagate(Task):
-    def __init__(self, name: str, wave_function: str, hamiltonian: str,
-                 **kwargs):
+    def __init__(self, name: str, wave_function: Union[str, Path],
+                 hamiltonian: Union[str, Path], **kwargs):
         self.name = name
         self.wave_function = wave_function
         self.hamiltonian = hamiltonian
+        self.logger = get_logger(__name__ + ".Propagate")
 
         self.flags, self.flag_list = create_flags(**kwargs)
-        self.flag_list += ["-rst", "initial.wfn", "-opr", "hamiltonian.mb_opr"]
+        self.flag_list += ["-rst", "initial", "-opr", "hamiltonian"]
 
         if self.flags["relax"]:
             self.basename = "relaxation"
@@ -121,18 +122,15 @@ class Propagate(Task):
         # compute required paths
         self.path_name = Path(self.name)
         self.path_pickle = Path(self.name + ".prop_pickle")
-        self.path_output = self.path_name / "output"
-        self.path_gpop = self.path_name / "gpop"
-        self.path_natpop = self.path_name / "natpop"
-        self.path_restart = self.path_name / "restart"
-        self.path_final = self.path_name / "final.wfn"
-        self.path_psi = self.path_name / "psi"
-        self.path_energies = self.path_name / "eigenenergies"
-        self.path_eigenvectors = self.path_name / "eigenvectors"
-        self.path_wfn = self.wave_function + ".wfn"
-        self.path_opr = self.hamiltonian + ".mb_opr"
-        self.path_wfn_tmp = self.path_name / "initial.wfn"
-        self.path_opr_tmp = self.path_name / "hamiltonian.mb_opr"
+        self.path_wave_function = make_path(wave_function).with_suffix(".wfn")
+        self.path_hamiltonian = make_path(hamiltonian).with_suffix(".mb_opr")
+
+        if self.flags["exact_diag"]:
+            self.qdtk_files = ["eigenenergies", "eigenvectors"]
+        else:
+            self.qdtk_files = ["output", "gpop", "natpop", "final.wfn"]
+            if self.flags["psi"]:
+                self.qdtk_files.append("psi")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -151,91 +149,47 @@ class Propagate(Task):
 
     def task_propagate(self) -> Dict[str, Any]:
         @DoitAction
-        def action_create_dir(targets: List[str]):
+        def action_run(targets: List[str]):
             del targets
 
             if not self.path_name.exists():
-                LOGGER.info("create propagation directory")
-                os.makedirs(self.name)
+                self.path_name.mkdir()
 
-        @DoitAction
-        def action_copy_initial_wave_function(targets: List[str]):
-            del targets
-            LOGGER.info("copy initial wave function")
-            shutil.copy2(self.path_wfn, self.path_wfn_tmp)
+            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdir_:
+                tmpdir = Path(tmpdir_)
 
-        @DoitAction
-        def action_copy_hamiltonian(targets: List[str]):
-            del targets
-            LOGGER.info("copy Hamiltonian")
-            shutil.copy2(self.path_opr, self.path_opr_tmp)
+                operator = self.path_hamiltonian.resolve()
+                wave_function = self.path_wave_function.resolve()
+                output_dir = self.path_name.resolve()
 
-        @DoitAction
-        def action_run(targets: List[str]):
-            del targets
-            with cwd.WorkingDir(self.path_name.resolve()):
-                LOGGER.info("propagate wave function")
-                cmd = ["qdtk_propagate.x"] + self.flag_list
-                env = os.environ.copy()
-                env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
-                LOGGER.info("command: %s", " ".join(cmd))
-                subprocess.run(cmd, env=env)
+                with cwd.WorkingDir(tmpdir):
+                    self.logger.info("propagate wave function")
+                    copy_file(operator, "hamiltonian")
+                    copy_file(wave_function, "initial")
+                    cmd = ["qdtk_propagate.x"] + self.flag_list
+                    env = os.environ.copy()
+                    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                    self.logger.info("command: %s", " ".join(cmd))
+                    result = subprocess.run(cmd, env=env)
+                    if result.returncode != 0:
+                        raise RuntimeError("Failed to run qdtk_propagate.x")
 
-        @DoitAction
-        def action_remove_hamiltonian(targets: List[str]):
-            del targets
-            LOGGER.info("remove Hamiltonian")
-            self.path_opr_tmp.unlink()
+                    if not self.flags["exact_diag"]:
+                        shutil.move("restart", "final.wfn")
 
-        @DoitAction
-        def action_remove_initial_wave_function(targets: List[str]):
-            del targets
-            LOGGER.info("remove initial wave function")
-            self.path_wfn_tmp.unlink()
-
-        @DoitAction
-        def action_move_final_wave_function(targets: List[str]):
-            del targets
-            LOGGER.info("move final wave function %s -> %s", self.path_restart,
-                        self.path_final)
-            shutil.move(self.path_restart, self.path_final)
-
-        if self.flags["exact_diag"]:
-            targets = [self.path_energies, self.path_eigenvectors]
-            actions = [
-                action_create_dir,
-                action_copy_initial_wave_function,
-                action_copy_hamiltonian,
-                action_run,
-                action_remove_hamiltonian,
-                action_remove_initial_wave_function,
-            ]
-        else:
-            targets = [
-                self.path_output,
-                self.path_gpop,
-                self.path_natpop,
-                self.path_final,
-            ]
-            if self.flags["psi"]:
-                targets.append(self.path_psi)
-
-            actions = [
-                action_create_dir,
-                action_copy_initial_wave_function,
-                action_copy_hamiltonian,
-                action_run,
-                action_remove_hamiltonian,
-                action_remove_initial_wave_function,
-                action_move_final_wave_function,
-            ]
+                    for fname in self.qdtk_files:
+                        copy_file(fname, output_dir / fname)
 
         return {
-            "name": "{}:{}:run".format(self.basename, self.name),
-            "actions": actions,
-            "targets": targets,
-            "file_dep": [self.path_pickle, self.path_wfn, self.path_opr],
-            "verbosity": 2,
+            "name":
+            "{}:{}:run".format(self.basename, self.name),
+            "actions": [action_run],
+            "targets":
+            [str(self.path_name / fname) for fname in self.qdtk_files],
+            "file_dep":
+            [self.path_pickle, self.path_wave_function, self.path_hamiltonian],
+            "verbosity":
+            2,
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
@@ -243,8 +197,8 @@ class Propagate(Task):
 
 
 class Relax(Propagate):
-    def __init__(self, name: str, wave_function: str, hamiltonian: str,
-                 **kwargs):
+    def __init__(self, name: str, wave_function: Union[str, Path],
+                 hamiltonian: Union[str, Path], **kwargs):
         kwargs["relax"] = True
         kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
         kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -252,10 +206,12 @@ class Relax(Propagate):
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 
+        self.logger = get_logger(__name__ + ".Relax")
+
 
 class ImprovedRelax(Propagate):
-    def __init__(self, name: str, wave_function: str, hamiltonian: str,
-                 eig_index: int, **kwargs):
+    def __init__(self, name: str, wave_function: Union[str, Path],
+                 hamiltonian: Union[str, Path], eig_index: int, **kwargs):
         kwargs["improved_relax"] = True
         kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
         kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -266,11 +222,16 @@ class ImprovedRelax(Propagate):
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 
+        self.logger = get_logger(__name__ + ".ImprovedRelax")
+
 
 class Diagonalize(Propagate):
-    def __init__(self, name: str, wave_function: str, hamiltonian: str,
-                 number_of_states: int, **kwargs):
+    def __init__(self, name: str, wave_function: Union[str, Path],
+                 hamiltonian: Union[str, Path], number_of_states: int,
+                 **kwargs):
         kwargs["exact_diag"] = True
         kwargs["eig_tot"] = number_of_states
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
+
+        self.logger = get_logger(__name__ + ".Diagonalize")

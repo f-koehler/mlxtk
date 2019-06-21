@@ -11,7 +11,7 @@
 #$ -S /bin/bash
 #$ -cwd
 #$ -j y
-#$ -o {{args.sge_dir}}/sge.o$JOB_ID
+#$ -o sge.o$JOB_ID
 #$ -V
 #$ -l h_vmem={{args.memory}}
 #$ -l h_cpu={{args.time}}

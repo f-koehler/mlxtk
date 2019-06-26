@@ -3,7 +3,7 @@ from typing import Any, Callable, Dict, List
 import numpy
 
 from ..doit_compat import DoitAction
-from ..inout.expval import read_expval_ascii, write_expval_ascii
+from ..inout.expval import read_expval_hdf5, write_expval_hdf5
 from .task import Task
 
 
@@ -14,8 +14,8 @@ class ComputeVariance(Task):
         self.expectation_value = expectation_value
         self.expectation_value_squared = expectation_value_squared
 
-        self.path_expectation_value = self.expectation_value + ".exp"
-        self.path_expectation_value_squared = self.expectation_value_squared + ".exp"
+        self.path_expectation_value = self.expectation_value + ".exp.h5"
+        self.path_expectation_value_squared = self.expectation_value_squared + ".exp.h5"
         self.path_variance = self.name + ".var"
 
     def task_compute(self) -> Dict[str, Any]:
@@ -23,13 +23,13 @@ class ComputeVariance(Task):
         def action_compute(targets: List[str]):
             del targets
 
-            t1, exp = read_expval_ascii(self.path_expectation_value)
-            t2, exp2 = read_expval_ascii(self.path_expectation_value_squared)
+            t1, exp = read_expval_hdf5(self.path_expectation_value)
+            t2, exp2 = read_expval_hdf5(self.path_expectation_value_squared)
 
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")
 
-            write_expval_ascii(self.path_variance, (t1, exp2 - (exp**2)))
+            write_expval_hdf5(self.path_variance, t1, exp2 - (exp**2))
 
         return {
             "name":

@@ -17,6 +17,7 @@ from typing import Any, Callable, Dict, List, Union
 
 from .. import cwd
 from ..doit_compat import DoitAction
+from ..inout.expval import read_expval_ascii, write_expval_hdf5
 from ..log import get_logger
 from ..util import copy_file, make_path
 from .task import Task
@@ -32,11 +33,12 @@ class ComputeExpectationValue(Task):
         self.operator = make_path(operator).with_suffix(".mb_opr")
         self.psi = make_path(psi)
         if self.unique_name:
-            self.expval = self.psi.with_name(
-                self.psi.stem + "_" + self.operator.stem).with_suffix(".exp")
+            self.expval = self.psi.with_name(self.psi.stem + "_" +
+                                             self.operator.stem).with_suffix(
+                                                 ".exp.h5")
         else:
             self.expval = (self.psi.parent /
-                           self.operator.stem).with_suffix(".exp")
+                           self.operator.stem).with_suffix(".exp.h5")
 
         self.wave_function = make_path(
             kwargs.get("wave_function",
@@ -68,7 +70,11 @@ class ComputeExpectationValue(Task):
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                     subprocess.run(cmd, env=env)
-                    copy_file("expval", expval)
+
+                    write_expval_hdf5("expval.h5",
+                                      *read_expval_ascii("expval"))
+
+                    copy_file("expval.h5", expval)
 
         return {
             "name": "expval:{}:compute".format(self.name),
@@ -91,7 +97,7 @@ class ComputeExpectationValueStatic(Task):
         self.wave_function = make_path(wave_function).with_suffix(".wfn")
         self.expval = self.wave_function.with_name(
             self.wave_function.stem + "_" +
-            self.operator.stem).with_suffix(".exp")
+            self.operator.stem).with_suffix(".exp.h5")
 
         self.name = str(self.expval.with_suffix(""))
 
@@ -117,7 +123,10 @@ class ComputeExpectationValueStatic(Task):
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                     subprocess.run(cmd, env=env)
-                    copy_file("expval", expval)
+
+                    write_expval_hdf5("expval.h5",
+                                      *read_expval_ascii("expval"))
+                    copy_file("expval.h5", expval)
 
         return {
             "name": "expval_static:{}:compute".format(self.name),

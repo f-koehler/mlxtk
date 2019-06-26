@@ -14,7 +14,7 @@ def main():
     parser.add_argument("path",
                         nargs="?",
                         type=Path,
-                        default=Path("natpop"),
+                        default=Path("propagate.h5/natpop"),
                         help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument("-d",

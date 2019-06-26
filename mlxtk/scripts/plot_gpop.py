@@ -13,7 +13,7 @@ def main():
     parser.add_argument("path",
                         nargs="?",
                         type=Path,
-                        default=Path("gpop"),
+                        default=Path("propagate.h5/gpop"),
                         help="path to the gpop file")
     parser.add_argument("-d",
                         "--dof",

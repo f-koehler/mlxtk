@@ -2,6 +2,7 @@
 """
 import io
 import re
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 import h5py
@@ -112,7 +113,7 @@ def read_gpop_ascii(
 
 
 def read_gpop_hdf5(
-        path: str, interior_path: str, dof: Optional[int] = None
+        path: Union[Path, str], interior_path: str, dof: Optional[int] = None
 ) -> Union[Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
                                                                ndarray]],
            Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
@@ -125,7 +126,7 @@ def read_gpop_hdf5(
         one-body density data
     """
     with h5py.File(path, "r") as fp:
-        time = fp["time"][:]
+        time = fp[interior_path]["time"][:]
         if dof is not None:
             dof_str = "dof_" + str(dof)
             return (

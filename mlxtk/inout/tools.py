@@ -4,7 +4,7 @@ This module provides common functions when working with I/O.
 """
 
 from pathlib import Path
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 from ..util import make_path
 
@@ -13,7 +13,7 @@ HDF5_MAGIC_NUMBER = bytes([0x89, 0x48, 0x44, 0x46, 0x0D, 0x0A, 0x1A, 0x0A])
 """
 
 
-def is_hdf5_path(path: Union[str, Path]) -> Tuple[bool, Path, Path]:
+def is_hdf5_path(path: Union[str, Path]) -> Tuple[bool, Path, str]:
     """Parse a path which potentially resides inside a HDF5 file
 
     This function checks wether path points to a regular file on the disk. If
@@ -29,20 +29,21 @@ def is_hdf5_path(path: Union[str, Path]) -> Tuple[bool, Path, Path]:
         Tuple[bool, str, str]: whether this path is a path in a HDF5 file, path
             to the file and interior path.
     """
-    path = make_path(path)
-    full_path = path
-    interior_path = Path()
+    path = make_path(path).resolve()
+    parts = list(path.parts)
 
-    while path.parent != path:
-        if is_hdf5_file(path):
-            return True, path, interior_path
+    def get_path(parts: List[str]) -> Path:
+        new_path = Path(parts[0])
+        for p in parts[1:]:
+            new_path /= p
+        return new_path
 
-        if path.is_file():
-            return False, path, Path()
+    for i in range(1, len(parts)):
+        file_path = get_path(parts[0:i])
+        if is_hdf5_file(file_path):
+            return True, file_path, str(get_path(parts[i:]))
 
-        path = path.parent
-
-    return False, full_path, Path()
+    return False, path, ""
 
 
 def is_hdf5_file(path: Path) -> bool:

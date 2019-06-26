@@ -7,8 +7,14 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple, Union
 
+import h5py
+
 from .. import cwd
 from ..doit_compat import DoitAction
+from ..inout.eigenbasis import add_eigenbasis_to_hdf5, read_eigenbasis_ascii
+from ..inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
+from ..inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
+from ..inout.output import add_output_to_hdf5, read_output_ascii
 from ..log import get_logger
 from ..util import copy_file, make_path
 from .task import Task
@@ -125,10 +131,13 @@ class Propagate(Task):
         self.path_wave_function = make_path(wave_function).with_suffix(".wfn")
         self.path_hamiltonian = make_path(hamiltonian).with_suffix(".mb_opr")
 
+        self.path_hdf5 = self.path_name / (
+            "exact_diag.h5" if self.flags["exact_diag"] else "propagate.h5")
+
         if self.flags["exact_diag"]:
-            self.qdtk_files = ["eigenenergies", "eigenvectors"]
+            self.qdtk_files = []
         else:
-            self.qdtk_files = ["output", "gpop", "natpop", "final.wfn"]
+            self.qdtk_files = ["final.wfn"]
             if self.flags["psi"]:
                 self.qdtk_files.append("psi")
 
@@ -161,6 +170,7 @@ class Propagate(Task):
                 operator = self.path_hamiltonian.resolve()
                 wave_function = self.path_wave_function.resolve()
                 output_dir = self.path_name.resolve()
+                hdf5_file = self.path_hdf5.resolve()
 
                 with cwd.WorkingDir(tmpdir):
                     self.logger.info("propagate wave function")
@@ -174,8 +184,21 @@ class Propagate(Task):
                     if result.returncode != 0:
                         raise RuntimeError("Failed to run qdtk_propagate.x")
 
-                    if not self.flags["exact_diag"]:
+                    if self.flags["exact_diag"]:
+                        with h5py.File("result.h5", "w") as fptr:
+                            add_eigenbasis_to_hdf5(fptr,
+                                                   *read_eigenbasis_ascii("."))
+                    else:
                         shutil.move("restart", "final.wfn")
+                        with h5py.File("result.h5", "w") as fptr:
+                            add_gpop_to_hdf5(fptr.create_group("gpop"),
+                                             *read_gpop_ascii("gpop"))
+                            add_natpop_to_hdf5(fptr.create_group("natpop"),
+                                               *read_natpop_ascii("natpop"))
+                            add_output_to_hdf5(fptr.create_group("output"),
+                                               *read_output_ascii("output"))
+
+                    shutil.move("result.h5", hdf5_file)
 
                     for fname in self.qdtk_files:
                         copy_file(fname, output_dir / fname)
@@ -185,7 +208,8 @@ class Propagate(Task):
             "{}:{}:run".format(self.basename, self.name),
             "actions": [action_run],
             "targets":
-            [str(self.path_name / fname) for fname in self.qdtk_files],
+            [str(self.path_name / fname)
+             for fname in self.qdtk_files] + [self.path_hdf5],
             "file_dep":
             [self.path_pickle, self.path_wave_function, self.path_hamiltonian],
             "verbosity":

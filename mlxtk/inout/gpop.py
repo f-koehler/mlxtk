@@ -36,7 +36,9 @@ def read_gpop(
 
 def read_gpop_ascii(
         path: str, dof: Optional[int] = None
-) -> Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]]:
+) -> Union[Tuple[numpy.ndarray, numpy.ndarray],
+           Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
+                                                               ndarray]]]:
     """Read the one-body densities from a raw ML-X file.
 
     Args:
@@ -72,15 +74,6 @@ def read_gpop_ascii(
             sio.seek(0)
             data = pandas.read_csv(sio, sep=r"\s+", names=["grid", "density"])
             del sio
-
-            # unfortuantely reading from the fhandle directly does not seem to
-            # work
-            # data = pandas.read_csv(
-            #     fhandle,
-            #     sep=r"\s+",
-            #     nrows=grid_points,
-            #     names=["grid", "density"],
-            #     skip_blank_lines=False)
 
             if dof_index not in dofs:
                 dofs.append(dof_index)
@@ -150,37 +143,17 @@ def read_gpop_hdf5(
         return (time, grids, densities)
 
 
-def write_gpop_hdf5(
-        path: str,
-        data: Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
-                                                                  ndarray]],
-):
-    """Write the one-body densities to a HDF5 file.
+def add_gpop_to_hdf5(fptr: Union[h5py.Group, h5py.File], time: numpy.ndarray,
+                     grids: Dict[int, numpy.ndarray],
+                     densities: Dict[int, numpy.ndarray]):
+    fptr.create_dataset("time", time.shape, dtype=numpy.float64)[:] = time
 
-    Args:
-        path (str): path for the HDF5 file
-        data (Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int,
-        numpy.ndarray]]): one-body densities
-    """
-    time, grids, densities = data
-    with h5py.File(path, "w") as fp:
-        dset = fp.create_dataset("time",
-                                 time.shape,
-                                 dtype=numpy.float64,
-                                 compression="gzip")
-        dset[:] = time
+    for dof in grids:
+        grp = fptr.create_group("dof_" + str(dof))
 
-        for dof in densities:
-            grp = fp.create_group("dof_" + str(dof))
+        grp.create_dataset("grid", grids[dof].shape,
+                           dtype=numpy.float64)[:] = grids[dof]
 
-            dset = grp.create_dataset("grid",
-                                      grids[dof].shape,
-                                      dtype=numpy.float64,
-                                      compression="gzip")
-            dset[:] = grids[dof]
-
-            dset = grp.create_dataset("density",
-                                      densities[dof].shape,
-                                      dtype=numpy.float64,
-                                      compression="gzip")
-            dset[:, :] = densities[dof]
+        grp.create_dataset("density",
+                           densities[dof].shape,
+                           dtype=numpy.float64)[:, :] = densities[dof]

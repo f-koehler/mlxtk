@@ -1,6 +1,7 @@
 import io
 import re
-from typing import List, Tuple
+from pathlib import Path
+from typing import List, Tuple, Union
 
 import h5py
 import numpy
@@ -42,8 +43,10 @@ def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     return times, numpy.moveaxis(numpy.array(spfs), 1, 0)
 
 
-def read_psi_ascii(path: str
+def read_psi_ascii(path: Union[str, Path]
                    ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path = str(path)
+
     times = []
     psis = []
     tape = []

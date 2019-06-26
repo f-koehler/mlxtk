@@ -143,23 +143,13 @@ def read_natpop_hdf5(
         return (time, data)
 
 
-def write_natpop_hdf5(
-        path: str,
-        all_data: Tuple[numpy.ndarray, Dict[int, Dict[int, numpy.ndarray]]]):
-    time, data = all_data
-    with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset("time",
-                                   time.shape,
-                                   dtype=numpy.float64,
-                                   compression="gzip")
-        dset[:] = time
-        for node in data:
-            grp = fptr.create_group("node_{}".format(node))
-            for dof in data[node]:
-                dset = grp.create_dataset(
-                    "dof_" + str(dof),
-                    data[node][dof].shape,
-                    dtype=numpy.float64,
-                    compression="gzip",
-                )
-                dset[:, :] = data[node][dof][:, :]
+def add_natpop_to_hdf5(fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray,
+                       natpops: Dict[int, Dict[int, numpy.ndarray]]):
+    fptr.create_dataset("time", time.shape, dtype=numpy.float64)[:] = time
+
+    for node in natpops:
+        grp = fptr.create_group("node_" + str(node))
+        for dof in natpops[node]:
+            grp.create_dataset("dof_" + str(dof),
+                               natpops[node][dof].shape,
+                               dtype=numpy.float64)[:, :] = natpops[node][dof]

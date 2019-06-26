@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 import h5py
 import numpy
@@ -54,31 +54,12 @@ def read_output_hdf5(
         )
 
 
-def write_output_hdf5(
-        path: str,
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
-    with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset("time",
-                                   data[0].shape,
-                                   dtype=data[0].dtype,
-                                   compression="gzip")
-        dset[:] = data[0]
-
-        dset = fptr.create_dataset("norm",
-                                   data[1].shape,
-                                   dtype=data[1].dtype,
-                                   compression="gzip")
-        dset[:] = data[1]
-
-        dset = fptr.create_dataset("energy",
-                                   data[2].shape,
-                                   dtype=data[2].dtype,
-                                   compression="gzip")
-        dset[:] = data[2]
-
-        dset = fptr.create_dataset("overlap",
-                                   data[3].shape,
-                                   dtype=data[3].dtype,
-                                   compression="gzip")
-        dset[:] = data[3]
+def add_output_to_hdf5(fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray,
+                       norm: numpy.ndarray, energy: numpy.ndarray,
+                       overlap: numpy.ndarray):
+    fptr.create_dataset("time", time.shape, dtype=numpy.float64)[:] = time
+    fptr.create_dataset("norm", norm.shape, dtype=numpy.float64)[:] = norm
+    fptr.create_dataset("energy", energy.shape,
+                        dtype=numpy.float64)[:] = energy
+    fptr.create_dataset("overlap", overlap.shape,
+                        dtype=numpy.float64)[:] = overlap

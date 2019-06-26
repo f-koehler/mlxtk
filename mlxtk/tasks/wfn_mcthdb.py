@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List
 
 import h5py
 import numpy
+from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
@@ -13,7 +14,6 @@ from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
                                        get_spfs, load_wave_function,
                                        save_wave_function)
-from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 LOGGER = get_logger(__name__)
 
@@ -39,8 +39,8 @@ class MCTDHBCreateWaveFunction(Task):
 
         self.path = Path(name + ".wfn")
         self.path_pickle = Path(name + ".wfn_pickle")
-        self.path_basis = Path(name + ".wfn_basis.hdf5")
-        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.hdf5")
+        self.path_basis = Path(name + ".wfn_basis.h5")
+        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.h5")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -128,11 +128,11 @@ class MCTDHBCreateWaveFunctionMulti(Task):
         self.path = name + ".wfn"
         self.path_pickle = name + ".wfn_pickle"
         self.path_bases = [
-            name + "_{}.wfn_basis.hdf5".format(i)
+            name + "_{}.wfn_basis.h5".format(i)
             for i, _ in enumerate(self.hamiltonians_1b)
         ]
         self.path_matrices = [
-            name + ".opr_mat.hdf5" for name in self.hamiltonians_1b
+            name + ".opr_mat.h5" for name in self.hamiltonians_1b
         ]
 
     def task_write_parameters(self) -> Dict[str, Any]:

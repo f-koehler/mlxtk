@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
-
 from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
@@ -125,7 +124,7 @@ class CreateOperator(Task):
                 self.specification = OperatorSpecification(*args, **kwargs)
 
         self.path = Path(name + ".opr")
-        self.path_matrix = Path(name + ".opr_mat.hdf5")
+        self.path_matrix = Path(name + ".opr_mat.h5")
         self.path_pickle = Path(name + ".opr_pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:

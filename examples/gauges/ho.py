@@ -29,13 +29,13 @@ def create_simulation(p):
 
     sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
                                                 p.N, p.m)
-    sim += mlxtk.tasks.Propagate("propagate_0",
-                                 "initial",
-                                 "hamiltonian",
-                                 tfinal=5.0,
-                                 dt=0.05,
-                                 psi=True,
-                                 gauge=p.gauge)
+    # sim += mlxtk.tasks.Propagate("propagate_0",
+    #                              "initial",
+    #                              "hamiltonian",
+    #                              tfinal=5.0,
+    #                              dt=0.05,
+    #                              psi=True,
+    #                              gauge=p.gauge)
     sim += mlxtk.tasks.Relax("rlx",
                              "initial",
                              "hamiltonian",
@@ -43,14 +43,14 @@ def create_simulation(p):
                              dt=0.01,
                              psi=True,
                              gauge=p.gauge)
-    sim += mlxtk.tasks.ImprovedRelax("imprlx",
-                                     "initial",
-                                     "hamiltonian",
-                                     1,
-                                     tfinal=1000.0,
-                                     dt=0.01,
-                                     psi=True,
-                                     gauge=p.gauge)
+    # sim += mlxtk.tasks.ImprovedRelax("imprlx",
+    #                                  "initial",
+    #                                  "hamiltonian",
+    #                                  1,
+    #                                  tfinal=1000.0,
+    #                                  dt=0.01,
+    #                                  psi=True,
+    #                                  gauge=p.gauge)
     # sim += mlxtk.tasks.Propagate("propagate_rlx",
     #                              "rlx/final",
     #                              "hamiltonian_quenched",

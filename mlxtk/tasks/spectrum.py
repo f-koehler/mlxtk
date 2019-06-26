@@ -17,8 +17,8 @@ class ComputeSpectrum(Task):
         self.name = hamiltonian_1b
         self.num_spfs = num_spfs
 
-        self.path = Path(self.name + ".spectrum.hdf5")
-        self.path_matrix = Path(self.name + ".opr_mat.hdf5")
+        self.path = Path(self.name + ".spectrum.h5")
+        self.path_matrix = Path(self.name + ".opr_mat.h5")
         self.path_matrix_hash = Path(self.name + ".opr_mat.hash")
 
     def task_check_num_spfs(self) -> Dict[str, Any]:

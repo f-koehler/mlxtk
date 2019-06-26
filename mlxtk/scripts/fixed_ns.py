@@ -8,6 +8,7 @@ import h5py
 import numpy
 import pandas
 
+from .. import inout
 from ..cwd import WorkingDir
 from ..inout.psi import read_first_frame
 from ..log import get_logger
@@ -34,8 +35,8 @@ def main():
 
     output = args.output
     if not output:
-        output = Path("fixed_ns_{}_{}.hdf5".format(args.psi.stem,
-                                                   args.basis.stem))
+        output = Path("{}_{}.fixed_ns.h5".format(args.psi.stem,
+                                                 args.basis.stem))
 
     output = output.resolve()
 
@@ -58,45 +59,12 @@ def main():
             LOGGER.info("run qdtk_analysis.x: %s", " ".join(cmd))
             subprocess.check_output(cmd)
 
-            with open("result", "r") as fp:
-                num_columns = len(fp.readline().split())
-
-            num_coefficients = (num_columns - 1) // 3
-            names = ["time"] + [
-                "real_" + str(i) for i in range(num_coefficients)
-            ] + ["imag_" + str(i) for i in range(num_coefficients)]
-            usecols = [i for i in range(2 * num_coefficients + 1)]
-            data = pandas.read_csv("result",
-                                   delim_whitespace=True,
-                                   header=None,
-                                   names=names,
-                                   usecols=usecols)[names].values
-            times, indices = numpy.unique(data[:, 0], return_index=True)
-            num_times = len(times)
-
+            times, real, imag = inout.read_fixed_ns_ascii("result")
             wfn = load_wave_function("basis")
-
-            with h5py.File("result.hdf5", "w") as fp:
-                grp = fp.create_group("fixed_ns")
-                grp.attrs["N"] = wfn._tape[1]
-                grp.attrs["m"] = wfn._tape[3]
-
-                dset = grp.create_dataset("time", (num_times, ),
-                                          dtype=numpy.float64)
-                dset[:] = times
-
-                dset = grp.create_dataset("real",
-                                          (num_times, num_coefficients),
-                                          dtype=numpy.float64)
-                dset[:, :] = data[indices, 1:num_coefficients + 1]
-
-                dset = grp.create_dataset("imag",
-                                          (num_times, num_coefficients),
-                                          dtype=numpy.float64)
-                dset[:, :] = data[indices, num_coefficients + 1:]
-
+            inout.write_fixed_ns_hdf5("result.h5", times, real, imag,
+                                      wfn._tape[1], wfn._tape[3])
             LOGGER.info("copy result")
-            shutil.copy2("result.hdf5", output)
+            shutil.copy2("result.h5", output)
 
 
 if __name__ == "__main__":

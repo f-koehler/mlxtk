@@ -10,7 +10,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("path",
                         nargs="?",
-                        default="gpop.hdf5",
+                        default="gpop.h5",
                         help="path to the gpop file")
     parser.add_argument("-d",
                         "--dof",

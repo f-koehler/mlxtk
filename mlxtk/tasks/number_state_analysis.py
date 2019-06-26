@@ -5,10 +5,12 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
 import h5py
+import pandas
 
-from .. import cwd
+from .. import cwd, inout
 from ..doit_compat import DoitAction
 from ..log import get_logger
+from ..tools.wave_function import load_wave_function
 from ..util import copy_file, make_path
 from .task import Task
 
@@ -23,7 +25,8 @@ class NumberStateAnalysisStatic(Task):
         self.result = kwargs.get(
             "name",
             self.wave_function.with_name(self.wave_function.stem + "_" +
-                                         self.basis.stem)).with_suffix(".nsa")
+                                         self.basis.stem)).with_suffix(
+                                             ".fixed_ns.h5")
 
         self.name = str(self.result.with_suffix(""))
 
@@ -49,7 +52,13 @@ class NumberStateAnalysisStatic(Task):
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                     subprocess.run(cmd, env=env)
-                    copy_file("result", result)
+
+                    times, real, imag = inout.read_fixed_ns_ascii("result")
+                    wfn = load_wave_function("basis")
+                    inout.write_fixed_ns_hdf5("result.h5", times, real, imag,
+                                              wfn._tape[1], wfn._tape[3])
+
+                    copy_file("result.h5", result)
 
         return {
             "name":

@@ -7,8 +7,8 @@ if __name__ == "__main__":
 
     parameters = HarmonicTrap.create_parameters()
     parameters.N = 2
-    parameters.m = 5
-    parameters.g = 0.5
+    parameters.m = 3
+    parameters.g = 0.1
 
     parameters_quenched = parameters.copy()
     parameters_quenched.omega = 0.7
@@ -53,5 +53,9 @@ if __name__ == "__main__":
     sim += mlxtk.tasks.ComputeExpectationValueStatic("propagate/final", "com")
 
     sim += mlxtk.tasks.NumberStateAnalysisStatic("propagate/final", "initial")
+
+    sim += mlxtk.tasks.MCTDHBCreateWaveFunction("basis_ED", "hamiltonian_1b",
+                                                parameters.N, 20)
+    sim += mlxtk.tasks.Diagonalize("ED", "basis_ED", "hamiltonian", 5)
 
     sim.main()

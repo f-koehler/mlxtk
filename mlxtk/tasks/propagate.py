@@ -16,6 +16,7 @@ from ..inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
 from ..inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
 from ..inout.output import add_output_to_hdf5, read_output_ascii
 from ..log import get_logger
+from ..temporary_dir import TemporaryDir
 from ..util import copy_file, make_path
 from .task import Task
 
@@ -164,15 +165,16 @@ class Propagate(Task):
             if not self.path_name.exists():
                 self.path_name.mkdir()
 
-            with tempfile.TemporaryDirectory(dir=os.getcwd()) as tmpdir_:
-                tmpdir = Path(tmpdir_)
+            temp_path = self.path_name.resolve().with_name("." +
+                                                           self.path_name.name)
 
+            with TemporaryDir(temp_path) as tmpdir:
                 operator = self.path_hamiltonian.resolve()
                 wave_function = self.path_wave_function.resolve()
                 output_dir = self.path_name.resolve()
                 hdf5_file = self.path_hdf5.resolve()
 
-                with cwd.WorkingDir(tmpdir):
+                with cwd.WorkingDir(tmpdir.path):
                     self.logger.info("propagate wave function")
                     copy_file(operator, "hamiltonian")
                     copy_file(wave_function, "initial")
@@ -202,6 +204,8 @@ class Propagate(Task):
 
                     for fname in self.qdtk_files:
                         copy_file(fname, output_dir / fname)
+
+                    tmpdir.complete = True
 
         return {
             "name":

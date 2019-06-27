@@ -11,6 +11,7 @@ import h5py
 
 from .. import cwd
 from ..doit_compat import DoitAction
+from ..hashing import hash_file
 from ..inout.eigenbasis import add_eigenbasis_to_hdf5, read_eigenbasis_ascii
 from ..inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
 from ..inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
@@ -115,7 +116,7 @@ class Propagate(Task):
         self.logger = get_logger(__name__ + ".Propagate")
 
         self.flags, self.flag_list = create_flags(**kwargs)
-        self.flag_list += ["-rst", "initial", "-opr", "hamiltonian"]
+        self.flag_list += ["-rst", "restart", "-opr", "hamiltonian"]
 
         if self.flags["relax"]:
             self.basename = "relaxation"
@@ -148,6 +149,21 @@ class Propagate(Task):
             del targets
 
             obj = [self.name, self.wave_function, self.hamiltonian, self.flags]
+
+            if self.flags["exact_diag"]:
+                shutil.rmtree(path_temp)
+
+            path_temp = self.path_name.resolve().with_name("." +
+                                                           self.path_name.name)
+            if path_temp.exists():
+                if self.path_pickle.exists():
+                    with open(self.path_pickle, "rb") as fptr:
+                        if pickle.load(fptr) != obj:
+                            self.logger.debug("propagation parameters changed")
+                            shutil.rmtree(path_temp)
+                else:
+                    shutil.rmtree(path_temp)
+
             with open(self.path_pickle, "wb") as fp:
                 pickle.dump(obj, fp)
 
@@ -165,10 +181,48 @@ class Propagate(Task):
             if not self.path_name.exists():
                 self.path_name.mkdir()
 
-            temp_path = self.path_name.resolve().with_name("." +
+            path_temp = self.path_name.resolve().with_name("." +
                                                            self.path_name.name)
 
-            with TemporaryDir(temp_path) as tmpdir:
+            if path_temp.exists():
+                path_temp_operator = path_temp / "hamiltonian"
+                if not path_temp_operator.exists():
+                    self.logger.debug(
+                        "temporary operator \"%s\" does not exist",
+                        str(path_temp_operator))
+                    shutil.rmtree(path_temp)
+                else:
+                    hash_a = hash_file(path_temp_operator)
+                    hash_b = hash_file(self.path_hamiltonian.resolve())
+                    if hash_a != hash_b:
+                        self.logger.debug("operator hashes do not match")
+                        shutil.rmtree(path_temp)
+
+            if path_temp.exists():
+                path_temp_wfn = path_temp / "initial"
+                if not path_temp_wfn.exists():
+                    self.logger.debug(
+                        "temporary wave function \"%s\" does not exist",
+                        str(path_temp_wfn))
+                    shutil.rmtree(path_temp)
+                else:
+                    hash_a = hash_file(path_temp_wfn)
+                    hash_b = hash_file(self.path_wave_function.resolve())
+                    if hash_a != hash_b:
+                        self.logger.debug("wave function hashes do not match")
+                        shutil.rmtree(path_temp)
+
+            if path_temp.exists():
+                self.logger.info("attempt continuation run")
+                self.flags["cont"] = True
+                self.flags["rstzero"] = False
+                self.flag_list.append("-cont")
+                try:
+                    self.flag_list.remove("-rstzero")
+                except ValueError:
+                    pass
+
+            with TemporaryDir(path_temp) as tmpdir:
                 operator = self.path_hamiltonian.resolve()
                 wave_function = self.path_wave_function.resolve()
                 output_dir = self.path_name.resolve()
@@ -176,8 +230,10 @@ class Propagate(Task):
 
                 with cwd.WorkingDir(tmpdir.path):
                     self.logger.info("propagate wave function")
-                    copy_file(operator, "hamiltonian")
-                    copy_file(wave_function, "initial")
+                    if not self.flags["cont"]:
+                        copy_file(operator, "hamiltonian")
+                        copy_file(wave_function, "initial")
+                        copy_file(wave_function, "restart")
                     cmd = ["qdtk_propagate.x"] + self.flag_list
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
@@ -213,7 +269,7 @@ class Propagate(Task):
             "actions": [action_run],
             "targets":
             [str(self.path_name / fname)
-             for fname in self.qdtk_files] + [self.path_hdf5],
+             for fname in self.qdtk_files] + [str(self.path_hdf5)],
             "file_dep":
             [self.path_pickle, self.path_wave_function, self.path_hamiltonian],
             "verbosity":

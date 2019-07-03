@@ -1,6 +1,6 @@
 import pickle
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
@@ -24,7 +24,7 @@ class MCTDHBCreateWaveFunction(Task):
                  hamiltonian_1b: str,
                  num_particles: int,
                  num_spfs: int,
-                 number_state: numpy.ndarray = None):
+                 number_state: Union[numpy.ndarray, List] = None):
         self.name = name
         self.number_of_particles = num_particles
         self.number_of_spfs = num_spfs
@@ -35,7 +35,7 @@ class MCTDHBCreateWaveFunction(Task):
                                             dtype=numpy.int64)
             self.number_state[0] = self.number_of_particles
         else:
-            self.number_state = numpy.copy(number_state)
+            self.number_state = numpy.copy(numpy.array(number_state))
 
         self.path = Path(name + ".wfn")
         self.path_pickle = Path(name + ".wfn_pickle")

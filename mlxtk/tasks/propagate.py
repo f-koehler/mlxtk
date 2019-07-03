@@ -80,10 +80,14 @@ DEFAULT_FLAGS = {
 def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     flags = copy.copy(DEFAULT_FLAGS)
 
+    non_qdtk_flags = ["extra_files"]
+
     for flag in kwargs:
         if flag not in FLAG_TYPES:
-            raise RuntimeError("Unknown flag \"{}\"".format(flag))
-        flags[flag] = kwargs[flag]
+            if flag not in non_qdtk_flags:
+                raise RuntimeError("Unknown flag \"{}\"".format(flag))
+        else:
+            flags[flag] = kwargs[flag]
 
     if flags["relax"]:
         flags["statsteps"] = flags.get("statsteps", 50)
@@ -142,6 +146,8 @@ class Propagate(Task):
             self.qdtk_files = ["final.wfn"]
             if self.flags["psi"]:
                 self.qdtk_files.append("psi")
+
+        self.qdtk_files += kwargs.get("extra_files", [])
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction

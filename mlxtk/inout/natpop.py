@@ -1,5 +1,6 @@
 import io
 import re
+from pathlib import Path
 from typing import Dict, Tuple, Union
 
 import h5py
@@ -109,38 +110,27 @@ def read_natpop_ascii(
 
 
 def read_natpop_hdf5(
-        path: str, interior_path: str = "/", node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[numpy.ndarray, Dict[int, numpy.ndarray],
-                                Dict[int, Dict[int, numpy.ndarray]]], ]:
+        path: Union[str, Path],
+        interior_path: str,
+        node: int = None,
+        dof: int = None
+) -> Union[Tuple[numpy.ndarray, numpy.ndarray],
+           Tuple[numpy.ndarray, Dict[str, Dict[str, numpy.ndarray]]]]:
     with h5py.File(path, "r") as fptr:
-        time = fptr[interior_path]["time"][:]
+        time = fptr[interior_path + "/time"][:]
 
-        if node:
-            if dof:
-                return (
-                    time,
-                    fptr[interior_path]["node_" + str(node)]["dof_" +
-                                                             str(dof)][:, :],
-                )
-            node_str = "node_" + str(node)
-            data = {}
-            for entry in fptr[interior_path][node_str]:
-                data[int(entry.replace(
-                    "dof_", ""))] = fptr[interior_path][node_str][entry][:, :]
+        if node and dof:
+            data = fptr[interior_path +
+                        "/node_{}/dof_{}".format(node, dof)][:, :]
             return (time, data)
 
-        if dof is not None:
-            raise ValueError("No node specified while specifying the DOF")
         data = {}
-        for node_entry in (entry for entry in fptr[interior_path]
-                           if entry.startswith("node_")):
-            node_i = int(node_entry.replace("node_", ""))
-            data[node_i] = {}
-            for dof_entry in fptr[interior_path][node_entry]:
-                dof_i = int(dof_entry.replace("dof_", ""))
-                data[node_i][dof_i] = fptr[interior_path][node_entry][
-                    dof_entry]
-        return (time, data)
+        for node_str in fptr[interior_path]:
+            data[node_str] = {}
+            for dof_str in fptr[interior_path + "/" + node_str]:
+                data[node_str][dof_str] = fptr[interior_path + "/" + node_str +
+                                               "/" + dof_str][:, :]
+        return data
 
 
 def add_natpop_to_hdf5(fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray,

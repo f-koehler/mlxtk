@@ -11,24 +11,11 @@ from QDTK.Wavefunction import Wavefunction
 from ..util import memoize
 
 
-def load_wave_function(p: Union[Path, TextIO]) -> Wavefunction:
-    if isinstance(p, Path):
-        if p.suffix == ".gz":
-            with gzip.open(p) as fp:
-                with io.StringIO(fp.read().decode()) as sio:
-                    return Wavefunction(wfn_file=sio)
-
-    return Wavefunction(wfn_file=p)
+def load_wave_function(path: Union[str, Path]) -> Wavefunction:
+    return Wavefunction(wfn_file=str(path))
 
 
-def save_wave_function(path: Path, wfn: Wavefunction):
-    if path.suffix == ".gz":
-        with io.StringIO() as sio:
-            wfn.createWfnFile(sio)
-            with gzip.open(path, "wb") as fp:
-                fp.write(sio.getvalue().encode())
-                return
-
+def save_wave_function(path: Union[str, Path], wfn: Wavefunction):
     wfn.createWfnFile(str(path))
 
 

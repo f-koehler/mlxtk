@@ -45,7 +45,7 @@ class GaussianTrap(SingleSpeciesSystem):
         )
 
     def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
-        if self.parameters.g != 0.0:
+        if self.parameters.g != 0.0 and self.parameters.N > 1:
             return (self.get_kinetic_operator() +
                     self.get_potential_operator() +
                     self.get_interaction_operator())

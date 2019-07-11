@@ -156,11 +156,10 @@ class Propagate(Task):
 
             obj = [self.name, self.wave_function, self.hamiltonian, self.flags]
 
-            if self.flags["exact_diag"]:
-                shutil.rmtree(path_temp)
-
             path_temp = self.path_name.resolve().with_name("." +
                                                            self.path_name.name)
+            if path_temp.exists() and self.flags["exact_diag"]:
+                shutil.rmtree(path_temp)
             if path_temp.exists():
                 if self.path_pickle.exists():
                     with open(self.path_pickle, "rb") as fptr:

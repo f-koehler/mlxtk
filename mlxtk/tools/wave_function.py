@@ -82,7 +82,7 @@ def binom(n: int, k: int) -> int:
     return int(scipy.special.binom(n, k))
 
 
-@jit
+# @jit
 def build_number_state_table_bosonic(N: int, m: int) -> numpy.ndarray:
     number_of_states = binom(N + m - 1, m - 1)
     number_states = numpy.zeros((number_of_states, m), numpy.int64)

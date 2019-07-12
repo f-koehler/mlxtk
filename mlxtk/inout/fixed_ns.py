@@ -32,6 +32,18 @@ def read_fixed_ns_ascii(
                            1], data[indices, num_coefficients + 1:]
 
 
+def read_fixed_ns_hdf5(path: Union[str, Path]
+                       ) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
+    path = str(path)
+    with h5py.File(path, "r") as fptr:
+        time = fptr["fixed_ns"]["time"][:]
+        coefficients = fptr["fixed_ns"][
+            "real"][:, :] + 1j * fptr["fixed_ns"]["imag"][:, :]
+        N = fptr["fixed_ns"].attrs["N"]
+        m = fptr["fixed_ns"].attrs["m"]
+        return time, coefficients, N, m
+
+
 def write_fixed_ns_hdf5(path: Union[str, Path], times: numpy.ndarray,
                         real: numpy.ndarray, imag: numpy.ndarray, N: int,
                         m: int):

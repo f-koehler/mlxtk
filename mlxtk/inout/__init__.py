@@ -1,4 +1,4 @@
-from . import expval, natpop
+from . import expval, natpop, fixed_ns
 from .dmat import read_dmat_evals, read_dmat_evecs_grid, read_dmat_spfrep
 from .dmat2 import read_dmat2_gridrep
 from .fixed_ns import read_fixed_ns_ascii, write_fixed_ns_hdf5

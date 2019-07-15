@@ -61,7 +61,7 @@ pylint = "^2.3"
 [tool.poetry.dev-dependencies]
 isort = "^4.3.20"
 sphinx = "^2.0.1"
-yapf = "^0.27.0"
+yapf = "^0.28.0"
 
 [tool.poetry.scripts]
 dmat_spf_slider = "mlxtk.scripts.dmat_spf_slider:main"

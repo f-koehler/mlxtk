@@ -6,9 +6,12 @@ from typing import Union
 import matplotlib
 import matplotlib.figure
 import matplotlib.pyplot
+from matplotlib.backend_bases import LocationEvent
+from matplotlib.figure import Figure
 
 from ..log import get_logger
 from ..util import make_path
+from . import cursor
 from .energy import plot_energy, plot_energy_diff
 from .entropy import plot_entropy, plot_entropy_diff
 from .expval import plot_expval

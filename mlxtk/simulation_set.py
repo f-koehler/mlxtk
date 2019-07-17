@@ -27,7 +27,6 @@ def run_simulation(simulation: Simulation
     Returns:
         list: list with a single doit task description for simulation run
     """
-
     def task_run_simulation():
         @doit_compat.DoitAction
         def action_run_simulation(targets: List[str]):
@@ -54,7 +53,6 @@ def dry_run_simulation(simulation: Simulation
     Returns:
         list: list with a single doit task description for simulation run
     """
-
     def task_dry_run_simulation():
         @doit_compat.DoitAction
         def action_dry_run_simulation(targets: List[str]):
@@ -102,7 +100,6 @@ class SimulationSet:
         simulations (list): the list of simulations
         working_dir (str): optional working directory (defaults to ``name``)
     """
-
     def __init__(
             self,
             name: str,

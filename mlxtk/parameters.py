@@ -11,7 +11,6 @@ class Parameters:
     to document them.
     All parameters are exposed as member variables of this class.
     """
-
     def __init__(self, params: List[Dict[str, Any]] = []):
         self.names = []  # type: List[str]
         self.docs = {}  # type: Dict[str, str]

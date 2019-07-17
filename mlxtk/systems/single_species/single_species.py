@@ -18,7 +18,6 @@ class SingleSpeciesSystem(ABC):
         parameters (mlxtk.parameters.Parameters): the system parameters
         grid (mlxtk.dvr.DVRSpecification): the grid of the harmonic oscillator
     """
-
     def __init__(self, parameters: Parameters, grid: DVRSpecification):
         self.parameters = parameters
         self.grid = grid

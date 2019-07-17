@@ -21,7 +21,6 @@ class OperatorSpecification:
     """Object used to specify how to construct an operator acting on degrees
     of freedom.
     """
-
     def __init__(
             self,
             dofs: List[DVRSpecification],

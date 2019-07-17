@@ -23,7 +23,6 @@ class WorkingDir:
         path (str): Path of the desired working directory
         initial_dir (str): Working directory before changing
     """
-
     def __init__(self, path: Union[str, Path]):
         if isinstance(path, str):
             path = Path(path)

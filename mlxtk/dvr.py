@@ -41,7 +41,6 @@ class DVRSpecification:
        args (list): list of arguments to construct the DVR
        dvr: the DVR object once it is constructed
     """
-
     def __init__(self, type_: str, *args):
         self.type_ = type_
         self.args = args

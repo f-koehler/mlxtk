@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Union
 import h5py
 import numpy
 from QDTK.Wavefunction import Wavefunction as WaveFunction
+from QDTK.Wavefunction import grab_lowest_eigenfct
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
@@ -73,14 +74,12 @@ class MCTDHBCreateWaveFunction(Task):
 
             with h5py.File(targets[1], "w") as fptr:
                 dset = fptr.create_dataset("energies", (self.number_of_spfs, ),
-                                           dtype=numpy.float64,
-                                           compression="gzip")
+                                           dtype=numpy.float64)
                 dset[:] = energies
 
                 dset = fptr.create_dataset("spfs",
                                            spfs_arr.shape,
-                                           dtype=numpy.complex128,
-                                           compression="gzip")
+                                           dtype=numpy.complex128)
                 dset[:, :] = spfs_arr
 
             grid_points = matrix.shape[0]
@@ -97,6 +96,102 @@ class MCTDHBCreateWaveFunction(Task):
 
         return {
             "name": "wfn_mctdhb:{}:create".format(self.name),
+            "actions": [action_write_wave_function],
+            "targets": [self.path, self.path_basis],
+            "file_dep": [self.path_pickle, self.path_matrix],
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_write_parameters, self.task_write_wave_function]
+
+
+class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
+    def __init__(self,
+                 name: str,
+                 hamiltonian_1b: str,
+                 num_particles: int,
+                 threshold: float,
+                 above_threshold: bool = False,
+                 max_number: int = 0):
+        self.logger = get_logger(__name__ +
+                                 ".MCTDHBCreateWaveFunctionEnergyThreshold")
+        self.name = name
+        self.number_of_particles = num_particles
+        self.threshold = threshold
+        self.above_threshold = above_threshold
+        self.max_number = max_number
+        self.hamiltonian_1b = hamiltonian_1b
+
+        self.path = Path(name + ".wfn")
+        self.path_pickle = Path(name + ".wfn_pickle")
+        self.path_basis = Path(name + ".wfn_basis.h5")
+        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.h5")
+
+    def task_write_parameters(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_parameters(targets: List[str]):
+            del targets
+
+            obj = [
+                self.name, self.hamiltonian_1b, self.number_of_particles,
+                self.threshold, self.above_threshold, self.max_number
+            ]
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr)
+
+        return {
+            "name":
+            "wfn_mctdhb_energy_threshold:{}:write_parameters".format(
+                self.name),
+            "actions": [action_write_parameters],
+            "targets": [self.path_pickle],
+        }
+
+    def task_write_wave_function(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_wave_function(targets: List[str]):
+            with h5py.File(self.path_matrix, "r") as fptr:
+                matrix = fptr["matrix"][:, :]
+
+            energies, spfs = diagonalize_1b_operator(matrix, -1)
+
+            indices = numpy.nonzero((
+                energies > self.threshold) if self.above_threshold else (
+                    energies < self.threshold))[0]
+            m = indices.max() - indices.min() + 1
+            if self.max_number > 0:
+                m = min(self.max_number, m)
+            self.logger.info("use m = %d spfs", m)
+            spfs = spfs[indices.min():indices.min() + m]
+            spfs_arr = numpy.array(spfs)
+            energies = energies[indices.min():indices.min() + m]
+
+            with h5py.File(targets[1], "w") as fptr:
+                dset = fptr.create_dataset("energies", (len(energies), ),
+                                           dtype=numpy.float64)
+                dset[:] = energies
+
+                dset = fptr.create_dataset("spfs",
+                                           spfs_arr.shape,
+                                           dtype=numpy.complex128)
+                dset[:, :] = spfs_arr
+
+            grid_points = matrix.shape[0]
+            tape = (-10, self.number_of_particles, +1, len(energies), -1, 1, 1,
+                    0, grid_points, -2)
+            self.number_state = numpy.zeros(len(energies), dtype=numpy.int64)
+            self.number_state[0] = self.number_of_particles
+            wfn = WaveFunction(tape=tape)
+            wfn.init_coef_sing_spec_B(self.number_state,
+                                      spfs,
+                                      1e-15,
+                                      1e-15,
+                                      full_spf=True)
+
+            save_wave_function(self.path, wfn)
+
+        return {
+            "name": "wfn_mctdhb_energy_threshold:{}:create".format(self.name),
             "actions": [action_write_wave_function],
             "targets": [self.path, self.path_basis],
             "file_dep": [self.path_pickle, self.path_matrix],
@@ -172,14 +267,12 @@ class MCTDHBCreateWaveFunctionMulti(Task):
 
                 with h5py.File(path_basis, "w") as fptr:
                     dset = fptr.create_dataset("energies", (m, ),
-                                               dtype=numpy.float64,
-                                               compression="gzip")
+                                               dtype=numpy.float64)
                     dset[:] = energies
 
                     dset = fptr.create_dataset("spfs",
                                                spfs_arr.shape,
-                                               dtype=numpy.complex128,
-                                               compression="gzip")
+                                               dtype=numpy.complex128)
                     dset[:, :] = spfs_arr[-1]
 
             grid_points = matrix.shape[0]

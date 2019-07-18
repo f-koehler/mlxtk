@@ -8,6 +8,7 @@ from .variance import ComputeVariance
 from .wave_function import RequestWaveFunction
 from .wfn_mcthdb import (MCTDHBAddMomentum, MCTDHBAddMomentumSplit,
                          MCTDHBCreateWaveFunction,
+                         MCTDHBCreateWaveFunctionEnergyThreshold,
                          MCTDHBCreateWaveFunctionMulti, MCTDHBExtendGrid)
 
 assert ComputeExpectationValue

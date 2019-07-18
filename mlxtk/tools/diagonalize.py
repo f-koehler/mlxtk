@@ -17,7 +17,7 @@ def diagonalize_1b_operator(matrix: numpy.ndarray, number_eigenfunctions: int
     Args:
         hamiltonian (QDTK.Operator): operator to diagonalize
         number_eigenfunctions (int): number of eigenvalues/eigenvectors to
-            compute
+            compute (-1 to compute all)
 
     Returns:
         A tuple with the list of eigenvalues as the first element followed by
@@ -27,6 +27,9 @@ def diagonalize_1b_operator(matrix: numpy.ndarray, number_eigenfunctions: int
     eigenvalues = numpy.real(eigenvalues)
 
     QDTK.Tools.Mathematics.sortEigValsVecs(eigenvalues, eigenvectors)
+
+    if number_eigenfunctions < 0:
+        number_eigenfunctions = len(eigenvalues)
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
         number_eigenfunctions, eigenvectors)

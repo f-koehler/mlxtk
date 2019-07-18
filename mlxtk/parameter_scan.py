@@ -6,7 +6,6 @@ parameter ranges.
 import argparse
 import os
 import pickle
-import sqlite3
 import subprocess
 from pathlib import Path
 from typing import Callable, List
@@ -72,18 +71,6 @@ class ParameterScan(SimulationSet):
             with open("scan.pickle", "wb") as fptr:
                 pickle.dump([combination for combination in self.combinations],
                             fptr)
-
-            names = self.combinations[0].names
-            data = pandas.DataFrame({
-                name: pandas.Series([comb[name] for comb in self.combinations])
-                for name in names
-            })
-            path_sqlite = Path("scan.sqlite3")
-            if path_sqlite.exists():
-                path_sqlite.unlink()
-            con = sqlite3.connect(str(path_sqlite))
-            data.to_sql("combinations", con, index=True, index_label="index")
-            con.close()
 
     def link_simulations(self):
         if not self.combinations:

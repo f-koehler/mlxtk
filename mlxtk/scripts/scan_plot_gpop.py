@@ -14,14 +14,15 @@ from ..parameters import Parameters
 LOGGER = log.get_logger(__name__)
 plot.make_headless()
 
+MODFUNCS = []
+
 
 def plot_gpop(index: int,
               path: Path,
               parameters: Parameters,
               file_path: Path,
               dof: int = 1,
-              extension: str = ".pdf",
-              modfunc: Callable[[Figure, Axes, Parameters], None] = None):
+              extension: str = ".pdf"):
     total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
@@ -29,8 +30,8 @@ def plot_gpop(index: int,
         ax.set_title(r"$\rho_1(x,t)$")
         ax.set_xlabel(units.get_time_label())
         ax.set_ylabel(units.get_length_label())
-        if modfunc:
-            modfunc(fig, ax, parameters)
+        for func in MODFUNCS:
+            func(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
         plot.close_figure(fig)
     except FileNotFoundError:
@@ -38,6 +39,8 @@ def plot_gpop(index: int,
 
 
 def main():
+    global MODFUNCS
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "scan_dir",
@@ -73,11 +76,12 @@ def main():
         del parameters
         plot.apply_2d_args(ax, args)
 
+    MODFUNCS = [apply_args] + MODFUNCS
+
     load_scan(args.scan_dir).plot_foreach(
         args.output,
         partial(plot_gpop,
                 file_path=args.file,
-                modfunc=apply_args,
                 dof=args.dof,
                 extension=args.extension))
 

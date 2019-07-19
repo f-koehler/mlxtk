@@ -47,7 +47,7 @@ def main():
     parser.add_argument("-f",
                         "--file",
                         type=Path,
-                        default=Path("propagate") / "natpop",
+                        default=Path("propagate") / "propagate.h5/natpop",
                         help="relative path within each simulation")
     parser.add_argument("-d",
                         "--dof",

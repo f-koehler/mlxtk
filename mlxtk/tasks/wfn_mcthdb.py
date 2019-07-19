@@ -162,6 +162,8 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
             if self.max_number > 0:
                 m = min(self.max_number, m)
             self.logger.info("use m = %d spfs", m)
+            self.logger.info("spf indices: %d to %d", indices.min(),
+                             indices.min() + m)
             spfs = spfs[indices.min():indices.min() + m]
             spfs_arr = numpy.array(spfs)
             energies = energies[indices.min():indices.min() + m]

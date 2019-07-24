@@ -204,7 +204,7 @@ class SimulationSet:
             [
                 "--process=" + str(args.jobs),
                 "--backend=sqlite3",
-                "--db-file=" + str(self.working_dir / "doit.sqlite3"),
+                "--db-file=:memory:",
             ],
         )
 
@@ -222,7 +222,7 @@ class SimulationSet:
             tasks,
             [
                 "--backend=sqlite3",
-                "--db-file=" + str(self.working_dir / "doit.sqlite3"),
+                "--db-file=:memory:",
             ],
         )
 
@@ -239,7 +239,7 @@ class SimulationSet:
             [
                 "--process=" + str(args.jobs),
                 "--backend=sqlite3",
-                "--db-file=" + str(self.working_dir / "doit.sqlite3"),
+                "--db-file=:memory:",
             ],
         )
 

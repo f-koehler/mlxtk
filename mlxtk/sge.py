@@ -126,7 +126,7 @@ def submit(command: str,
 
     # submit job
     LOGGER.debug("submit job")
-    output = subprocess.check_output(["qsub", job_script]).decode()
+    output = subprocess.check_output(["qsub", str(job_script)]).decode()
     match = REGEX_QSUB.match(output)
     if not match:
         raise RuntimeError("Cannot parse job id from qsub command output")

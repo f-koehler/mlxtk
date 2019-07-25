@@ -40,7 +40,7 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
                 self.tasks_run,
-                ["graph", "--backend=sqlite3", "--db-file=doit.sqlite3"],
+                ["graph", "--backend=json", "--db-file=doit.json"],
             )
 
             with open("tasks.dot") as fptr:
@@ -62,7 +62,7 @@ class Simulation:
         with cwd.WorkingDir(self.working_dir):
             doit_compat.run_doit(
                 self.tasks_run,
-                ["list", "--backend=sqlite3", "--db-file=doit.sqlite3"],
+                ["list", "--backend=json", "--db-file=doit.json"],
             )
 
     def run(self, args: argparse.Namespace):
@@ -73,8 +73,8 @@ class Simulation:
                     self.tasks_run,
                     [
                         "--process=" + str(args.jobs),
-                        "--backend=sqlite3",
-                        "--db-file=doit.sqlite3",
+                        "--backend=json",
+                        "--db-file=doit.json",
                     ],
                 )
 
@@ -87,8 +87,8 @@ class Simulation:
                 doit_compat.run_doit(
                     self.tasks_dry_run,
                     [
-                        "--backend=sqlite3",
-                        "--db-file=doit.sqlite3",
+                        "--backend=json",
+                        "--db-file=doit.json",
                     ],
                 )
 
@@ -100,8 +100,8 @@ class Simulation:
                     self.tasks_clean,
                     [
                         "--process=" + str(args.jobs),
-                        "--backend=sqlite3",
-                        "--db-file=doit.sqlite3",
+                        "--backend=json",
+                        "--db-file=doit.json",
                     ],
                 )
 
@@ -134,8 +134,8 @@ class Simulation:
                 self.tasks_run,
                 [
                     "info",
-                    "--backend=sqlite3",
-                    "--db-file=doit.sqlite3",
+                    "--backend=json",
+                    "--db-file=doit.json",
                     args.name,
                 ],
             )

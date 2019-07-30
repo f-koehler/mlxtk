@@ -35,7 +35,10 @@ def main():
     plot_gpop(ax, *data)
 
     ax.set_xlabel(units.get_time_label(working_directory=args.path))
-    ax.set_ylabel(units.get_length_label(working_directory=args.path))
+    if args.momentum:
+        ax.set_ylabel(units.get_momentum_label(working_directory=args.path))
+    else:
+        ax.set_ylabel(units.get_length_label(working_directory=args.path))
 
     apply_2d_args(ax, args)
 

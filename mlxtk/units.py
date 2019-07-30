@@ -28,6 +28,22 @@ def format_label(quantity: str, unit) -> str:
     return "$" + quantity + r"\:\left[" + unit + r"\right]$"
 
 
+def get_wave_vector_unit(quantity: str = "wave_vector",
+                         spatial_quantity: str = "length",
+                         working_directory: Path = Path.cwd()
+                         ) -> Optional[Any]:
+
+    unit = load_unit(quantity, working_directory)
+    if unit:
+        return unit
+
+    unit = load_unit(spatial_quantity, working_directory)
+    if unit:
+        return simplify(2 * sympy.pi / unit)
+
+    return None
+
+
 def get_length_label(quantity: str = "x",
                      working_directory: Path = Path.cwd()) -> str:
     unit = load_unit("length", working_directory)
@@ -47,6 +63,14 @@ def get_time_label(quantity: str = "t",
 def get_energy_label(quantity: str = "E",
                      working_directory: Path = Path.cwd()) -> str:
     unit = load_unit("energy", working_directory)
+    if unit:
+        return format_label(quantity, latex(simplify(unit)))
+    return format_label(quantity, r"\mathrm{a.u.}")
+
+
+def get_momentum_label(quantity: str = "k",
+                       working_directory: Path = Path.cwd()):
+    unit = get_wave_vector_unit("wave_vector", "length", working_directory)
     if unit:
         return format_label(quantity, latex(simplify(unit)))
     return format_label(quantity, r"\mathrm{a.u.}")

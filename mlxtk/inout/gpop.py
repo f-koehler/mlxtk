@@ -137,10 +137,11 @@ def read_gpop_hdf5(
 
         grids = {}
         densities = {}
-        for dof_str in (key for key in fp.keys() if key.startswith("dof_")):
-            dof_i = dof_str.replace("dof_", "")
-            grids[dof_i] = fp[interior_path][dof_str][:]
-            densities[dof_i] = fp[interior_path][dof_str][:, :]
+        for dof_str in (key for key in fp[interior_path].keys()
+                        if key.startswith("dof_")):
+            dof_i = int(dof_str.replace("dof_", ""))
+            grids[dof_i] = fp[interior_path][dof_str]["grid"][:]
+            densities[dof_i] = fp[interior_path][dof_str]["density"][:, :]
         return (time, grids, densities)
 
 

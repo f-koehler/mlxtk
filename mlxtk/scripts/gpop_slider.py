@@ -7,6 +7,7 @@ from PySide2 import QtWidgets
 from scipy import fftpack
 
 from .. import inout, plot, units
+from ..tools.gpop import transform_to_momentum_space
 from ..ui import MatplotlibWidget, load_ui
 
 
@@ -99,14 +100,7 @@ def main():
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    data = inout.read_gpop(args.path)
-    for key in data[1]:
-        dx = numpy.abs(data[1][key][1] - data[1][key][0])
-        k = fftpack.fftshift(fftpack.fftfreq(len(data[1][key]), dx))
-        transformed = numpy.abs(
-            fftpack.fftshift(fftpack.fft(data[2][key], axis=1), axes=1))
-        data[1][key] = k
-        data[2][key] = transformed
+    data = transform_to_momentum_space(inout.read_gpop(args.path))
 
     app = QtWidgets.QApplication(sys.argv)
     form = GpopSlider(*data, args)

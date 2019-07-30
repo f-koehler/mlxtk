@@ -100,7 +100,9 @@ def main():
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    data = transform_to_momentum_space(inout.read_gpop(args.path))
+    data = inout.read_gpop(args.path)
+    if args.momentum:
+        data = transform_to_momentum_space(data)
 
     app = QtWidgets.QApplication(sys.argv)
     form = GpopSlider(*data, args)

@@ -23,7 +23,7 @@ def transform_to_momentum_space(
     elif isinstance(data[1], numpy.ndarray):
         dx = numpy.abs(data[1][1] - data[1][0])
         return data[0].copy(), fftpack.fftshift(
-            fftpack.fftfreq(len(data[1][key]), dx)), numpy.abs(
-                fftpack.fftshift(fftpack.fft(data[2][key], axis=1), axes=1))
+            fftpack.fftfreq(len(data[1]), dx)), numpy.abs(
+                fftpack.fftshift(fftpack.fft(data[2], axis=1), axes=1))
     else:
         raise ValueError("Bad data format")

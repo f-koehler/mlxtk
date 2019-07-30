@@ -2,7 +2,9 @@ import argparse
 import sys
 from pathlib import Path
 
+import numpy
 from PySide2 import QtWidgets
+from scipy import fftpack
 
 from .. import inout, plot, units
 from ..ui import MatplotlibWidget, load_ui
@@ -91,11 +93,23 @@ def main():
                         type=Path,
                         default=Path("propagate.h5/gpop"),
                         help="path to the gpop file")
+    parser.add_argument("--momentum",
+                        action="store_true",
+                        help="whether to transform to momentum space")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
+    data = inout.read_gpop(args.path)
+    for key in data[1]:
+        dx = numpy.abs(data[1][key][1] - data[1][key][0])
+        k = fftpack.fftshift(fftpack.fftfreq(len(data[1][key]), dx))
+        transformed = numpy.abs(
+            fftpack.fftshift(fftpack.fft(data[2][key], axis=1), axes=1))
+        data[1][key] = k
+        data[2][key] = transformed
+
     app = QtWidgets.QApplication(sys.argv)
-    form = GpopSlider(*inout.read_gpop(args.path), args)
+    form = GpopSlider(*data, args)
     assert form
     sys.exit(app.exec_())
 

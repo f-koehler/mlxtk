@@ -12,7 +12,13 @@ from ..ui import MatplotlibWidget, load_ui
 
 
 class GpopSlider(QtWidgets.QWidget):
-    def __init__(self, times, grids, gpops, plot_args, parent=None):
+    def __init__(self,
+                 times,
+                 grids,
+                 gpops,
+                 plot_args,
+                 momentum_space: bool = False,
+                 parent=None):
         super().__init__(parent)
 
         self.times = times
@@ -22,6 +28,7 @@ class GpopSlider(QtWidgets.QWidget):
         self.time_index = 0
         self.dof = 1
         self.line = None  # type: Line2D
+        self.momentum_space = momentum_space
 
         self.window = load_ui("gpop_slider.ui")
 
@@ -70,8 +77,12 @@ class GpopSlider(QtWidgets.QWidget):
 
         self.line = self.axes.plot(self.grids[self.dof],
                                    self.gpops[self.dof][self.time_index])[0]
-        self.axes.set_xlabel(units.get_length_label())
-        self.axes.set_ylabel(r"$\rho_1(x,t)$")
+        if self.momentum_space:
+            self.axes.set_xlabel(units.get_momentum_label())
+            self.axes.set_ylabel(r"$\rho_1(k,t)$")
+        else:
+            self.axes.set_xlabel(units.get_length_label())
+            self.axes.set_ylabel(r"$\rho_1(x,t)$")
         plot.apply_2d_args(self.axes, self.plot_args)
         self.axes.set_ylim([
             self.axes.get_ylim()[0],
@@ -96,6 +107,7 @@ def main():
                         help="path to the gpop file")
     parser.add_argument("--momentum",
                         action="store_true",
+                        default=False,
                         help="whether to transform to momentum space")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
@@ -105,7 +117,7 @@ def main():
         data = transform_to_momentum_space(data)
 
     app = QtWidgets.QApplication(sys.argv)
-    form = GpopSlider(*data, args)
+    form = GpopSlider(*data, args, momentum_space=args.momentum)
     assert form
     sys.exit(app.exec_())
 

@@ -1,5 +1,6 @@
 import argparse
 import sys
+from pathlib import Path
 
 from PySide2 import QtWidgets
 
@@ -86,7 +87,10 @@ class GpopSlider(QtWidgets.QWidget):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", help="path to the gpop file")
+    parser.add_argument("path",
+                        type=Path,
+                        default=Path("propagate.h5/gpop"),
+                        help="path to the gpop file")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 

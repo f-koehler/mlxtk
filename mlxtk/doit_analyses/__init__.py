@@ -21,7 +21,7 @@ def doit_plot_individual(selection: ParameterSelection,
 
     plot_dir = selection.path / "plots"
     output_dir = plot_dir / plot_name
-    pickle_file = plot_dir / "args.pickle"
+    pickle_file = plot_dir / plot_name / "args.pickle"
     scan_name = selection.path.name
 
     def action_write_pickle(targets):

@@ -5,6 +5,9 @@
 *.swp
 *~
 .ctags
+.doit.db.bak
+.doit.db.dat
+.doit.db.dir
 .mypy_cache/
 \#*\#
 build/

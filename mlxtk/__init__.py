@@ -1,6 +1,6 @@
 """Main module of the mlxtk library.
 """
-from . import dvr, inout, plot, systems
+from . import doit_analyses, dvr, inout, plot, systems
 from .log import get_logger
 from .parameter_scan import ParameterScan
 from .parameter_selection import ParameterSelection, load_scan

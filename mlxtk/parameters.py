@@ -33,6 +33,15 @@ class Parameters:
         self.names.append(name)
         self.docs[name] = doc
         self.__setitem__(name, value)
+        return self
+
+    def remove_parameter(self, name: str):
+        if not name in self.names:
+            raise KeyError("No parameter \"{}\"".format(name))
+        del self.docs[name]
+        delattr(self, name)
+        self.names.remove(name)
+        return self
 
     def to_json(self) -> str:
         return json.dumps({

@@ -2,6 +2,7 @@
 """
 import os
 import pickle
+from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable, Iterable, List, Optional, Set, Union
 
@@ -14,13 +15,38 @@ from .util import make_path, map_parallel_progress
 class ParameterSelection:
     def __init__(self,
                  parameters: Iterable[Parameters],
-                 path: Path = None,
+                 path: Union[str, Path] = None,
                  indices: Iterable[int] = None):
         if indices is None:
             self.parameters = [(i, p) for i, p in enumerate(parameters)]
         else:
             self.parameters = list(zip(indices, parameters))
-        self.path = None if path is None else path.resolve()
+        self.path = None if path is None else make_path(path).resolve()
+
+    def copy(self):
+        return ParameterSelection(
+            copy.deepcopy([p[1].copy() for p in self.parameters], self.path,
+                          [p[0] for p in self.parameters]))
+
+    def partition_single(self, parameter_name: str):
+        parameter_values = self.get_values(parameter_name)
+        partitions = {value: [[], []] for value in parameter_values}
+        for index, parameter in self.parameters:
+            partitions[parameter[parameter_name]][0].append(index)
+            partitions[parameter[parameter_name]][1].append(
+                parameter.copy().remove_parameter(parameter_name))
+        return {
+            value: ParameterSelection(partitions[value][1], self.path,
+                                      partitions[value][0])
+            for value in parameter_values
+        }
+
+    def partition(self, parameter_names: Union[str, List[str]]):
+        if isinstance(parameter_names, str):
+            return self.partition_single(parameter_names)
+        raise NotImplementedError(
+            "Only partitioning according to a single parameter is implemented yet."
+        )
 
     def fix_parameter(self, name: str, value: Any):
         """Select by the value of a single parameter.
@@ -129,16 +155,6 @@ class ParameterSelection:
             list of all return values created by calling the function for each
             parameter set.
         """
-
-        # with redirect_for_tqdm() as original:
-        #     results = []
-        #     for entry, path in tqdm(list(zip(self.parameters,
-        #                                      self.get_paths())),
-        #                             file=original,
-        #                             dynamic_ncols=True):
-        #         results.append(func(entry[0], path, entry[1]))
-
-        #     return results
         def helper(item):
             return func(item[0], item[1], item[2])
 

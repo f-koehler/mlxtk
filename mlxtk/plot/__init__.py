@@ -1,3 +1,4 @@
+import argparse
 import shutil
 import subprocess
 from pathlib import Path
@@ -101,6 +102,44 @@ def create_subplots(*args, **kwargs):
     return matplotlib.pyplot.subplots(*args, **kwargs)
 
 
+class PlotArgs2D:
+    def __init__(self):
+        self.xmin = None
+        self.xmax = None
+        self.ymin = None
+        self.ymax = None
+        self.logx = False
+        self.logy = False
+        self.grid = True
+
+    @staticmethod
+    def from_dict(kwargs):
+        args = PlotArgs2D()
+        args.xmin = kwargs.get("xmin", None)
+        args.xmax = kwargs.get("xmax", None)
+        args.ymin = kwargs.get("ymin", None)
+        args.ymax = kwargs.get("ymax", None)
+        args.logx = kwargs.get("logx", False)
+        args.logy = kwargs.get("logy", False)
+        args.grid = kwargs.get("grid", True)
+        return args
+
+    @staticmethod
+    def from_namespace(namespace: argparse.Namespace):
+        return PlotArgs2D.from_dict(namespace.__dict__)
+
+    def apply(self,
+              axes: matplotlib.axes.Axes,
+              figure: matplotlib.figure.Figure = None):
+        axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
+        axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
+        axes.grid(self.grid)
+        if self.logx:
+            axes.set_xscale("log")
+        if self.logy:
+            axes.set_yscale("log")
+
+
 def add_argparse_2d_args(parser):
     parser.add_argument("--logx",
                         action="store_true",
@@ -136,25 +175,5 @@ def add_argparse_2d_args(parser):
                         help="do not draw a grid")
 
 
-def apply_2d_args(ax, args):
-    if args.logx:
-        ax.set_xscale("log")
-
-    if args.logy:
-        ax.set_yscale("log")
-
-    xlims = list(ax.get_xlim())
-    if args.xmin is not None:
-        xlims[0] = args.xmin
-    if args.xmax is not None:
-        xlims[1] = args.xmax
-    ax.set_xlim(xlims)
-
-    ylims = list(ax.get_ylim())
-    if args.ymin is not None:
-        ylims[0] = args.ymin
-    if args.ymax is not None:
-        ylims[1] = args.ymax
-    ax.set_ylim(ylims)
-
-    ax.grid(args.grid)
+def apply_2d_args(ax: matplotlib.axes.Axes, namespace: argparse.Namespace):
+    PlotArgs2D.from_namespace(namespace).apply(ax)

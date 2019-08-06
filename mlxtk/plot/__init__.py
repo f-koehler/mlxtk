@@ -111,6 +111,7 @@ class PlotArgs2D:
         self.logx = False
         self.logy = False
         self.grid = True
+        self.extensions = [".pdf", ".png"]
 
     @staticmethod
     def from_dict(kwargs):

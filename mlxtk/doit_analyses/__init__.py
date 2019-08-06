@@ -29,7 +29,7 @@ def doit_plot_individual(selection: ParameterSelection,
             pickle.dump([plotting_args, extra_args], fptr)
 
     yield {
-        "name": "{}:{}:pickle".format(scan_name, plot_name),
+        "name": "{}:{}:pickle".format(scan_name, plot_name).replace("=", "_"),
         "targets": [str(pickle_file)],
         "clean": True,
         "actions": [action_write_pickle]
@@ -47,9 +47,12 @@ def doit_plot_individual(selection: ParameterSelection,
             for target in targets:
                 plot.save(fig, target)
 
+            plot.close_figure(fig)
+
         yield {
             "name":
-            "{}:{}:index_{}:plot".format(scan_name, plot_name, index),
+            "{}:{}:index_{}:plot".format(scan_name, plot_name,
+                                         index).replace("=", "_"),
             "file_dep": [str(pickle_file)],
             "targets": [
                 output_dir / (str(index) + extension)
@@ -58,8 +61,6 @@ def doit_plot_individual(selection: ParameterSelection,
             "clean":
             True,
             "actions": [(action_plot, [index, path, parameters])],
-            "verbosity":
-            2,
         }
 
 
@@ -82,7 +83,6 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
                 str(scan_dir / "by_index" / str(index) / propagation /
                     "propagate.h5") + "/gpop",
                 dof=dof)
-            print(index)
             fig, ax = plt.subplots(1, 1)
             plot.gpop.plot_gpop(ax, time, grid, density)
             return fig, [ax]

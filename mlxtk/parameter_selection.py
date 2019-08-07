@@ -6,6 +6,8 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 
+from tqdm import tqdm
+
 from .cwd import WorkingDir
 from .parameters import Parameters
 from .util import make_path, map_parallel_progress
@@ -146,7 +148,8 @@ class ParameterSelection:
         return [parameter for _, parameter in self.parameters]
 
     def foreach(self,
-                func: Callable[[int, str, Parameters], Any]) -> List[Any]:
+                func: Callable[[int, str, Parameters], Any],
+                parallel=True) -> List[Any]:
         """Call a function for each included parameter set.
 
         Args:
@@ -164,7 +167,14 @@ class ParameterSelection:
 
         work = [[entry[0], path, entry[1]]
                 for entry, path in zip(self.parameters, self.get_paths())]
-        return map_parallel_progress(helper, work)
+
+        if parallel:
+            return map_parallel_progress(helper, work)
+
+        return [
+            func(entry[0], path, entry[1]) for entry, path in tqdm(
+                list(zip(self.parameters, self.get_paths())))
+        ]
 
     def plot_foreach(self, name: str,
                      func: Callable[[int, str, Parameters], None]

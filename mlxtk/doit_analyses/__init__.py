@@ -1,3 +1,4 @@
+import itertools
 import pickle
 from pathlib import Path
 from typing import List, Union
@@ -25,6 +26,9 @@ def doit_plot_individual(selection: ParameterSelection,
     scan_name = selection.path.name
 
     def action_write_pickle(targets):
+        dir = Path(targets[0]).parent
+        if not dir.exists():
+            dir.mkdir(parents=True)
         with open(targets[0], "wb") as fptr:
             pickle.dump([plotting_args, len(decorator_funcs)], fptr)
 
@@ -47,6 +51,9 @@ def doit_plot_individual(selection: ParameterSelection,
                     decorator_func(fig, ax, index, path, parameters)
 
             for target in targets:
+                path = Path(target).parent
+                if not path.exists:
+                    path.mkdir(parents=True)
                 plot.save(fig, target)
 
             plot.close_figure(fig)
@@ -100,6 +107,45 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
                                  decorator_funcs=kwargs.get(
                                      "decorator_funcs", [])))
 
-    for generator in generators:
-        for element in generator:
-            yield element
+    for element in itertools.chain(generators):
+        yield element
+
+
+def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
+                     propagation: str = "propagate",
+                     node: int = 1,
+                     dof: int = 1,
+                     extensions: List[str] = [".png", ".pdf"],
+                     **kwargs):
+    if isinstance(scan_dirs, list):
+        scan_dirs = [make_path(p) for p in scan_dirs]
+    else:
+        scan_dirs = [make_path(scan_dirs)]
+
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+    plotting_args.grid = kwargs.get("logy", True)
+
+    generators = []
+    for scan_dir in scan_dirs:
+        selection = load_scan(scan_dir)
+
+        def plot_func(index, path, parameters):
+            data = inout.natpop.read_natpop(
+                str(scan_dir / "by_index" / str(index) / propagation /
+                    "propagate.h5") + "/natpop",
+                node=node,
+                dof=dof)
+            fig, ax = plt.subplots(1, 1)
+            plot.natpop.plot_natpop(ax, *data)
+            return fig, [ax]
+
+        generators.append(
+            doit_plot_individual(selection,
+                                 "natpop_{}_{}".format(node, dof),
+                                 plot_func,
+                                 plotting_args,
+                                 decorator_funcs=kwargs.get(
+                                     "decorator_funcs", [])))
+
+    for element in itertools.chain(generators):
+        yield element

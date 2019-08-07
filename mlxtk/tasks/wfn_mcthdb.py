@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
+from QDTK.Wavefunction import Wavefunction as WaveFunction
 from QDTK.Wavefunction import grab_lowest_eigenfct
 
 from mlxtk.doit_compat import DoitAction

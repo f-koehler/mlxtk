@@ -145,7 +145,7 @@ def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
         scan_dirs = [make_path(scan_dirs)]
 
     plotting_args = PlotArgs2D.from_dict(kwargs)
-    plotting_args.grid = kwargs.get("logy", True)
+    plotting_args.logy = kwargs.get("logy", True)
 
     generators = []
     for scan_dir in scan_dirs:

@@ -134,13 +134,14 @@ class PlotArgs2D:
               figure: matplotlib.figure.Figure = None):
         del figure
 
-        axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
-        axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
         axes.grid(self.grid)
         if self.logx:
             axes.set_xscale("log")
         if self.logy:
             axes.set_yscale("log")
+
+        axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
+        axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
 
 
 def add_argparse_2d_args(parser):

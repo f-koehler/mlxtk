@@ -152,8 +152,8 @@ def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
         selection = load_scan(scan_dir)
 
         def plot_func(index, path, parameters):
-            del index
             del path
+            del parameters
 
             data = inout.natpop.read_natpop(
                 str(scan_dir / "by_index" / str(index) / propagation /

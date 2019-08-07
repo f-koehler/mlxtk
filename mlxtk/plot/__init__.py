@@ -132,6 +132,8 @@ class PlotArgs2D:
     def apply(self,
               axes: matplotlib.axes.Axes,
               figure: matplotlib.figure.Figure = None):
+        del figure
+
         axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
         axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
         axes.grid(self.grid)

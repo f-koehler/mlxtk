@@ -2,9 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
-import numpy
 from PySide2 import QtWidgets
-from scipy import fftpack
 
 from .. import inout, plot, units
 from ..tools.gpop import transform_to_momentum_space
@@ -91,6 +89,8 @@ class GpopSlider(QtWidgets.QWidget):
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):
+        del index
+
         self.line.set_ydata(self.gpops[self.dof][self.time_index])
         self.axes.set_ylim([
             self.axes.get_ylim()[0],

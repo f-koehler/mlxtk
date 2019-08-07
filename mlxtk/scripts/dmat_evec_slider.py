@@ -180,6 +180,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     window = DmatEvecSlider(*inout.read_dmat_evecs_grid(args.path), args)
     sys.exit(app.exec_())
+    del window
 
 
 if __name__ == "__main__":

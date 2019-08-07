@@ -3,7 +3,6 @@ import os
 import pickle
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple, Union
 
@@ -141,7 +140,7 @@ class Propagate(Task):
             "exact_diag.h5" if self.flags["exact_diag"] else "propagate.h5")
 
         if self.flags["exact_diag"]:
-            self.qdtk_files = []
+            self.qdtk_files: List[str] = []
         else:
             self.qdtk_files = ["final.wfn"]
             if self.flags["psi"]:

@@ -2,7 +2,6 @@
 import argparse
 from functools import partial
 from pathlib import Path
-from typing import Callable
 
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure

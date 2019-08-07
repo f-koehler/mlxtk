@@ -4,11 +4,12 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Union
 
 from . import cwd, doit_compat, sge, util
 from .log import get_logger
 from .simulation import Simulation
+from .util import make_path
 
 assert Any
 assert Callable
@@ -104,12 +105,12 @@ class SimulationSet:
             self,
             name: str,
             simulations: List[Simulation],
-            working_dir: Optional[Path] = None,
+            working_dir: Union[str, Path] = None,
     ):
         self.name = name
         self.simulations = simulations
         self.working_dir = Path(
-            name).resolve() if working_dir is None else working_dir
+            name).resolve() if working_dir is None else make_path(working_dir)
 
         self.logger = get_logger(__name__ + ".SimulationSet")
 

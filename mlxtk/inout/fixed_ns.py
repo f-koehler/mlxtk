@@ -26,7 +26,6 @@ def read_fixed_ns_ascii(
                                names=names,
                                usecols=usecols)[names].values
         times, indices = numpy.unique(data[:, 0], return_index=True)
-        num_times = len(times)
 
         return times, data[indices, 1:num_coefficients +
                            1], data[indices, num_coefficients + 1:]

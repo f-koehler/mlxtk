@@ -4,10 +4,6 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-import h5py
-import numpy
-import pandas
-
 from .. import inout
 from ..cwd import WorkingDir
 from ..inout.psi import read_first_frame

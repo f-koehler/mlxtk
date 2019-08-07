@@ -4,7 +4,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 from .. import units
-from ..inout import read_expval
+from ..inout.expval import read_expval
 from ..plot import add_argparse_2d_args, apply_2d_args, plot_expval
 
 

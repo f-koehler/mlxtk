@@ -4,9 +4,6 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
-import h5py
-import pandas
-
 from .. import cwd, inout
 from ..doit_compat import DoitAction
 from ..log import get_logger

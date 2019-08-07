@@ -8,9 +8,7 @@ import os
 import pickle
 import subprocess
 from pathlib import Path
-from typing import Callable, List
-
-import pandas
+from typing import Callable, List, Union
 
 import mlxtk.parameters
 
@@ -30,7 +28,7 @@ class ParameterScan(SimulationSet):
             name: str,
             func: Callable[[Parameters], Simulation],
             combinations: List[Parameters],
-            working_dir: str = None,
+            working_dir: Union[str, Path] = None,
     ):
         super().__init__(name, [], working_dir)
         self.func = func

@@ -4,10 +4,9 @@ import os
 import pickle
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable, Iterable, List, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 
 from .cwd import WorkingDir
-from .log import redirect_for_tqdm, tqdm
 from .parameters import Parameters
 from .util import make_path, map_parallel_progress
 
@@ -25,12 +24,14 @@ class ParameterSelection:
 
     def copy(self):
         return ParameterSelection(
-            copy.deepcopy([p[1].copy() for p in self.parameters], self.path,
-                          [p[0] for p in self.parameters]))
+            deepcopy([p[1].copy() for p in self.parameters], self.path,
+                     [p[0] for p in self.parameters]))
 
     def partition_single(self, parameter_name: str):
         parameter_values = self.get_values(parameter_name)
-        partitions = {value: [[], []] for value in parameter_values}
+        partitions = {value: [[], []]
+                      for value in parameter_values
+                      }  # type: Dict[Any, List[List[int], List[Parameters]]]
         for index, parameter in self.parameters:
             partitions[parameter[parameter_name]][0].append(index)
             partitions[parameter[parameter_name]][1].append(

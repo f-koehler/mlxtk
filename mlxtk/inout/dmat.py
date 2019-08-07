@@ -4,8 +4,6 @@ from typing import Tuple, Union
 import numpy
 import pandas
 
-from ..util import make_path
-
 
 def read_dmat_evals(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with open(path, "r") as fp:

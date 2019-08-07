@@ -4,8 +4,6 @@ import h5py
 import numpy
 import pandas
 
-from . import tools
-
 
 def read_expval_ascii(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with open(path, "r") as fp:

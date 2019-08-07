@@ -19,13 +19,12 @@ def plot_expval(index: int,
                 path: Path,
                 parameters: Parameters,
                 file_path: Path,
-                dof: int = 1,
                 extension: str = ".pdf",
                 modfunc: Callable[[Figure, Axes, Parameters], None] = None):
     total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
-        plot.plot_expval(ax, *inout.read_expval(total_path))
+        plot.plot_expval(ax, *inout.expval.read_expval(total_path))
         ax.set_title(r"$\rho_1(x,t)$")
         ax.set_xlabel(units.get_time_label())
         ax.set_ylabel(units.get_length_label())
@@ -46,11 +45,6 @@ def main():
     parser.add_argument("expval",
                         type=Path,
                         help="relative path to expval within each simulation")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom")
     parser.add_argument("-e",
                         "--extension",
                         type=str,
@@ -76,7 +70,6 @@ def main():
         partial(plot_expval,
                 file_path=args.expval,
                 modfunc=apply_args,
-                dof=args.dof,
                 extension=args.extension))
 
 

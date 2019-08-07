@@ -1,11 +1,8 @@
-import gzip
-import io
 from pathlib import Path
-from typing import Any, Dict, List, TextIO, Union
+from typing import Any, Dict, List, Union
 
 import numpy
 import scipy.special
-from numba import jit
 from QDTK.Wavefunction import Wavefunction
 
 from ..util import memoize

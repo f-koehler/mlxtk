@@ -5,7 +5,6 @@ import itertools
 import os.path
 import re
 import shutil
-import signal
 import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
@@ -17,7 +16,7 @@ import tqdm
 from pathos.pools import ProcessPool as Pool
 
 from . import cwd
-from .log import get_logger, redirect_for_tqdm
+from .log import get_logger
 
 LOGGER = get_logger(__name__)
 

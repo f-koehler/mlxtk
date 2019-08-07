@@ -47,15 +47,20 @@ def read_psi_ascii(path: Union[str, Path]
                    ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = str(path)
 
-    times = []
-    psis = []
-    tape = []
+    times: List[float] = []
+    psis: List[List[complex]] = []
+    tape: List[int] = []
     tape_finished = False
     with open(path) as fhandle:
         for line in fhandle:
             if line.startswith("$time"):
                 tape_finished = True
-                time = float(RE_TIME.match(fhandle.readline()).group(1))
+                m = RE_TIME.match(fhandle.readline())
+                if not m:
+                    raise RuntimeError(
+                        "Error extracting time point from label: {}".format(
+                            line))
+                time = float(m.group(1))
                 times.append(time)
             elif line.startswith("$psi"):
                 psis.append([])
@@ -74,12 +79,10 @@ def read_psi_ascii(path: Union[str, Path]
 
                 tape.append(int(line))
 
-    tape = numpy.array(tape, dtype=numpy.int64)
-    times = numpy.array(times)
-    psis = numpy.array([numpy.array(psi).transpose() for psi in psis],
-                       dtype=numpy.complex128)
-
-    return [tape, times, psis]
+    return numpy.array(tape,
+                       dtype=numpy.int64), numpy.array(times), numpy.array(
+                           [numpy.array(psi).transpose() for psi in psis],
+                           dtype=numpy.complex128)
 
 
 def read_psi_hdf5(path):

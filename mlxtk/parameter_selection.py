@@ -134,6 +134,9 @@ class ParameterSelection:
 
         return [self.path / "by_index" / str(i) for i, _ in self.parameters]
 
+    def generate_paths(self, subpath: Union[str, Path]) -> List[Path]:
+        return [Path(path) / subpath for path in self.get_paths()]
+
     def get_parameters(self) -> List[Parameters]:
         """Get all included parameters sets.
 

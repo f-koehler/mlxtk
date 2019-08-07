@@ -15,7 +15,7 @@ def doit_plot_individual(selection: ParameterSelection,
                          plot_func,
                          plotting_args: PlotArgs2D = None,
                          extensions: List[str] = [".pdf", ".png"],
-                         extra_args={}):
+                         decorator_funcs=[]):
     if plotting_args is None:
         plotting_args = PlotArgs2D()
 
@@ -26,7 +26,7 @@ def doit_plot_individual(selection: ParameterSelection,
 
     def action_write_pickle(targets):
         with open(targets[0], "wb") as fptr:
-            pickle.dump([plotting_args, extra_args], fptr)
+            pickle.dump([plotting_args, len(decorator_funcs)], fptr)
 
     yield {
         "name": "{}:{}:pickle".format(scan_name, plot_name).replace("=", "_"),
@@ -43,6 +43,8 @@ def doit_plot_individual(selection: ParameterSelection,
 
             for ax in axes:
                 plotting_args.apply(ax)
+                for decorator_func in decorator_funcs:
+                    decorator_func(fig, ax, index, path, parameters)
 
             for target in targets:
                 plot.save(fig, target)
@@ -74,6 +76,9 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
     else:
         scan_dirs = [make_path(scan_dirs)]
 
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+    plotting_args.grid = kwargs.get("grid", False)
+
     generators = []
     for scan_dir in scan_dirs:
         selection = load_scan(scan_dir)
@@ -88,7 +93,12 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
             return fig, [ax]
 
         generators.append(
-            doit_plot_individual(selection, "gpop_{}".format(dof), plot_func))
+            doit_plot_individual(selection,
+                                 "gpop_{}".format(dof),
+                                 plot_func,
+                                 plotting_args,
+                                 decorator_funcs=kwargs.get(
+                                     "decorator_funcs", [])))
 
     for generator in generators:
         for element in generator:

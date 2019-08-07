@@ -14,6 +14,8 @@ LOGGER = get_logger(__name__)
 
 
 def main():
+    # pylint: disable=protected-access
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "basis",

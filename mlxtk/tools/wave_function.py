@@ -33,14 +33,15 @@ def add_momentum(wfn: Wavefunction, momentum: float) -> Wavefunction:
 
 
 def add_momentum_split(wfn: Wavefunction, momentum: float,
-                       x0: float) -> Wavefunction:
+                       x_center: float) -> Wavefunction:
     # pylint: disable=protected-access
     num_spfs = wfn.tree._subnodes[0]._dim  # type: int
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     grid = wfn.tree._topNode._pgrid[0]
 
-    phase = numpy.exp(1j * (2.0 * numpy.heaviside(grid - x0, 0.5) - 1.0) *
-                      momentum * grid)
+    phase = numpy.exp(
+        1j * (2.0 * numpy.heaviside(grid - x_center, 0.5) - 1.0) * momentum *
+        grid)
 
     for i in range(0, num_spfs):
         start = wfn.tree._subnodes[0]._z0 + i * len_spfs
@@ -51,6 +52,7 @@ def add_momentum_split(wfn: Wavefunction, momentum: float,
 
 
 def get_spfs(wfn: Wavefunction) -> List[numpy.ndarray]:
+    # pylint: disable=protected-access
     num_spfs = wfn.tree._subnodes[0]._dim  # type: int
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     spfs = []
@@ -61,17 +63,6 @@ def get_spfs(wfn: Wavefunction) -> List[numpy.ndarray]:
         spfs.append(wfn.PSI[start:stop])
 
     return spfs
-
-
-class Memoize:
-    def __init__(self, f):
-        self.f = f
-        self.memo = {}
-
-    def __call__(self, *args):
-        if not args in self.memo:
-            self.memo[args] = self.f(*args)
-        return self.memo[args]
 
 
 @memoize

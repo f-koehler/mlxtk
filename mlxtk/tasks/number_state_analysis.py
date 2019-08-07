@@ -28,6 +28,8 @@ class NumberStateAnalysisStatic(Task):
         self.name = str(self.result.with_suffix(""))
 
     def task_compute(self) -> Dict[str, Any]:
+        # pylint: disable=protected-access
+
         @DoitAction
         def action_compute(targets: List[str]):
             del targets

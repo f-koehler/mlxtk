@@ -57,10 +57,10 @@ def doit_plot_individual(
         def action_plot(index, path, parameters, targets):
             fig, axes = plot_func(index, path, parameters)
 
-            for ax in axes:
-                plotting_args.apply(ax)
+            for axis in axes:
+                plotting_args.apply(axis)
                 for decorator_func in decorator_funcs:
-                    decorator_func(fig, ax, index, path, parameters)
+                    decorator_func(fig, axis, index, path, parameters)
 
             for target in targets:
                 path = Path(target).parent
@@ -115,9 +115,9 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
                 str(scan_dir / "by_index" / str(index) / propagation /
                     "propagate.h5") + "/gpop",
                 dof=dof)
-            fig, ax = plt.subplots(1, 1)
-            plot.gpop.plot_gpop(ax, time, grid, density)
-            return fig, [ax]
+            fig, axis = plt.subplots(1, 1)
+            plot.gpop.plot_gpop(axis, time, grid, density)
+            return fig, [axis]
 
         generators.append(
             doit_plot_individual(selection,
@@ -160,9 +160,9 @@ def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
                     "propagate.h5") + "/natpop",
                 node=node,
                 dof=dof)
-            fig, ax = plt.subplots(1, 1)
-            plot.natpop.plot_natpop(ax, *data)
-            return fig, [ax]
+            fig, axis = plt.subplots(1, 1)
+            plot.natpop.plot_natpop(axis, *data)
+            return fig, [axis]
 
         generators.append(
             doit_plot_individual(selection,

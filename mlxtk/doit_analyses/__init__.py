@@ -16,6 +16,7 @@ from ..util import make_path
 def doit_plot_individual(
         selection: ParameterSelection,
         plot_name: str,
+        file_deps: List[Union[str, Path]],
         plot_func: Callable[[int, str, Parameters], Tuple[matplotlib.figure.
                                                           Figure, matplotlib.
                                                           axes.Axes]],
@@ -47,6 +48,9 @@ def doit_plot_individual(
         "actions": [action_write_pickle]
     }
 
+    max_index_len = len(str(max(selection.parameters, key=lambda x: x[0])[0]))
+    padding_format = "{:0" + str(max_index_len) + "d}"
+
     for (index, parameters), path in zip(selection.parameters,
                                          selection.get_paths()):
 
@@ -66,13 +70,18 @@ def doit_plot_individual(
 
             plot.close_figure(fig)
 
+        other_deps = [
+            str(selection.path / "by_index" / str(index) / dep)
+            for dep in file_deps
+        ]
+
         yield {
             "name":
             "{}:{}:index_{}:plot".format(scan_name, plot_name,
                                          index).replace("=", "_"),
-            "file_dep": [str(pickle_file)],
+            "file_dep": [str(pickle_file)] + other_deps,
             "targets": [
-                output_dir / (str(index) + extension)
+                output_dir / (padding_format.format(index) + extension)
                 for extension in extensions
             ],
             "clean":
@@ -113,6 +122,7 @@ def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
         generators.append(
             doit_plot_individual(selection,
                                  "gpop_{}".format(dof),
+                                 [str(Path(propagation) / "propagate.h5")],
                                  plot_func,
                                  plotting_args,
                                  extensions,
@@ -157,6 +167,7 @@ def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
         generators.append(
             doit_plot_individual(selection,
                                  "natpop_{}_{}".format(node, dof),
+                                 [str(Path(propagation) / "propagate.h5")],
                                  plot_func,
                                  plotting_args,
                                  extensions,

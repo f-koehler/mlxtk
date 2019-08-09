@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 from tqdm import tqdm
 
 from .cwd import WorkingDir
-from .parameters import Parameters
+from .parameters import Parameters, get_variables
 from .util import make_path, map_parallel_progress
 
 
@@ -23,6 +23,9 @@ class ParameterSelection:
         else:
             self.parameters = list(zip(indices, parameters))
         self.path = None if path is None else make_path(path).resolve()
+
+    def get_variable_names(self) -> List[str]:
+        return get_variables([p[1] for p in self.parameters])[0]
 
     def copy(self):
         return ParameterSelection(

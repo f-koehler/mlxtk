@@ -40,7 +40,7 @@ include = [
 [tool.poetry.dependencies]
 colorama = "^0.4.1"
 doit = "0.31.1"
-doit-graph = "^0.2"
+doit-graph = ">=0.2,<0.4"
 future = "^0.17.1"
 h5py = "^2.9.0"
 jinja2 = "^2.10.1"

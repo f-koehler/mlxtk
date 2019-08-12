@@ -5,12 +5,17 @@ from typing import Any, Callable, List, Tuple, Union
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy
 
 from .. import inout, plot
+from ..inout.natpop import read_natpop_hdf5
+from ..log import get_logger
 from ..parameter_selection import ParameterSelection, load_scan
 from ..parameters import Parameters
 from ..plot import PlotArgs2D
 from ..util import make_path
+
+LOGGER = get_logger(__name__)
 
 
 def doit_plot_individual(
@@ -176,3 +181,92 @@ def scan_plot_natpop(scan_dirs: Union[Path, str, List[str], List[Path]],
 
     for element in itertools.chain(generators):
         yield element
+
+
+def collect_values(scan_dir: Union[Path, str],
+                   data_files: List[Union[Path, str]],
+                   output_file: Union[Path, str],
+                   fetch_func,
+                   missing_ok: bool = True):
+    scan_dir = make_path(scan_dir)
+    data_files = [make_path(p) for p in data_files]
+    output_file = make_path(output_file)
+
+    selection = load_scan(scan_dir)
+    file_deps = []
+    for data_file in data_files:
+        for i, _ in selection.parameters:
+            p = scan_dir / "by_index" / str(i) / data_file
+            if missing_ok and p.exists():
+                file_deps.append(p)
+
+    def action_collect_values(scan_dir: Path, targets):
+        selection = load_scan(scan_dir)
+        variables = selection.get_variable_names()
+
+        def helper(index, path, parameters):
+            return [parameters[variable] for variable in variables
+                    ], fetch_func(index, path, parameters)
+
+        parameters = []
+        values = []
+        for param, val in selection.foreach(helper, parallel=False):
+            if val is not None:
+                parameters.append(param)
+                values.append(val)
+            else:
+                LOGGER.warning("cannot fetch value(s) for parameters: %s",
+                               str(param))
+
+        parameters = numpy.array(parameters, dtype=object)
+        values = numpy.array(values, dtype=object)
+        if len(values.shape) == 1:
+            values = values.reshape((len(values), 1))
+        elif len(values.shape) == 2:
+            pass
+        else:
+            raise RuntimeError("Invalid dimensions {}".format(len(
+                values.shape)))
+
+        data = numpy.c_[parameters, values]
+        header = [variable for variable in variables
+                  ] + ["value{}".format(i) for i in range(values.shape[1])]
+        Path(targets[0]).parent.mkdir(parents=True, exist_ok=True)
+        numpy.savetxt(targets[0], data, header=" ".join(header))
+
+    yield {
+        "name":
+        "{}:collect_values:{}".format(str(scan_dir.name),
+                                      str(output_file.stem)).replace("=", "_"),
+        "targets": [str(output_file)],
+        "file_dep":
+        file_deps,
+        "clean":
+        True,
+        "actions": [(action_collect_values, [scan_dir])]
+    }
+
+
+def collect_max_depletion(scan_dir: Union[Path, str],
+                          output_file: Union[Path, str] = None,
+                          propagation_name: str = "propagate",
+                          node: int = 1,
+                          dof: int = 1,
+                          missing_ok: bool = True):
+    if output_file is None:
+        output_file = Path("data") / ("max_depletion_{}.txt".format(
+            make_path(scan_dir).name))
+
+    def fetch(index, path, parameters):
+        _, data = read_natpop_hdf5(path / propagation_name / "propagate.h5",
+                                   "natpop",
+                                   node=node,
+                                   dof=dof)
+        return (1 - data[:, 0]).max()
+
+    return collect_values(scan_dir, [
+        Path(propagation_name) / "propagate.h5",
+    ],
+                          output_file,
+                          fetch,
+                          missing_ok=missing_ok)

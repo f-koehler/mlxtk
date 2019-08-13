@@ -14,44 +14,35 @@ from ..util import make_path
 from .plot import doit_plot_individual
 
 
-def scan_plot_gpop(scan_dirs: Union[Path, str, List[str], List[Path]],
+def scan_plot_gpop(scan_dir: Union[Path, str],
                    propagation: str = "propagate",
                    dof: int = 1,
                    extensions: List[str] = [".png", ".pdf"],
                    **kwargs):
-    if isinstance(scan_dirs, list):
-        scan_dirs = [make_path(p) for p in scan_dirs]
-    else:
-        scan_dirs = [make_path(scan_dirs)]
+    scan_dir = make_path(scan_dir)
 
     plotting_args = PlotArgs2D.from_dict(kwargs)
     plotting_args.grid = kwargs.get("grid", False)
 
-    generators = []
-    for scan_dir in scan_dirs:
-        selection = load_scan(scan_dir)
+    selection = load_scan(scan_dir)
 
-        def plot_func(index, path, parameters):
-            del path
-            del parameters
+    def plot_func(index, path, parameters):
+        del path
+        del parameters
 
-            time, grid, density = read_gpop(
-                str(scan_dir / "by_index" / str(index) / propagation /
-                    "propagate.h5") + "/gpop",
-                dof=dof)
-            fig, axis = plt.subplots(1, 1)
-            plot_gpop(axis, time, grid, density)
-            return fig, [axis]
+        time, grid, density = read_gpop(
+            str(scan_dir / "by_index" / str(index) / propagation /
+                "propagate.h5") + "/gpop",
+            dof=dof)
+        fig, axis = plt.subplots(1, 1)
+        plot_gpop(axis, time, grid, density)
+        return fig, [axis]
 
-        generators.append(
-            doit_plot_individual(selection,
-                                 "gpop_{}".format(dof),
-                                 [str(Path(propagation) / "propagate.h5")],
-                                 plot_func,
-                                 plotting_args,
-                                 extensions,
-                                 decorator_funcs=kwargs.get(
-                                     "decorator_funcs", [])))
-
-    for element in itertools.chain(generators):
-        yield element
+    yield doit_plot_individual(selection,
+                               "gpop_{}".format(dof),
+                               [str(Path(propagation) / "propagate.h5")],
+                               plot_func,
+                               plotting_args,
+                               extensions,
+                               decorator_funcs=kwargs.get(
+                                   "decorator_funcs", []))

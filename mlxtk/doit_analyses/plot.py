@@ -7,6 +7,7 @@ import matplotlib
 from .. import plot
 from ..parameter_selection import ParameterSelection
 from ..parameters import Parameters
+from ..util import make_path
 
 
 def doit_plot_individual(
@@ -84,3 +85,64 @@ def doit_plot_individual(
             True,
             "actions": [(action_plot, [index, path, parameters])],
         }
+
+
+def direct_plot(input_files: List[Union[str, Path]],
+                output_file_base: Union[str, Path],
+                plot_func: Callable[[], Tuple[matplotlib.figure.
+                                              Figure, matplotlib.axes.Axes]],
+                plotting_args: plot.PlotArgs2D = None,
+                extensions: List[str] = [".pdf", ".png"],
+                decorator_funcs: List[
+                    Callable[[matplotlib.figure.Figure, matplotlib.axes.
+                              Axes], Any]] = []):
+    if plotting_args is None:
+        plotting_args = plot.PlotArgs2D()
+
+    input_files = [make_path(input_file) for input_file in input_files]
+    output_file_base = make_path(output_file_base)
+    pickle_file = output_file_base.parent / ("." + output_file_base.stem +
+                                             ".pickle")
+
+    def action_write_pickle(targets):
+        dirname = Path(targets[0]).parent
+        if not dirname.exists():
+            dirname.mkdir(parents=True)
+        with open(targets[0], "wb") as fptr:
+            pickle.dump([plotting_args, len(decorator_funcs)], fptr)
+
+    yield {
+        "name":
+        "direct_plot:{}:pickle".format(output_file_base.name).replace(
+            "=", "_"),
+        "targets": [str(pickle_file)],
+        "clean":
+        True,
+        "actions": [action_write_pickle]
+    }
+
+    def action_plot(targets):
+        fig, axes = plot_func()
+
+        for axis in axes:
+            plotting_args.apply(axis)
+            for decorator_func in decorator_funcs:
+                decorator_func(fig, axis)
+
+        for target in targets:
+            plot.save(fig, target)
+
+        plot.close_figure(fig)
+
+    yield {
+        "name":
+        "direct_plot:{}:plot".format(output_file_base.name).replace("=", "_"),
+        "file_dep":
+        [str(input_file) for input_file in input_files] + [str(pickle_file)],
+        "targets": [str(output_file_base) + ext for ext in extensions],
+        "clean":
+        True,
+        "actions": [
+            action_plot,
+        ]
+    }

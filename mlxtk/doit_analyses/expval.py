@@ -17,8 +17,11 @@ def collect_final_expval(scan_dir: Union[Path, str],
     expval = make_path(expval)
 
     if output_file is None:
-        output_file = Path("data") / ("expval_" + expval.name.rstrip(".exp.h5")
-                                      ) / (make_path(scan_dir).name + ".txt")
+        folder_name = "expval_" + expval.name.rstrip(".exp.h5")
+        if not folder_name.startswith("final_"):
+            folder_name = "final_" + folder_name
+        output_file = Path("data") / (folder_name) / (
+            make_path(scan_dir).name + ".txt")
 
     def fetch(index, path, parameters):
         _, data = numpy.array(read_expval_hdf5(path / expval))

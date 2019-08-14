@@ -44,6 +44,33 @@ def get_wave_vector_unit(quantity: str = "wave_vector",
     return None
 
 
+def get_speed_unit(quantity: str = "speed",
+                   spatial_quantity: str = "length",
+                   time_quantity: str = "time",
+                   working_directory: Path = Path.cwd()) -> Optional[Any]:
+    unit = load_unit(quantity, working_directory)
+    if unit:
+        return unit
+
+    return simplify(
+        load_unit(spatial_quantity, working_directory) /
+        load_unit(time_quantity, working_directory))
+
+
+def get_acceleration_unit(quantity: str = "acceleration",
+                          spatial_quantity: str = "length",
+                          time_quantity: str = "time",
+                          working_directory: Path = Path.cwd()
+                          ) -> Optional[Any]:
+    unit = load_unit(quantity, working_directory)
+    if unit:
+        return unit
+
+    return simplify(
+        load_unit(spatial_quantity, working_directory) /
+        (load_unit(time_quantity, working_directory)**2))
+
+
 def get_length_label(quantity: str = "x",
                      working_directory: Path = Path.cwd()) -> str:
     unit = load_unit("length", working_directory)

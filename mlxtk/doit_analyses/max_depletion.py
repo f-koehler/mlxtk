@@ -11,8 +11,8 @@ from .plot import direct_plot
 
 
 def collect_max_depletion(scan_dir: Union[Path, str],
-                          output_file: Union[Path, str] = None,
                           propagation_name: str = "propagate",
+                          output_file: Union[Path, str] = None,
                           node: int = 1,
                           dof: int = 1,
                           missing_ok: bool = True):

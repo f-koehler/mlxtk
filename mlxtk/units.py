@@ -17,11 +17,29 @@ class Unit:
         else:
             self.expression = sympy.simplify(expression)
 
+    def format_label(self, quantity: str):
+        return "$" + quantity + r"\:\left[" + str(self) + r"\right]$"
+
     def __str__(self):
         return sympy.latex(self.expression)
 
-    def format_label(self, quantity: str):
-        return "$" + quantity + r"\:\left[" + str(self) + r"\right]$"
+    def __mul__(self, other):
+        if isinstance(other, Unit):
+            return Unit(self.expression * other.expression)
+        return Unit(self.expression * other)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        if isinstance(other, Unit):
+            return Unit(self.expression / other.expression)
+        return Unit(self.expression / other)
+
+    def __rtruediv__(self, other):
+        if isinstance(other, Unit):
+            return Unit(other.expression / self.expression)
+        return Unit(other / self.expression)
 
 
 class MissingUnitError(Exception):

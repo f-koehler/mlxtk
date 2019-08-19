@@ -30,7 +30,11 @@ def main():
     time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
     plot_natpop(ax, time, natpop)
 
-    ax.set_xlabel(units.get_time_label(working_directory=args.path))
+    try:
+        ax.set_xlabel(
+            units.get_default_unit_system().get_time_unit().format_label("t"))
+    except units.MissingUnitError:
+        ax.set_xlabel("$t$")
 
     apply_2d_args(ax, args)
 

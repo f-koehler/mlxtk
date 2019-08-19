@@ -1,103 +1,86 @@
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import sympy
 import sympy.abc
+from sympy.physics.quantum.constants import hbar
 
 from .settings import load_settings
+from .util import memoize
 
 
-def load_unit(quantity: str,
-              working_directory: Path = Path.cwd()) -> Optional[Any]:
-    unit = load_settings(working_directory).get("units",
-                                                {}).get(quantity, None)
-    if unit:
-        return sympy.sympify(unit, locals=sympy.abc._clash)
-    return None
+class Unit:
+    def __init__(self, expression: Union[str, Any]):
+        if isinstance(expression, str):
+            self.expression = sympy.sympify(expression,
+                                            locals=sympy.abc._clash)
+        else:
+            self.expression = sympy.simplify(expression)
+
+    def __str__(self):
+        return sympy.latex(self.expression)
+
+    def format_label(self, quantity: str):
+        return "$" + quantity + r"\:\left[" + str(self) + r"\right]$"
 
 
-def simplify(expr):
-    return sympy.simplify(expr)
+class MissingUnitError(Exception):
+    def __init__(self, dimension: str):
+        super().__init__("Missing unit for dimension: " + dimension)
 
 
-def latex(expr):
-    return sympy.latex(expr)
+class UnitSystem:
+    def __init__(self):
+        self.units = {}
 
+    @staticmethod
+    @memoize
+    def from_config(working_directory: Path = Path.cwd()):
+        system = UnitSystem()
+        units = load_settings(working_directory).get("units", {})
+        for dimension in units:
+            system.units[dimension] = Unit(units[dimension])
+        return system
 
-def format_label(quantity: str, unit) -> str:
-    return "$" + quantity + r"\:\left[" + unit + r"\right]$"
+    def get_length_unit(self) -> Unit:
+        if "length" not in self.units:
+            raise MissingUnitError("length")
 
+        return self.units["length"]
 
-def get_wave_vector_unit(quantity: str = "wave_vector",
-                         spatial_quantity: str = "length",
-                         working_directory: Path = Path.cwd()
-                         ) -> Optional[Any]:
+    def get_time_unit(self) -> Unit:
+        if "time" not in self.units:
+            raise MissingUnitError("time")
 
-    unit = load_unit(quantity, working_directory)
-    if unit:
+        return self.units["time"]
+
+    def get_energy_unit(self) -> Unit:
+        if "energy" in self.units:
+            return self.units["energy"]
+
+        unit = Unit(hbar / self.get_time_unit().expression)
+        self.units["energy"] = unit
         return unit
 
-    unit = load_unit(spatial_quantity, working_directory)
-    if unit:
-        return simplify(2 * sympy.pi / unit)
+    def get_speed_unit(self) -> Unit:
+        if "speed" in self.units:
+            return self.units["speed"]
 
-    return None
-
-
-def get_speed_unit(quantity: str = "speed",
-                   spatial_quantity: str = "length",
-                   time_quantity: str = "time",
-                   working_directory: Path = Path.cwd()) -> Optional[Any]:
-    unit = load_unit(quantity, working_directory)
-    if unit:
+        unit = Unit(self.get_length_unit().expression /
+                    self.get_time_unit().expression)
+        self.units["speed"] = unit
         return unit
 
-    return simplify(
-        load_unit(spatial_quantity, working_directory) /
-        load_unit(time_quantity, working_directory))
+    def get_acceleration_unit(self) -> Unit:
+        if "acceleration" in self.units:
+            return self.units["acceleration"]
 
-
-def get_acceleration_unit(quantity: str = "acceleration",
-                          spatial_quantity: str = "length",
-                          time_quantity: str = "time",
-                          working_directory: Path = Path.cwd()
-                          ) -> Optional[Any]:
-    unit = load_unit(quantity, working_directory)
-    if unit:
+        unit = Unit(self.get_speed_unit().expression /
+                    self.get_time_unit().expression)
+        self.units["acceleration"] = unit
         return unit
 
-    return simplify(
-        load_unit(spatial_quantity, working_directory) /
-        (load_unit(time_quantity, working_directory)**2))
 
-
-def get_length_label(quantity: str = "x",
-                     working_directory: Path = Path.cwd()) -> str:
-    unit = load_unit("length", working_directory)
-    if unit:
-        return format_label(quantity, latex(simplify(unit)))
-    return format_label(quantity, r"\mathrm{a.u.}")
-
-
-def get_time_label(quantity: str = "t",
-                   working_directory: Path = Path.cwd()) -> str:
-    unit = load_unit("time", working_directory)
-    if unit:
-        return format_label(quantity, latex(simplify(unit)))
-    return format_label(quantity, r"\mathrm{a.u.}")
-
-
-def get_energy_label(quantity: str = "E",
-                     working_directory: Path = Path.cwd()) -> str:
-    unit = load_unit("energy", working_directory)
-    if unit:
-        return format_label(quantity, latex(simplify(unit)))
-    return format_label(quantity, r"\mathrm{a.u.}")
-
-
-def get_momentum_label(quantity: str = "k",
-                       working_directory: Path = Path.cwd()):
-    unit = get_wave_vector_unit("wave_vector", "length", working_directory)
-    if unit:
-        return format_label(quantity, latex(simplify(unit)))
-    return format_label(quantity, r"\mathrm{a.u.}")
+def get_default_unit_system(working_directory: Path = Path.cwd()
+                            ) -> UnitSystem:
+    return UnitSystem.from_config(working_directory)

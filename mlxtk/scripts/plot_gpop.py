@@ -34,11 +34,16 @@ def main():
         data = transform_to_momentum_space(data)
     plot_gpop(ax, *data)
 
-    ax.set_xlabel(units.get_time_label(working_directory=args.path))
-    if args.momentum:
-        ax.set_ylabel(units.get_momentum_label(working_directory=args.path))
-    else:
-        ax.set_ylabel(units.get_length_label(working_directory=args.path))
+    unitsys = units.get_default_unit_system()
+    try:
+        ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
+    except units.MissingUnitError:
+        ax.set_xlabel("$t$")
+
+    try:
+        ax.set_ylabel(unitsys.get_length_unit().format_label("x"))
+    except units.MissingUnitError:
+        ax.set_ylabel("$x$")
 
     apply_2d_args(ax, args)
 

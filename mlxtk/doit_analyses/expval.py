@@ -1,11 +1,16 @@
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
+import matplotlib.pyplot as plt
 import numpy
 
 from ..inout.expval import read_expval_hdf5
+from ..parameter_selection import load_scan
+from ..plot import PlotArgs2D
+from ..plot.expval import plot_expval
 from ..util import make_path
 from .collect import collect_values
+from .plot import doit_plot_individual
 
 
 def collect_final_expval(scan_dir: Union[Path, str],
@@ -31,3 +36,35 @@ def collect_final_expval(scan_dir: Union[Path, str],
                           output_file,
                           fetch,
                           missing_ok=missing_ok)
+
+
+def scan_plot_expval(scan_dir: Union[Path, str],
+                     expval: Union[Path, str],
+                     extensions: List[str] = [".png", ".pdf"],
+                     **kwargs):
+    scan_dir = make_path(scan_dir)
+    expval = make_path(expval)
+
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+
+    selection = load_scan(scan_dir)
+
+    def plot_func(index, path, parameters):
+        del path
+        del parameters
+
+        data = read_expval_hdf5(
+            str((scan_dir / "by_index" / str(index) /
+                 expval).with_suffix(".exp.h5")))
+        fig, axis = plt.subplots(1, 1)
+        plot_expval(axis, *data, **kwargs)
+        return fig, [axis]
+
+    return doit_plot_individual(
+        selection,
+        "expval_{}".format(str(expval)).replace("/", "_"),
+        [str(expval.with_suffix(".exp.h5"))],
+        plot_func,
+        plotting_args,
+        extensions,
+        decorator_funcs=kwargs.get("decorator_funcs", []))

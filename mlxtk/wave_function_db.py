@@ -5,7 +5,7 @@ import pickle
 import time
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 from . import cwd, doit_compat
 from .hashing import hash_string
@@ -71,6 +71,19 @@ class WaveFunctionDB(ParameterScan):
         self.load_missing_wave_functions()
         self.load_stored_wave_functions()
         self.combinations = self.stored_wave_functions + self.missing_wave_functions
+
+        # TODO: it would be better to collect missing wave functions and remove them in one go
+        # this would require some additional methods
+        for parameter in self.stored_wave_functions:
+            path = self.get_path(parameter)
+            if not path:
+                self.store_missing_wave_function(parameter)
+                self.remove_wave_function(parameter)
+                continue
+
+            if not path.exists():
+                self.store_missing_wave_function(parameter)
+                self.remove_wave_function(parameter)
 
     def load_missing_wave_functions(self):
         self.create_working_dir()
@@ -155,6 +168,40 @@ class WaveFunctionDB(ParameterScan):
 
             self.stored_wave_functions.append(parameters)
 
+    def remove_wave_function(self, parameters: Parameters):
+        self.create_working_dir()
+
+        p = Path("stored_wave_functions.pickle")
+        with cwd.WorkingDir(self.working_dir):
+            if not p.exists():
+                return
+
+            with open(p, "rb") as fptr:
+                entries = pickle.load(fptr)
+
+            if parameters not in entries:
+                return
+
+            entries.remove(parameters)
+
+            with open(p, "wb") as fptr:
+                pickle.dump(entries, fptr)
+
+            self.stored_wave_functions.remove(parameters)
+
+    def get_path(self, parameters: Parameters) -> Optional[Path]:
+        common_parameter_names = parameters.get_common_parameter_names(
+            self.prototype)
+
+        for p in self.stored_wave_functions:
+            if p.has_same_common_parameters(parameters,
+                                            common_parameter_names):
+                path = self.working_dir.resolve() / "sim" / hash_string(
+                    repr(p)) / self.wfn_path
+                return path
+
+        return None
+
     def request(self, parameters: Parameters, compute: bool = True) -> Path:
         self.logger.info("request wave function for parameters %s",
                          repr(parameters))
@@ -162,13 +209,10 @@ class WaveFunctionDB(ParameterScan):
         common_parameter_names = parameters.get_common_parameter_names(
             self.prototype)
 
-        for p in self.stored_wave_functions:
-            if p.has_same_common_parameters(parameters,
-                                            common_parameter_names):
-                self.logger.info("wave function is present")
-                path = self.working_dir.resolve() / "sim" / hash_string(
-                    repr(p)) / self.wfn_path
-                return path
+        path = self.get_path(parameters)
+        if path:
+            self.logger.info("wave function is present")
+            return path
 
         self.logger.info("wave function is not present")
 

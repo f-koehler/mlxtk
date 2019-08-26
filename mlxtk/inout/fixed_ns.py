@@ -43,6 +43,17 @@ def read_fixed_ns_hdf5(path: Union[str, Path]
         return time, coefficients, N, m
 
 
+def read_fixed_ns_total_magnitude_hdf5(
+        path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
+    path = str(path)
+
+    time, coefficients, N, m = read_fixed_ns_hdf5(path)
+
+    return time, numpy.sum(coefficients.real**2 + coefficients.imag**2,
+                           axis=1), N, m
+
+
 def write_fixed_ns_hdf5(path: Union[str, Path], times: numpy.ndarray,
                         real: numpy.ndarray, imag: numpy.ndarray, N: int,
                         m: int):

@@ -63,8 +63,10 @@ def collect_values(scan_dir: Union[Path, str],
 
     yield {
         "name":
-        "{}:collect_values:{}".format(str(scan_dir.name),
-                                      str(output_file.stem)).replace("=", "_"),
+        "{}:collect_values:{}".format(
+            str(scan_dir.name),
+            str(output_file.with_suffix(""))).replace("=",
+                                                      "_").replace("/", "_"),
         "targets": [str(output_file)],
         "file_dep":
         file_deps,

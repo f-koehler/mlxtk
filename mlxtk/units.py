@@ -108,6 +108,43 @@ class UnitSystem:
         self.units["acceleration"] = unit
         return unit
 
+    def get_delta_interaction_unit(self) -> Unit:
+        if "delta_interaction" in self.units:
+            return self.units["delta_interaction"]
+
+        unit = Unit(self.get_energy_unit().expression *
+                    self.get_length_unit().expression)
+        self.units["delta_interaction"] = unit
+        return unit
+
+    def init_all_units(self):
+        for method in dir(self):
+            if not callable(getattr(self, method)):
+                continue
+
+            if not method.startswith("get_"):
+                continue
+
+            if not method.endswith("_unit"):
+                continue
+
+            try:
+                getattr(self, method)()
+            except MissingUnitError:
+                pass
+
+    def __str__(self):
+        self.init_all_units()
+
+        output = [
+            "UnitSystem:",
+        ]
+        for dimension in self.units:
+            output.append("\t" + dimension + ":  " +
+                          str(self.units[dimension]))
+
+        return "\n".join(output)
+
 
 def get_default_unit_system(working_directory: Path = Path.cwd()
                             ) -> UnitSystem:

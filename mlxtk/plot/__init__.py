@@ -29,7 +29,7 @@ def make_headless():
 def save(figure: matplotlib.figure.Figure,
          path: Union[str, Path],
          crop: bool = True,
-         optimize: bool = True):
+         optimize: bool = False):
     path = make_path(path)
 
     if path.suffix == ".pdf":

@@ -1,1 +1,1 @@
-from . import signal
+from . import signal, table

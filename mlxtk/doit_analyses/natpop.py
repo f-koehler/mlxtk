@@ -1,13 +1,16 @@
 import itertools
+import pickle
 from pathlib import Path
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
+import h5py
 import matplotlib.pyplot as plt
 import numpy
 
 from ..inout.natpop import read_natpop, read_natpop_hdf5
 from ..parameter_selection import load_scan
 from ..plot import PlotArgs2D, plot_natpop
+from ..tools.entropy import compute_entropy
 from ..util import make_path
 from .collect import collect_values
 from .plot import direct_plot, doit_plot_individual
@@ -46,6 +49,86 @@ def scan_plot_natpop(scan_dir: Union[Path, str],
                                 extensions,
                                 decorator_funcs=kwargs.get(
                                     "decorator_funcs", []))
+
+
+class DefaultNatpopAnalysis:
+    def __init__(self,
+                 scan_dir: Union[Path, str],
+                 propagation: str = "propagation",
+                 node: int = 1,
+                 dof: int = 1,
+                 missing_ok: bool = True,
+                 output_file: Union[Path, str] = None):
+        self.scan_dir = make_path(scan_dir)
+        self.propagation = propagation
+        self.node = node
+        self.dof = dof
+        self.missing_ok = missing_ok
+
+        if output_file is None:
+            self.output_file = Path("data") / "natpop_{}_{}".format(
+                node, dof) / (self.scan_dir.name.replace("=", "_") + ".h5")
+        else:
+            sself.scan_dir.name.elf.output_file = make_path(output_file)
+
+    def __call__(self) -> Dict[str, Any]:
+        pickle_obj = [self.node, self.dof, self.missing_ok]
+        pickle_path = self.output_file.with_suffix(".pickle")
+
+        pickle_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(pickle_path, "wb") as fptr:
+            pickle.dump(pickle_obj, fptr)
+
+        def action(input_files, targets):
+            with h5py.File(targets[0]) as fptr:
+                max_depletion = []
+                max_entropy = []
+                max_last_orbital = []
+
+                for input_file in input_files:
+                    time, data = read_natpop_hdf5(input_file,
+                                                  "natpop",
+                                                  node=self.node,
+                                                  dof=self.dof)
+                    del time
+
+                    entropy = compute_entropy(data)
+
+                    max_depletion.append((1 - data[:, 0]).max())
+                    max_entropy.append(entropy.max())
+                    max_last_orbital.append(data[:, -1].max())
+
+                dset = fptr.create_dataset("max_depletion",
+                                           (len(max_depletion), ),
+                                           dtype=numpy.float64)
+                dset[:] = max_depletion
+
+                dset = fptr.create_dataset("max_entropy", (len(max_entropy), ),
+                                           dtype=numpy.float64)
+                dset[:] = max_entropy
+
+                dset = fptr.create_dataset("max_last_orbital",
+                                           (len(max_last_orbital), ),
+                                           dtype=numpy.float64)
+                dset[:] = max_last_orbital
+
+        scan_name_sanitized = self.scan_dir.name.replace("=", "_")
+
+        scan = load_scan(self.scan_dir)
+        input_files = [
+            self.scan_dir / "by_index" / str(i) / self.propagation /
+            "propagate.h5" for i, _ in scan.parameters
+        ]
+
+        yield {
+            "name":
+            "natpop:{}_{}:{}:default_analysis".format(self.node, self.dof,
+                                                      scan_name_sanitized),
+            "file_dep": [pickle_path] + input_files,
+            "targets": [self.output_file],
+            "actions": [(action, [input_files])]
+        }
 
 
 def collect_max_depletion(scan_dir: Union[Path, str],

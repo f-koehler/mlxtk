@@ -4,8 +4,10 @@ import os
 import pickle
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import (Any, Callable, Dict, Iterable, List, Optional, Set, Tuple,
+                    Union)
 
+import numpy
 from tqdm import tqdm
 
 from .cwd import WorkingDir
@@ -149,6 +151,19 @@ class ParameterSelection:
             A list of all included parameter sets.
         """
         return [parameter for _, parameter in self.parameters]
+
+    def get_variable_values(self) -> Tuple[List[str], Dict[str, numpy.array]]:
+        variables = self.get_variable_names()
+        values = {var: [] for var in variables}
+
+        for _, parameters in self.parameters:
+            for var in variables:
+                values[var].append(parameters[var])
+
+        for var in variables:
+            values[var] = numpy.array(values[var])
+
+        return variables, values
 
     def foreach(self,
                 func: Callable[[int, str, Parameters], Any],

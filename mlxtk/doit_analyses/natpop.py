@@ -80,7 +80,9 @@ class DefaultNatpopAnalysis:
         with open(pickle_path, "wb") as fptr:
             pickle.dump(pickle_obj, fptr)
 
-        def action(input_files, targets):
+        def action(scan_dir, input_files, targets):
+            variables, values = load_scan(scan_dir).get_variable_values()
+
             with h5py.File(targets[0]) as fptr:
                 max_depletion = []
                 max_entropy = []
@@ -113,6 +115,13 @@ class DefaultNatpopAnalysis:
                                            dtype=numpy.float64)
                 dset[:] = max_last_orbital
 
+                grp = fptr.create_group("variables")
+                for var in variables:
+                    dset = grp.create_dataset(var,
+                                              values[var].shape,
+                                              dtype=values[var].dtype)
+                    dset[:] = values[var]
+
         scan_name_sanitized = self.scan_dir.name.replace("=", "_")
 
         scan = load_scan(self.scan_dir)
@@ -127,7 +136,7 @@ class DefaultNatpopAnalysis:
                                                       scan_name_sanitized),
             "file_dep": [pickle_path] + input_files,
             "targets": [self.output_file],
-            "actions": [(action, [input_files])]
+            "actions": [(action, [self.scan_dir, input_files])]
         }
 
 

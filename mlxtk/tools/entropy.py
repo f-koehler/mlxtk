@@ -20,9 +20,18 @@ def compute_entropy(natpop: numpy.ndarray
         Boltzmann entropy
     """
     if len(natpop.shape) == 1:
-        return numpy.sum(-natpop * numpy.log(natpop))
+        result = 0.0
+        for lam in natpop:
+            if lam != 0.0:
+                result -= lam * numpy.log(lam)
+        return result
 
     if len(natpop.shape) == 2:
-        return numpy.sum(-natpop * numpy.log(natpop), axis=1)
+        result = numpy.zeros(natpop.shape[0])
+        for i in range(natpop.shape[0]):
+            for lam in natpop[i]:
+                if lam != 0.0:
+                    result[i] -= lam * numpy.log(lam)
+        return result
 
     raise ValueError("natpop must be either 1- or 2-dimensional")

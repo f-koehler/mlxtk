@@ -54,7 +54,7 @@ def scan_plot_natpop(scan_dir: Union[Path, str],
 class DefaultNatpopAnalysis:
     def __init__(self,
                  scan_dir: Union[Path, str],
-                 propagation: str = "propagation",
+                 propagation: str = "propagate",
                  node: int = 1,
                  dof: int = 1,
                  missing_ok: bool = True,

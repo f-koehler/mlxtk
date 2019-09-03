@@ -11,4 +11,4 @@ def task_plot_natpop():
 
 def task_analyse_natpop():
     return mlxtk.doit_analyses.natpop.DefaultNatpopAnalysis(
-        "harmonic_trap_scan", "propagate")()
+        "harmonic_trap_scan")()

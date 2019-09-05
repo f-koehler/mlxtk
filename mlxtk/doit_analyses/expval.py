@@ -13,6 +13,31 @@ from .collect import collect_values
 from .plot import doit_plot_individual
 
 
+def collect_initial_expval(scan_dir: Union[Path, str],
+                           expval: Union[Path, str],
+                           output_file: Union[Path, str] = None,
+                           node: int = 1,
+                           dof: int = 1,
+                           missing_ok: bool = True):
+    expval = make_path(expval)
+
+    if output_file is None:
+        folder_name = "expval_" + expval.name.rstrip(".exp.h5")
+        if not folder_name.startswith("initial_"):
+            folder_name = "initial_" + folder_name
+        output_file = Path("data") / (folder_name) / (
+            make_path(scan_dir).name + ".txt")
+
+    def fetch(index, path, parameters):
+        _, data = numpy.array(read_expval_hdf5(path / expval))
+        return data[0].real, data[0].imag
+
+    return collect_values(scan_dir, [expval],
+                          output_file,
+                          fetch,
+                          missing_ok=missing_ok)
+
+
 def collect_final_expval(scan_dir: Union[Path, str],
                          expval: Union[Path, str],
                          output_file: Union[Path, str] = None,

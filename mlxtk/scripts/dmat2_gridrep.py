@@ -3,7 +3,10 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+import h5py
+
 from ..cwd import WorkingDir
+from ..inout.dmat2 import add_dmat2_gridrep_to_hdf5, read_dmat2_gridrep_ascii
 from ..util import copy_file
 
 
@@ -38,9 +41,9 @@ def main():
     restart_file = Path(args.restart).resolve()
     operator_file = Path(args.operator).resolve()
     psi_file = Path(args.psi).resolve()
+    basename = "dmat2_dof{}_dof{}".format(args.dof1, args.dof2)
     if not args.output:
-        output_file = Path.cwd() / "dmat2_dof{}_dof{}_gridrep.h5".format(
-            args.dof1, args.dof2)
+        output_file = Path.cwd() / (basename + "_gridrep.h5")
     else:
         output_file = Path(args.output).resolve()
 
@@ -55,8 +58,9 @@ def main():
                 str(args.dof1), "-dofB",
                 str(args.dof2)
             ])
-            copy_file("dmat2_dof{}_dof{}_grid".format(args.dof1, args.dof2),
-                      output_file)
+            with h5py.File(output_file, "w") as fptr:
+                add_dmat2_gridrep_to_hdf5(
+                    fptr, read_dmat2_gridrep_ascii(basename + "_grid"))
 
 
 if __name__ == "__main__":

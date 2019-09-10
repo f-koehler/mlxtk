@@ -69,6 +69,8 @@ class GpopSlider(QtWidgets.QWidget):
         self.label_time.setText("Time: {:.4E}".format(self.times[index]))
 
     def init_plot(self):
+        unit_system = units.get_default_unit_system()
+
         if self.line:
             self.line.remove()
             self.line = None
@@ -76,10 +78,11 @@ class GpopSlider(QtWidgets.QWidget):
         self.line = self.axes.plot(self.grids[self.dof],
                                    self.gpops[self.dof][self.time_index])[0]
         if self.momentum_space:
-            self.axes.set_xlabel(units.get_momentum_label())
+            # self.axes.set_xlabel(unit_system.get_momentum_label().format_label("p"))
             self.axes.set_ylabel(r"$\rho_1(k,t)$")
         else:
-            self.axes.set_xlabel(units.get_length_label())
+            self.axes.set_xlabel(
+                unit_system.get_length_unit().format_label("x"))
             self.axes.set_ylabel(r"$\rho_1(x,t)$")
         plot.apply_2d_args(self.axes, self.plot_args)
         self.axes.set_ylim([

@@ -58,14 +58,16 @@ class Dmat2Slider(QtWidgets.QWidget):
             self.mesh.remove()
             self.mesh = None
 
+        unit_system = units.get_default_unit_system()
+
         X2, X1 = numpy.meshgrid(self.x2, self.x1)
         self.mesh = self.axes.pcolormesh(X1,
                                          X2,
                                          self.dmat2[self.time_index],
                                          cmap="gnuplot",
                                          rasterized=True)
-        # self.axes.set_xlabel(units.get_length_label("x_1"))
-        # self.axes.set_ylabel(units.get_length_label("x_2"))
+        self.axes.set_xlabel(unit_system.get_length_unit().format_label("x_1"))
+        self.axes.set_ylabel(unit_system.get_length_unit().format_label("x_2"))
         plot.apply_2d_args(self.axes, self.plot_args)
         self.plot.canvas.draw()
 

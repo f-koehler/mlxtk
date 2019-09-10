@@ -3,12 +3,23 @@ import matplotlib.tri
 import numpy
 import stl
 
+from ..tools.gpop import transform_to_momentum_space
+
 
 def plot_gpop(ax, time, grid, density):
     Y, X = numpy.meshgrid(grid, time)
     ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
     ax.set_xlabel("$t$")
     ax.set_ylabel(r"$x$")
+
+
+def plot_gpop_momentum(ax, time, grid, density):
+    time, momentum, density = transform_to_momentum_space(
+        (time, grid, density))
+    Y, X = numpy.meshgrid(momentum, time)
+    ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
+    ax.set_xlabel("$t$")
+    ax.set_xlabel("$p$")
 
 
 def create_gpop_model(time, grid, density):

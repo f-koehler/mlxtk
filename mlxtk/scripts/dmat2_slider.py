@@ -64,8 +64,8 @@ class Dmat2Slider(QtWidgets.QWidget):
                                          self.dmat2[self.time_index],
                                          cmap="gnuplot",
                                          rasterized=True)
-        self.axes.set_xlabel(units.get_length_label("x_1"))
-        self.axes.set_ylabel(units.get_length_label("x_2"))
+        # self.axes.set_xlabel(units.get_length_label("x_1"))
+        # self.axes.set_ylabel(units.get_length_label("x_2"))
         plot.apply_2d_args(self.axes, self.plot_args)
         self.plot.canvas.draw()
 
@@ -81,7 +81,7 @@ def main():
     args = parser.parse_args()
 
     app = QtWidgets.QApplication(sys.argv)
-    Dmat2Slider(*inout.read_dmat2_gridrep(args.path), args)
+    slider = Dmat2Slider(*inout.read_dmat2_gridrep(args.path), args)
     sys.exit(app.exec_())
 
 

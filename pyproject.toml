@@ -67,6 +67,7 @@ yapf = "^0.28.0"
 
 [tool.poetry.scripts]
 dmat_spf_slider = "mlxtk.scripts.dmat_spf_slider:main"
+dmat2_gridrep = "mlxtk.scripts.dmat2_gridrep:main"
 dmat2_slider = "mlxtk.scripts.dmat2_slider:main"
 dmat_evec_slider = "mlxtk.scripts.dmat_evec_slider:main"
 fixed_ns = "mlxtk.scripts.fixed_ns:main"

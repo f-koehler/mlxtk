@@ -3,6 +3,7 @@ import sys
 
 import h5py
 import numpy
+
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import (QApplication, QGraphicsView, QHeaderView, QLabel,
                              QListWidget, QTableWidget, QTabWidget)

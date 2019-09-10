@@ -1,10 +1,9 @@
 from typing import List, Tuple
 
 import numpy
-import scipy.linalg
-
 import QDTK.Tools.Mathematics
 import QDTK.Wavefunction
+import scipy.linalg
 
 from .. import log
 

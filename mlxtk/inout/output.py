@@ -12,7 +12,6 @@ def read_output(
         path: str
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
-    print(is_hdf5, path, interior_path)
     if is_hdf5:
         return read_output_hdf5(path, interior_path)
 

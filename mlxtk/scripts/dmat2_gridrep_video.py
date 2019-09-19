@@ -11,7 +11,10 @@ from tqdm import tqdm
 from .. import plot, units
 from ..cwd import WorkingDir
 from ..inout.dmat2 import read_dmat2_gridrep_hdf5
+from ..log import get_logger
 from ..util import copy_file
+
+LOGGER = get_logger(__name__)
 
 
 def main():
@@ -38,7 +41,7 @@ def main():
     if args.output:
         output = args.output.resolve()
     else:
-        output = args.input.with_suffix(".mp4")
+        output = args.input.with_suffix(".mp4").resolve()
 
     with tempfile.TemporaryDirectory() as tmpdir:
         with WorkingDir(tmpdir):
@@ -55,11 +58,14 @@ def main():
                             dpi=600)
                 plot.close_figure(fig)
 
-            subprocess.run([
+            cmd = [
                 "ffmpeg", "-y", "-framerate",
                 str(args.fps), "-i", "%0" + str(num_digits) + "d.png",
                 "out.mp4"
-            ])
+            ]
+            LOGGER.info("ffmpeg command: %s", " ".join(cmd))
+            subprocess.run(cmd)
+            LOGGER.info("copy file: out.mp4 -> %s", str(output))
             copy_file("out.mp4", output)
 
 

@@ -83,7 +83,7 @@ def main():
     args = parser.parse_args()
 
     app = QtWidgets.QApplication(sys.argv)
-    slider = Dmat2Slider(*inout.read_dmat2_gridrep(args.path), args)
+    slider = Dmat2Slider(*inout.dmat2.read_dmat2_gridrep_hdf5(args.path), args)
     sys.exit(app.exec_())
 
 

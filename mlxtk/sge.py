@@ -43,7 +43,7 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
     parser.add_argument(
         "-e",
         "--email",
-        default="none",
+        default=None,
         help=("email address to notify about finished, aborted and suspended"
               "jobs"),
     )

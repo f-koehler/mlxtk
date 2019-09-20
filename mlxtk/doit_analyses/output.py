@@ -1,9 +1,15 @@
 from pathlib import Path
-from typing import Union
+from typing import List, Union
+
+import matplotlib.pyplot as plt
 
 from ..inout.output import read_output_hdf5
+from ..parameter_selection import load_scan
+from ..plot import PlotArgs2D
+from ..plot.energy import plot_energy
 from ..util import make_path
 from .collect import collect_values
+from .plot import doit_plot_individual
 
 
 def collect_final_energy(scan_dir: Union[Path, str],
@@ -25,3 +31,35 @@ def collect_final_energy(scan_dir: Union[Path, str],
                           output_file,
                           fetch,
                           missing_ok=missing_ok)
+
+
+def scan_plot_energy(scan_dir: Union[Path, str],
+                     propagation: str = "propagate",
+                     extensions: List[str] = [".png", ".pdf"],
+                     **kwargs):
+    scan_dir = make_path(scan_dir)
+
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+
+    selection = load_scan(scan_dir)
+
+    def plot_func(index, path, parameters):
+        del path
+        del parameters
+
+        time, _, energy, _ = read_output_hdf5(
+            scan_dir / "by_index" / str(index) / propagation / "propagate.h5",
+            "output")
+
+        fig, axis = plt.subplots(1, 1)
+        plot_energy(axis, time, energy)
+        return fig, [axis]
+
+    yield doit_plot_individual(selection,
+                               "energy",
+                               [str(Path(propagation) / "propagate.h5")],
+                               plot_func,
+                               plotting_args,
+                               extensions,
+                               decorator_funcs=kwargs.get(
+                                   "decorator_funcs", []))

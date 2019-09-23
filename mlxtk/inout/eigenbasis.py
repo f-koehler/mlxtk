@@ -20,7 +20,7 @@ def read_eigenbasis_ascii(
     path_vectors = path / "eigenvectors"
 
     regex_energy = re.compile(
-        r"^\s+\d+\s+\([+-]?(\d+\.\d+(?:[eE][+-]?\d+)?),[+-]?(\d+\.\d+(?:[eE][+-]?\d+)?)\)$"
+        r"^\s+\d+\s+\(([+-]?\d+\.\d+(?:[eE][+-]?\d+)?),([+-]?\d+\.\d+(?:[eE][+-]?\d+)?)\)$"
     )
 
     energies = []

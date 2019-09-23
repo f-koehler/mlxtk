@@ -61,6 +61,11 @@ class TwoGaussianTraps(GaussianTrap):
 
         return operator
 
+    def get_hamiltonian(self) -> tasks.MBOperatorSpecification:
+        return self.get_hamiltonian_left_well(
+        ) + self.create_gaussian_potential_operator(
+            self.parameters.x0R, self.parameters.V0R, "potential_right")
+
     def get_hamiltonian_colliding_wells(self,
                                         vL: float = 1.0,
                                         aL: float = 0.0,

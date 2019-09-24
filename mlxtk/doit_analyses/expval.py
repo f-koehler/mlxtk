@@ -70,6 +70,8 @@ def scan_plot_expval(scan_dir: Union[Path, str],
     scan_dir = make_path(scan_dir)
     expval = make_path(expval)
 
+    kwargs["coefficient"] = kwargs.get("coefficient", 1.)
+
     plotting_args = PlotArgs2D.from_dict(kwargs)
 
     selection = load_scan(scan_dir)
@@ -92,4 +94,5 @@ def scan_plot_expval(scan_dir: Union[Path, str],
         plot_func,
         plotting_args,
         extensions,
-        decorator_funcs=kwargs.get("decorator_funcs", []))
+        decorator_funcs=kwargs.get("decorator_funcs", []),
+        extra_args={"coefficient": kwargs["coefficient"]})

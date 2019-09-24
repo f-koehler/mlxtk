@@ -22,7 +22,8 @@ def doit_plot_individual(
         decorator_funcs: List[Callable[[
             matplotlib.figure.Figure, matplotlib.axes.
             Axes, int, str, Parameters
-        ], Any]] = []):
+        ], Any]] = [],
+        **extra_args):
     if plotting_args is None:
         plotting_args = plot.PlotArgs2D()
 
@@ -36,7 +37,8 @@ def doit_plot_individual(
         if not dir.exists():
             dir.mkdir(parents=True)
         with open(targets[0], "wb") as fptr:
-            pickle.dump([plotting_args, len(decorator_funcs)], fptr)
+            pickle.dump([plotting_args,
+                         len(decorator_funcs), extra_args], fptr)
 
     yield {
         "name": "{}:{}:pickle".format(scan_name, plot_name).replace("=", "_"),

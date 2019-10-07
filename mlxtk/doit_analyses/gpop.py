@@ -21,6 +21,8 @@ def scan_plot_gpop(scan_dir: Union[Path, str],
                    **kwargs):
     scan_dir = make_path(scan_dir)
 
+    plot_name = kwargs.get("plot_name", "gpop_{}".format(dof))
+
     plotting_args = PlotArgs2D.from_dict(kwargs)
     plotting_args.grid = kwargs.get("grid", False)
 
@@ -39,7 +41,7 @@ def scan_plot_gpop(scan_dir: Union[Path, str],
         return fig, [axis]
 
     yield doit_plot_individual(selection,
-                               "gpop_{}".format(dof),
+                               plot_name,
                                [str(Path(propagation) / "propagate.h5")],
                                plot_func,
                                plotting_args,

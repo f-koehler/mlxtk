@@ -17,8 +17,8 @@ def collect_final_energy(scan_dir: Union[Path, str],
                          output_file: Union[Path, str] = None,
                          missing_ok: bool = True):
     if output_file is None:
-        output_file = Path("data") / "final_energy" / (
-            make_path(scan_dir).name + ".txt")
+        output_file = Path("data") / "{}_final_energy".format(
+            propagation_name) / (make_path(scan_dir).name + ".txt")
 
     def fetch(index, path, parameters):
         _, _, energy, _ = read_output_hdf5(

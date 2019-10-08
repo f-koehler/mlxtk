@@ -1,5 +1,5 @@
-from typing import Tuple, Union
 from pathlib import Path
+from typing import Tuple, Union
 
 import h5py
 import numpy
@@ -37,7 +37,8 @@ def read_expval_hdf5(path: Union[Path, str], interior_path: str = "/"
             "real"][:] + 1j * fptr[interior_path]["imag"][:]
 
 
-def write_expval_hdf5(path: Union[Path, str], time: numpy.ndarray, values: numpy.ndarray):
+def write_expval_hdf5(path: Union[Path, str], time: numpy.ndarray,
+                      values: numpy.ndarray):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset("time", time.shape, dtype=numpy.float64)
         dset[:] = time
@@ -49,7 +50,8 @@ def write_expval_hdf5(path: Union[Path, str], time: numpy.ndarray, values: numpy
         dset[:] = values.imag
 
 
-def write_expval_ascii(path: Union[Path, str], data: Tuple[numpy.ndarray, numpy.ndarray]):
+def write_expval_ascii(path: Union[Path, str],
+                       data: Tuple[numpy.ndarray, numpy.ndarray]):
     pandas.DataFrame(
         numpy.column_stack((data[0], data[1].real, data[1].imag)),
         columns=["time", "real", "imag"],

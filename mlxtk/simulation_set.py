@@ -323,7 +323,7 @@ class SimulationSet:
             "list": self.list_,
             "list-tasks": self.list_tasks,
             "qdel": self.qdel,
-            "qsub": self.qsub,
+            "qsub": self.qsub_array,
             "run": self.run,
             "run-index": self.run_index,
             "task-info": self.task_info,

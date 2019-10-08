@@ -30,18 +30,13 @@ def is_hdf5_path(path: Union[str, Path]) -> Tuple[bool, Path, str]:
             to the file and interior path.
     """
     path = make_path(path).resolve()
-    parts = list(path.parts)
+    built_path = path.parts[0]
 
-    def get_path(parts: List[str]) -> Path:
-        new_path = Path(parts[0])
-        for p in parts[1:]:
-            new_path /= p
-        return new_path
+    for part in path.parts[1:]:
+        built_path /= part
 
-    for i in range(1, len(parts)):
-        file_path = get_path(parts[0:i])
-        if is_hdf5_file(file_path):
-            return True, file_path, str(get_path(parts[i:]))
+        if is_hdf5_file(built_path):
+            return True, built_path, str(path.relative_to(built_path))
 
     return False, path, ""
 

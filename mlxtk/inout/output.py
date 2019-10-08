@@ -9,7 +9,7 @@ from . import tools
 
 
 def read_output(
-        path: str
+        path: Union[Path, str]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -19,7 +19,7 @@ def read_output(
 
 
 def read_output_ascii(
-        path
+        path: Union[Path, str]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read an output file (raw ASCII format)
 
@@ -32,7 +32,7 @@ def read_output_ascii(
           simulation times. The other entries contain the norm, energy and
           maximum SPF overlap of the wave function at all times.
     """
-    dataFrame = pandas.read_csv(path,
+    dataFrame = pandas.read_csv(str(path),
                                 sep=r"\s+",
                                 names=["time", "norm", "energy", "overlap"])
     return (

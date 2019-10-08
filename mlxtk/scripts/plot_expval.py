@@ -22,7 +22,8 @@ def main():
     time, values = read_expval(args.path)
     plot_expval(ax, time, values)
 
-    ax.set_xlabel(units.get_time_label(working_directory=args.path))
+    system = units.get_default_unit_system()
+    ax.set_xlabel(system.get_time_unit().format_label("t"))
 
     apply_2d_args(ax, args)
 

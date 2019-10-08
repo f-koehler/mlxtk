@@ -69,7 +69,7 @@ class DefaultNatpopAnalysis:
             self.output_file = Path("data") / "natpop_{}_{}".format(
                 node, dof) / (self.scan_dir.name.replace("=", "_") + ".h5")
         else:
-            sself.scan_dir.name.elf.output_file = make_path(output_file)
+            self.output_file = make_path(output_file)
 
     def __call__(self) -> Dict[str, Any]:
         pickle_obj = [self.node, self.dof, self.missing_ok]
@@ -83,7 +83,7 @@ class DefaultNatpopAnalysis:
         def action(scan_dir, input_files, targets):
             variables, values = load_scan(scan_dir).get_variable_values()
 
-            with h5py.File(targets[0]) as fptr:
+            with h5py.File(targets[0], "w") as fptr:
                 max_depletion = []
                 max_entropy = []
                 max_last_orbital = []
@@ -132,8 +132,8 @@ class DefaultNatpopAnalysis:
 
         yield {
             "name":
-            "natpop:{}_{}:{}:default_analysis".format(self.node, self.dof,
-                                                      scan_name_sanitized),
+            "{}:natpop:{}_{}:{}:default_analysis".format(
+                self.propagation, self.node, self.dof, scan_name_sanitized),
             "file_dep": [pickle_path] + input_files,
             "targets": [self.output_file],
             "actions": [(action, [self.scan_dir, input_files])]

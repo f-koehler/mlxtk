@@ -57,7 +57,7 @@ def doit_plot_individual(
             fig, axes = plot_func(index, path, parameters)
 
             for axis in axes:
-                plotting_args.apply(axis)
+                plotting_args.apply(axis, fig)
                 for decorator_func in decorator_funcs:
                     decorator_func(fig, axis, index, path, parameters)
 

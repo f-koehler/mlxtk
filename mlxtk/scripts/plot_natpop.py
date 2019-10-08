@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 from .. import units
 from ..inout.natpop import read_natpop
-from ..plot import add_argparse_2d_args, apply_2d_args
+from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
+                    handle_saving)
 from ..plot.natpop import plot_natpop
 
 
@@ -23,9 +24,10 @@ def main():
                         default=1,
                         help="degree of freedom")
     add_argparse_2d_args(parser)
+    add_argparse_save_arg(parser)
     args = parser.parse_args()
 
-    _, ax = plt.subplots(1, 1)
+    figure, ax = plt.subplots(1, 1)
 
     time, natpop = read_natpop(args.path, node=args.node, dof=args.dof)
     plot_natpop(ax, time, natpop)
@@ -36,7 +38,8 @@ def main():
     except units.MissingUnitError:
         ax.set_xlabel("$t$")
 
-    apply_2d_args(ax, args)
+    apply_2d_args(ax, figure, args)
+    handle_saving(figure, args)
 
     plt.show()
 

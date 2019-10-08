@@ -68,7 +68,7 @@ class Dmat2Slider(QtWidgets.QWidget):
                                          rasterized=True)
         self.axes.set_xlabel(unit_system.get_length_unit().format_label("x_1"))
         self.axes.set_ylabel(unit_system.get_length_unit().format_label("x_2"))
-        plot.apply_2d_args(self.axes, self.plot_args)
+        plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):

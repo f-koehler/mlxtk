@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 from .. import units
 from ..inout import read_gpop
-from ..plot import add_argparse_2d_args, apply_2d_args, plot_gpop
+from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
+                    handle_saving, plot_gpop)
 from ..tools.gpop import transform_to_momentum_space
 
 
@@ -25,9 +26,10 @@ def main():
                         action="store_true",
                         help="whether to transform to momentum space")
     add_argparse_2d_args(parser)
+    add_argparse_save_arg(parser)
     args = parser.parse_args()
 
-    _, ax = plt.subplots(1, 1)
+    figure, ax = plt.subplots(1, 1)
 
     data = read_gpop(args.path, dof=args.dof)
     if args.momentum:
@@ -45,7 +47,9 @@ def main():
     except units.MissingUnitError:
         ax.set_ylabel("$x$")
 
-    apply_2d_args(ax, args)
+    apply_2d_args(ax, figure, args)
+
+    handle_saving(figure, args)
 
     plt.show()
 

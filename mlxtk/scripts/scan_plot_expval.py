@@ -26,8 +26,9 @@ def plot_expval(index: int,
         fig, ax = plot.create_subplots(1, 1)
         plot.plot_expval(ax, *inout.expval.read_expval(total_path))
         ax.set_title(r"$\rho_1(x,t)$")
-        ax.set_xlabel(units.get_time_label())
-        ax.set_ylabel(units.get_length_label())
+        system = units.get_default_unit_system()
+        ax.set_xlabel(system.get_time_unit().format_label("t"))
+        ax.set_xlabel(system.get_length_unit().format_label("x"))
         if modfunc:
             modfunc(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
@@ -61,9 +62,8 @@ def main():
         args.output = "_".join(args.expval.with_suffix("").parts)
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
-        del fig
         del parameters
-        plot.apply_2d_args(ax, args)
+        plot.apply_2d_args(ax, fig, args)
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,

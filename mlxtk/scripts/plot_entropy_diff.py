@@ -21,7 +21,7 @@ def main():
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    _, ax = plt.subplots(1, 1)
+    figure, ax = plt.subplots(1, 1)
 
     time1, natpop1 = read_natpop(args.path[0], node=args.node, dof=args.dof)
     time2, natpop2 = read_natpop(args.path[1], node=args.node, dof=args.dof)
@@ -37,9 +37,10 @@ def main():
 
     plot_entropy_diff(ax, time1, entropy1, entropy2)
 
-    ax.set_xlabel(units.get_time_label(working_directory=args.path))
+    system = units.get_default_unit_system()
+    ax.set_xlabel(system.get_time_unit().format_label("t"))
 
-    apply_2d_args(ax, args)
+    apply_2d_args(ax, figure, args)
 
     plt.show()
 

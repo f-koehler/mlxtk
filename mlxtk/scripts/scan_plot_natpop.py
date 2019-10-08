@@ -28,7 +28,8 @@ def plot_natpop(index: int,
         fig, ax = plot.create_subplots(1, 1)
         plot.plot_natpop(ax,
                          *inout.read_natpop(total_path, dof=dof, node=node))
-        ax.set_xlabel(units.get_time_label())
+        system = units.get_default_unit_system()
+        ax.set_xlabel(system.get_time_unit().format_label("t"))
         ax.set_ylabel(r"$\lambda_i(t)$")
         for func in MODFUNCS:
             func(fig, ax, parameters)
@@ -73,9 +74,8 @@ def main():
         args.output = "natpop_{}_{}".format(args.dof, args.node)
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
-        del fig
         del parameters
-        plot.apply_2d_args(ax, args)
+        plot.apply_2d_args(ax, fig, args)
 
     MODFUNCS = [apply_args] + MODFUNCS
 

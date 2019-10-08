@@ -94,9 +94,10 @@ class DmatEvecSlider(QtWidgets.QWidget):
         self.line_real.set_visible(self.check_real.isChecked())
         self.line_imag.set_visible(self.check_imag.isChecked())
 
-        self.axes.set_xlabel(units.get_length_label())
+        system = units.get_default_unit_system()
+        self.axes.set_xlabel(system.get_length_unit().format_label("x"))
         self.axes.set_ylabel(r"$\varphi(x)$")
-        plot.apply_2d_args(self.axes, self.plot_args)
+        plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
         self.update_yrange()
 
         self.plot.canvas.draw()

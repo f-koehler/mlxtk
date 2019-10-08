@@ -123,16 +123,15 @@ class PlotArgs2D:
         args.logx = kwargs.get("logx", False)
         args.logy = kwargs.get("logy", False)
         args.grid = kwargs.get("grid", True)
+        args.dpi = kwargs.get("dpi", 600)
         return args
 
     @staticmethod
     def from_namespace(namespace: argparse.Namespace):
         return PlotArgs2D.from_dict(namespace.__dict__)
 
-    def apply(self,
-              axes: matplotlib.axes.Axes,
-              figure: matplotlib.figure.Figure = None):
-        del figure
+    def apply(self, axes: matplotlib.axes.Axes,
+              figure: matplotlib.figure.Figure):
 
         axes.grid(self.grid)
         if self.logx:
@@ -143,8 +142,11 @@ class PlotArgs2D:
         axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
         axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
 
+        if self.dpi and (figure is not None):
+            figure.set_dpi(self.dpi)
 
-def add_argparse_2d_args(parser):
+
+def add_argparse_2d_args(parser: argparse.ArgumentParser):
     parser.add_argument("--logx",
                         action="store_true",
                         dest="logx",
@@ -177,7 +179,44 @@ def add_argparse_2d_args(parser):
                         action="store_false",
                         dest="grid",
                         help="do not draw a grid")
+    parser.add_argument("--dpi",
+                        type=int,
+                        default=600,
+                        help="resolution (dpi) of figure")
 
 
-def apply_2d_args(ax: matplotlib.axes.Axes, namespace: argparse.Namespace):
-    PlotArgs2D.from_namespace(namespace).apply(ax)
+def apply_2d_args(ax: matplotlib.axes.Axes, figure: matplotlib.figure.Figure,
+                  namespace: argparse.Namespace):
+    PlotArgs2D.from_namespace(namespace).apply(ax, figure)
+
+
+def add_argparse_save_arg(parser: argparse.ArgumentParser):
+    parser.add_argument("-o",
+                        "--output",
+                        type=Path,
+                        help="path to the output file")
+    parser.add_argument("--crop-pdf",
+                        action="store_true",
+                        dest="crop_pdf",
+                        help="crop PDF file")
+    parser.add_argument("--no-crop-pdf",
+                        action="store_false",
+                        dest="crop_pdf",
+                        help="do not crop PDF file")
+    parser.add_argument("--optimize-pdf",
+                        action="store_true",
+                        dest="optimize_pdf",
+                        help="optimize PDF file")
+    parser.add_argument("--no-optimize-pdf",
+                        action="store_false",
+                        dest="optimize_pdf",
+                        help="do not optimize PDF file")
+    parser.set_defaults(crop_pdf=False, optimize_pdf=False)
+
+
+def handle_saving(figure: Figure, namespace: argparse.Namespace):
+    if namespace.output:
+        save(figure,
+             namespace.output,
+             crop=namespace.crop_pdf,
+             optimize=namespace.optimize_pdf)

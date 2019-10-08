@@ -26,8 +26,9 @@ def plot_energy(index: int,
         fig, ax = plot.create_subplots(1, 1)
         time, _, energy, _ = inout.read_output(total_path)
         plot.plot_energy(ax, time, energy)
-        ax.set_xlabel(units.get_time_label())
-        ax.set_ylabel(units.get_energy_label())
+        system = units.get_default_unit_system()
+        ax.set_xlabel(system.get_time_unit().format_label("t"))
+        ax.set_ylabel(system.get_energy_unit().format_label("E"))
         if modfunc:
             modfunc(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
@@ -61,9 +62,8 @@ def main():
     args = parser.parse_args()
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
-        del fig
         del parameters
-        plot.apply_2d_args(ax, args)
+        plot.apply_2d_args(ax, fig, args)
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,

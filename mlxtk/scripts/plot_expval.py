@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 from .. import units
 from ..inout.expval import read_expval
-from ..plot import add_argparse_2d_args, apply_2d_args, plot_expval
+from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
+                    handle_saving, plot_expval)
 
 
 def main():
@@ -15,9 +16,10 @@ def main():
                         nargs="?",
                         help="path to the output file")
     add_argparse_2d_args(parser)
+    add_argparse_save_arg(parser)
     args = parser.parse_args()
 
-    _, ax = plt.subplots(1, 1)
+    figure, ax = plt.subplots(1, 1)
 
     time, values = read_expval(args.path)
     plot_expval(ax, time, values)
@@ -25,8 +27,9 @@ def main():
     system = units.get_default_unit_system()
     ax.set_xlabel(system.get_time_unit().format_label("t"))
 
-    apply_2d_args(ax, args)
+    apply_2d_args(ax, figure, args)
 
+    handle_saving(figure, args)
     plt.show()
 
 

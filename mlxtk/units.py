@@ -51,6 +51,20 @@ class Unit:
             return Unit(other.expression**self.expression)
         return Unit(other**self.expression)
 
+    def is_arbitrary(self) -> bool:
+        return False
+
+
+class ArbitraryUnit:
+    def __init__(self):
+        pass
+
+    def format_label(self, quantity: str):
+        return "$" + quantity + r"\:\left[\mathrm{a.u.}\right]$"
+
+    def is_arbitrary(self) -> bool:
+        return True
+
 
 class MissingUnitError(Exception):
     def __init__(self, dimension: str):
@@ -70,50 +84,65 @@ class UnitSystem:
             system.units[dimension] = Unit(units[dimension])
         return system
 
-    def get_length_unit(self) -> Unit:
+    def get_length_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "length" not in self.units:
-            raise MissingUnitError("length")
+            return ArbitraryUnit()
 
         return self.units["length"]
 
-    def get_time_unit(self) -> Unit:
+    def get_time_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "time" not in self.units:
-            raise MissingUnitError("time")
+            return ArbitraryUnit()
 
         return self.units["time"]
 
-    def get_energy_unit(self) -> Unit:
+    def get_energy_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "energy" in self.units:
             return self.units["energy"]
 
-        unit = Unit(hbar / self.get_time_unit().expression)
+        time_unit = self.get_time_unit()
+        if time_unit.is_arbitrary():
+            return ArbitraryUnit()
+
+        unit = Unit(hbar / time_unit.expression)
         self.units["energy"] = unit
         return unit
 
-    def get_speed_unit(self) -> Unit:
+    def get_speed_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "speed" in self.units:
             return self.units["speed"]
 
-        unit = Unit(self.get_length_unit().expression /
-                    self.get_time_unit().expression)
+        length_unit = self.get_length_unit()
+        time_unit = self.get_time_unit()
+        if length_unit.is_arbitrary() or time_unit.is_arbitrary():
+            return ArbitraryUnit()
+
+        unit = Unit(length_unit.expression / time_unit.expression)
         self.units["speed"] = unit
         return unit
 
-    def get_acceleration_unit(self) -> Unit:
+    def get_acceleration_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "acceleration" in self.units:
             return self.units["acceleration"]
 
-        unit = Unit(self.get_speed_unit().expression /
-                    self.get_time_unit().expression)
+        speed_unit = self.get_speed_unit()
+        time_unit = self.get_time_unit()
+        if speed_unit.is_arbitrary() or time_unit.is_arbitrary():
+            return ArbitraryUnit()
+
+        unit = Unit(speed_unit.expression / time_unit.expression)
         self.units["acceleration"] = unit
         return unit
 
-    def get_delta_interaction_unit(self) -> Unit:
+    def get_delta_interaction_unit(self) -> Union[Unit, ArbitraryUnit]:
         if "delta_interaction" in self.units:
             return self.units["delta_interaction"]
 
-        unit = Unit(self.get_energy_unit().expression *
-                    self.get_length_unit().expression)
+        energy_unit = self.get_energy_unit()
+        length_unit = self.get_length_unit()
+        if energy_unit.is_arbitrary() or length_unit.is_arbitrary():
+            return ArbitraryUnit()
+        unit = Unit(energy_unit.expression * length_unit.expression)
         self.units["delta_interaction"] = unit
         return unit
 

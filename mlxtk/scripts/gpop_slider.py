@@ -84,7 +84,7 @@ class GpopSlider(QtWidgets.QWidget):
             self.axes.set_xlabel(
                 unit_system.get_length_unit().format_label("x"))
             self.axes.set_ylabel(r"$\rho_1(x,t)$")
-        plot.apply_2d_args(self.axes, self.plot_args)
+        plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
         self.axes.set_ylim([
             self.axes.get_ylim()[0],
             1.02 * self.gpops[self.dof][self.time_index].max()

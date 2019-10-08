@@ -28,7 +28,7 @@ def main():
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 
-    _, ax = plt.subplots(1, 1)
+    figure, ax = plt.subplots(1, 1)
 
     time, natpop = read_natpop(args.path_natpop, node=args.node, dof=args.dof)
     time2, evals = read_dmat_evals(args.path_evals)
@@ -39,9 +39,10 @@ def main():
     for natpop, value in zip(natpop.T, evals.T):
         plt.plot(time, natpop - value)
 
-    ax.set_xlabel(units.get_time_label(working_directory=args.path_evals))
+    system = units.get_default_unit_system()
+    ax.set_xlabel(system.get_time_unit().format_label("t"))
 
-    apply_2d_args(ax, args)
+    apply_2d_args(ax, figure, args)
 
     plt.show()
 

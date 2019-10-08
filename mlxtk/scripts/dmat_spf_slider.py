@@ -64,7 +64,7 @@ class DmatSlider(QtWidgets.QWidget):
                                          numpy.abs(self.dmat[self.time_index]),
                                          cmap="gnuplot",
                                          rasterized=True)
-        plot.apply_2d_args(self.axes, self.plot_args)
+        plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):

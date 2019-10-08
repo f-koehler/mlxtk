@@ -36,7 +36,7 @@ class WaveFunctionDBLock:
         self.path = path
 
     def __enter__(self):
-        for i in range(1024):
+        for _ in range(1024):
             try:
                 self.path.touch(exist_ok=False)
                 return

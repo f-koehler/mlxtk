@@ -1,6 +1,7 @@
 """Work with a collection of simulations.
 """
 import argparse
+import json
 import os
 import sys
 from pathlib import Path
@@ -120,6 +121,7 @@ class SimulationSet:
 
         self.argparser_list = subparsers.add_parser("list")
         self.argparser_list_tasks = subparsers.add_parser("list-tasks")
+        self.argparser_lockfiles = subparsers.add_parser("lockfiles")
         self.argparser_task_info = subparsers.add_parser("task-info")
         subparsers.add_parser("qdel")
         self.argparser_qsub = subparsers.add_parser("qsub")
@@ -185,6 +187,31 @@ class SimulationSet:
 
     def list_tasks(self, args: argparse.Namespace):
         self.simulations[args.index].main(["list"])
+
+    def lockfiles(self, args: argparse.Namespace):
+        lock_files = [
+            self.working_dir.resolve() / sim.working_dir / "run.lock"
+            for sim in self.simulations
+        ]
+        working_dirs = [sim.working_dir for sim in self.simulations]
+
+        counter = 0
+        for lock_file, working_dir in zip(lock_files, working_dirs):
+            if not lock_file.exists():
+                continue
+
+            counter += 1
+
+            with open(lock_file, "r") as fptr:
+                self.logger.info("lock: %s", working_dir)
+                lock = json.load(fptr)
+                try:
+                    self.logger.info("\thost: %s", lock["host"])
+                    self.logger.info("\tpid:  %d", lock["pid"])
+                except KeyError:
+                    pass
+
+        self.logger.info("%d lock files", counter)
 
     def task_info(self, args: argparse.Namespace):
         self.create_working_dir()
@@ -322,6 +349,7 @@ class SimulationSet:
             "dry-run": self.dry_run,
             "list": self.list_,
             "list-tasks": self.list_tasks,
+            "lockfiles": self.lockfiles,
             "qdel": self.qdel,
             "qsub": self.qsub_array,
             "run": self.run,

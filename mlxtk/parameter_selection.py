@@ -11,8 +11,11 @@ import numpy
 from tqdm import tqdm
 
 from .cwd import WorkingDir
+from .log import get_logger
 from .parameters import Parameters, get_variables
 from .util import make_path, map_parallel_progress
+
+LOGGER = get_logger(__name__)
 
 
 class ParameterSelection:
@@ -221,3 +224,24 @@ def load_scan(path: Union[str, Path]) -> ParameterSelection:
     with open(path / "scan.pickle", "rb") as fptr:
         obj = pickle.load(fptr)
         return ParameterSelection((parameter for parameter in obj), path)
+
+
+def group_scans_by(selections: List[ParameterSelection],
+                   parameter_name: str) -> Dict[Any, List[ParameterSelection]]:
+    values = set()
+    for selection in selections:
+        scan_values = selection.get_values(parameter_name)
+        if len(scan_values) != 1:
+            raise RuntimeError(
+                "exactly one parameter for \"{}\" required per scan".format(
+                    parameter_name))
+        values.add(scan_values.pop())
+
+    result = {}
+    for selection in selections:
+        val = selection.parameters[0][1][parameter_name]
+        if parameter_name not in result:
+            result[parameter_name] = []
+        result[parameter_name].append(val)
+
+    return result

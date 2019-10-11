@@ -130,6 +130,8 @@ class SimulationSet:
         self.argparser_run_index = subparsers.add_parser("run-index")
         self.argparser_clean = subparsers.add_parser("clean")
         self.argparser_archive = subparsers.add_parser("archive")
+        self.argparser_propagation_status = subparsers.add_parser(
+            "propagation-status")
 
         sge.add_parser_arguments(self.argparser_qsub)
 
@@ -172,6 +174,12 @@ class SimulationSet:
             type=int,
             default=1,
             help="number of jobs (when pigz is available)")
+        self.argparser_propagation_status.add_argument(
+            "name",
+            default="propagate",
+            nargs="?",
+            type=str,
+            help="name of the propagation")
 
     def create_working_dir(self):
         if not self.working_dir.exists():
@@ -331,6 +339,19 @@ class SimulationSet:
                                  compression=args.compression,
                                  jobs=args.jobs)
 
+    def propagation_status(self, args: argparse.Namespace):
+        total = 0.
+        self.logger.info("check propagation status of propagation: %s",
+                         args.name)
+        with cwd.WorkingDir(self.working_dir):
+            for simulation in self.simulations:
+                progress = simulation.check_propagation_status(args.name)
+                total += progress
+                self.logger.info("sim %s: %6.2f%%", simulation.name,
+                                 progress * 100.)
+        total = total / len(self.simulations)
+        self.logger.info("total: %6.2f%%", total * 100.)
+
     def main(self, argv: List[str]):
         if argv is None:
             argv = sys.argv[1:]
@@ -355,6 +376,7 @@ class SimulationSet:
             "run": self.run,
             "run-index": self.run_index,
             "task-info": self.task_info,
+            "propagation-status": self.propagation_status
         }
 
         subcommand_map[args.subcommand](args)

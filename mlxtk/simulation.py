@@ -143,11 +143,12 @@ class Simulation:
             )
 
     def check_propagation_status(self, propagation: str) -> float:
-        work_dir = self.working_dir / ("." + propagation)
-        final_dir = self.working_dir / propagation
-        output_file = final_dir / "propagate.h5"
-        pickle_file = self.working_dir / (propagation + ".prop_pickle")
-        output_file = self.working_dir / work_dir / "output"
+        work_dir = self.working_dir / ("." + propagation)  # sim/.propagate/
+        final_dir = self.working_dir / propagation  # sim/propagate/
+        output_file = final_dir / "propagate.h5"  # sim/propagate/propagate.h5
+        pickle_file = self.working_dir / (propagation + ".prop_pickle"
+                                          )  # sim/propagate.prop_pickle
+        output_file = work_dir / "output"  # sim/.propagate/output
 
         if not work_dir.exists():
             if output_file.exists():

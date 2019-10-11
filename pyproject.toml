@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "mlxtk"
-version = "0.7.3"
+version = "0.7.4"
 description = "Toolkit to design, run and analyze ML-MCTDH(X) simulations"
 authors = ["Fabian Köhler <fkoehler@physnet.uni-hamburg.de>"]
 license = "MIT"

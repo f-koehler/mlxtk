@@ -1,5 +1,6 @@
 import argparse
 import os
+import pickle
 import re
 import subprocess
 import sys
@@ -7,6 +8,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from . import cwd, doit_compat, lock, log, sge
+from .inout.output import read_output_ascii
 
 LOGGER = log.get_logger(__name__)
 
@@ -140,6 +142,37 @@ class Simulation:
                 ],
             )
 
+    def check_propagation_status(self, propagation: str) -> float:
+        work_dir = self.working_dir / ("." + propagation)
+        final_dir = self.working_dir / propagation
+        output_file = final_dir / "propagate.h5"
+        pickle_file = self.working_dir / (propagation + ".prop_pickle")
+        output_file = self.working_dir / work_dir / "output"
+
+        if not work_dir.exists():
+            if output_file.exists():
+                return 1.
+            else:
+                return 0.
+
+        if not pickle_file.exists():
+            return 0.
+
+        if not output_file.exists():
+            return 0.
+
+        with open(pickle_file, "rb") as fptr:
+            tfinal = pickle.load(fptr)[3]["tfinal"]
+
+        times, _, _, _ = read_output_ascii(output_file)
+
+        return times[-1] / tfinal
+
+    def propagation_status(self, args: argparse.Namespace):
+        self.logger.info("check progress of propagation %s", args.name)
+        progress = self.check_propagation_status(args.name)
+        self.logger.info("total progress: %6.2f%%", progress * 100.)
+
     def main(self, argv: List[str] = None):
         if argv is None:
             argv = sys.argv[1:]
@@ -183,6 +216,14 @@ class Simulation:
         # parser for qdel
         subparsers.add_parser("qdel")
 
+        parser_propagation_status = subparsers.add_parser("propagation-status")
+        parser_propagation_status.add_argument(
+            "name",
+            default="propagate",
+            type=str,
+            nargs="?",
+            help="name of the propagation to check")
+
         args = parser.parse_args(argv)
 
         if args.subcommand is None:
@@ -207,3 +248,5 @@ class Simulation:
             self.list(args)
         elif args.subcommand == "task-info":
             self.task_info(args)
+        elif args.subcommand == "propagation-status":
+            self.propagation_status(args)

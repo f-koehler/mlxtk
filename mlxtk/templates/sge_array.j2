@@ -12,7 +12,7 @@
 #$ -S /bin/bash
 #$ -cwd
 #$ -j y
-#$ -o sge_$SGE_TASK_ID.o$JOB_ID
+#$ -o sge_${SGE_TASK_ID}.o${JOB_ID}
 #$ -V
 #$ -l h_vmem={{args.memory}}
 #$ -l h_cpu={{args.time}}

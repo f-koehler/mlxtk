@@ -66,7 +66,7 @@ class Simulation(base.SimulationBase):
     from .cmd_dry_run import cmd_dry_run
     from .cmd_graph import cmd_graph
     from .cmd_list import cmd_list
-    from .cmd_propagation_status import cmd_propagation_status
+    from .cmd_propagation_status import cmd_propagation_status, check_propagation_status
     from .cmd_qdel import cmd_qdel
     from .cmd_qsub import cmd_qsub
     from .cmd_run import cmd_run

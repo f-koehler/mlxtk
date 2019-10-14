@@ -1,5 +1,7 @@
 import argparse
+import pickle
 
+from ..inout.output import read_output_ascii
 from .base import SimulationBase
 
 
@@ -33,5 +35,5 @@ def check_propagation_status(self: SimulationBase, propagation: str) -> float:
 
 def cmd_propagation_status(self: SimulationBase, args: argparse.Namespace):
     self.logger.info("check progress of propagation: %s", args.name)
-    progress = self.check_propagation_status(args.name)
+    progress = check_propagation_status(self, args.name)
     self.logger.info("total progress: %6.2f%%", progress * 100.)

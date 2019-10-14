@@ -137,14 +137,14 @@ class ParameterScan(SimulationSet):
                         if path_entry.is_symlink():
                             path_entry.unlink()
 
-    def dry_run(self, args: argparse.Namespace):
+    def cmd_dry_run(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
         super().cmd_dry_run(args)
 
-    def run(self, args: argparse.Namespace):
+    def cmd_run(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
@@ -163,19 +163,12 @@ class ParameterScan(SimulationSet):
 
         raise ValueError("Parameters not included: " + str(parameters))
 
-    def qsub_array(self, args: argparse.Namespace):
+    def cmd_qsub_array(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
         super().cmd_qsub_array(args)
-
-    # def qsub_array(self, args: argparse.Namespace):
-    #     self.unlink_simulations()
-    #     self.store_parameters()
-    #     self.link_simulations()
-
-    #     super().cmd_qsub_array(args)
 
     def main(self, argv: List[str] = None):
         self.compute_simulations()

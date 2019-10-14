@@ -240,14 +240,14 @@ class WaveFunctionDB(ParameterScan):
             self.remove_missing_wave_function(parameters)
             self.store_wave_function(parameters)
 
-    def run_index(self, args: argparse.Namespace):
-        super().run_index(args)
+    def cmd_run_index(self, args: argparse.Namespace):
+        super().cmd_run_index(args)
         parameters = self.combinations[args.index]
         with WaveFunctionDBLock(self.working_dir / "wave_function_db.lock"):
             self.remove_missing_wave_function(parameters)
             self.store_wave_function(parameters)
 
-    def run(self, args: argparse.Namespace):
+    def cmd_run(self, args: argparse.Namespace):
         self.logger.info("running wave function db")
 
         self.unlink_simulations()

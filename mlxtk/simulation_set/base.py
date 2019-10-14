@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import List, Union
 
-from .. import sge
 from ..log import get_logger
 from ..simulation import Simulation
 from ..util import make_path
@@ -40,70 +39,9 @@ class SimulationSetBase:
 
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
-        subparsers = self.argparser.add_subparsers(dest="subcommand")
+        self.construct_argparser()
 
-        self.argparser_list = subparsers.add_parser("list")
-        self.argparser_list_tasks = subparsers.add_parser("list-tasks")
-        self.argparser_lockfiles = subparsers.add_parser("lockfiles")
-        self.argparser_task_info = subparsers.add_parser("task-info")
-        subparsers.add_parser("qdel")
-        self.argparser_qsub = subparsers.add_parser("qsub")
-        self.argparser_run = subparsers.add_parser("run")
-        self.argparser_dry_run = subparsers.add_parser("dry-run")
-        self.argparser_run_index = subparsers.add_parser("run-index")
-        self.argparser_clean = subparsers.add_parser("clean")
-        self.argparser_archive = subparsers.add_parser("archive")
-        self.argparser_propagation_status = subparsers.add_parser(
-            "propagation-status")
-
-        sge.add_parser_arguments(self.argparser_qsub)
-
-        self.argparser_list.add_argument("-d",
-                                         "--directory",
-                                         action="store_true")
-
-        self.argparser_list_tasks.add_argument(
-            "index",
-            type=int,
-            help="index of the simulation whose tasks to list")
-        self.argparser_task_info.add_argument("index",
-                                              type=int,
-                                              help="index of the simulation")
-        self.argparser_task_info.add_argument("name",
-                                              type=str,
-                                              help="name of the task")
-        self.argparser_run.add_argument("-j",
-                                        "--jobs",
-                                        type=int,
-                                        default=1,
-                                        help="number of parallel workers")
-        self.argparser_clean.add_argument("-j",
-                                          "--jobs",
-                                          type=int,
-                                          default=1,
-                                          help="number of parallel workers")
-        self.argparser_run_index.add_argument(
-            "index", type=int, help="index of the simulation to run")
-
-        self.argparser_archive.add_argument(
-            "-c",
-            "--compression",
-            type=int,
-            default=9,
-            help="compression level [1-9] (1: fastest, 9: best)")
-        self.argparser_archive.add_argument(
-            "-j",
-            "--jobs",
-            type=int,
-            default=1,
-            help="number of jobs (when pigz is available)")
-        self.argparser_propagation_status.add_argument(
-            "name",
-            default="propagate",
-            nargs="?",
-            type=str,
-            help="name of the propagation")
-
+    from .cli import construct_argparser
     from .cmd_archive import cmd_archive
     from .cmd_clean import cmd_clean
     from .cmd_dry_run import cmd_dry_run

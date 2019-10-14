@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List
 
 from ..doit_compat import DoitAction, run_doit
 from ..simulation import Simulation
+from .base import SimulationSetBase
 
 
 def run_simulation(simulation: Simulation
@@ -31,7 +32,7 @@ def run_simulation(simulation: Simulation
     return [task_run_simulation]
 
 
-def cmd_run(self, args: argparse.Namespace):
+def cmd_run(self: SimulationSetBase, args: argparse.Namespace):
     self.logger.info("running simulation set")
 
     self.create_working_dir()

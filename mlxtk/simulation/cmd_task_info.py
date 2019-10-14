@@ -2,9 +2,10 @@ import argparse
 
 from ..cwd import WorkingDir
 from ..doit_compat import run_doit
+from .base import SimulationBase
 
 
-def cmd_task_info(self, args: argparse.Namespace):
+def cmd_task_info(self: SimulationBase, args: argparse.Namespace):
     with WorkingDir(self.working_dir):
         run_doit(
             self.tasks_run,

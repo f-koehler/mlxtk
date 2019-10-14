@@ -3,9 +3,10 @@ import subprocess
 from pathlib import Path
 
 from ..cwd import WorkingDir
+from .base import SimulationBase
 
 
-def cmd_qdel(self, args: argparse.Namespace):
+def cmd_qdel(self: SimulationBase, args: argparse.Namespace):
     del args
 
     if not self.working_dir.exists():

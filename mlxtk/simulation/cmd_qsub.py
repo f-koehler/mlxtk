@@ -4,9 +4,10 @@ from pathlib import Path
 
 from .. import sge
 from ..cwd import WorkingDir
+from .base import SimulationBase
 
 
-def cmd_qsub(self, args: argparse.Namespace):
+def cmd_qsub(self: SimulationBase, args: argparse.Namespace):
     self.create_working_dir()
     call_dir = Path.cwd().absolute()
     script_path = Path(sys.argv[0]).absolute()

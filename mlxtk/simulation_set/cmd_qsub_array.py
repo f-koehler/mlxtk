@@ -5,9 +5,10 @@ from pathlib import Path
 
 from .. import sge
 from ..cwd import WorkingDir
+from .base import SimulationSetBase
 
 
-def cmd_qsub(self, args: argparse.Namespace):
+def cmd_qsub(self: SimulationSetBase, args: argparse.Namespace):
     self.logger.info("submitting simulation set to SGE scheduler")
     self.create_working_dir()
 
@@ -28,7 +29,7 @@ def cmd_qsub(self, args: argparse.Namespace):
                        job_name=simulation.name)
 
 
-def cmd_qsub_array(self, args: argparse.Namespace):
+def cmd_qsub_array(self: SimulationSetBase, args: argparse.Namespace):
     self.logger.info("submitting simulation set as an array to SGE scheduler")
     self.create_working_dir()
 

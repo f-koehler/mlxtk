@@ -3,6 +3,7 @@ from typing import Any, Callable, Dict, List
 
 from ..doit_compat import DoitAction, run_doit
 from ..simulation import Simulation
+from .base import SimulationSetBase
 
 
 def clean_simulation(simulation: Simulation
@@ -23,7 +24,7 @@ def clean_simulation(simulation: Simulation
     return [task_clean_simulation]
 
 
-def cmd_clean(self, args: argparse.Namespace):
+def cmd_clean(self: SimulationSetBase, args: argparse.Namespace):
     self.logger.info("cleaning simulation set")
 
     self.create_working_dir()

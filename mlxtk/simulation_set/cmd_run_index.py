@@ -3,9 +3,10 @@ import sys
 from pathlib import Path
 
 from ..cwd import WorkingDir
+from .base import SimulationSetBase
 
 
-def cmd_run_index(self, args: argparse.Namespace):
+def cmd_run_index(self: SimulationSetBase, args: argparse.Namespace):
     script_dir = Path(sys.argv[0]).parent.resolve()
     with WorkingDir(script_dir):
         self.logger.info("run simulation with index %d", args.index)

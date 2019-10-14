@@ -1,10 +1,10 @@
 import argparse
 
 from .. import sge
+from .base import SimulationSetBase
 
 
-def construct_argparser(self):
-
+def construct_argparser(self: SimulationSetBase):
     self.argparser_list = self.subparsers.add_parser("list")
     self.argparser_list_tasks = self.subparsers.add_parser("list-tasks")
     self.argparser_lockfiles = self.subparsers.add_parser("lockfiles")

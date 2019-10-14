@@ -3,9 +3,10 @@ import re
 
 from ..cwd import WorkingDir
 from ..doit_compat import run_doit
+from .base import SimulationBase
 
 
-def cmd_graph(self, args: argparse.Namespace):
+def cmd_graph(self: SimulationBase, args: argparse.Namespace):
     del args
 
     regex = re.compile(r"^\s+\".+\"\s*->\s*\".+\";$")

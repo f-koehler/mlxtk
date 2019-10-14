@@ -1,9 +1,10 @@
 import argparse
 
 from ..cwd import WorkingDir
+from .base import SimulationSetBase
 
 
-def cmd_qdel(self, args: argparse.Namespace):
+def cmd_qdel(self: SimulationSetBase, args: argparse.Namespace):
     del args
 
     if not self.working_dir.exists():

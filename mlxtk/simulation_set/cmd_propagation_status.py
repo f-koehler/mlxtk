@@ -1,9 +1,10 @@
 import argparse
 
 from ..cwd import WorkingDir
+from .base import SimulationSetBase
 
 
-def cmd_propagation_status(self, args: argparse.Namespace):
+def cmd_propagation_status(self: SimulationSetBase, args: argparse.Namespace):
     total = 0.
     self.logger.info("check propagation status of propagation: %s", args.name)
     with WorkingDir(self.working_dir):

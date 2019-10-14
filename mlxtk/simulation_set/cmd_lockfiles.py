@@ -1,8 +1,10 @@
 import argparse
 import json
 
+from .base import SimulationSetBase
 
-def cmd_lockfiles(self, args: argparse.Namespace):
+
+def cmd_lockfiles(self: SimulationSetBase, args: argparse.Namespace):
     lock_files = [
         self.working_dir.resolve() / sim.working_dir / "run.lock"
         for sim in self.simulations

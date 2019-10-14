@@ -142,14 +142,14 @@ class ParameterScan(SimulationSet):
         self.store_parameters()
         self.link_simulations()
 
-        super().dry_run(args)
+        super().cmd_dry_run(args)
 
     def run(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
-        super().run(args)
+        super().cmd_run(args)
 
     def run_by_param(self, parameters: mlxtk.parameters.Parameters):
         self.logger.info("run simulation for parameters %s", repr(parameters))
@@ -163,19 +163,19 @@ class ParameterScan(SimulationSet):
 
         raise ValueError("Parameters not included: " + str(parameters))
 
-    def qsub(self, args: argparse.Namespace):
-        self.unlink_simulations()
-        self.store_parameters()
-        self.link_simulations()
-
-        super().qsub(args)
-
     def qsub_array(self, args: argparse.Namespace):
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
-        super().qsub_array(args)
+        super().cmd_qsub_array(args)
+
+    # def qsub_array(self, args: argparse.Namespace):
+    #     self.unlink_simulations()
+    #     self.store_parameters()
+    #     self.link_simulations()
+
+    #     super().cmd_qsub_array(args)
 
     def main(self, argv: List[str] = None):
         self.compute_simulations()

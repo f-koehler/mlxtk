@@ -13,3 +13,5 @@
 build/
 dist/
 poetry.lock
+.vscode/.ropeproject/objectdb
+.vscode/.ropeproject/config.py

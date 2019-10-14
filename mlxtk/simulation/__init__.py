@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import List, Optional
 
 from .. import sge
-from .base import SimulationBase
+from . import base
 
 
-class Simulation(SimulationBase):
+class Simulation(base.SimulationBase):
     def __init__(self, name: Path, working_dir: Optional[Path] = None):
         super().__init__(name, working_dir)
 

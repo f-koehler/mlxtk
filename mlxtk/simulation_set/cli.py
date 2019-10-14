@@ -4,20 +4,19 @@ from .. import sge
 
 
 def construct_argparser(self):
-    subparsers = self.argparser.add_subparsers(dest="subcommand")
 
-    self.argparser_list = subparsers.add_parser("list")
-    self.argparser_list_tasks = subparsers.add_parser("list-tasks")
-    self.argparser_lockfiles = subparsers.add_parser("lockfiles")
-    self.argparser_task_info = subparsers.add_parser("task-info")
-    subparsers.add_parser("qdel")
-    self.argparser_qsub = subparsers.add_parser("qsub")
-    self.argparser_run = subparsers.add_parser("run")
-    self.argparser_dry_run = subparsers.add_parser("dry-run")
-    self.argparser_run_index = subparsers.add_parser("run-index")
-    self.argparser_clean = subparsers.add_parser("clean")
-    self.argparser_archive = subparsers.add_parser("archive")
-    self.argparser_propagation_status = subparsers.add_parser(
+    self.argparser_list = self.subparsers.add_parser("list")
+    self.argparser_list_tasks = self.subparsers.add_parser("list-tasks")
+    self.argparser_lockfiles = self.subparsers.add_parser("lockfiles")
+    self.argparser_task_info = self.subparsers.add_parser("task-info")
+    self.subparsers.add_parser("qdel")
+    self.argparser_qsub = self.subparsers.add_parser("qsub")
+    self.argparser_run = self.subparsers.add_parser("run")
+    self.argparser_dry_run = self.subparsers.add_parser("dry-run")
+    self.argparser_run_index = self.subparsers.add_parser("run-index")
+    self.argparser_clean = self.subparsers.add_parser("clean")
+    self.argparser_archive = self.subparsers.add_parser("archive")
+    self.argparser_propagation_status = self.subparsers.add_parser(
         "propagation-status")
 
     sge.add_parser_arguments(self.argparser_qsub)

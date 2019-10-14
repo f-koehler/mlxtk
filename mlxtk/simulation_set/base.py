@@ -39,6 +39,7 @@ class SimulationSetBase:
 
         self.argparser = argparse.ArgumentParser(
             description="This is a set of mlxtk simulations")
+        self.subparsers = self.argparser.add_subparsers(dest="subcommand")
         self.construct_argparser()
 
     from .cli import construct_argparser

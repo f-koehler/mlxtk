@@ -16,7 +16,7 @@ class ComputeVariance(Task):
 
         self.path_expectation_value = self.expectation_value + ".exp.h5"
         self.path_expectation_value_squared = self.expectation_value_squared + ".exp.h5"
-        self.path_variance = self.name + ".var"
+        self.path_variance = self.name + ".var.h5"
 
     def task_compute(self) -> Dict[str, Any]:
         @DoitAction

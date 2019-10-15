@@ -65,7 +65,7 @@ def collect_final_expval(scan_dir: Union[Path, str],
 
 def scan_plot_expval(scan_dir: Union[Path, str],
                      expval: Union[Path, str],
-                     extensions: List[str] = [".png", ".pdf"],
+                     extensions: List[str] = [".png",],
                      **kwargs):
     scan_dir = make_path(scan_dir)
     expval = make_path(expval)

@@ -35,7 +35,7 @@ def collect_final_energy(scan_dir: Union[Path, str],
 
 def scan_plot_energy(scan_dir: Union[Path, str],
                      propagation: str = "propagate",
-                     extensions: List[str] = [".png", ".pdf"],
+                     extensions: List[str] = [".png"],
                      **kwargs):
     scan_dir = make_path(scan_dir)
 

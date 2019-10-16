@@ -55,11 +55,12 @@ class SingleSpeciesSystem(ABC):
         )
 
     def get_com_operator(self) -> MBOperatorSpecification:
-        return MBOperatorSpecification((1, ), (self.grid, ), {"com_coeff": 1.},
-                                       {"com": self.grid.get_x()},
-                                       "com_coeff | 1 com")
+        return MBOperatorSpecification(
+            (1, ), (self.grid, ), {"com_coeff": 1. / self.parameters.N},
+            {"com": self.grid.get_x()}, "com_coeff | 1 com")
 
     def get_com_operator_squared(self) -> MBOperatorSpecification:
+        N_squared = self.parameters.N**2
         return MBOperatorSpecification(
             (1, ),
             (self.grid, ),
@@ -68,8 +69,8 @@ class SingleSpeciesSystem(ABC):
                 "com_squared_coeff_2": 2.0,
             },
             {
-                "com_squared_x": self.grid.get_x(),
-                "com_squared_x^2": self.grid.get_x()**2,
+                "com_squared_x": self.grid.get_x() / N_squared,
+                "com_squared_x^2": self.grid.get_x()**2 / N_squared,
             },
             [
                 "com_squared_coeff_1 | 1 com_squared_x^2",

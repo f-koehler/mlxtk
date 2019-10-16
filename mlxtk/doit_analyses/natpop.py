@@ -20,7 +20,9 @@ def scan_plot_natpop(scan_dir: Union[Path, str],
                      propagation: str = "propagate",
                      node: int = 1,
                      dof: int = 1,
-                     extensions: List[str] = [".png", ],
+                     extensions: List[str] = [
+                         ".png",
+                     ],
                      **kwargs):
     scan_dir = make_path(scan_dir)
 

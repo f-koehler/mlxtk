@@ -17,7 +17,9 @@ from .plot import doit_plot_individual
 def scan_plot_gpop(scan_dir: Union[Path, str],
                    propagation: str = "propagate",
                    dof: int = 1,
-                   extensions: List[str] = [".png",],
+                   extensions: List[str] = [
+                       ".png",
+                   ],
                    **kwargs):
     scan_dir = make_path(scan_dir)
 
@@ -53,7 +55,9 @@ def scan_plot_gpop(scan_dir: Union[Path, str],
 def scan_plot_gpop_momentum(scan_dir: Union[Path, str],
                             propagation: str = "propagate",
                             dof: int = 1,
-                            extensions: List[str] = [".png",],
+                            extensions: List[str] = [
+                                ".png",
+                            ],
                             **kwargs):
     scan_dir = make_path(scan_dir)
 

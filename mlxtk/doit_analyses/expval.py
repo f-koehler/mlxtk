@@ -65,7 +65,9 @@ def collect_final_expval(scan_dir: Union[Path, str],
 
 def scan_plot_expval(scan_dir: Union[Path, str],
                      expval: Union[Path, str],
-                     extensions: List[str] = [".png",],
+                     extensions: List[str] = [
+                         ".png",
+                     ],
                      **kwargs):
     scan_dir = make_path(scan_dir)
     expval = make_path(expval)
@@ -91,6 +93,43 @@ def scan_plot_expval(scan_dir: Union[Path, str],
         selection,
         "expval_{}".format(str(expval)).replace("/", "_"),
         [str(expval.with_suffix(".exp.h5"))],
+        plot_func,
+        plotting_args,
+        extensions,
+        decorator_funcs=kwargs.get("decorator_funcs", []),
+        extra_args={"coefficient": kwargs["coefficient"]})
+
+
+def scan_plot_variance(scan_dir: Union[Path, str],
+                       variance: Union[Path, str],
+                       extensions: List[str] = [
+                           ".png",
+                       ],
+                       **kwargs):
+    scan_dir = make_path(scan_dir)
+    variance = make_path(variance)
+
+    kwargs["coefficient"] = kwargs.get("coefficient", 1.)
+
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+
+    selection = load_scan(scan_dir)
+
+    def plot_func(index, path, parameters):
+        del path
+        del parameters
+
+        data = read_expval_hdf5(
+            str((scan_dir / "by_index" / str(index) /
+                 variance).with_suffix(".var.h5")))
+        fig, axis = plt.subplots(1, 1)
+        plot_expval(axis, *data, **kwargs)
+        return fig, [axis]
+
+    return doit_plot_individual(
+        selection,
+        "variance_{}".format(str(variance)).replace("/", "_"),
+        [str(variance.with_suffix(".var.h5"))],
         plot_func,
         plotting_args,
         extensions,

@@ -1,5 +1,9 @@
 mlxtk
 =====
+![PyPI](https://img.shields.io/pypi/v/mlxtk)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mlxtk)
+![PyPI - License](https://img.shields.io/pypi/l/mlxtk)
+
 Toolkit to design, run and analyze ML-MCTDH(X) simulations
 
 Description

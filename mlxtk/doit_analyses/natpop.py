@@ -11,9 +11,10 @@ from ..inout.natpop import read_natpop, read_natpop_hdf5
 from ..parameter_selection import load_scan
 from ..plot import PlotArgs2D, plot_natpop
 from ..tools.entropy import compute_entropy
-from ..util import make_path
+from ..util import list_files, make_path
 from .collect import collect_values
 from .plot import direct_plot, doit_plot_individual
+from .video import create_slideshow
 
 
 def scan_plot_natpop(scan_dir: Union[Path, str],
@@ -188,3 +189,15 @@ def plot_max_depletion(data_file: Union[Path, str],
                        output_dir,
                        plot,
                        decorator_funcs=decorator_funcs)
+
+
+def scan_natpop_slideshow(scan_dir: Union[Path, str],
+                          node: int = 1,
+                          dof: int = 1,
+                          duration: float = 20.0):
+    scan_dir = make_path(scan_dir)
+    yield create_slideshow(
+        list_files(scan_dir / "plots" / "natpop_{}_{}".format(node, dof), [
+            ".png",
+        ]), (Path("videos") / ("natpop" + str(dof)) /
+             scan_dir.name).with_suffix(".mp4"), duration)

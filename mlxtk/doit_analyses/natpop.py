@@ -199,5 +199,5 @@ def scan_natpop_slideshow(scan_dir: Union[Path, str],
     yield create_slideshow(
         list_files(scan_dir / "plots" / "natpop_{}_{}".format(node, dof), [
             ".png",
-        ]), (Path("videos") / ("natpop" + str(dof)) /
+        ]), (Path("videos") / ("natpop_{}_{}".format(node, dof)) /
              scan_dir.name).with_suffix(".mp4"), duration)

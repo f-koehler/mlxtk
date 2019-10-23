@@ -100,4 +100,4 @@ def scan_gpop_slideshow(scan_dir: Union[Path, str],
         list_files(scan_dir / "plots" / ("gpop_" + str(dof)), [
             ".png",
         ]), (Path("videos") / ("gpop_" + str(dof)) /
-             scan_dir.name).with_suffix(".mp4"), duration)
+             scan_dir.name).with_suffix(scan_dir.suffix + ".mp4"), duration)

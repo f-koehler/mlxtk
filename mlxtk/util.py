@@ -8,7 +8,7 @@ import shutil
 import subprocess
 from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, Iterable, List, Union
+from typing import Any, Iterable, List, Optional, Union
 
 import numba
 import numpy
@@ -210,3 +210,13 @@ def map_parallel_progress(func, items: List[Any],
                 pbar.update()
                 results.append(result)
             return results
+
+
+def list_files(path: Union[Path, str],
+               extensions: Optional[List[str]] = None) -> List[Path]:
+    path = make_path(path)
+    files = sorted(p for p in path.iterdir() if p.is_file())
+    if not extensions:
+        return list(files)
+
+    return [p for p in files if p.suffix in extensions]

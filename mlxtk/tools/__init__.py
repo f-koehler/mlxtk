@@ -1,1 +1,1 @@
-from . import signal, table
+from . import signal, table, video

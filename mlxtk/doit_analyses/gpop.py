@@ -7,11 +7,15 @@ import matplotlib.figure
 import matplotlib.pyplot as plt
 
 from ..inout.gpop import read_gpop
+from ..log import get_logger
 from ..parameter_selection import load_scan
 from ..plot import PlotArgs2D
 from ..plot.gpop import plot_gpop, plot_gpop_momentum
-from ..util import make_path
+from ..util import list_files, make_path
 from .plot import doit_plot_individual
+from .video import create_slideshow
+
+LOGGER = get_logger(__name__)
 
 
 def scan_plot_gpop(scan_dir: Union[Path, str],
@@ -86,3 +90,14 @@ def scan_plot_gpop_momentum(scan_dir: Union[Path, str],
                                extensions,
                                decorator_funcs=kwargs.get(
                                    "decorator_funcs", []))
+
+
+def scan_gpop_slideshow(scan_dir: Union[Path, str],
+                        dof: int = 1,
+                        duration: float = 20.0):
+    scan_dir = make_path(scan_dir)
+    yield create_slideshow(
+        list_files(scan_dir / "plots" / ("gpop_" + str(dof)), [
+            ".png",
+        ]), (Path("videos") / ("gpop_" + str(dof)) /
+             scan_dir.name).with_suffix(".mp4"), duration)

@@ -6,13 +6,17 @@ from typing import List, Union
 
 from ..cwd import WorkingDir
 from ..util import make_path
+from ..log import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 def create_slideshow(files: List[Union[Path, str]],
                      output_file: Union[Path, str],
                      duration: float = 30.0):
     if not len(files):
-        raise RuntimeError("No images specified!")
+        LOGGER.error("No image files specified! Nothing to do.")
+        return
 
     files = [make_path(file).resolve() for file in files]
     output_file = make_path(output_file).resolve()

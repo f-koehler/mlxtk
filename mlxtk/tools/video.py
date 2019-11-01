@@ -5,8 +5,8 @@ from pathlib import Path
 from typing import List, Union
 
 from ..cwd import WorkingDir
-from ..util import make_path
 from ..log import get_logger
+from ..util import make_path
 
 LOGGER = get_logger(__name__)
 

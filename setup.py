@@ -46,6 +46,7 @@ simulation outcome.
     packages=["mlxtk"],
     entry_points={
         "console_scripts": [
+            "create_slideshow = mlxtk.scripts.create_slideshow:main",
             "dmat_evec_slider = mlxtk.scripts.dmat_evec_slider:main",
             "dmat_spf_slider = mlxtk.scripts.dmat_spf_slider:main",
             "dmat2_gridrep = mlxtk.scripts.dmat2_gridrep:main",

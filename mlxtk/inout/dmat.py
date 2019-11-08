@@ -3,6 +3,7 @@ from typing import Tuple, Union
 
 import numpy
 import pandas
+import h5py
 
 
 def read_dmat_evals(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
@@ -89,3 +90,25 @@ def write_dmat_gridrep_ascii(
                       len(data[0]) * len(data[1])), dmat.real, dmat.imag],
         columns=["time", "x1", "x2", "real", "imag"])
     df.to_csv(path, header=False, index=False, sep="\t")
+
+
+def add_dmat_gridrep_to_hdf5(
+        fptr: Union[h5py.File, h5py.Group],
+        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+):
+    fptr.create_dataset("time", data[0].shape,
+                        dtype=numpy.float64)[:] = data[0]
+    fptr.create_dataset("x1", data[1].shape, dtype=numpy.float64)[:] = data[1]
+    fptr.create_dataset("x2", data[2].shape, dtype=numpy.float64)[:] = data[2]
+    fptr.create_dataset("real", data[3].shape,
+                        dtype=numpy.float64)[:, :, :] = data[3].real
+    fptr.create_dataset("imag", data[3].shape,
+                        dtype=numpy.float64)[:, :, :] = data[3].imag
+
+
+def write_dmat_gridrep_hdf5(
+        path: Union[str, Path],
+        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+):
+    with h5py.File(path, "w") as fptr:
+        add_dmat_gridrep_to_hdf5(fptr, data)

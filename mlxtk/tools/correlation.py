@@ -4,7 +4,7 @@ from typing import Tuple, Union
 
 import numpy
 
-from ..inout.dmat import read_dmat_gridrep_ascii, write_dmat_gridrep_ascii
+from ..inout.dmat import read_dmat_gridrep_ascii, write_dmat_gridrep_hdf5
 from ..inout.dmat2 import read_dmat2_gridrep_ascii
 from ..log import get_logger
 from ..util import make_path
@@ -65,7 +65,7 @@ def save_g1(
         path: Union[Path, str],
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ):
-    write_dmat_gridrep_ascii(path, data)
+    write_dmat_gridrep_hdf5(path, data)
     LOGGER.info("finished writing g1")
 
 
@@ -73,5 +73,5 @@ def save_g2(
         path: Union[Path, str],
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ):
-    write_dmat_gridrep_ascii(path, data)
+    write_dmat_gridrep_hdf5(path, data)
     LOGGER.info("finished writing g2")

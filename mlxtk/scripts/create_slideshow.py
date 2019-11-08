@@ -19,7 +19,7 @@ def main():
     parser.add_argument("-d",
                         "--duration",
                         type=float,
-                        default=30,
+                        default=20,
                         help="duration for the video")
     args = parser.parse_args()
 

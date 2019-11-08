@@ -43,7 +43,7 @@ def read_dmat_evecs_grid(
     return times, grid, evecs.T.reshape(m, len(times), len(grid))
 
 
-def read_dmat_spfrep(path: Union[str, Path]):
+def read_dmat_spfrep_ascii(path: Union[str, Path]):
     df = pandas.read_csv(str(path),
                          delim_whitespace=True,
                          header=None,
@@ -56,3 +56,36 @@ def read_dmat_spfrep(path: Union[str, Path]):
     elements = df["real"].values + 1j * df["imag"].values
 
     return time, elements.reshape((num_times, num_i, num_j))
+
+
+def read_dmat_gridrep_ascii(
+        path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    df = pandas.read_csv(path,
+                         header=None,
+                         names=["time", "x1", "x2", "real", "imag"],
+                         delim_whitespace=True)
+
+    time = numpy.unique(df["time"].values)
+    x1 = numpy.unique(df["x1"].values)
+    x2 = numpy.unique(df["x2"].values)
+    dmat2 = numpy.reshape(df["real"].values + 1j * df["imag"].values,
+                          (len(time), len(x1), len(x2)))
+    return time, x1, x2, dmat2
+
+
+def write_dmat_gridrep_ascii(
+        path: Union[str, Path],
+        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+):
+    dmat = data[3].flatten()
+
+    df = pandas.DataFrame(
+        data=numpy.
+        c_[numpy.repeat(data[0],
+                        len(data[1]) * len(data[2])),
+           numpy.tile(numpy.repeat(data[1], len(data[2])), len(data[0])),
+           numpy.tile(data[2],
+                      len(data[0]) * len(data[1])), dmat.real, dmat.imag],
+        columns=["time", "x1", "x2", "real", "imag"])
+    df.to_csv(path, header=False, index=False, sep="\t")

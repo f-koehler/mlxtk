@@ -47,11 +47,12 @@ simulation outcome.
     entry_points={
         "console_scripts": [
             "create_slideshow = mlxtk.scripts.create_slideshow:main",
-            "dmat_evec_slider = mlxtk.scripts.dmat_evec_slider:main",
-            "dmat_spf_slider = mlxtk.scripts.dmat_spf_slider:main",
             "dmat2_gridrep = mlxtk.scripts.dmat2_gridrep:main",
-            "dmat2_slider = mlxtk.scripts.dmat2_slider:main",
             "dmat2_gridrep_video = mlxtk.scripts.dmat2_gridrep_video:main",
+            "dmat2_slider = mlxtk.scripts.dmat2_slider:main",
+            "dmat_evec_slider = mlxtk.scripts.dmat_evec_slider:main",
+            "dmat_slider = mlxtk.scripts.dmat_slider:main",
+            "dmat_spf_slider = mlxtk.scripts.dmat_spf_slider:main",
             "fixed_ns = mlxtk.scripts.fixed_ns:main",
             "fixed_ns_table = mlxtk.scripts.fixed_ns_table:main",
             "gpop_model = mlxtk.scripts.gpop_model:main",

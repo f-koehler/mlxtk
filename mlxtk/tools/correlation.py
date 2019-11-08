@@ -1,3 +1,4 @@
+import cmath
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -20,10 +21,11 @@ def compute_g1(
     LOGGER.info("finished reading dmat")
 
     g1 = numpy.zeros_like(dmat)
+    # TODO: improve this naive implementation (maybe numba can help)
     for i in range(len(time)):
         for j in range(len(x1)):
             for k in range(len(x2)):
-                g1[i, j, k] = dmat[i, j, k] / numpy.sqrt(
+                g1[i, j, k] = dmat[i, j, k] / cmath.sqrt(
                     dmat[i, j, j] * dmat[i, k, k])
     LOGGER.info("finished computing g1")
 
@@ -49,12 +51,14 @@ def compute_g2(
     assert numpy.allclose(x2, x2_)
 
     g2 = numpy.zeros_like(dmat)
-
+    # TODO: improve this naive implementation (maybe numba can help)
     for i in range(len(time)):
         for j in range(len(x1)):
             for k in range(len(x2)):
                 g2[i, j, k] = dmat2[i, j, k] / (dmat[i, j, j] * dmat[i, k, k])
     LOGGER.info("finished computing g2")
+
+    return time, x1, x2, g2
 
 
 def save_g1(

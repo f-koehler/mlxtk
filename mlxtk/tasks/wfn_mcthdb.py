@@ -4,6 +4,8 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
+from QDTK.Wavefunction import Wavefunction as WaveFunction
+from QDTK.Wavefunction import grab_lowest_eigenfct
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
@@ -13,8 +15,6 @@ from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
                                        get_spfs, load_wave_function,
                                        save_wave_function)
-from QDTK.Wavefunction import Wavefunction as WaveFunction
-from QDTK.Wavefunction import grab_lowest_eigenfct
 
 LOGGER = get_logger(__name__)
 
@@ -54,7 +54,7 @@ class MCTDHBCreateWaveFunction(Task):
                 self.number_state.tolist()
             ]
             with open(self.path_pickle, "wb") as fptr:
-                pickle.dump(obj, fptr)
+                pickle.dump(obj, fptr, protocol=3)
 
         return {
             "name": "wfn_mctdhb:{}:write_parameters".format(self.name),
@@ -137,7 +137,7 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
                 self.threshold, self.above_threshold, self.max_number
             ]
             with open(self.path_pickle, "wb") as fptr:
-                pickle.dump(obj, fptr)
+                pickle.dump(obj, fptr, protocol=3)
 
         return {
             "name":
@@ -243,7 +243,7 @@ class MCTDHBCreateWaveFunctionMulti(Task):
                 self.number_state.tolist()
             ]
             with open(self.path_pickle, "wb") as fptr:
-                pickle.dump(obj, fptr)
+                pickle.dump(obj, fptr, protocol=3)
 
         return {
             "name": "wfn_mctdhb_multi:{}:write_parameters".format(self.name),
@@ -319,7 +319,7 @@ class MCTDHBAddMomentum(Task):
 
             obj = [self.name, self.initial, self.momentum]
             with open(self.path_pickle, "wb") as fptr:
-                pickle.dump(obj, fptr)
+                pickle.dump(obj, fptr, protocol=3)
 
         return {
             "name":
@@ -372,7 +372,7 @@ class MCTDHBAddMomentumSplit(Task):
 
             obj = [self.name, self.initial, self.momentum, self.x0]
             with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+                pickle.dump(obj, fp, protocol=3)
 
         return {
             "name":
@@ -432,7 +432,7 @@ class MCTDHBExtendGrid(Task):
                 self.name, self.initial, self.nleft, self.nright, self.value
             ]
             with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+                pickle.dump(obj, fp, protocol=3)
 
         return {
             "name":

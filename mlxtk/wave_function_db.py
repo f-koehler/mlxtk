@@ -123,7 +123,7 @@ class WaveFunctionDB(ParameterScan):
             entries.append(parameters)
 
             with open(p, "wb") as fptr:
-                pickle.dump(entries, fptr)
+                pickle.dump(entries, fptr, protocol=3)
 
             self.missing_wave_functions.append(parameters)
 
@@ -144,7 +144,7 @@ class WaveFunctionDB(ParameterScan):
             entries.remove(parameters)
 
             with open(p, "wb") as fptr:
-                pickle.dump(entries, fptr)
+                pickle.dump(entries, fptr, protocol=3)
 
             self.missing_wave_functions.remove(parameters)
 
@@ -164,7 +164,7 @@ class WaveFunctionDB(ParameterScan):
             entries.append(parameters)
 
             with open(p, "wb") as fptr:
-                pickle.dump(entries, fptr)
+                pickle.dump(entries, fptr, protocol=3)
 
             self.stored_wave_functions.append(parameters)
 
@@ -185,7 +185,7 @@ class WaveFunctionDB(ParameterScan):
             entries.remove(parameters)
 
             with open(p, "wb") as fptr:
-                pickle.dump(entries, fptr)
+                pickle.dump(entries, fptr, protocol=3)
 
             self.stored_wave_functions.remove(parameters)
 

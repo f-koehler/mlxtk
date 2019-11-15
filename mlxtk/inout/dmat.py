@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Tuple, Union
 
+import h5py
 import numpy
 import pandas
-import h5py
 
 
 def read_dmat_evals(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:

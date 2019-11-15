@@ -61,14 +61,15 @@ class ParameterScan(SimulationSet):
                 simulation.create_working_dir()
                 with cwd.WorkingDir(simulation.working_dir):
                     with open("parameters.pickle", "wb") as fptr:
-                        pickle.dump(combination, fptr)
+                        pickle.dump(combination, fptr, protocol=3)
 
                     with open("parameters.json", "w") as fptr:
                         fptr.write(combination.to_json() + "\n")
 
             with open("scan.pickle", "wb") as fptr:
                 pickle.dump([combination for combination in self.combinations],
-                            fptr)
+                            fptr,
+                            protocol=3)
 
     def link_simulations(self):
         if not self.combinations:

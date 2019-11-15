@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
-
 from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
@@ -143,7 +142,7 @@ class CreateOperator(Task):
                 obj[3][term] = inaccurate_hash(self.specification.terms[term])
 
             with open(self.path_pickle, "wb") as fptr:
-                pickle.dump(obj, fptr)
+                pickle.dump(obj, fptr, protocol=3)
 
         return {
             "name": "operator:{}:write_parameters".format(self.name),

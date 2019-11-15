@@ -7,13 +7,14 @@ x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 parameters = HarmonicTrap.create_parameters()
 parameters.N = 3
 parameters.m = 5
-parameters.g = 1.5
+parameters.g = 0.1
 parameters.add_parameter("gauge", "standard", "The gauge to use.")
 
 
 def create_simulation(p):
     p_quenched = parameters.copy()
-    p_quenched.omega = 0.1
+    p_quenched.g = 0.0
+    p_quenched.omega = 10
 
     system = HarmonicTrap(p, x)
     system_quenched = HarmonicTrap(p_quenched, x)

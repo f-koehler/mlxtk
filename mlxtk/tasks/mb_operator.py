@@ -198,7 +198,7 @@ class CreateMBOperator(Task):
                         self.specification.terms[term])
 
             with open(targets[0], "wb") as fp:
-                pickle.dump(obj, fp)
+                pickle.dump(obj, fp, protocol=3)
 
         return {
             "name": "mb_operator:{}:write_parameters".format(self.name),

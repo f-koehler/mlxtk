@@ -10,7 +10,7 @@ from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any, Iterable, List, Optional, Union
 
-import numba
+# import numba
 import numpy
 import tqdm
 from pathos.pools import ProcessPool as Pool
@@ -83,17 +83,17 @@ def load_module(path: str):
     return module
 
 
-@numba.vectorize(
-    [numba.float64(numba.complex128),
-     numba.float32(numba.complex64)])
+# @numba.vectorize(
+#     [numba.float64(numba.complex128),
+#      numba.float32(numba.complex64)])
 def compute_magnitude(x):
     return x.real**2 + x.imag**2
 
 
-@numba.vectorize([
-    numba.float64(numba.float64, numba.float64),
-    numba.float32(numba.float32, numba.float32)
-])
+# @numba.vectorize([
+#     numba.float64(numba.float64, numba.float64),
+#     numba.float32(numba.float32, numba.float32)
+# ])
 def compute_magnitude_split(real, imag):
     return real**2 + imag**2
 

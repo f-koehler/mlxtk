@@ -16,7 +16,7 @@ def create_slideshow(images: List[Union[Path, str]],
         make_path(targets[0]).parent.mkdir(parents=True, exist_ok=True)
         obj = {"duration": duration}
         with open(targets[0], "wb") as fptr:
-            pickle.dump(obj, fptr)
+            pickle.dump(obj, fptr, protocol=3)
 
     yield {
         "name":

@@ -169,7 +169,7 @@ class Propagate(Task):
                     shutil.rmtree(path_temp)
 
             with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp)
+                pickle.dump(obj, fp, protocol=3)
 
         return {
             "name": "{}:{}:write_parameters".format(self.basename, self.name),

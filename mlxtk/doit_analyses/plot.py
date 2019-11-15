@@ -38,7 +38,9 @@ def doit_plot_individual(
             dir.mkdir(parents=True)
         with open(targets[0], "wb") as fptr:
             pickle.dump([plotting_args,
-                         len(decorator_funcs), extra_args], fptr)
+                         len(decorator_funcs), extra_args],
+                        fptr,
+                        protocol=3)
 
     yield {
         "name": "{}:{}:pickle".format(scan_name, plot_name).replace("=", "_"),
@@ -111,7 +113,9 @@ def direct_plot(input_files: List[Union[str, Path]],
         if not dirname.exists():
             dirname.mkdir(parents=True)
         with open(targets[0], "wb") as fptr:
-            pickle.dump([plotting_args, len(decorator_funcs)], fptr)
+            pickle.dump([plotting_args, len(decorator_funcs)],
+                        fptr,
+                        protocol=3)
 
     yield {
         "name":

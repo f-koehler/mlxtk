@@ -81,7 +81,7 @@ class DefaultNatpopAnalysis:
         pickle_path.parent.mkdir(parents=True, exist_ok=True)
 
         with open(pickle_path, "wb") as fptr:
-            pickle.dump(pickle_obj, fptr)
+            pickle.dump(pickle_obj, fptr, protocol=3)
 
         def action(scan_dir, input_files, targets):
             variables, values = load_scan(scan_dir).get_variable_values()

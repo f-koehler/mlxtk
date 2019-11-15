@@ -1,6 +1,7 @@
 import argparse
 import re
 import subprocess
+import tempfile
 from pathlib import Path
 
 import h5py
@@ -67,87 +68,89 @@ def main():
     opr = args.operator.resolve()
     rst = args.restart.resolve()
     psi = args.psi.resolve()
-    with WorkingDir("tmp"):
-        copy_file(opr, "opr")
-        copy_file(rst, "rst")
+    with tempfile.TemporaryDirectory() as tempdir:
+        with WorkingDir(tempdir):
+            copy_file(opr, "opr")
+            copy_file(rst, "rst")
 
-        if args.slice:
-            tape, times, psi = read_psi_ascii(psi)
+            if args.slice:
+                tape, times, psi = read_psi_ascii(psi)
 
-            m = RE_SLICE.match(args.slice)
-            if not m:
-                raise RuntimeError("Invalid slice format \"{}\"".format(
-                    args.slice))
+                m = RE_SLICE.match(args.slice)
+                if not m:
+                    raise RuntimeError("Invalid slice format \"{}\"".format(
+                        args.slice))
 
-            start = 0
-            end = len(times)
-            step = 1
-            if m.group(1) != "":
-                start = int(m.group(1))
-            if m.group(2) != "":
-                stop = int(m.group(2))
-            try:
-                if m.group(3) != "":
-                    step = int(m.group(3))
-            except IndexError:
-                pass
+                start = 0
+                end = len(times)
+                step = 1
+                if m.group(1) != "":
+                    start = int(m.group(1))
+                if m.group(2) != "":
+                    stop = int(m.group(2))
+                try:
+                    if m.group(3) != "":
+                        step = int(m.group(3))
+                except IndexError:
+                    pass
 
-            indices = [i for i in range(start, end, step)]
-            write_psi_ascii("psi", (tape, times[indices], psi[indices]))
-        else:
-            copy_file(psi, "psi")
+                indices = [i for i in range(start, end, step)]
+                write_psi_ascii("psi", (tape, times[indices], psi[indices]))
+            else:
+                copy_file(psi, "psi")
 
-        gridrep = args.gridrep or ((not args.gridrep) and (not args.spfrep))
+            gridrep = args.gridrep or ((not args.gridrep) and
+                                       (not args.spfrep))
 
-        cmd = [
-            "qdtk_analysis.x", "-opr", "opr", "-rst", "rst", "-psi", "psi",
-            "-dmat", "-nd",
-            str(args.node), "-dof",
-            str(args.dof)
-        ]
-        if not gridrep:
-            cmd.append("-spfrep")
-        if gridrep:
-            cmd.append("-gridrep")
-        if args.diagonalize:
-            cmd.append("-diagonalize")
-        if args.only_diagonalize:
-            cmd += ["-diagonalize", "-onlydiag"]
-        if args.only_eigenvalues:
-            cmd.append("-onlyeigval")
-        LOGGER.info("cmd: %s", " ".join(cmd))
+            cmd = [
+                "qdtk_analysis.x", "-opr", "opr", "-rst", "rst", "-psi", "psi",
+                "-dmat", "-nd",
+                str(args.node), "-dof",
+                str(args.dof)
+            ]
+            if not gridrep:
+                cmd.append("-spfrep")
+            if gridrep:
+                cmd.append("-gridrep")
+            if args.diagonalize:
+                cmd.append("-diagonalize")
+            if args.only_diagonalize:
+                cmd += ["-diagonalize", "-onlydiag"]
+            if args.only_eigenvalues:
+                cmd.append("-onlyeigval")
+            LOGGER.info("cmd: %s", " ".join(cmd))
 
-        subprocess.run(cmd)
+            subprocess.run(cmd)
 
-        with h5py.File(output, "w") as fptr:
-            if not args.only_diagonalize:
-                if gridrep:
-                    dmat.add_dmat_gridrep_to_hdf5(
-                        fptr,
-                        dmat.read_dmat_gridrep_ascii("dmat_dof{}_grid".format(
-                            args.dof)))
-                else:
-                    dmat.add_dmat_spfrep_to_hdf5(
-                        fptr,
-                        *dmat.read_dmat_spfrep_ascii("dmat_dof{}_spf".format(
-                            args.dof)))
-
-            if args.diagonalize or args.only_diagonalize:
-                dmat.add_dmat_evals_to_hdf5(
-                    fptr,
-                    *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(
-                        args.dof)))
-                if not args.only_eigenvalues:
+            with h5py.File(output, "w") as fptr:
+                if not args.only_diagonalize:
                     if gridrep:
-                        dmat.add_dmat_evecs_grid_to_hdf5(
+                        dmat.add_dmat_gridrep_to_hdf5(
                             fptr,
-                            *dmat.read_dmat_evecs_grid_ascii(
-                                "evec_dmat_dof{}_grid".format(args.dof)))
+                            dmat.read_dmat_gridrep_ascii(
+                                "dmat_dof{}_grid".format(args.dof)))
                     else:
-                        dmat.add_dmat_evecs_spf_to_hdf5(
+                        dmat.add_dmat_spfrep_to_hdf5(
                             fptr,
-                            *dmat.read_dmat_evecs_spf_ascii(
-                                "evec_dmat_dof{}_spf".format(args.dof)))
+                            *dmat.read_dmat_spfrep_ascii(
+                                "dmat_dof{}_spf".format(args.dof)))
+
+                if args.diagonalize or args.only_diagonalize:
+                    dmat.add_dmat_evals_to_hdf5(
+                        fptr,
+                        *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(
+                            args.dof)))
+                    if not args.only_eigenvalues:
+                        if gridrep:
+                            dmat.add_dmat_evecs_grid_to_hdf5(
+                                fptr,
+                                *dmat.read_dmat_evecs_grid_ascii(
+                                    "evec_dmat_dof{}_grid".format(args.dof)))
+                        else:
+                            dmat.add_dmat_evecs_spf_to_hdf5(
+                                fptr,
+                                *dmat.read_dmat_evecs_spf_ascii(
+                                    "evec_dmat_dof{}_spf".format(args.dof)))
 
 
 if __name__ == "__main__":

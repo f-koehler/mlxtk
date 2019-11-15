@@ -6,11 +6,11 @@ from pathlib import Path
 
 import h5py
 
-from ..cwd import WorkingDir
-from ..inout import dmat
-from ..inout.psi import read_psi_ascii, write_psi_ascii
-from ..log import get_logger
-from ..util import copy_file
+from ...cwd import WorkingDir
+from ...inout import dmat2
+from ...inout.psi import read_psi_ascii, write_psi_ascii
+from ...log import get_logger
+from ...util import copy_file
 
 LOGGER = get_logger(__name__)
 RE_SLICE = re.compile(r"^([+-]*\d*):([+-]*\d*)(?::([+-]*\d*))?$")
@@ -24,14 +24,18 @@ def main():
     parser.add_argument("restart", type=Path, help="path of the restart file")
     parser.add_argument("psi", type=Path, help="path of the psi file")
     parser.add_argument("--node", type=int, default=0, help="node to use")
-    parser.add_argument("--dof",
+    parser.add_argument("--dof1",
                         type=int,
                         default=1,
                         help="degree of freedom to use")
+    parser.add_argument("--dof2",
+                        type=int,
+                        default=1,
+                        help="second degree of freedom to use")
     parser.add_argument("-o",
                         "--output",
                         type=Path,
-                        default=Path.cwd() / "dmat.h5",
+                        default=Path.cwd() / "dmat2.h5",
                         help="output file")
     parser.add_argument("--slice", type=str)
 
@@ -104,9 +108,10 @@ def main():
 
             cmd = [
                 "qdtk_analysis.x", "-opr", "opr", "-rst", "rst", "-psi", "psi",
-                "-dmat", "-nd",
+                "-dmat2", "-nd",
                 str(args.node), "-dof",
-                str(args.dof)
+                str(args.dof1), "-dofB",
+                str(args.dof2)
             ]
             if not gridrep:
                 cmd.append("-spfrep")
@@ -125,32 +130,36 @@ def main():
             with h5py.File(output, "w") as fptr:
                 if not args.only_diagonalize:
                     if gridrep:
-                        dmat.add_dmat_gridrep_to_hdf5(
+                        dmat2.add_dmat2_gridrep_to_hdf5(
                             fptr,
-                            dmat.read_dmat_gridrep_ascii(
-                                "dmat_dof{}_grid".format(args.dof)))
+                            dmat2.read_dmat2_gridrep_ascii(
+                                "dmat2_dof{}_dof{}_grid".format(
+                                    args.dof1, args.dof2)))
                     else:
-                        dmat.add_dmat_spfrep_to_hdf5(
+                        dmat2.add_dmat2_spfrep_to_hdf5(
                             fptr,
-                            *dmat.read_dmat_spfrep_ascii(
-                                "dmat_dof{}_spf".format(args.dof)))
+                            *dmat2.read_dmat2_spfrep_ascii(
+                                "dmat2_dof{}_dof{}_spf".format(
+                                    args.dof1, args.dof2)))
 
-                if args.diagonalize or args.only_diagonalize:
-                    dmat.add_dmat_evals_to_hdf5(
-                        fptr,
-                        *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(
-                            args.dof)))
-                    if not args.only_eigenvalues:
-                        if gridrep:
-                            dmat.add_dmat_evecs_grid_to_hdf5(
-                                fptr,
-                                *dmat.read_dmat_evecs_grid_ascii(
-                                    "evec_dmat_dof{}_grid".format(args.dof)))
-                        else:
-                            dmat.add_dmat_evecs_spf_to_hdf5(
-                                fptr,
-                                *dmat.read_dmat_evecs_spf_ascii(
-                                    "evec_dmat_dof{}_spf".format(args.dof)))
+                # if args.diagonalize or args.only_diagonalize:
+                #     dmat2.add_dmat2_evals_to_hdf5(
+                #         fptr,
+                #         *dmat2.read_dmat2_evals_ascii(
+                #             "eval_dmat2_dof{}_dof{}".format(args.dof)))
+                #     if not args.only_eigenvalues:
+                #         if gridrep:
+                #             dmat2.add_dmat2_evecs_grid_to_hdf5(
+                #                 fptr,
+                #                 *dmat2.read_dmat2_evecs_grid_ascii(
+                #                     "evec_dmat2_dof{}_dof{}_grid".format(
+                #                         args.dof1, args.dof2)))
+                #         else:
+                #             dmat2.add_dmat2_evecs_spf_to_hdf5(
+                #                 fptr,
+                #                 *dmat2.read_dmat2_evecs_spf_ascii(
+                #                     "evec_dmat2_dof{}_dof{}_spf".format(
+                #                         args.dof1, args.dof2)))
 
 
 if __name__ == "__main__":

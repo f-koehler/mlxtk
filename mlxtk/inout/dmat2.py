@@ -19,17 +19,6 @@ def read_dmat2_gridrep(
     return read_dmat2_gridrep_ascii(path)
 
 
-def read_dmat2_gridrep(
-        path: str
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
-    is_hdf5, path, interior_path = tools.is_hdf5_path(path)
-    if is_hdf5:
-        assert interior_path
-        raise NotImplementedError()
-
-    return read_dmat2_gridrep_ascii(path)
-
-
 def read_dmat2_gridrep_ascii(
         path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
@@ -64,3 +53,32 @@ def add_dmat2_gridrep_to_hdf5(
     fptr.create_dataset("x2", data[2].shape, dtype=numpy.float64)[:] = data[2]
     fptr.create_dataset("dmat2", data[3].shape,
                         dtype=numpy.float64)[:, :, :] = data[3]
+
+
+def read_dmat2_spfrep_ascii(path: Union[str, Path]
+                            ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    df = pandas.read_csv(path,
+                         header=None,
+                         names=["time", "i", "j", "k", "l", "real", "imag"],
+                         delim_whitespace=True)
+    time = numpy.unique(df["time"].values)
+    num_times = len(time)
+    num_i = len(numpy.unique(df["i"].values))
+    num_j = len(numpy.unique(df["j"].values))
+    num_k = len(numpy.unique(df["k"].values))
+    num_l = len(numpy.unique(df["l"].values))
+    return time, numpy.reshape(
+        df["real"].values,
+        (num_times, num_i, num_j, num_k,
+         num_l)) + 1j * numpy.reshape(df["imag"].values,
+                                      (num_times, num_i, num_j, num_k, num_l))
+
+
+def add_dmat2_spfrep_to_hdf5(fptr: [h5py.File, h5py.Group],
+                             time: numpy.ndarray, dmat2: numpy.ndarray):
+    group = fptr.create_group("dmat2_spfrep")
+    group.create_dataset("time", shape=time.shape, dtype=time.dtype)[:] = time
+    group.create_dataset("real", shape=dmat2.shape,
+                         dtype=dmat2.real.dtype)[:, :, :, :, :] = dmat2.real
+    group.create_dataset("imag", shape=dmat2.shape,
+                         dtype=dmat2.imag.dtype)[:, :, :, :, :] = dmat2.imag

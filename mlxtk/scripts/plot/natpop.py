@@ -3,11 +3,11 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from .. import units
-from ..inout.natpop import read_natpop
-from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
-                    handle_saving)
-from ..plot.natpop import plot_natpop
+from ... import units
+from ...inout.natpop import read_natpop
+from ...plot import (add_argparse_2d_args, add_argparse_save_arg,
+                     apply_2d_args, handle_saving)
+from ...plot.natpop import plot_natpop
 
 
 def main():

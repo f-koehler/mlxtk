@@ -3,11 +3,11 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from .. import units
-from ..inout import read_gpop
-from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
-                    handle_saving, plot_gpop)
-from ..tools.gpop import transform_to_momentum_space
+from ... import units
+from ...inout import read_gpop
+from ...plot import (add_argparse_2d_args, add_argparse_save_arg,
+                     apply_2d_args, handle_saving, plot_gpop)
+from ...tools.gpop import transform_to_momentum_space
 
 
 def main():

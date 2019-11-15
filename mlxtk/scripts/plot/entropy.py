@@ -2,12 +2,12 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from .. import units
-from ..inout import read_natpop
-from ..plot import (add_argparse_2d_args, add_argparse_save_arg, apply_2d_args,
-                    handle_saving, plot_entropy)
-from ..tools.entropy import compute_entropy
-from ..util import labels_from_paths
+from ... import units
+from ...inout import read_natpop
+from ...plot import (add_argparse_2d_args, add_argparse_save_arg,
+                     apply_2d_args, handle_saving, plot_entropy)
+from ...tools.entropy import compute_entropy
+from ...util import labels_from_paths
 
 
 def main():

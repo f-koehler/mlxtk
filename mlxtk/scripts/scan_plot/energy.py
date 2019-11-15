@@ -7,9 +7,9 @@ from typing import Callable
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from .. import inout, log, plot, units
-from ..parameter_selection import load_scan
-from ..parameters import Parameters
+from ... import inout, log, plot, units
+from ...parameter_selection import load_scan
+from ...parameters import Parameters
 
 LOGGER = log.get_logger(__name__)
 plot.make_headless()

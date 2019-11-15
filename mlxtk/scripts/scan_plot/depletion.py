@@ -7,28 +7,29 @@ from typing import Callable
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from .. import inout, log, plot, units
-from ..parameter_selection import load_scan
-from ..parameters import Parameters
+from ... import inout, log, plot, units
+from ...parameter_selection import load_scan
+from ...parameters import Parameters
 
 LOGGER = log.get_logger(__name__)
 plot.make_headless()
 
 
-def plot_expval(index: int,
+def plot_natpop(index: int,
                 path: Path,
                 parameters: Parameters,
                 file_path: Path,
+                dof: int = 1,
+                node: int = 1,
                 extension: str = ".pdf",
                 modfunc: Callable[[Figure, Axes, Parameters], None] = None):
     total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
-        plot.plot_expval(ax, *inout.expval.read_expval(total_path))
-        ax.set_title(r"$\rho_1(x,t)$")
+        plot.plot_depletion(ax,
+                            *inout.read_natpop(total_path, dof=dof, node=node))
         system = units.get_default_unit_system()
         ax.set_xlabel(system.get_time_unit().format_label("t"))
-        ax.set_xlabel(system.get_length_unit().format_label("x"))
         if modfunc:
             modfunc(fig, ax, parameters)
         plot.save(fig, str(index) + extension)
@@ -43,9 +44,17 @@ def main():
         "scan_dir",
         type=Path,
         help="directory of the scan containing the file scan.pickle")
-    parser.add_argument("expval",
+    parser.add_argument("-f",
+                        "--file",
                         type=Path,
-                        help="relative path to expval within each simulation")
+                        default=Path("propagate") / "natpop",
+                        help="relative path within each simulation")
+    parser.add_argument("-d",
+                        "--dof",
+                        type=int,
+                        default=1,
+                        help="degree of freedom")
+    parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument("-e",
                         "--extension",
                         type=str,
@@ -59,17 +68,20 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = "_".join(args.expval.with_suffix("").parts)
+        args.output = "depletion_{}_{}".format(args.dof, args.node)
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
+        del fig
         del parameters
         plot.apply_2d_args(ax, fig, args)
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,
-        partial(plot_expval,
-                file_path=args.expval,
+        partial(plot_natpop,
+                file_path=args.file,
                 modfunc=apply_args,
+                dof=args.dof,
+                node=args.node,
                 extension=args.extension))
 
 

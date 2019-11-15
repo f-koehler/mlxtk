@@ -1,6 +1,7 @@
 import cmath
 from pathlib import Path
 from typing import Tuple, Union
+import h5py
 
 import numpy
 
@@ -33,15 +34,15 @@ def compute_g1(
 
 
 def compute_g2(
-        dmat_path: Union[Path, str], dmat2_path: Union[Path, str]
+        data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
+                         ndarray],
+        data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
+                          ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 
-    time, x1, x2, dmat = read_dmat_gridrep_ascii(dmat_path)
-    LOGGER.info("finished reading dmat")
-
-    time_, x1_, x2_, dmat2 = read_dmat2_gridrep_ascii(dmat2_path)
-    LOGGER.info("finished reading dmat2")
+    time, x1, x2, dmat = data_dmat
+    time_, x1_, x2_, dmat2 = data_dmat2
 
     assert time.shape == time_.shape
     assert x1.shape == x1_.shape

@@ -151,6 +151,15 @@ def read_dmat_gridrep_ascii(
     return time, x1, x2, dmat2
 
 
+def read_dmat_gridrep_hdf5(
+        path: Union[str, Path], interior_path: str = "/"
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    with h5py.File(path, "r") as fptr:
+        return fptr[interior_path]["time"][:], fptr[interior_path][
+            "x1"][:], fptr[interior_path]["x2"][:], fptr[interior_path][
+                "real"][:, :, :] + 1j * fptr[interior_path]["imag"][:, :, :]
+
+
 def write_dmat_gridrep_ascii(
         path: Union[str, Path],
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]

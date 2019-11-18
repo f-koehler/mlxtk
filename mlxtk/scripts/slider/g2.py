@@ -3,9 +3,9 @@ import sys
 
 from PySide2 import QtWidgets
 
-from ... import plot
-from ...inout.g2 import read_g2_hdf5
-from . import g1
+from mlxtk import plot
+from mlxtk.inout.g2 import read_g2_hdf5
+from mlxtk.scripts.slider import g1
 
 
 class Gui(g1.Gui):

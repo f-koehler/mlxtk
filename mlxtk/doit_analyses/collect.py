@@ -36,17 +36,17 @@ def collect_values(scan_dir: Union[Path, str],
                     ], fetch_func(index, path, parameters)
 
         parameters = []
-        values = []
+        values_lst = []
         for param, val in selection.foreach(helper, parallel=False):
             if val is not None:
                 parameters.append(param)
-                values.append(val)
+                values_lst.append(val)
             else:
                 LOGGER.warning("cannot fetch value(s) for parameters: %s",
                                str(param))
 
         parameters = numpy.array(parameters, dtype=object)
-        values = numpy.array(values, dtype=object)
+        values = numpy.array(values_lst, dtype=object)
         if len(values.shape) == 1:
             values = values.reshape((len(values), 1))
         elif len(values.shape) == 2:

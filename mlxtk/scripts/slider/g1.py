@@ -6,9 +6,9 @@ import matplotlib
 import numpy
 from PySide2 import QtWidgets
 
-from ... import plot, units
-from ...inout.g1 import read_g1_hdf5
-from ...ui.plot_slider import PlotSlider
+from mlxtk import plot, units
+from mlxtk.inout.g1 import read_g1_hdf5
+from mlxtk.ui.plot_slider import PlotSlider
 
 
 class Gui(PlotSlider):

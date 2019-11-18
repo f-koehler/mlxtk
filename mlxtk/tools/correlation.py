@@ -60,19 +60,3 @@ def compute_g2(
     LOGGER.info("finished computing g2")
 
     return time, x1, x2, g2
-
-
-def save_g1(
-        path: Union[Path, str],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
-    write_dmat_gridrep_hdf5(path, data)
-    LOGGER.info("finished writing g1")
-
-
-def save_g2(
-        path: Union[Path, str],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
-    write_dmat_gridrep_hdf5(path, data)
-    LOGGER.info("finished writing g2")

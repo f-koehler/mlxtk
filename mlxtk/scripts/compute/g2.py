@@ -1,9 +1,11 @@
 import argparse
 from pathlib import Path
 
-from ...inout import dmat, dmat2
+import h5py
+
+from ...inout import dmat, dmat2, g2
 from ...log import get_logger
-from ...tools.correlation import compute_g2, save_g2
+from ...tools.correlation import compute_g2
 
 LOGGER = get_logger(__name__)
 
@@ -19,8 +21,10 @@ def main():
     data_dmat = dmat.read_dmat_gridrep_hdf5(args.dmat, "dmat_gridrep")
     LOGGER.info("read dmat2")
     data_dmat2 = dmat2.read_dmat2_gridrep_hdf5(args.dmat2, "dmat2_gridrep")
-    g2 = compute_g2(data_dmat, data_dmat2)
-    save_g2(args.output, g2)
+    data = compute_g2(data_dmat, data_dmat2)
+
+    with h5py.File(args.output, "w") as fptr:
+        g2.add_g2_to_hdf5(fptr, data)
 
 
 if __name__ == "__main__":

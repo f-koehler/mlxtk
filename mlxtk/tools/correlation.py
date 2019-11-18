@@ -1,8 +1,8 @@
 import cmath
 from pathlib import Path
 from typing import Tuple, Union
-import h5py
 
+import h5py
 import numpy
 
 from ..inout.dmat import read_dmat_gridrep_ascii, write_dmat_gridrep_hdf5
@@ -14,12 +14,12 @@ LOGGER = get_logger(__name__)
 
 
 def compute_g1(
-        dmat_path: Union[Path, str]
+        data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
+                         ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
-    time, x1, x2, dmat = read_dmat_gridrep_ascii(dmat_path)
-    LOGGER.info("finished reading dmat")
+    time, x1, x2, dmat = data_dmat
 
     g1 = numpy.zeros_like(dmat)
     # TODO: improve this naive implementation (maybe numba can help)

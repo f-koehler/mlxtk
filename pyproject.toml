@@ -67,7 +67,12 @@ typed-ast = "^1.4.0"
 yapf = "^0.28.0"
 
 [tool.poetry.scripts]
-compute_dmat = "mlxtk.scripts.compute_dmat:main"
+compute_dmat = "mlxtk.scripts.compute.dmat:main"
+compute_dmat2 = "mlxtk.scripts.compute.dmat2:main"
+compute_g1 = "mlxtk.scripts.compute.g1:main"
+compute_g2 = "mlxtk.scripts.compute.g2:main"
+
+slider_g1 = "mlxtk.scripts.slider.g1:main"
 
 create_slideshow = "mlxtk.scripts.create_slideshow:main"
 dmat2_gridrep = "mlxtk.scripts.dmat2_gridrep:main"

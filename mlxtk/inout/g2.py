@@ -19,3 +19,14 @@ def add_g2_to_hdf5(
                          data[3].real.dtype)[:] = data[3].real
     group.create_dataset("imag", data[3].shape,
                          data[3].imag.dtype)[:] = data[3].imag
+
+
+def read_g2_hdf5(
+        path: Union[str, Path], interior_path: str = "/g2"
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path = make_path(path)
+
+    with h5py.File(path, "r") as fptr:
+        return fptr[interior_path]["time"][:], fptr[interior_path][
+            "x1"][:], fptr[interior_path]["x2"][:], fptr[interior_path][
+                "real"][:] + 1j * fptr[interior_path]["imag"][:]

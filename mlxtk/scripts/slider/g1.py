@@ -54,6 +54,8 @@ class Gui(PlotSlider):
 
     def update_plot(self, index: int):
         self.mesh.set_array(self.values[index, :-1, :-1].ravel())
+        self.mesh.set_clim(vmin=self.values[index].min(),
+                           vmax=self.values[index].max())
         self.plot.canvas.draw()
 
     def update_label(self, index: int):

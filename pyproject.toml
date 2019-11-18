@@ -73,6 +73,7 @@ compute_g1 = "mlxtk.scripts.compute.g1:main"
 compute_g2 = "mlxtk.scripts.compute.g2:main"
 
 slider_g1 = "mlxtk.scripts.slider.g1:main"
+slider_g2 = "mlxtk.scripts.slider.g2:main"
 
 create_slideshow = "mlxtk.scripts.create_slideshow:main"
 dmat2_gridrep = "mlxtk.scripts.dmat2_gridrep:main"

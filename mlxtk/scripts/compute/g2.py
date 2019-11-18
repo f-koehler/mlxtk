@@ -18,7 +18,7 @@ def main():
     LOGGER.info("read dmat")
     data_dmat = dmat.read_dmat_gridrep_hdf5(args.dmat, "dmat_gridrep")
     LOGGER.info("read dmat2")
-    data_dmat2 = dmat2.read_dmat2_gridrep_hdf5(args.dmat2)
+    data_dmat2 = dmat2.read_dmat2_gridrep_hdf5(args.dmat2, "dmat2_gridrep")
     g2 = compute_g2(data_dmat, data_dmat2)
     save_g2(args.output, g2)
 

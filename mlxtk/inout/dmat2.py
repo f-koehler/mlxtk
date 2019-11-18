@@ -40,19 +40,20 @@ def read_dmat2_gridrep_hdf5(
     with h5py.File(path, "r") as fptr:
         return (fptr[interior_path]["time"][:], fptr[interior_path]["x1"][:],
                 fptr[interior_path]["x2"][:],
-                fptr[interior_path]["dmat2"][:, :, :])
+                fptr[interior_path]["values"][:, :, :])
 
 
 def add_dmat2_gridrep_to_hdf5(
         fptr: Union[h5py.File, h5py.Group],
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ):
-    fptr.create_dataset("time", data[0].shape,
-                        dtype=numpy.float64)[:] = data[0]
-    fptr.create_dataset("x1", data[1].shape, dtype=numpy.float64)[:] = data[1]
-    fptr.create_dataset("x2", data[2].shape, dtype=numpy.float64)[:] = data[2]
-    fptr.create_dataset("dmat2", data[3].shape,
-                        dtype=numpy.float64)[:, :, :] = data[3]
+    group = fptr.create_group("dmat2_gridrep")
+    group.create_dataset("time", data[0].shape,
+                         dtype=numpy.float64)[:] = data[0]
+    group.create_dataset("x1", data[1].shape, dtype=numpy.float64)[:] = data[1]
+    group.create_dataset("x2", data[2].shape, dtype=numpy.float64)[:] = data[2]
+    group.create_dataset("values", data[3].shape,
+                         dtype=numpy.float64)[:, :, :] = data[3]
 
 
 def read_dmat2_spfrep_ascii(path: Union[str, Path]

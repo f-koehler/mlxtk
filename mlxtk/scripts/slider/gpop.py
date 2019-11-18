@@ -7,22 +7,21 @@ import numpy
 from PySide2 import QtWidgets
 
 from mlxtk import plot, units
-from mlxtk.inout.g1 import read_g1_hdf5
+from mlxtk.inout.gpop import read_gpop
+from mlxtk.plot.gpop import plot_gpop
 from mlxtk.ui.plot_slider import PlotSlider
 
 
 class Gui(PlotSlider):
     def __init__(self,
-                 data: Tuple[numpy.ndarray, numpy.ndarray, numpy.
-                             ndarray, numpy.ndarray],
+                 data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
                  min_index: int,
                  max_index: int,
                  projection: str = None,
                  plot_args: Optional[argparse.Namespace] = None,
                  parent: QtWidgets.QWidget = None):
-        self.time, self.x1, self.x2, self.values = data
-        self.values = numpy.abs(self.values)
-        self.mesh: matplotlib.collections.QuadMesh = None
+        self.time, self.grid, self.density = data
+        self.line: matplotlib.lines.Line2D = None
         super().__init__(min_index,
                          max_index,
                          plot_args=plot_args,
@@ -33,29 +32,23 @@ class Gui(PlotSlider):
     def init_plot(self):
         self.label.setText("Time: {:6.2f}".format(self.time[0]))
 
-        if self.mesh:
-            self.mesh.remove()
-            self.mesh = None
+        if self.line:
+            self.line.remove()
+            self.line = None
 
         if self.plot_args:
             plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
 
         unit_system = units.get_default_unit_system()
         self.axes.set_xlabel(unit_system.get_length_unit().format_label("x_1"))
-        self.axes.set_ylabel(unit_system.get_length_unit().format_label("x_2"))
+        self.axes.set_ylabel(unit_system.get_time_unit().format_label("t"))
 
-        X2, X1 = numpy.meshgrid(self.x2, self.x1)
-        self.mesh = self.axes.pcolormesh(X1,
-                                         X2,
-                                         self.values[0],
-                                         cmap="gnuplot",
-                                         rasterized=True)
+        self.line, = self.axes.plot(self.grid, self.density[0])
+
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):
-        self.mesh.set_array(self.values[index, :-1, :-1].ravel())
-        self.mesh.set_clim(vmin=self.values[index].min(),
-                           vmax=self.values[index].max())
+        self.line.set_ydata(self.density[index])
         self.plot.canvas.draw()
 
     def update_label(self, index: int):
@@ -64,12 +57,20 @@ class Gui(PlotSlider):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", help="path to the g1 file")
+    parser.add_argument("path",
+                        nargs="?",
+                        default="propagate.h5/gpop",
+                        help="path to the gpop file")
+    parser.add_argument("-d",
+                        "--dof",
+                        type=int,
+                        default=1,
+                        help="degree of freedom")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
     app = QtWidgets.QApplication(sys.argv)
-    data = read_g1_hdf5(args.path)
+    data = read_gpop(args.path, args.dof)
     gui = Gui(data, 0, len(data[0]) - 1)
     sys.exit(app.exec_())
 

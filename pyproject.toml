@@ -74,6 +74,7 @@ compute_g2 = "mlxtk.scripts.compute.g2:main"
 
 slider_g1 = "mlxtk.scripts.slider.g1:main"
 slider_g2 = "mlxtk.scripts.slider.g2:main"
+slider_gpop = "mlxtk.scripts.slider.gpop:main"
 
 create_slideshow = "mlxtk.scripts.create_slideshow:main"
 dmat2_gridrep = "mlxtk.scripts.dmat2_gridrep:main"
@@ -85,7 +86,6 @@ dmat_spf_slider = "mlxtk.scripts.dmat_spf_slider:main"
 fixed_ns = "mlxtk.scripts.fixed_ns:main"
 fixed_ns_table = "mlxtk.scripts.fixed_ns_table:main"
 gpop_model = "mlxtk.scripts.gpop_model:main"
-gpop_slider = "mlxtk.scripts.gpop_slider:main"
 mlxtkenv = "mlxtkenv_script:main"
 
 plot_energy = "mlxtk.scripts.plot.energy:main"

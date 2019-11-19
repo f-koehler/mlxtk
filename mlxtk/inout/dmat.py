@@ -109,7 +109,8 @@ def add_dmat_evecs_spf_to_hdf5(fptr: Union[h5py.File, h5py.Group],
                          evecs.imag.dtype)[:, :, :] = evecs.imag
 
 
-def read_dmat_spfrep_ascii(path: Union[str, Path]):
+def read_dmat_spfrep_ascii(path: Union[str, Path]
+                           ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     df = pandas.read_csv(str(path),
                          delim_whitespace=True,
@@ -158,6 +159,13 @@ def read_dmat_gridrep_hdf5(
         return fptr[interior_path]["time"][:], fptr[interior_path][
             "x1"][:], fptr[interior_path]["x2"][:], fptr[interior_path][
                 "real"][:, :, :] + 1j * fptr[interior_path]["imag"][:, :, :]
+
+
+def read_dmat_spfrep_hdf5(path: Union[str, Path], interior_path: str = "/"
+                          ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    with h5py.File(path, "r") as fptr:
+        return fptr[interior_path]["time"][:], fptr[interior_path][
+            "real"][:, :, :] + 1j * fptr[interior_path]["imag"][:, :, :]
 
 
 def write_dmat_gridrep_ascii(

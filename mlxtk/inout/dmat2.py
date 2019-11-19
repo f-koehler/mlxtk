@@ -43,6 +43,14 @@ def read_dmat2_gridrep_hdf5(
                 fptr[interior_path]["values"][:, :, :])
 
 
+def read_dmat2_spfrep_hdf5(path: Union[str, Path], interior_path: str = "/"
+                           ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    with h5py.File(path, "r") as fptr:
+        return (fptr[interior_path]["time"][:],
+                fptr[interior_path]["real"][:, :, :] +
+                1j * fptr[interior_path]["imag"][:, :, :])
+
+
 def add_dmat2_gridrep_to_hdf5(
         fptr: Union[h5py.File, h5py.Group],
         data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]

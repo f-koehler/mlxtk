@@ -139,8 +139,14 @@ class PlotArgs2D:
         if self.logy:
             axes.set_yscale("log")
 
-        axes.set_xlim(xmin=self.xmin, xmax=self.xmax)
-        axes.set_ylim(ymin=self.ymin, ymax=self.ymax)
+        xmin, xmax = axes.get_xlim()
+        ymin, ymax = axes.get_ylim()
+        xmin = xmin if self.xmin is None else self.xmin
+        xmax = xmax if self.xmax is None else self.xmax
+        ymin = ymin if self.ymin is None else self.ymin
+        ymax = ymax if self.ymax is None else self.ymax
+        axes.set_xlim(xmin=xmin, xmax=xmax)
+        axes.set_ylim(ymin=ymin, ymax=ymax)
 
         if self.dpi and (figure is not None):
             figure.set_dpi(self.dpi)

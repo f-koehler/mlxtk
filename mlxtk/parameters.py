@@ -1,7 +1,7 @@
 import copy
 import itertools
 import json
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 
 
 class Parameters:
@@ -152,6 +152,20 @@ def generate_all(parameters: Parameters,
         ret[-1].set_values(combination)
 
     return ret
+
+
+def filter_combinations(parameters: List[Parameters],
+                        filters: Union[Callable[[Parameters], bool], List[
+                            Callable[[Parameters], bool]]]
+                        ) -> List[Parameters]:
+    if not isinstance(filters, list):
+        filters = [filters]
+
+    params = [p.copy() for p in parameters]
+    for f in filters:
+        params = [p for p in params if f(p)]
+
+    return params
 
 
 def get_variables(parameters: List[Parameters]) -> Tuple[List[str], List[str]]:

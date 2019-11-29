@@ -63,7 +63,7 @@ mypy = "*"
 pylint = "*"
 tuna = "*"
 typed-ast = "*"
-yapf = "^0.28"
+yapf = "^0.29"
 
 [tool.poetry.scripts]
 compute_dmat = "mlxtk.scripts.compute.dmat:main"

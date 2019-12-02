@@ -19,6 +19,16 @@ def read_dmat2_gridrep(
     return read_dmat2_gridrep_ascii(path)
 
 
+def read_dmat2_gridrep(
+        path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    is_hdf5, path, interior_path = tools.is_hdf5_path(path)
+    if is_hdf5:
+        return read_dmat2_gridrep_hdf5(path, interior_path)
+
+    return read_dmat2_gridrep_ascii(path)
+
+
 def read_dmat2_gridrep_ascii(
         path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:

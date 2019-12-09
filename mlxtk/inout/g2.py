@@ -7,10 +7,9 @@ import numpy
 from ..util import make_path
 
 
-def add_g2_to_hdf5(
-        fptr: Union[h5py.File, h5py.Group],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
+def add_g2_to_hdf5(fptr: Union[h5py.File, h5py.Group],
+                   data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                               numpy.ndarray]):
     group = fptr.create_group("g2")
     group.create_dataset("time", data[0].shape, data[0].dtype)[:] = data[0]
     group.create_dataset("x1", data[1].shape, data[1].dtype)[:] = data[1]
@@ -22,7 +21,8 @@ def add_g2_to_hdf5(
 
 
 def read_g2_hdf5(
-        path: Union[str, Path], interior_path: str = "/g2"
+    path: Union[str, Path],
+    interior_path: str = "/g2"
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 

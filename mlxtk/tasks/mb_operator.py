@@ -15,12 +15,12 @@ from .task import Task
 
 class MBOperatorSpecification:
     def __init__(
-            self,
-            dofs: Iterable[int],
-            grids: Iterable[DVRSpecification],
-            coefficients: List[Any],
-            terms: List[Any],
-            table: Union[str, List[str]],
+        self,
+        dofs: Iterable[int],
+        grids: Iterable[DVRSpecification],
+        coefficients: List[Any],
+        terms: List[Any],
+        table: Union[str, List[str]],
     ):
         self.dofs = dofs
         self.grids = grids

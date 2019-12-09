@@ -25,10 +25,10 @@ class SimulationSetBase:
         working_dir (str): optional working directory (defaults to ``name``)
     """
     def __init__(
-            self,
-            name: str,
-            simulations: List[Simulation],
-            working_dir: Union[str, Path] = None,
+        self,
+        name: str,
+        simulations: List[Simulation],
+        working_dir: Union[str, Path] = None,
     ):
         self.name = name
         self.simulations = simulations

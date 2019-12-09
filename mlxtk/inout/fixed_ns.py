@@ -9,7 +9,7 @@ from ..util import make_path
 
 
 def read_fixed_ns_ascii(
-        path: Union[str, Path]
+    path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 
@@ -27,12 +27,14 @@ def read_fixed_ns_ascii(
                                usecols=usecols)[names].values
         times, indices = numpy.unique(data[:, 0], return_index=True)
 
-        return times, data[indices, 1:num_coefficients +
-                           1], data[indices, num_coefficients + 1:]
+        return times, data[indices,
+                           1:num_coefficients + 1], data[indices,
+                                                         num_coefficients + 1:]
 
 
-def read_fixed_ns_hdf5(path: Union[str, Path]
-                       ) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
+def read_fixed_ns_hdf5(
+    path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
     with h5py.File(path, "r") as fptr:
         time = fptr["fixed_ns"]["time"][:]
@@ -44,7 +46,7 @@ def read_fixed_ns_hdf5(path: Union[str, Path]
 
 
 def read_fixed_ns_total_magnitude_hdf5(
-        path: Union[str, Path]
+    path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
 

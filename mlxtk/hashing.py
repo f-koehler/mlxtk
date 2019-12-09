@@ -19,7 +19,8 @@ def hash_file(path: Union[str, Path], program: str = "sha1sum") -> str:
     return subprocess.check_output([program, str(path)]).split()[0]
 
 
-def inaccurate_hash(x: numpy.ndarray, decimals: int = 10,
+def inaccurate_hash(x: numpy.ndarray,
+                    decimals: int = 10,
                     program="sha256sum") -> str:
     return (subprocess.check_output(
         [program], input=x.round(decimals).tobytes("C")).decode().split()[0])

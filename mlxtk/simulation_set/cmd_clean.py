@@ -6,8 +6,8 @@ from ..simulation import Simulation
 from .base import SimulationSetBase
 
 
-def clean_simulation(simulation: Simulation
-                     ) -> List[Callable[[], Dict[str, Any]]]:
+def clean_simulation(
+        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     def task_clean_simulation():
         @DoitAction
         def action_clean_simulation(targets: List[str]):

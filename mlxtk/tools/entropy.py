@@ -5,8 +5,8 @@ from typing import Union
 import numpy
 
 
-def compute_entropy(natpop: numpy.ndarray
-                    ) -> Union[numpy.ndarray, numpy.float64]:
+def compute_entropy(
+        natpop: numpy.ndarray) -> Union[numpy.ndarray, numpy.float64]:
     """Compute the Boltzmann entropy from natural populations.
 
     The entropy is computed using the formula

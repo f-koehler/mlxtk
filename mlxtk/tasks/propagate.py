@@ -315,8 +315,8 @@ class ImprovedRelax(Propagate):
 
 class Diagonalize(Propagate):
     def __init__(self, name: str, wave_function: Union[str, Path],
-                 hamiltonian: Union[str, Path], number_of_states: int,
-                 **kwargs):
+                 hamiltonian: Union[str,
+                                    Path], number_of_states: int, **kwargs):
         kwargs["exact_diag"] = True
         kwargs["eig_tot"] = number_of_states
 

@@ -167,7 +167,9 @@ class DVRSpecification:
             (str(arg) for arg in self.args)) + ">")
 
 
-def add_harmdvr(npoints: int, xeq: float, xho: float,
+def add_harmdvr(npoints: int,
+                xeq: float,
+                xho: float,
                 tolerance: float = 1e-15) -> DVRSpecification:
     """Register a new harmonic oscillator DVR
 
@@ -217,7 +219,8 @@ def add_expdvr(npoints: int, qmin: float, qmax: float) -> DVRSpecification:
     return DVRSpecification("ExponentialDVR", npoints, qmin, qmax)
 
 
-def add_lengendredvr(npoints: int, m: int,
+def add_lengendredvr(npoints: int,
+                     m: int,
                      tolerance: float = 1e-10) -> DVRSpecification:
     return DVRSpecification("LegendreDVR", npoints, m, tolerance)
 

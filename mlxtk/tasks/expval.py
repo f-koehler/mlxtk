@@ -87,8 +87,8 @@ class ComputeExpectationValue(Task):
 
 
 class ComputeExpectationValueStatic(Task):
-    def __init__(self, wave_function: Union[str, Path],
-                 operator: Union[str, Path]):
+    def __init__(self, wave_function: Union[str, Path], operator: Union[str,
+                                                                        Path]):
         self.logger = get_logger(__name__ + ".ComputeExpectationValueStatic")
 
         # compute required paths

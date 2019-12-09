@@ -154,10 +154,11 @@ def generate_all(parameters: Parameters,
     return ret
 
 
-def filter_combinations(parameters: List[Parameters],
-                        filters: Union[Callable[[Parameters], bool], List[
-                            Callable[[Parameters], bool]]]
-                        ) -> List[Parameters]:
+def filter_combinations(
+    parameters: List[Parameters], filters: Union[Callable[[Parameters], bool],
+                                                 List[Callable[[Parameters],
+                                                               bool]]]
+) -> List[Parameters]:
     if not isinstance(filters, list):
         filters = [filters]
 

@@ -9,8 +9,9 @@ from ..util import make_path
 from . import tools
 
 
-def read_dmat_gridrep(path: Union[str, Path]
-                      ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+def read_dmat_gridrep(
+    path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_dmat_gridrep_hdf5(path, interior_path)
@@ -18,8 +19,8 @@ def read_dmat_gridrep(path: Union[str, Path]
     return read_dmat_gridrep_ascii(path)
 
 
-def read_dmat_evals_ascii(path: Union[str, Path]
-                          ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def read_dmat_evals_ascii(
+        path: Union[str, Path]) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path, "r") as fp:
         m = len(fp.readline().strip().split()) - 1
@@ -38,7 +39,7 @@ def add_dmat_evals_to_hdf5(fptr: Union[h5py.File, h5py.Group],
 
 
 def read_dmat_evecs_grid_ascii(
-        path: Union[str, Path]
+    path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path, "r") as fp:
@@ -68,9 +69,9 @@ def read_dmat_evecs_grid_ascii(
     return times, grid, evecs.T.reshape(m, len(times), len(grid))
 
 
-def add_dmat_evecs_grid_to_hdf5(fptr: Union[h5py.File, h5py.Group],
-                                times: numpy.ndarray, grid: numpy.ndarray,
-                                evecs: numpy.ndarray):
+def add_dmat_evecs_grid_to_hdf5(fptr: Union[h5py.File,
+                                            h5py.Group], times: numpy.ndarray,
+                                grid: numpy.ndarray, evecs: numpy.ndarray):
     group = fptr.create_group("evecs_grid")
     group.create_dataset("time", times.shape, times.dtype)[:] = times
     group.create_dataset("grid", grid.shape, grid.dtype)[:] = grid
@@ -80,8 +81,8 @@ def add_dmat_evecs_grid_to_hdf5(fptr: Union[h5py.File, h5py.Group],
                          evecs.imag.dtype)[:, :, :] = evecs.imag
 
 
-def read_dmat_evecs_spf_ascii(path: Union[str, Path]
-                              ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def read_dmat_evecs_spf_ascii(
+        path: Union[str, Path]) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path, "r") as fp:
         m = (len(fp.readline().strip().split()) - 2) // 2
@@ -119,8 +120,8 @@ def add_dmat_evecs_spf_to_hdf5(fptr: Union[h5py.File, h5py.Group],
                          evecs.imag.dtype)[:, :, :] = evecs.imag
 
 
-def read_dmat_spfrep_ascii(path: Union[str, Path]
-                           ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def read_dmat_spfrep_ascii(
+        path: Union[str, Path]) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     df = pandas.read_csv(str(path),
                          delim_whitespace=True,
@@ -147,7 +148,7 @@ def add_dmat_spfrep_to_hdf5(fptr: Union[h5py.File, h5py.Group],
 
 
 def read_dmat_gridrep_ascii(
-        path: Union[str, Path]
+    path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(path,
                          header=None,
@@ -163,7 +164,8 @@ def read_dmat_gridrep_ascii(
 
 
 def read_dmat_gridrep_hdf5(
-        path: Union[str, Path], interior_path: str = "/"
+    path: Union[str, Path],
+    interior_path: str = "/"
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return fptr[interior_path]["time"][:], fptr[interior_path][
@@ -171,34 +173,32 @@ def read_dmat_gridrep_hdf5(
                 "real"][:, :, :] + 1j * fptr[interior_path]["imag"][:, :, :]
 
 
-def read_dmat_spfrep_hdf5(path: Union[str, Path], interior_path: str = "/"
-                          ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def read_dmat_spfrep_hdf5(
+        path: Union[str, Path],
+        interior_path: str = "/") -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return fptr[interior_path]["time"][:], fptr[interior_path][
             "real"][:, :, :] + 1j * fptr[interior_path]["imag"][:, :, :]
 
 
-def write_dmat_gridrep_ascii(
-        path: Union[str, Path],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
+def write_dmat_gridrep_ascii(path: Union[str, Path],
+                             data: Tuple[numpy.ndarray, numpy.ndarray,
+                                         numpy.ndarray, numpy.ndarray]):
     dmat = data[3].flatten()
 
-    df = pandas.DataFrame(
-        data=numpy.
-        c_[numpy.repeat(data[0],
-                        len(data[1]) * len(data[2])),
-           numpy.tile(numpy.repeat(data[1], len(data[2])), len(data[0])),
-           numpy.tile(data[2],
-                      len(data[0]) * len(data[1])), dmat.real, dmat.imag],
-        columns=["time", "x1", "x2", "real", "imag"])
+    df = pandas.DataFrame(data=numpy.c_[
+        numpy.repeat(data[0],
+                     len(data[1]) * len(data[2])),
+        numpy.tile(numpy.repeat(data[1], len(data[2])), len(data[0])),
+        numpy.tile(data[2],
+                   len(data[0]) * len(data[1])), dmat.real, dmat.imag],
+                          columns=["time", "x1", "x2", "real", "imag"])
     df.to_csv(path, header=False, index=False, sep="\t")
 
 
-def add_dmat_gridrep_to_hdf5(
-        fptr: Union[h5py.File, h5py.Group],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
+def add_dmat_gridrep_to_hdf5(fptr: Union[h5py.File, h5py.Group],
+                             data: Tuple[numpy.ndarray, numpy.ndarray,
+                                         numpy.ndarray, numpy.ndarray]):
     group = fptr.create_group("dmat_gridrep")
     group.create_dataset("time", data[0].shape,
                          dtype=numpy.float64)[:] = data[0]
@@ -210,9 +210,8 @@ def add_dmat_gridrep_to_hdf5(
                          dtype=numpy.float64)[:, :, :] = data[3].imag
 
 
-def write_dmat_gridrep_hdf5(
-        path: Union[str, Path],
-        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
-):
+def write_dmat_gridrep_hdf5(path: Union[str, Path],
+                            data: Tuple[numpy.ndarray, numpy.ndarray,
+                                        numpy.ndarray, numpy.ndarray]):
     with h5py.File(path, "w") as fptr:
         add_dmat_gridrep_to_hdf5(fptr, data)

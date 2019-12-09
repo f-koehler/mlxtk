@@ -6,14 +6,16 @@ import scipy.optimize
 import scipy.signal
 
 
-def find_relative_maxima(x: numpy.ndarray,
-                         y: numpy.ndarray,
-                         order: int = 5,
-                         threshold: float = None,
-                         interpolation={
-                             "order": 5,
-                             "points": 10000
-                         }) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def find_relative_maxima(
+    x: numpy.ndarray,
+    y: numpy.ndarray,
+    order: int = 5,
+    threshold: float = None,
+    interpolation={
+        "order": 5,
+        "points": 10000
+    }
+) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if interpolation is not None:
         interp = scipy.interpolate.interp1d(x,
                                             y,
@@ -34,13 +36,15 @@ def find_relative_maxima(x: numpy.ndarray,
     return x[peak_args], y[peak_args]
 
 
-def find_relative_minima(x: numpy.ndarray,
-                         y: numpy.ndarray,
-                         order: int = 5,
-                         interpolation={
-                             "order": 5,
-                             "points": 10000
-                         }) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def find_relative_minima(
+    x: numpy.ndarray,
+    y: numpy.ndarray,
+    order: int = 5,
+    interpolation={
+        "order": 5,
+        "points": 10000
+    }
+) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if interpolation is not None:
         interp = scipy.interpolate.interp1d(x,
                                             y,

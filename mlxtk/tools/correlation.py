@@ -14,8 +14,8 @@ LOGGER = get_logger(__name__)
 
 
 def compute_g1(
-        data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
-                         ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                     numpy.ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
@@ -34,10 +34,10 @@ def compute_g1(
 
 
 def compute_g2(
-        data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
-                         ndarray],
-        data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
-                          ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                     numpy.ndarray],
+    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                      numpy.ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 
@@ -63,10 +63,10 @@ def compute_g2(
 
 
 def compute_g2_diff(
-        data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
-                         ndarray],
-        data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.
-                          ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                     numpy.ndarray],
+    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                      numpy.ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 

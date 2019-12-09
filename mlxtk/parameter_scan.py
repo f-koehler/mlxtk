@@ -24,11 +24,11 @@ assert List
 
 class ParameterScan(SimulationSet):
     def __init__(
-            self,
-            name: str,
-            func: Callable[[Parameters], Simulation],
-            combinations: List[Parameters],
-            working_dir: Union[str, Path] = None,
+        self,
+        name: str,
+        func: Callable[[Parameters], Simulation],
+        combinations: List[Parameters],
+        working_dir: Union[str, Path] = None,
     ):
         super().__init__(name, [], working_dir)
         self.func = func

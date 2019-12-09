@@ -63,8 +63,8 @@ def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
     return settings
 
 
-def merge_settings(first: Dict[Any, Any],
-                   second: Dict[Any, Any]) -> Dict[Any, Any]:
+def merge_settings(first: Dict[Any, Any], second: Dict[Any,
+                                                       Any]) -> Dict[Any, Any]:
     new = {key: second[key] for key in second}
 
     for entry in first["paths"]:

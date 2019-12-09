@@ -6,8 +6,8 @@ from ..simulation import Simulation
 from .base import SimulationSetBase
 
 
-def dry_run_simulation(simulation: Simulation
-                       ) -> List[Callable[[], Dict[str, Any]]]:
+def dry_run_simulation(
+        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     """Create a task for running the given simulation dry.
 
     Args:

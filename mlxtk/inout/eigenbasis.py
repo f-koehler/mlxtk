@@ -13,7 +13,7 @@ LOGGER = get_logger(__name__)
 
 
 def read_eigenbasis_ascii(
-        path: Union[str, Path]
+    path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     path_energies = path / "eigenenergies"
@@ -37,9 +37,9 @@ def read_eigenbasis_ascii(
     return energies, tape, psi
 
 
-def add_eigenbasis_to_hdf5(fptr: Union[h5py.File, h5py.Group],
-                           energies: numpy.ndarray, tape: numpy.ndarray,
-                           psi: numpy.ndarray):
+def add_eigenbasis_to_hdf5(fptr: Union[h5py.File,
+                                       h5py.Group], energies: numpy.ndarray,
+                           tape: numpy.ndarray, psi: numpy.ndarray):
     grp = fptr.create_group("energies")
     grp.create_dataset("real", energies.shape,
                        dtype=numpy.float64)[:] = energies.real

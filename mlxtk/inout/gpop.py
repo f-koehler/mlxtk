@@ -15,7 +15,8 @@ assert List
 
 
 def read_gpop(
-        path: str, dof: Optional[int] = None
+    path: str,
+    dof: Optional[int] = None
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read the one-body densities from a file.
 
@@ -36,10 +37,10 @@ def read_gpop(
 
 
 def read_gpop_ascii(
-        path: str, dof: Optional[int] = None
-) -> Union[Tuple[numpy.ndarray, numpy.ndarray],
-           Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
-                                                               ndarray]]]:
+    path: str,
+    dof: Optional[int] = None
+) -> Union[Tuple[numpy.ndarray, numpy.ndarray], Tuple[numpy.ndarray, Dict[
+        int, numpy.ndarray], Dict[int, numpy.ndarray]]]:
     """Read the one-body densities from a raw ML-X file.
 
     Args:
@@ -113,10 +114,12 @@ def read_gpop_ascii(
 
 
 def read_gpop_hdf5(
-        path: Union[Path, str], interior_path: str, dof: Optional[int] = None
-) -> Union[Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.
-                                                               ndarray]],
-           Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray], ]:
+    path: Union[Path, str],
+    interior_path: str,
+    dof: Optional[int] = None
+) -> Union[Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[
+        int, numpy.ndarray]], Tuple[numpy.ndarray, numpy.ndarray,
+                                    numpy.ndarray], ]:
     """Read the one-body densities from a HDF5 file.
 
     Args:

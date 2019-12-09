@@ -22,11 +22,11 @@ class OperatorSpecification:
     of freedom.
     """
     def __init__(
-            self,
-            dofs: List[DVRSpecification],
-            coefficients: List[Any],
-            terms: List[Any],
-            table: Union[str, List[str]],
+        self,
+        dofs: List[DVRSpecification],
+        coefficients: List[Any],
+        terms: List[Any],
+        table: Union[str, List[str]],
     ):
         self.dofs = dofs
         self.coefficients = coefficients

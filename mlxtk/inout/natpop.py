@@ -11,10 +11,11 @@ from . import tools
 
 
 def read_natpop(
-        path: str, node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.
-                                     ndarray], Dict[int, Dict[int, numpy.
-                                                              ndarray]]]]:
+    path: str,
+    node: int = 0,
+    dof: int = 0
+) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[
+        int, numpy.ndarray]]]]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_natpop_hdf5(path, interior_path, node, dof)
@@ -23,10 +24,11 @@ def read_natpop(
 
 
 def read_natpop_ascii(
-        path: str, node: int = 0, dof: int = 0
-) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.
-                                     ndarray], Dict[int, Dict[int, numpy.
-                                                              ndarray]]]]:
+    path: str,
+    node: int = 0,
+    dof: int = 0
+) -> Tuple[numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[
+        int, numpy.ndarray]]]]:
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
     re_node_info = re.compile(r"^node:\s+(\d+)\s+layer:\s+(\d+)$")
@@ -110,12 +112,12 @@ def read_natpop_ascii(
 
 
 def read_natpop_hdf5(
-        path: Union[str, Path],
-        interior_path: str,
-        node: int = None,
-        dof: int = None
-) -> Union[Tuple[numpy.ndarray, numpy.ndarray],
-           Tuple[numpy.ndarray, Dict[str, Dict[str, numpy.ndarray]]]]:
+    path: Union[str, Path],
+    interior_path: str,
+    node: int = None,
+    dof: int = None
+) -> Union[Tuple[numpy.ndarray, numpy.ndarray], Tuple[numpy.ndarray, Dict[
+        str, Dict[str, numpy.ndarray]]]]:
     with h5py.File(path, "r") as fptr:
         time = fptr[interior_path + "/time"][:]
 

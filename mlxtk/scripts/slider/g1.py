@@ -13,8 +13,8 @@ from mlxtk.ui.plot_slider import PlotSlider
 
 class Gui(PlotSlider):
     def __init__(self,
-                 data: Tuple[numpy.ndarray, numpy.ndarray, numpy.
-                             ndarray, numpy.ndarray],
+                 data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
+                             numpy.ndarray],
                  min_index: int,
                  max_index: int,
                  projection: str = None,

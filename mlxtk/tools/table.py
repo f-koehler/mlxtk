@@ -19,8 +19,9 @@ def list_arg_closest(array: List[Union[int, float]],
     return i
 
 
-def align_matching_elements(*args: Union[List[Union[int, float]], numpy.array]
-                            ) -> List[List[Union[int, float]]]:
+def align_matching_elements(
+    *args: Union[List[Union[int, float]], numpy.array]
+) -> List[List[Union[int, float]]]:
     arrays = []
     for arg in args:
         if isinstance(arg, numpy.ndarray):
@@ -47,8 +48,9 @@ def align_matching_elements(*args: Union[List[Union[int, float]], numpy.array]
     return numpy.array(table).T.tolist()
 
 
-def make_table(*args: Union[List[Union[int, float]], numpy.array]
-               ) -> List[List[Union[int, float]]]:
+def make_table(
+    *args: Union[List[Union[int, float]], numpy.array]
+) -> List[List[Union[int, float]]]:
     length = 0
     for arg in args:
         length = max(length, len(arg))

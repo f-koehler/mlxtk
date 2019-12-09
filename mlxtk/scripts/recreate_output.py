@@ -53,31 +53,31 @@ def main():
     output_rst = path_output / "final.wfn"
     output_psi = path_output / "psi"
 
-    # with tempfile.TemporaryDirectory() as tmpdir:
-    with mlxtk.cwd.WorkingDir("tmp"):
-        mlxtk.util.copy_file(path_psi, "psi")
-        mlxtk.util.copy_file(path_opr, "opr")
-        extract_first_frame("psi", "rst")
+    with tempfile.TemporaryDirectory() as tmpdir:
+        with mlxtk.cwd.WorkingDir(tmpdir):
+            mlxtk.util.copy_file(path_psi, "psi")
+            mlxtk.util.copy_file(path_opr, "opr")
+            extract_first_frame("psi", "rst")
 
-        subprocess.run([
-            "qdtk_analysis.x", "-rst", "rst", "-opr", "opr", "-psi", "psi",
-            "-recreate"
-        ])
+            subprocess.run([
+                "qdtk_analysis.x", "-rst", "rst", "-opr", "opr", "-psi", "psi",
+                "-recreate"
+            ])
 
-        with h5py.File("result.h5", "w") as fptr:
-            mlxtk.inout.gpop.add_gpop_to_hdf5(
-                fptr.create_group("gpop"),
-                *mlxtk.inout.gpop.read_gpop_ascii("gpop"))
-            mlxtk.inout.natpop.add_natpop_to_hdf5(
-                fptr.create_group("natpop"),
-                *mlxtk.inout.natpop.read_natpop_ascii("natpop"))
-            mlxtk.inout.output.add_output_to_hdf5(
-                fptr.create_group("output"),
-                *mlxtk.inout.output.read_output_ascii("output"))
+            with h5py.File("result.h5", "w") as fptr:
+                mlxtk.inout.gpop.add_gpop_to_hdf5(
+                    fptr.create_group("gpop"),
+                    *mlxtk.inout.gpop.read_gpop_ascii("gpop"))
+                mlxtk.inout.natpop.add_natpop_to_hdf5(
+                    fptr.create_group("natpop"),
+                    *mlxtk.inout.natpop.read_natpop_ascii("natpop"))
+                mlxtk.inout.output.add_output_to_hdf5(
+                    fptr.create_group("output"),
+                    *mlxtk.inout.output.read_output_ascii("output"))
 
-        shutil.move("result.h5", output_hdf5)
-        shutil.move("restart", output_rst)
-        shutil.move("psi", output_psi)
+            shutil.move("result.h5", output_hdf5)
+            shutil.move("restart", output_rst)
+            shutil.move("psi", output_psi)
 
 
 if __name__ == "__main__":

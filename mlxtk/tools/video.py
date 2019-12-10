@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 import tempfile
@@ -26,9 +27,8 @@ def create_slideshow(files: List[Union[Path, str]],
             max_number_len = len(str(len(files)))
 
             for i, file in enumerate(files):
-                shutil.copy2(file,
-                             ("{:0" + str(max_number_len) + "d}{}").format(
-                                 i, file.suffix))
+                os.symlink(file, ("{:0" + str(max_number_len) + "d}{}").format(
+                    i, file.suffix))
 
             cmd = [
                 "ffmpeg", "-r",

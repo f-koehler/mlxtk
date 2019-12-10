@@ -66,6 +66,8 @@ typed-ast = "*"
 yapf = "^0.29"
 
 [tool.poetry.scripts]
+animate_gpop = "mlxtk.scripts.animate.gpop:main"
+
 compute_dmat = "mlxtk.scripts.compute.dmat:main"
 compute_dmat2 = "mlxtk.scripts.compute.dmat2:main"
 compute_g1 = "mlxtk.scripts.compute.g1:main"

@@ -21,7 +21,7 @@ class Gui(PlotSlider):
                  plot_args: Optional[argparse.Namespace] = None,
                  parent: QtWidgets.QWidget = None):
         self.time, self.x1, self.x2, self.values = data
-        self.values = numpy.abs(self.values) - 1
+        self.values = numpy.abs(self.values)
         self.mesh: matplotlib.collections.QuadMesh = None
         super().__init__(min_index,
                          max_index,

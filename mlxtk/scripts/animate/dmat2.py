@@ -15,21 +15,28 @@ def create_frame_worker(args):
 
 
 def create_frame(index: int, time: float, x1: numpy.ndarray, x2: numpy.ndarray,
-                 values: numpy.ndarray, file_name_fmt: str,
-                 args: argparse.Namespace):
+                 values: numpy.ndarray, valmin: float, valmax: float,
+                 file_name_fmt: str, args: argparse.Namespace):
     unitsys = mlxtk.units.get_default_unit_system()
 
     X2, X1 = numpy.meshgrid(x2, x1)
 
     fig, ax = plt.subplots(1, 1)
-    mlxtk.plot.apply_2d_args(ax, fig, args)
     ax.set_title("$t=" + "{:8.2f}".format(time) + r"\," +
                  str(unitsys.get_time_unit()) + "$")
     ax.set_xlabel(unitsys.get_length_unit().format_label("x_1"))
     ax.set_ylabel(unitsys.get_length_unit().format_label("x_2"))
     ax.set_title(r"$\rho_2(x_1,x_2,t),\quad " + "t=" + "{:8.2f}".format(time) +
                  r"\," + str(unitsys.get_time_unit()) + "$")
-    ax.pcolormesh(X1, X2, values, rasterized=True, cmap="gnuplot")
+    mesh = ax.pcolormesh(X1,
+                         X2,
+                         values,
+                         rasterized=True,
+                         cmap="gnuplot",
+                         vmin=valmin,
+                         vmax=valmax)
+    fig.colorbar(mesh)
+    mlxtk.plot.apply_2d_args(ax, fig, args)
     mlxtk.plot.save(fig, file_name_fmt.format(index))
     mlxtk.plot.close_figure(fig)
 
@@ -57,12 +64,16 @@ def main():
         args.input_, "dmat2_gridrep")
     values = numpy.abs(values)
 
+    valmin = 0.0
+    valmax = values.max()
+
     file_name_fmt = "{:0" + str(len(str(len(times)))) + "d}.png"
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        parameters = [(index, time, x1, x2, density, file_name_fmt, args)
-                      for index, (time,
-                                  density) in enumerate(zip(times, values))]
+        parameters = [
+            (index, time, x1, x2, density, valmin, valmax, file_name_fmt, args)
+            for index, (time, density) in enumerate(zip(times, values))
+        ]
         with mlxtk.cwd.WorkingDir(tmpdir):
             with multiprocessing.Pool() as pool:
                 for _ in tqdm(pool.imap_unordered(create_frame_worker,

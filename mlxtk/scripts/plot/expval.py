@@ -2,6 +2,10 @@ import argparse
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import numpy
+import scipy.fftpack
+
+import mlxtk
 
 from ... import units
 from ...inout.expval import read_expval_hdf5
@@ -15,6 +19,10 @@ def main():
                         type=Path,
                         nargs="?",
                         help="path to the output file")
+    parser.add_argument(
+        "--fft",
+        action="store_true",
+        help="whether to transform the signal to frequency space")
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()
@@ -22,10 +30,28 @@ def main():
     figure, ax = plt.subplots(1, 1)
 
     time, values = read_expval_hdf5(args.path)
-    plot_expval(ax, time, values)
 
-    system = units.get_default_unit_system()
-    ax.set_xlabel(system.get_time_unit().format_label("t"))
+    unitsys = mlxtk.units.get_default_unit_system()
+
+    if args.fft:
+        amplitudes = numpy.abs(
+            scipy.fftpack.fftshift(scipy.fftpack.fft(values)))
+        amplitudes = amplitudes / amplitudes.max()
+        frequencies = scipy.fftpack.fftshift(
+            scipy.fftpack.fftfreq(len(time), time[1] - time[0]))
+
+        selection = frequencies >= 0.
+        amplitudes = amplitudes[selection]
+        frequencies = frequencies[selection]
+
+        plot_expval(ax, frequencies, amplitudes)
+
+        ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
+        ax.set_ylabel(
+            mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}"))
+    else:
+        plot_expval(ax, time, values)
+        ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
 
     apply_2d_args(ax, figure, args)
 

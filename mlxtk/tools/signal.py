@@ -82,6 +82,11 @@ def find_roots(x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
     return numpy.sort(numpy.array(roots))
 
 
+def find_sign_changes(x: numpy.ndarray) -> numpy.ndarray:
+    signs = numpy.sign(x)
+    return (numpy.roll(signs, 1) - signs != 0)
+
+
 def fourier_transform(
         t: numpy.ndarray,
         signal: numpy.ndarray,

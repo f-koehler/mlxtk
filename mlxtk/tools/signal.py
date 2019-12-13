@@ -1,6 +1,7 @@
 from typing import Tuple
 
 import numpy
+import scipy.fftpack
 import scipy.interpolate
 import scipy.optimize
 import scipy.signal
@@ -79,3 +80,16 @@ def find_roots(x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
         roots.append(sol.root)
 
     return numpy.sort(numpy.array(roots))
+
+
+def fourier_transform(
+        t: numpy.ndarray,
+        signal: numpy.ndarray,
+        only_positive: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
+    amplitudes = numpy.abs(scipy.fftpack.fftshift(scipy.fftpack.fft(signal)))
+    frequencies = scipy.fftpack.fftshift(
+        scipy.fftpack.fftfreq(len(t), t[1] - t[0]))
+    if only_positive:
+        amplitudes = amplitudes[frequencies >= 0]
+        frequencies = frequencies[frequencies >= 0]
+    return frequencies, amplitudes

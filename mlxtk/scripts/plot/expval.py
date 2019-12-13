@@ -34,17 +34,7 @@ def main():
     unitsys = mlxtk.units.get_default_unit_system()
 
     if args.fft:
-        amplitudes = numpy.abs(
-            scipy.fftpack.fftshift(scipy.fftpack.fft(values)))
-        amplitudes = amplitudes / amplitudes.max()
-        frequencies = scipy.fftpack.fftshift(
-            scipy.fftpack.fftfreq(len(time), time[1] - time[0]))
-
-        selection = frequencies >= 0.
-        amplitudes = amplitudes[selection]
-        frequencies = frequencies[selection]
-
-        plot_expval(ax, frequencies, amplitudes)
+        plot_expval(ax, *mlxtk.tools.signal.fourier_transform(time, values))
 
         ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
         ax.set_ylabel(

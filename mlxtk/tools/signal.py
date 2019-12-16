@@ -8,15 +8,15 @@ import scipy.signal
 
 
 def find_relative_maxima(
-    x: numpy.ndarray,
-    y: numpy.ndarray,
-    order: int = 5,
-    threshold: float = None,
-    interpolation={
-        "order": 5,
-        "points": 10000
-    }
-) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        x: numpy.ndarray,
+        y: numpy.ndarray,
+        order: int = 5,
+        threshold: float = None,
+        interpolation={
+            "order": 5,
+            "points": 10000
+        },
+        sort: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if interpolation is not None:
         interp = scipy.interpolate.interp1d(x,
                                             y,
@@ -34,7 +34,15 @@ def find_relative_maxima(
     if not len(peak_args):
         return numpy.array([]), numpy.array([])
 
-    return x[peak_args], y[peak_args]
+    x_peaks = x[peak_args]
+    y_peaks = y[peak_args]
+
+    if sort:
+        permutation = numpy.argsort(y_peaks)
+        x_peaks = x_peaks[permutation][::-1]
+        y_peaks = y_peaks[permutation][::-1]
+
+    return x_peaks, y_peaks
 
 
 def find_relative_minima(
@@ -92,6 +100,7 @@ def fourier_transform(
         signal: numpy.ndarray,
         only_positive: bool = True) -> Tuple[numpy.ndarray, numpy.ndarray]:
     amplitudes = numpy.abs(scipy.fftpack.fftshift(scipy.fftpack.fft(signal)))
+    amplitudes = amplitudes / amplitudes.max()
     frequencies = scipy.fftpack.fftshift(
         scipy.fftpack.fftfreq(len(t), t[1] - t[0]))
     if only_positive:

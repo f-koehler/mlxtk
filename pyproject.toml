@@ -38,7 +38,7 @@ include = [
 
 [tool.poetry.dependencies]
 colorama = "^0.4"
-doit = "^0.31"
+doit = "^0.32"
 # doit-graph = "^0.3"
 future = "^0.18"
 h5py = "^2.10"

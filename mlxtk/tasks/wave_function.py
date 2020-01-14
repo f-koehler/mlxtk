@@ -1,8 +1,13 @@
 import os
+import pickle
 import shutil
 import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
+
+import numpy
+
+from mlxtk.inout.psi import read_psi_frame_ascii, write_psi_ascii
 
 from ..cwd import WorkingDir
 from ..doit_compat import DoitAction
@@ -86,3 +91,55 @@ class RequestWaveFunction(Task):
 
     def get_tasks_dry_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_request_wave_function_dry_run]
+
+
+class FrameFromPsi(Task):
+    def __init__(self,
+                 psi: Union[str, Path],
+                 index: int,
+                 path: Union[Path, str] = None):
+        self.logger = get_logger(__name__ + ".FrameFromPsi")
+        self.psi = make_path(psi)
+        self.index = index
+
+        if path is None:
+            self.path = self.psi.stem + "_{}.wfn".format(self.index)
+        else:
+            self.path = make_path(path)
+
+        self.pickle_path = self.path.with_suffix(".wfn_pickle")
+
+    def task_pickle(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_pickle(targets):
+            with open(targets[0], "wb") as fptr:
+                pickle.dump(self.index, fptr, protocol=3)
+
+        return {
+            "name":
+            "frame_from_psi:{}_{}:pickle".format(self.path.stem, self.index),
+            "actions": [action_pickle],
+            "targets": [str(self.pickle_path)]
+        }
+
+    def task_grab(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_grab(targets):
+            with open(self.pickle_path, "rb") as fptr:
+                index = pickle.load(fptr)
+
+            tape, times, frame = read_psi_frame_ascii(self.psi, self.index)
+            write_psi_ascii(
+                targets[0],
+                (tape, numpy.array([times[index]]), numpy.array([frame])))
+
+        return {
+            "name": "frame_from_psi:{}_{}:grab".format(self.path.stem,
+                                                       self.index),
+            "actions": [action_grab],
+            "file_dep": [self.pickle_path, self.psi],
+            "targets": [self.path]
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_pickle, self.task_grab]

@@ -5,7 +5,7 @@ from .operator import CreateOperator, OperatorSpecification
 from .propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from .spectrum import ComputeSpectrum
 from .variance import ComputeVariance
-from .wave_function import RequestWaveFunction
+from .wave_function import FrameFromPsi, RequestWaveFunction
 from .wfn_mcthdb import (MCTDHBAddMomentum, MCTDHBAddMomentumSplit,
                          MCTDHBCreateWaveFunction,
                          MCTDHBCreateWaveFunctionEnergyThreshold,
@@ -25,6 +25,7 @@ assert MCTDHBExtendGrid
 assert Propagate
 assert Relax
 assert RequestWaveFunction
+assert FrameFromPsi
 
 assert MBOperatorSpecification
 assert OperatorSpecification

@@ -4,6 +4,9 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
+import h5py
+import numpy
+
 from .. import cwd, inout
 from ..doit_compat import DoitAction
 from ..log import get_logger
@@ -19,11 +22,12 @@ class NumberStateAnalysisStatic(Task):
 
         self.wave_function = make_path(wave_function).with_suffix(".wfn")
         self.basis = make_path(basis).with_suffix(".wfn")
-        self.result = kwargs.get(
-            "name",
-            self.wave_function.with_name(self.wave_function.stem + "_" +
-                                         self.basis.stem)).with_suffix(
-                                             ".fixed_ns.h5")
+        self.result = make_path(
+            kwargs.get(
+                "name",
+                self.wave_function.with_name(self.wave_function.stem + "_" +
+                                             self.basis.stem))).with_suffix(
+                                                 ".fixed_ns.h5")
 
         self.name = str(self.result.with_suffix(""))
 
@@ -56,6 +60,13 @@ class NumberStateAnalysisStatic(Task):
                     wfn = load_wave_function("basis")
                     inout.write_fixed_ns_hdf5("result.h5", times, real, imag,
                                               wfn._tape[1], wfn._tape[3])
+
+                    with h5py.File("result.h5", "a") as fptr:
+                        dset = fptr["fixed_ns"].create_dataset(
+                            "total_magnitude",
+                            shape=(1, ),
+                            dtype=numpy.float64)
+                        dset[:] = numpy.sum((real**2) + (imag**2))
 
                     copy_file("result.h5", result)
 

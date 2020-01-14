@@ -26,8 +26,8 @@ def plot_natpop(index: int,
     total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
-        plot.plot_natpop(ax,
-                         *inout.read_natpop(total_path, dof=dof, node=node))
+        plot.plot_natpop(ax, *inout.read_natpop(total_path, dof=dof,
+                                                node=node))
         system = units.get_default_unit_system()
         ax.set_xlabel(system.get_time_unit().format_label("t"))
         ax.set_ylabel(r"$\lambda_i(t)$")

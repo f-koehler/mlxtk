@@ -86,6 +86,53 @@ def read_psi_ascii(
                            dtype=numpy.complex128)
 
 
+def read_psi_frame_ascii(
+        path: Union[str, Path],
+        index: int) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path = str(path)
+
+    counter = -1
+    times: List[float] = []
+    psi: List[complex] = []
+    tape: List[int] = []
+    tape_finished = False
+    with open(path) as fhandle:
+        for line in fhandle:
+            if line.startswith("$time"):
+                tape_finished = True
+                m = RE_TIME.match(fhandle.readline())
+                if not m:
+                    raise RuntimeError(
+                        "Error extracting time point from label: {}".format(
+                            line))
+                time = float(m.group(1))
+                times.append(time)
+            elif line.startswith("$psi"):
+                counter += 1
+                match = RE_ELEMENT.match(fhandle.readline())
+                while match:
+                    if counter == index:
+                        psi.append(
+                            float(match.group(1)) + 1j * float(match.group(2)))
+                    match = RE_ELEMENT.match(fhandle.readline())
+
+            if not tape_finished:
+                if line.startswith("$tape"):
+                    continue
+
+                if not line.strip():
+                    continue
+
+                tape.append(int(line))
+
+    if not psi:
+        raise KeyError("index {} is out of bounds".format(index))
+
+    return numpy.array(tape,
+                       dtype=numpy.int64), numpy.array(times), numpy.array(
+                           psi, dtype=numpy.complex128)
+
+
 def read_psi_hdf5(path):
     with h5py.File(path, "r") as fptr:
         tape = fptr["tape"][:]

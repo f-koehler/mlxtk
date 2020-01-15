@@ -9,7 +9,8 @@ from .wave_function import FrameFromPsi, RequestWaveFunction
 from .wfn_mcthdb import (MCTDHBAddMomentum, MCTDHBAddMomentumSplit,
                          MCTDHBCreateWaveFunction,
                          MCTDHBCreateWaveFunctionEnergyThreshold,
-                         MCTDHBCreateWaveFunctionMulti, MCTDHBExtendGrid)
+                         MCTDHBCreateWaveFunctionMulti, MCTDHBExtendGrid,
+                         MCTDHBOverlapStatic)
 
 assert ComputeExpectationValue
 assert ComputeSpectrum

@@ -1,4 +1,7 @@
+import os
 import pickle
+import subprocess
+import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
@@ -7,6 +10,7 @@ import numpy
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 from QDTK.Wavefunction import grab_lowest_eigenfct
 
+from mlxtk import cwd, inout
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
 from mlxtk.log import get_logger
@@ -15,6 +19,7 @@ from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
                                        get_spfs, load_wave_function,
                                        save_wave_function)
+from mlxtk.util import copy_file, make_path
 
 LOGGER = get_logger(__name__)
 
@@ -482,3 +487,68 @@ class MCTDHBExtendGrid(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_extend_grid]
+
+
+class MCTDHBOverlapStatic(Task):
+    def __init__(self, wave_function: Union[str, Path],
+                 basis: Union[str, Path], **kwargs):
+        self.logger = get_logger(__name__ + ".MCTDHBOverlapStatic")
+
+        self.wave_function = make_path(wave_function).with_suffix(".wfn")
+        self.basis = make_path(basis).with_suffix(".wfn")
+        self.result = make_path(
+            kwargs.get(
+                "name",
+                self.wave_function.with_name(self.wave_function.stem + "_" +
+                                             self.basis.stem))).with_suffix(
+                                                 ".overlap.h5")
+
+        self.name = str(self.result.with_suffix(""))
+
+    def task_compute(self) -> Dict[str, Any]:
+        # pylint: disable=protected-access
+
+        @DoitAction
+        def action_compute(targets: List[str]):
+            wave_function = self.wave_function.resolve()
+            basis = self.basis.resolve()
+            result = self.result.resolve()
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                with cwd.WorkingDir(tmpdir):
+                    self.logger.info(
+                        "compute MCTDHB wave function overlap (static)")
+                    copy_file(wave_function, "restart")
+                    copy_file(basis, "basis")
+                    cmd = [
+                        "qdtk_analysis.x", "-fixed_ns", "-rst_bra", "basis",
+                        "-rst_ket", "restart", "-save", "result"
+                    ]
+                    self.logger.info("command: %s", " ".join(cmd))
+                    env = os.environ.copy()
+                    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+                    subprocess.run(cmd, env=env)
+
+                    _, real, imag = inout.read_fixed_ns_ascii("result")
+                    self.logger.info(real.shape)
+                    coeffs = load_wave_function("basis").PSI[:real.shape[1]]
+                    overlap = numpy.abs(
+                        numpy.sum(
+                            numpy.conjugate(coeffs) * (real + 1j * imag)))**2
+                    self.logger.info("overlap = %f", overlap)
+
+                    with h5py.File(result, "w") as fptr:
+                        fptr.create_dataset("overlap",
+                                            shape=(1, ),
+                                            dtype=numpy.float64)[:] = overlap
+
+        return {
+            "name": "mctdhb_overlap_static:{}:compute".format(self.name),
+            "actions": [action_compute],
+            "targets": [str(self.result)],
+            "file_dep": [str(self.wave_function),
+                         str(self.basis)]
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_compute]

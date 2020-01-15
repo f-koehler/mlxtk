@@ -8,7 +8,9 @@ from . import base
 
 
 class Simulation(base.SimulationBase):
-    def __init__(self, name: Path, working_dir: Optional[Path] = None):
+    def __init__(self,
+                 name: Path = Path("sim"),
+                 working_dir: Optional[Path] = None):
         super().__init__(name, working_dir)
 
         self.argparser = argparse.ArgumentParser(

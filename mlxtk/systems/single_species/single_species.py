@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import numpy
 
 from mlxtk.dvr import DVRSpecification
+from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.tasks import MBOperatorSpecification, OperatorSpecification
 
@@ -21,6 +22,7 @@ class SingleSpeciesSystem(ABC):
     def __init__(self, parameters: Parameters, grid: DVRSpecification):
         self.parameters = parameters
         self.grid = grid
+        self.logger = get_logger(__name__ + ".MBOperatorSpecification")
 
         if grid.is_fft():
             self.grid_1b = grid.get_expdvr()

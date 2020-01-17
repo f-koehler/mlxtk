@@ -2,19 +2,20 @@
 import mlxtk
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
-if __name__ == "__main__":
-    x = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
+grid = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
 
-    parameters = HarmonicTrap.create_parameters()
-    parameters.N = 2
-    parameters.m = 3
-    parameters.g = 0.1
+parameters = HarmonicTrap.create_parameters()
+parameters.N = 2
+parameters.m = 3
+parameters.g = 0.1
+
+if __name__ == "__main__":
 
     parameters_quenched = parameters.copy()
     parameters_quenched.omega = 0.7
 
-    system = HarmonicTrap(parameters, x)
-    system_quenched = HarmonicTrap(parameters_quenched, x)
+    system = HarmonicTrap(parameters, grid)
+    system_quenched = HarmonicTrap(parameters_quenched, grid)
 
     sim = mlxtk.Simulation("harmonic_trap")
 

@@ -1,7 +1,7 @@
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
 
-from .gaussian_trap import GaussianTrap
+from .gaussian_trap import GaussianTrap, gaussian
 
 
 class TwoGaussianTraps(GaussianTrap):

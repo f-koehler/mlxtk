@@ -65,6 +65,9 @@ class ArbitraryUnit:
     def is_arbitrary(self) -> bool:
         return True
 
+    def __str__(self):
+        return r"\mathrm{a.u.}"
+
 
 class MissingUnitError(Exception):
     def __init__(self, dimension: str):

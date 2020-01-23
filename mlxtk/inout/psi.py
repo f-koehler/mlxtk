@@ -88,7 +88,7 @@ def read_psi_ascii(
 
 def read_psi_frame_ascii(
         path: Union[str, Path],
-        index: int) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+        index: int) -> Tuple[numpy.ndarray, float, numpy.ndarray]:
     path = str(path)
 
     counter = -1
@@ -128,9 +128,8 @@ def read_psi_frame_ascii(
     if not psi:
         raise KeyError("index {} is out of bounds".format(index))
 
-    return numpy.array(tape,
-                       dtype=numpy.int64), numpy.array(times), numpy.array(
-                           psi, dtype=numpy.complex128)
+    return numpy.array(tape, dtype=numpy.int64), numpy.array(
+        [times[index]]), numpy.array(psi, dtype=numpy.complex128)
 
 
 def read_psi_hdf5(path):

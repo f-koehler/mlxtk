@@ -28,6 +28,15 @@ def copy_file(src: Union[str, Path], dst: Union[str, Path]):
     shutil.copy2(src, dst)
 
 
+def remove_file(path: Union[str, Path]):
+    path = make_path(path)
+    if path.exists() and path.is_file():
+        LOGGER.debug("delete file: %s", str(path))
+        path.unlink()
+    else:
+        LOGGER.debug("file does not exist/path is not a file, do nothing")
+
+
 def get_common_path(paths: List[Path]) -> Path:
     return Path(os.path.commonpath([str(p) for p in paths]))
 

@@ -26,8 +26,9 @@ def create_frame(index: int, time: float, x1: numpy.ndarray, x2: numpy.ndarray,
                  str(unitsys.get_time_unit()) + "$")
     ax.set_xlabel(unitsys.get_length_unit().format_label("x_1"))
     ax.set_ylabel(unitsys.get_length_unit().format_label("x_2"))
-    ax.set_title(r"$\rho_2(x_1,x_2,t),\quad " + "t=" + "{:8.2f}".format(time) +
-                 r"\," + str(unitsys.get_time_unit()) + "$")
+    ax.set_title(r"${\left|\rho_1(x_1,x_2,t)\right|}^2,\quad " + "t=" +
+                 "{:8.2f}".format(time) + r"\," +
+                 str(unitsys.get_time_unit()) + "$")
     mesh = ax.pcolormesh(X1,
                          X2,
                          values,
@@ -47,12 +48,12 @@ def main():
                         "--input",
                         dest="input_",
                         type=Path,
-                        default="dmat2.h5",
-                        help="path to the dmat2 file")
+                        default="dmat.h5",
+                        help="path to the dmat file")
     parser.add_argument("-o",
                         "--output",
                         type=Path,
-                        default=Path("dmat2.mp4"),
+                        default=Path("dmat.mp4"),
                         help="path for the video file")
     mlxtk.plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
@@ -60,9 +61,9 @@ def main():
     args.output = args.output.resolve()
     path_input = args.input_.resolve()
 
-    times, x1, x2, values = mlxtk.inout.dmat2.read_dmat2_gridrep_hdf5(
-        args.input_, "dmat2_gridrep")
-    values = numpy.abs(values)
+    times, x1, x2, values = mlxtk.inout.dmat.read_dmat_gridrep_hdf5(
+        args.input_, "dmat_gridrep")
+    values = numpy.abs(values)**2
 
     valmin = 0.0
     valmax = values.max()

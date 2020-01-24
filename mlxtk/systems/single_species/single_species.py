@@ -62,9 +62,13 @@ class SingleSpeciesSystem(ABC):
             {"com": self.grid.get_x()}, "com_coeff | 1 com")
 
     def get_momentum_operator(self) -> MBOperatorSpecification:
-        return MBOperatorSpecification(
-            (1, ), (self.grid, ), {"momentum_coeff": -1j},
-            {"momentum": self.grid.get_d1()}, "momentum_coeff | 1 momentum")
+        return MBOperatorSpecification((1, ), (self.grid, ),
+                                       {"momentum_coeff": -1j}, {
+                                           "momentum": {
+                                               "value": self.grid.get_d1(),
+                                               "fft": self.grid.is_fft()
+                                           }
+                                       }, "momentum_coeff | 1 momentum")
 
     def get_com_operator_squared(self) -> MBOperatorSpecification:
         N_squared = self.parameters.N**2

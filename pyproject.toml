@@ -96,6 +96,7 @@ fixed_ns_table = "mlxtk.scripts.fixed_ns_table:main"
 gpop_model = "mlxtk.scripts.gpop_model:main"
 mlxtkenv = "mlxtkenv_script:main"
 grab_1b_eigenfunction = "mlxtk.scripts.grab_1b_eigenfunction:main"
+grab_spfs = "mlxtk.scripts.grab_spfs:main"
 
 plot_energy = "mlxtk.scripts.plot.energy:main"
 plot_energy_diff = "mlxtk.scripts.plot.energy_diff:main"

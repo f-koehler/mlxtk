@@ -127,7 +127,7 @@ def main():
 
             subprocess.run(cmd)
 
-            with h5py.File(output, "w") as fptr:
+            with h5py.File(output, "a") as fptr:
                 if not args.only_diagonalize:
                     if gridrep:
                         dmat2.add_dmat2_gridrep_to_hdf5(

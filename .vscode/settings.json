@@ -1,4 +1,10 @@
 {
     "python.pythonPath": "/home/fkoehler/.cache/pypoetry/virtualenvs/mlxtk-py3.8/bin/python",
-    "python.formatting.provider": "yapf"
+    "python.formatting.provider": "yapf",
+    "files.exclude": {
+        ".mypy_cache": true,
+        "dist": true,
+        "mlxtk.egg-info": true,
+        "poetry.lock": true
+    }
 }

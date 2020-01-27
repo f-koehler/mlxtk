@@ -229,3 +229,12 @@ def list_files(path: Union[Path, str],
         return list(files)
 
     return [p for p in files if p.suffix in extensions]
+
+
+def list_dirs(path: Union[Path, str]) -> List[Path]:
+    path = make_path(path)
+    return list(sorted(p for p in path.iterdir() if p.is_dir()))
+
+
+def create_relative_symlink(src: Union[Path, str], dest: Union[Path, str]):
+    subprocess.run(["ln", "-sr", src, dest])

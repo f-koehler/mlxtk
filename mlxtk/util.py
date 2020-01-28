@@ -238,3 +238,7 @@ def list_dirs(path: Union[Path, str]) -> List[Path]:
 
 def create_relative_symlink(src: Union[Path, str], dest: Union[Path, str]):
     subprocess.run(["ln", "-sr", src, dest])
+
+
+def mkdir(path: Union[str, Path]):
+    make_path(path).mkdir(parents=True, exist_ok=True)

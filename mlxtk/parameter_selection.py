@@ -59,7 +59,7 @@ class ParameterSelection:
             "Only partitioning according to a single parameter is implemented yet."
         )
 
-    def fix_parameter(self, name: str, value: Any):
+    def fix_parameter(self, name: str, value: Any) -> "ParameterSelection":
         """Select by the value of a single parameter.
 
         Args:
@@ -69,9 +69,13 @@ class ParameterSelection:
         Returns:
             A new ParameterSelection containing only matching parameter sets.
         """
-        return ParameterSelection(
-            [entry[1] for entry in self.parameters if entry[1][name] == value],
-            self.path)
+        entries = []
+        indices = []
+        for index, entry in self.parameters:
+            if entry[name] == value:
+                entries.append(entry)
+                indices.append(index)
+        return ParameterSelection(entries, self.path, indices)
 
     def group_by(self, name: str):
         return {

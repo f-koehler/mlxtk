@@ -108,5 +108,6 @@ class OperatorSpecification:
     def diagonalize(
             self,
             number_eigenfunctions: int) -> Tuple[numpy.ndarray, numpy.ndarray]:
-        return diagonalize_1b_operator(self.get_matrix(),
-                                       number_eigenfunctions)
+        evals, evecs = diagonalize_1b_operator(self.get_matrix(),
+                                               number_eigenfunctions)
+        return evals, numpy.array(evecs)

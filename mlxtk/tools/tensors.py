@@ -20,7 +20,7 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
                               g: float = 1.0) -> numpy.ndarray:
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
-    V = numpy.zeros((m, m), dtype=numpy.complex128)
+    V = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
 
     for a in range(m):
         for b in range(m):

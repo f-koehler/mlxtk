@@ -1,1 +1,1 @@
-from . import correlation, signal, table, video
+from . import correlation, signal, table, tensors, video

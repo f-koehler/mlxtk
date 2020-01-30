@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euf -o pipefail
 
-FILES=`find mlxtk examples -name "*.py"`
+FILES=`find mlxtk examples tests -name "*.py"`
 
 echo "Run isort"
 isort -j $(nproc) ${FILES} || exit

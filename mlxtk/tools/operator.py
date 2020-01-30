@@ -1,7 +1,8 @@
 import numpy
+from QDTK.Operator import Operator
 
 
-def get_operator_matrix(operator):
+def get_operator_matrix(operator: Operator) -> numpy.ndarray:
     nprod = operator.countProducts()
     grid_points = operator.pdim[0]
 

@@ -1,10 +1,13 @@
-from typing import Any, List, Union
+from typing import Any, List, Tuple, Union
 
+import numpy
 from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
 
 from mlxtk.dvr import DVRSpecification
+from mlxtk.tools.diagonalize import diagonalize_1b_operator
+from mlxtk.tools.operator import get_operator_matrix
 
 
 class OperatorSpecification:
@@ -98,3 +101,12 @@ class OperatorSpecification:
         op.readTable("\n".join(self.table))
 
         return op
+
+    def get_matrix(self) -> numpy.ndarray:
+        return get_operator_matrix(self.get_operator())
+
+    def diagonalize(
+            self,
+            number_eigenfunctions: int) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        return diagonalize_1b_operator(self.get_matrix(),
+                                       number_eigenfunctions)

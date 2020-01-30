@@ -65,6 +65,7 @@ pylint = "*"
 tuna = "*"
 typed-ast = "*"
 yapf = "^0.29"
+pytest = "^5"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"

@@ -1,1 +1,1 @@
-from . import correlation, signal, table, tensors, video
+from mlxtk.tools import correlation, ns_table, signal, table, tensors, video

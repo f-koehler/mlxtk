@@ -34,7 +34,7 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
     return V
 
 
-def get_one_body_dmat_spf(
+def get_dmat_spf(
         coefficients: numpy.ndarray, states_Nm1: numpy.ndarray,
         lookup: ns_table.NumberStateLookupTableBosonic) -> numpy.ndarray:
     m = len(states_Nm1[0])

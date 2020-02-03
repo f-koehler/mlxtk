@@ -21,12 +21,13 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
     V = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
+    w = dvr.get_weights()
 
     for a in range(m):
         for b in range(m):
             for c in range(m):
                 for d in range(m):
                     V[a, b, c, d] = g * numpy.sum(
-                        spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d])
+                        (1 / w) * spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d])
 
     return V

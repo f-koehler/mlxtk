@@ -34,25 +34,32 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
     return V
 
 
-def get_dmat_spf(
-        coefficients: numpy.ndarray, states_Nm1: numpy.ndarray,
-        lookup: ns_table.NumberStateLookupTableBosonic) -> numpy.ndarray:
+def get_dmat_spf(coefficients: numpy.ndarray, states_Nm1: numpy.ndarray,
+                 states: numpy.ndarray) -> numpy.ndarray:
     m = len(states_Nm1[0])
     rho_1 = numpy.zeros((m, m), dtype=numpy.complex128)
     state_a = states_Nm1[0].copy()
     state_b = states_Nm1[0].copy()
 
+    def get_index(ns: numpy.ndarray):
+        for i, entry in enumerate(states):
+            if numpy.array_equal(entry, ns):
+                return i
+
+        raise KeyError(
+            "ns \"{}\" not contained in number state table!".format(ns))
+
     for i in range(m):
         for j in range(m):
             for state in states_Nm1:
-                state_a = state.copy()
-                state_b = state.copy()
+                state_a[:] = state
+                state_b[:] = state
                 state_a[i] += 1
                 state_b[j] += 1
                 rho_1[i, j] = numpy.sqrt(
-                    (state[i] + 1) * (state[j] + 1)) * numpy.conjugate(
-                        coefficients[lookup.get_index(state_a)]
-                    ) * coefficients[lookup.get_index(state_b)]
+                    (state[i] + 1) *
+                    (state[j] + 1)) * numpy.conjugate(coefficients[get_index(
+                        state_a)]) * coefficients[get_index(state_b)]
 
     return rho_1
 

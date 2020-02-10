@@ -34,9 +34,12 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
     return V
 
 
-def get_dmat_spf(coefficients: numpy.ndarray, states_Nm1: numpy.ndarray,
-                 states: numpy.ndarray) -> numpy.ndarray:
+def get_dmat_spf(coefficients: numpy.ndarray,
+                 states_Nm1: numpy.ndarray,
+                 states: numpy.ndarray,
+                 normalize: bool = True) -> numpy.ndarray:
     m = len(states_Nm1[0])
+    N = numpy.sum(states[0])
     rho_1 = numpy.zeros((m, m), dtype=numpy.complex128)
     state_a = states_Nm1[0].copy()
     state_b = states_Nm1[0].copy()
@@ -56,21 +59,34 @@ def get_dmat_spf(coefficients: numpy.ndarray, states_Nm1: numpy.ndarray,
                 state_b[:] = state
                 state_a[i] += 1
                 state_b[j] += 1
-                rho_1[i, j] = numpy.sqrt(
+                rho_1[i, j] += numpy.sqrt(
                     (state[i] + 1) *
                     (state[j] + 1)) * numpy.conjugate(coefficients[get_index(
                         state_a)]) * coefficients[get_index(state_b)]
 
+    if normalize:
+        return rho_1 / N
+
     return rho_1
 
 
-def get_dmat2_spf(
-        coefficients: numpy.ndarray, states_Nm2: numpy.ndarray,
-        lookup: ns_table.NumberStateLookupTableBosonic) -> numpy.ndarray:
+def get_dmat2_spf(coefficients: numpy.ndarray,
+                  states_Nm2: numpy.ndarray,
+                  states: numpy.ndarray,
+                  normalize: bool = True) -> numpy.ndarray:
     m = len(states_Nm2[0])
+    N = numpy.sum(states[0])
     rho_2 = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
     state_a = states_Nm2[0].copy()
     state_b = states_Nm2[0].copy()
+
+    def get_index(ns: numpy.ndarray):
+        for i, entry in enumerate(states):
+            if numpy.array_equal(entry, ns):
+                return i
+
+        raise KeyError(
+            "ns \"{}\" not contained in number state table!".format(ns))
 
     for i in range(m):
         for j in range(m):
@@ -91,10 +107,12 @@ def get_dmat2_spf(
                         state_a[j] += 1
                         state_b[k] += 1
                         state_b[l] += 1
-                        rho_2[i, j, k, l] = numpy.sqrt(
-                            (state[i] + 1) * factor_a *
-                            (state[j] + 1) * factor_b) * numpy.conjugate(
-                                coefficients[lookup.get_index(state_a)]
-                            ) * coefficients[lookup.get_index(state_b)]
+                        rho_2[i, j, k, l] += numpy.sqrt(
+                            (state[i] + 1) * factor_a * (state[j] + 1) *
+                            factor_b) * numpy.conjugate(coefficients[get_index(
+                                state_a)]) * coefficients[get_index(state_b)]
+
+    if normalize:
+        return rho_2 / (N * (N - 1))
 
     return rho_2

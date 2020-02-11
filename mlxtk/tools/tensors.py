@@ -34,6 +34,40 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
     return V
 
 
+def get_dmat_spf_naive(coefficients: numpy.ndarray,
+                       states: numpy.ndarray,
+                       normalize: bool = True):
+    m = len(states[0])
+    N = numpy.sum(states[0])
+    rho_1 = numpy.zeros((m, m), dtype=numpy.complex128)
+    state_l = states[0].copy()
+    state_r = states[0].copy()
+
+    for i in range(m):
+        for j in range(m):
+            for state1, coefficient1 in zip(states, coefficients):
+                for state2, coefficient2 in zip(states, coefficients):
+                    state_l[:] = state1
+                    state_r[:] = state2
+                    state_l[i] -= 1
+                    state_r[j] -= 1
+                    if state_l[i] < 0:
+                        continue
+                    if state_r[j] < 0:
+                        continue
+                    if not numpy.array_equal(state_l, state_r):
+                        continue
+
+                    rho_1[i, j] += numpy.conjugate(
+                        coefficient1) * coefficient2 * numpy.sqrt(
+                            state1[i] * state2[j])
+
+    if normalize:
+        return rho_1 / N
+
+    return rho_1
+
+
 def get_dmat_spf(coefficients: numpy.ndarray,
                  states_Nm1: numpy.ndarray,
                  states: numpy.ndarray,
@@ -70,6 +104,52 @@ def get_dmat_spf(coefficients: numpy.ndarray,
     return rho_1
 
 
+def get_dmat2_spf_naive(coefficients: numpy.ndarray,
+                        states: numpy.ndarray,
+                        normalize: bool = True) -> numpy.ndarray:
+    m = len(states[0])
+    N = numpy.sum(states[0])
+    rho_2 = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
+    state_l = states[0].copy()
+    state_r = states[0].copy()
+
+    for i in range(m):
+        for j in range(m):
+            for k in range(m):
+                for l in range(m):
+                    for state1, coefficient1 in zip(states, coefficients):
+                        for state2, coefficient2 in zip(states, coefficients):
+                            state_l[:] = state1
+                            state_r[:] = state2
+                            state_l[i] -= 1
+                            state_l[j] -= 1
+                            state_r[k] -= 1
+                            state_r[l] -= 1
+                            if state_l[i] < 0:
+                                continue
+                            if state_l[j] < 0:
+                                continue
+                            if state_r[k] < 0:
+                                continue
+                            if state_r[l] < 0:
+                                continue
+                            if not numpy.array_equal(state_l, state_r):
+                                continue
+
+                            delta_l = 1 if (i == j) else 0
+                            delta_r = 1 if (k == l) else 0
+
+                            rho_2[i, j, k, l] += numpy.conjugate(
+                                coefficient1) * coefficient2 * numpy.sqrt(
+                                    (state1[i] - delta_l) * state1[j] *
+                                    state2[k] * (state2[l] - delta_r))
+
+    if normalize:
+        return rho_2 / (N * (N - 1))
+
+    return rho_2
+
+
 def get_dmat2_spf(coefficients: numpy.ndarray,
                   states_Nm2: numpy.ndarray,
                   states: numpy.ndarray,
@@ -93,16 +173,16 @@ def get_dmat2_spf(coefficients: numpy.ndarray,
             for k in range(m):
                 for l in range(m):
                     for state in states_Nm2:
-                        state_a = state.copy()
-                        state_b = state.copy()
+                        state_a[:] = state
+                        state_b[:] = state
                         delta_a = (1 if i == j else 0)
                         delta_b = (1 if k == l else 0)
                         factor_a = state[j] + 1 - delta_a
-                        if factor_a <= 0:
-                            continue
+                        # if factor_a <= 0:
+                        #     continue
                         factor_b = state[l] + 1 - delta_b
-                        if factor_b <= 0:
-                            continue
+                        # if factor_b <= 0:
+                        #     continue
                         state_a[i] += 1
                         state_a[j] += 1
                         state_b[k] += 1

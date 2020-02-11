@@ -1,3 +1,5 @@
+from typing import Callable
+
 import numpy
 
 from mlxtk.dvr import DVRSpecification
@@ -14,6 +16,43 @@ def get_delta_interaction_dvr(dvr: DVRSpecification,
         V[i, i, i, i] = g / weights[i]
 
     return V
+
+
+def get_kinetic_spf(dvr: DVRSpecification,
+                    spfs: numpy.ndarray,
+                    prefactor: float = 0.5) -> numpy.ndarray:
+    m = spfs.shape[0]
+    n = dvr.args[0]
+    spfs_c = numpy.conjugate(spfs)
+    T_dvr = dvr.get_d2()
+    T = numpy.zeros((m, m), dtype=numpy.complex128)
+    w = dvr.get_weights()
+
+    for a in range(m):
+        for b in range(m):
+            for i in range(n):
+                for j in range(n):
+                    T[a, b] += numpy.sqrt(
+                        w[i] * w[j]) * T_dvr[i, j] * spfs_c[a, i] * spfs[b, j]
+
+    return prefactor * T
+
+
+def get_potential_spf(dvr: DVRSpecification,
+                      spfs: numpy.ndarray,
+                      potential: Callable[[numpy.ndarray], numpy.ndarray],
+                      prefactor: float = 1.0) -> numpy.ndarray:
+    m = spfs.shape[0]
+    spfs_c = numpy.conjugate(spfs)
+    V_dvr = potential(dvr.get_x())
+    V = numpy.zeros((m, m), dtype=numpy.complex128)
+    w = dvr.get_weights()
+
+    for a in range(m):
+        for b in range(m):
+            V[a, b] = numpy.sum(w * V_dvr * spfs_c[a] * spfs[b])
+
+    return prefactor * V
 
 
 def get_delta_interaction_spf(dvr: DVRSpecification,
@@ -178,11 +217,11 @@ def get_dmat2_spf(coefficients: numpy.ndarray,
                         delta_a = (1 if i == j else 0)
                         delta_b = (1 if k == l else 0)
                         factor_a = state[j] + 1 - delta_a
-                        # if factor_a <= 0:
-                        #     continue
+                        if factor_a <= 0:
+                            continue
                         factor_b = state[l] + 1 - delta_b
-                        # if factor_b <= 0:
-                        #     continue
+                        if factor_b <= 0:
+                            continue
                         state_a[i] += 1
                         state_a[j] += 1
                         state_b[k] += 1

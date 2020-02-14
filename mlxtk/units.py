@@ -68,6 +68,24 @@ class ArbitraryUnit:
     def __str__(self):
         return r"\mathrm{a.u.}"
 
+    def __mul__(self, other):
+        return self
+
+    def __rmul__(self, other):
+        return self
+
+    def __truediv__(self, other):
+        return self
+
+    def __rtruediv__(self, other):
+        return self
+
+    def __pow__(self, other):
+        return self
+
+    def __rpow__(self, other):
+        return self
+
 
 class MissingUnitError(Exception):
     def __init__(self, dimension: str):

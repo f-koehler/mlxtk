@@ -20,22 +20,20 @@ def get_delta_interaction_dvr(dvr: DVRSpecification,
 
 def get_kinetic_spf(dvr: DVRSpecification,
                     spfs: numpy.ndarray,
-                    prefactor: float = 0.5) -> numpy.ndarray:
+                    prefactor: float = -0.5) -> numpy.ndarray:
     m = spfs.shape[0]
-    n = dvr.args[0]
+    n = spfs.shape[1]
     spfs_c = numpy.conjugate(spfs)
-    T_dvr = dvr.get_d2()
+    T_dvr = prefactor * dvr.get_d2()
     T = numpy.zeros((m, m), dtype=numpy.complex128)
-    w = dvr.get_weights()
 
     for a in range(m):
         for b in range(m):
             for i in range(n):
                 for j in range(n):
-                    T[a, b] += numpy.sqrt(
-                        w[i] * w[j]) * T_dvr[i, j] * spfs_c[a, i] * spfs[b, j]
+                    T[a, b] += T_dvr[i, j] * spfs_c[a, i] * spfs[b, j]
 
-    return prefactor * T
+    return T
 
 
 def get_potential_spf(dvr: DVRSpecification,
@@ -44,15 +42,14 @@ def get_potential_spf(dvr: DVRSpecification,
                       prefactor: float = 1.0) -> numpy.ndarray:
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
-    V_dvr = potential(dvr.get_x())
+    V_dvr = prefactor * potential(dvr.get_x())
     V = numpy.zeros((m, m), dtype=numpy.complex128)
-    w = dvr.get_weights()
 
     for a in range(m):
         for b in range(m):
-            V[a, b] = numpy.sum(w * V_dvr * spfs_c[a] * spfs[b])
+            V[a, b] = numpy.sum(V_dvr * spfs_c[a] * spfs[b])
 
-    return prefactor * V
+    return V
 
 
 def get_delta_interaction_spf(dvr: DVRSpecification,

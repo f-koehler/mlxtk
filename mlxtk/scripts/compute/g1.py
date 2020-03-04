@@ -3,9 +3,9 @@ from pathlib import Path
 
 import h5py
 
-from ...inout import dmat, g1
-from ...log import get_logger
-from ...tools.correlation import compute_g1, compute_g1_diff
+from mlxtk.inout import dmat, g1
+from mlxtk.log import get_logger
+from mlxtk.tools.correlation import compute_g1, compute_g1_diff
 
 LOGGER = get_logger(__name__)
 

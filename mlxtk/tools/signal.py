@@ -71,7 +71,9 @@ def find_relative_minima(
     return x[peak_args], y[peak_args]
 
 
-def find_roots(x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
+def find_roots(x: numpy.ndarray,
+               y: numpy.ndarray,
+               min_spacing=1e-8) -> numpy.ndarray:
     interp = scipy.interpolate.interp1d(x, y, bounds_error=True, kind=5)
 
     signs = numpy.sign(y)
@@ -87,7 +89,12 @@ def find_roots(x: numpy.ndarray, y: numpy.ndarray) -> numpy.ndarray:
             raise RuntimeError("TODO: error message")
         roots.append(sol.root)
 
-    return numpy.sort(numpy.array(roots))
+    roots = numpy.sort(numpy.array(roots))
+    filtered_roots = [roots[0]]
+    for i in range(len(roots) - 1):
+        if roots[i + 1] - roots[i] > min_spacing:
+            filtered_roots.append(roots[i + 1])
+    return numpy.array(filtered_roots)
 
 
 def find_sign_changes(x: numpy.ndarray) -> numpy.ndarray:

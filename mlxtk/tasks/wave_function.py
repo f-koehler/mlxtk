@@ -42,10 +42,7 @@ class RequestWaveFunction(Task):
 
     def task_request_wave_function(self) -> Dict[str, Any]:
         db = load_db(self.db_path, self.variable_name)
-        db.working_dir = self.db_path.parent / db.name
-
-        with WorkingDir(self.db_path.parent):
-            src_path = db.request(self.parameters, self.compute)
+        src_path = db.request(self.parameters, self.compute)
 
         @DoitAction
         def action_copy(targets):

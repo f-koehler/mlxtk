@@ -7,7 +7,8 @@ from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
-from . import cwd, doit_compat
+from mlxtk import cwd, doit_compat
+
 from .hashing import hash_string
 from .log import get_logger
 from .parameter_scan import ParameterScan
@@ -206,30 +207,31 @@ class WaveFunctionDB(ParameterScan):
         self.logger.info("request wave function for parameters %s",
                          repr(parameters))
 
-        common_parameter_names = parameters.get_common_parameter_names(
-            self.prototype)
+        with cwd.WorkingDir(self.working_dir.parent):
+            common_parameter_names = parameters.get_common_parameter_names(
+                self.prototype)
 
-        path = self.get_path(parameters)
-        if path:
-            self.logger.info("wave function is present")
-            return path
+            path = self.get_path(parameters)
+            if path:
+                self.logger.info("wave function is present")
+                return path
 
-        self.logger.info("wave function is not present")
+            self.logger.info("wave function is not present")
 
-        p = copy.deepcopy(self.prototype)
-        for name in common_parameter_names:
-            p[name] = parameters[name]
+            p = copy.deepcopy(self.prototype)
+            for name in common_parameter_names:
+                p[name] = parameters[name]
 
-        if p not in self.missing_wave_functions:
-            self.store_missing_wave_function(p)
-            self.combinations = self.stored_wave_functions + self.missing_wave_functions
+            if p not in self.missing_wave_functions:
+                self.store_missing_wave_function(p)
+                self.combinations = self.stored_wave_functions + self.missing_wave_functions
 
-        if not compute:
-            raise MissingWfnError(p)
+            if not compute:
+                raise MissingWfnError(p)
 
-        self._compute(p)
+            self._compute(p)
 
-        return self.request(parameters, compute)
+            return self.request(parameters, compute)
 
     def _compute(self, parameters: Parameters):
         self.logger.info("computing wave function for parameters %s",
@@ -279,9 +281,11 @@ class WaveFunctionDB(ParameterScan):
 
 
 def load_db(path: Path, variable_name: str = "db") -> WaveFunctionDB:
-    with cwd.WorkingDir(path.parent):
+    with cwd.WorkingDir(path.resolve().parent):
         spec = importlib.util.spec_from_file_location("db", str(path))
         db_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(db_module)
         db = getattr(db_module, variable_name)
-        return db
+
+    db.working_dir = path.parent / db.name
+    return db

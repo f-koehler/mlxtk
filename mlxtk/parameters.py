@@ -61,6 +61,10 @@ class Parameters:
 
         return list(set(self.names) & set(other.names))
 
+    def set_to(self, other):
+        for name in self.get_common_parameter_names(other):
+            self[name] = other[name]
+
     def has_same_common_parameters(self,
                                    other,
                                    common_parameters: List[str] = None

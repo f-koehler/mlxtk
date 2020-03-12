@@ -9,6 +9,7 @@
 .doit.db.dat
 .doit.db.dir
 .mypy_cache/
+.venv/
 \#*\#
 build/
 dist/

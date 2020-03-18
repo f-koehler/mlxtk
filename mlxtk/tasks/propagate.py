@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple, Union
 
 import h5py
+import numpy
 
 from .. import cwd
 from ..doit_compat import DoitAction
@@ -259,6 +260,20 @@ class Propagate(Task):
                                                *read_natpop_ascii("natpop"))
                             add_output_to_hdf5(fptr.create_group("output"),
                                                *read_output_ascii("output"))
+
+                            if "gauge" in self.flags:
+                                if self.flags["gauge"] != "standard":
+                                    time, error = numpy.loadtxt(
+                                        "constraint_error.txt", unpack=True)
+                                    group = fptr.create_group(
+                                        "constraint_error")
+                                    group.create_dataset(
+                                        "time", time.shape,
+                                        dtype=time.dtype)[:] = time
+                                    group.create_dataset(
+                                        "error",
+                                        error.shape,
+                                        dtype=error.dtype)[:] = error
 
                     shutil.move("result.h5", hdf5_file)
 

@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from ..inout.output import read_output_ascii
-from ..log import get_logger
+from mlxtk.inout.output import read_output_ascii
+from mlxtk.log import get_logger
 
 
 class SimulationBase:

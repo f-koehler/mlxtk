@@ -5,9 +5,9 @@ import tempfile
 from pathlib import Path
 from typing import List, Union
 
-from ..cwd import WorkingDir
-from ..log import get_logger
-from ..util import make_path
+from mlxtk.cwd import WorkingDir
+from mlxtk.log import get_logger
+from mlxtk.util import make_path
 
 LOGGER = get_logger(__name__)
 

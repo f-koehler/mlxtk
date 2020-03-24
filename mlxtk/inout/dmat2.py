@@ -5,8 +5,8 @@ import h5py
 import numpy
 import pandas
 
-from ..util import make_path
-from . import tools
+from mlxtk.inout import tools
+from mlxtk.util import make_path
 
 
 def read_dmat2_gridrep(

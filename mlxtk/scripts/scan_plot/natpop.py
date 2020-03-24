@@ -6,9 +6,9 @@ from pathlib import Path
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from ... import inout, log, plot, units
-from ...parameter_selection import load_scan
-from ...parameters import Parameters
+from mlxtk import inout, log, plot, units
+from mlxtk.parameter_selection import load_scan
+from mlxtk.parameters import Parameters
 
 LOGGER = log.get_logger(__name__)
 plot.make_headless()

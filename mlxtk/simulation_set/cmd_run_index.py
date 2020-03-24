@@ -2,8 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from ..cwd import WorkingDir
-from .base import SimulationSetBase
+from mlxtk.cwd import WorkingDir
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def cmd_run_index(self: SimulationSetBase, args: argparse.Namespace):

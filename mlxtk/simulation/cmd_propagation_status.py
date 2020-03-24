@@ -1,8 +1,8 @@
 import argparse
 import pickle
 
-from ..inout.output import read_output_ascii
-from .base import SimulationBase
+from mlxtk.inout.output import read_output_ascii
+from mlxtk.simulation.base import SimulationBase
 
 
 def check_propagation_status(self: SimulationBase, propagation: str) -> float:

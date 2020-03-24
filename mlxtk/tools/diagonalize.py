@@ -5,7 +5,7 @@ import QDTK.Tools.Mathematics
 import QDTK.Wavefunction
 import scipy.linalg
 
-from .. import log
+from mlxtk import log
 
 LOGGER = log.get_logger(__name__)
 

@@ -4,8 +4,8 @@ import h5py
 import numpy
 import tabulate
 
-from ..tools.wave_function import build_number_state_table_bosonic
-from ..util import compute_magnitude_split
+from mlxtk.tools.wave_function import build_number_state_table_bosonic
+from mlxtk.util import compute_magnitude_split
 
 
 def main():

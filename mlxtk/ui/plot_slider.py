@@ -5,7 +5,7 @@ from typing import Optional
 from mpl_toolkits.mplot3d import Axes3D
 from PySide2 import QtWidgets
 
-from . import MatplotlibWidget, load_ui
+from mlxtk.ui import MatplotlibWidget, load_ui
 
 
 class PlotSlider(QtWidgets.QWidget):

@@ -4,10 +4,10 @@ from typing import Any, Callable, List, Tuple, Union
 
 import matplotlib
 
-from .. import plot
-from ..parameter_selection import ParameterSelection
-from ..parameters import Parameters
-from ..util import make_path
+from mlxtk import plot
+from mlxtk.parameter_selection import ParameterSelection
+from mlxtk.parameters import Parameters
+from mlxtk.util import make_path
 
 
 def doit_plot_individual(

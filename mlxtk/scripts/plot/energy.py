@@ -3,10 +3,10 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-from ... import units
-from ...inout import read_output
-from ...plot import (add_argparse_2d_args, add_argparse_save_arg,
-                     apply_2d_args, handle_saving, plot_energy)
+from mlxtk import units
+from mlxtk.inout import read_output
+from mlxtk.plot import (add_argparse_2d_args, add_argparse_save_arg,
+                        apply_2d_args, handle_saving, plot_energy)
 
 
 def main():

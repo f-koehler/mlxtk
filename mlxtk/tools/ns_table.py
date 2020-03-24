@@ -3,7 +3,7 @@ from typing import Any, Dict
 import numpy
 import scipy.special
 
-from ..util import memoize
+from mlxtk.util import memoize
 
 
 @memoize

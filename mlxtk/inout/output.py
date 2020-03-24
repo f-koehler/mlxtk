@@ -5,7 +5,7 @@ import h5py
 import numpy
 import pandas
 
-from . import tools
+from mlxtk.inout import tools
 
 
 def read_output(

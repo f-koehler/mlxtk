@@ -1,7 +1,7 @@
 import argparse
 import json
 
-from .base import SimulationSetBase
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def cmd_lockfiles(self: SimulationSetBase, args: argparse.Namespace):

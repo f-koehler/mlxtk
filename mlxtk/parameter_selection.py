@@ -10,10 +10,10 @@ from typing import (Any, Callable, Dict, Iterable, List, Optional, Set, Tuple,
 import numpy
 from tqdm import tqdm
 
-from .cwd import WorkingDir
-from .log import get_logger
-from .parameters import Parameters, get_variables
-from .util import make_path, map_parallel_progress
+from mlxtk.cwd import WorkingDir
+from mlxtk.log import get_logger
+from mlxtk.parameters import Parameters, get_variables
+from mlxtk.util import make_path, map_parallel_progress
 
 LOGGER = get_logger(__name__)
 

@@ -6,13 +6,12 @@ from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
 
+from mlxtk.doit_compat import DoitAction
+from mlxtk.dvr import DVRSpecification
+from mlxtk.hashing import inaccurate_hash
+from mlxtk.log import get_logger
 from mlxtk.operator import MBOperatorSpecification
-
-from ..doit_compat import DoitAction
-from ..dvr import DVRSpecification
-from ..hashing import inaccurate_hash
-from ..log import get_logger
-from .task import Task
+from mlxtk.tasks.task import Task
 
 
 class CreateMBOperator(Task):

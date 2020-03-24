@@ -5,9 +5,10 @@ from pathlib import Path
 
 import h5py
 
-from ..cwd import WorkingDir
-from ..inout.dmat2 import add_dmat2_gridrep_to_hdf5, read_dmat2_gridrep_ascii
-from ..util import copy_file
+from mlxtk.cwd import WorkingDir
+from mlxtk.inout.dmat2 import (add_dmat2_gridrep_to_hdf5,
+                               read_dmat2_gridrep_ascii)
+from mlxtk.util import copy_file
 
 
 def main():

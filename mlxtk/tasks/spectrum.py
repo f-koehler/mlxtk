@@ -4,11 +4,11 @@ from typing import Any, Callable, Dict, List, Union
 import h5py
 import numpy
 
-from ..doit_compat import DoitAction
-from ..inout.spectrum import read_spectrum, write_spectrum
-from ..tools.diagonalize import diagonalize_1b_operator
-from .operator import OperatorSpecification
-from .task import Task
+from mlxtk.doit_compat import DoitAction
+from mlxtk.inout.spectrum import read_spectrum, write_spectrum
+from mlxtk.tasks.operator import OperatorSpecification
+from mlxtk.tasks.task import Task
+from mlxtk.tools.diagonalize import diagonalize_1b_operator
 
 
 class ComputeSpectrum(Task):

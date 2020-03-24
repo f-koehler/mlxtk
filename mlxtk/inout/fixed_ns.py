@@ -5,7 +5,7 @@ import h5py
 import numpy
 import pandas
 
-from ..util import make_path
+from mlxtk.util import make_path
 
 
 def read_fixed_ns_ascii(

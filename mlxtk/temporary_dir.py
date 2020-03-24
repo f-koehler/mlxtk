@@ -2,8 +2,8 @@ import shutil
 from pathlib import Path
 from typing import Union
 
-from .log import get_logger
-from .util import make_path
+from mlxtk.log import get_logger
+from mlxtk.util import make_path
 
 
 class TemporaryDir:

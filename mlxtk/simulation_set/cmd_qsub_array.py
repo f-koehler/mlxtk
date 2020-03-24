@@ -3,9 +3,9 @@ import os
 import sys
 from pathlib import Path
 
-from .. import sge
-from ..cwd import WorkingDir
-from .base import SimulationSetBase
+from mlxtk import sge
+from mlxtk.cwd import WorkingDir
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def cmd_qsub(self: SimulationSetBase, args: argparse.Namespace):

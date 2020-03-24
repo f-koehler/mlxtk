@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 import h5py
 import numpy
 
-from ..tools.wave_function import get_spfs, load_wave_function
+from mlxtk.tools.wave_function import get_spfs, load_wave_function
 
 RE_TIME = re.compile(r"^\s+(.+)\s+\[au\]$")
 RE_ELEMENT = re.compile(r"^\s*\((.+)\,(.+)\)$")

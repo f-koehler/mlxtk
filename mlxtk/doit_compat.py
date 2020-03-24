@@ -13,8 +13,8 @@ from doit.doit_cmd import DoitMain
 from doit.task import dict_to_task
 from tabulate import tabulate
 
-from .log import get_logger
-from .timing import Timer
+from mlxtk.log import get_logger
+from mlxtk.timing import Timer
 
 LOGGER = get_logger(__name__)
 

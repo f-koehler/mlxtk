@@ -7,12 +7,12 @@ from typing import Any, Callable, Dict, List, Union
 import h5py
 import numpy
 
-from .. import cwd, inout
-from ..doit_compat import DoitAction
-from ..log import get_logger
-from ..tools.wave_function import load_wave_function
-from ..util import copy_file, make_path
-from .task import Task
+from mlxtk import cwd, inout
+from mlxtk.doit_compat import DoitAction
+from mlxtk.log import get_logger
+from mlxtk.tasks.task import Task
+from mlxtk.tools.wave_function import load_wave_function
+from mlxtk.util import copy_file, make_path
 
 
 class NumberStateAnalysisStatic(Task):

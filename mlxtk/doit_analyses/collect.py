@@ -3,9 +3,9 @@ from typing import List, Union
 
 import numpy
 
-from ..log import get_logger
-from ..parameter_selection import load_scan
-from ..util import make_path
+from mlxtk.log import get_logger
+from mlxtk.parameter_selection import load_scan
+from mlxtk.util import make_path
 
 LOGGER = get_logger(__name__)
 

@@ -5,8 +5,8 @@ import numpy
 from matplotlib.collections import QuadMesh
 from PySide2 import QtWidgets
 
-from .. import inout, plot
-from ..ui import MatplotlibWidget, load_ui
+from mlxtk import inout, plot
+from mlxtk.ui import MatplotlibWidget, load_ui
 
 
 class DmatSlider(QtWidgets.QWidget):

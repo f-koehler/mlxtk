@@ -2,7 +2,7 @@
 """
 import traceback
 
-from .log import get_logger
+from mlxtk.log import get_logger
 
 LOGGER = get_logger(__name__)
 

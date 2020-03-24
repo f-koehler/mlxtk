@@ -6,14 +6,14 @@ import matplotlib.axes
 import matplotlib.figure
 import matplotlib.pyplot as plt
 
-from ..inout.gpop import read_gpop
-from ..log import get_logger
-from ..parameter_selection import load_scan
-from ..plot import PlotArgs2D
-from ..plot.gpop import plot_gpop, plot_gpop_momentum
-from ..util import list_files, make_path
-from .plot import doit_plot_individual
-from .video import create_slideshow
+from mlxtk.doit_analyses.plot import doit_plot_individual
+from mlxtk.doit_analyses.video import create_slideshow
+from mlxtk.inout.gpop import read_gpop
+from mlxtk.log import get_logger
+from mlxtk.parameter_selection import load_scan
+from mlxtk.plot import PlotArgs2D
+from mlxtk.plot.gpop import plot_gpop, plot_gpop_momentum
+from mlxtk.util import list_files, make_path
 
 LOGGER = get_logger(__name__)
 

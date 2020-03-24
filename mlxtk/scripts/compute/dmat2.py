@@ -6,11 +6,11 @@ from pathlib import Path
 
 import h5py
 
-from ...cwd import WorkingDir
-from ...inout import dmat2
-from ...inout.psi import read_psi_ascii, write_psi_ascii
-from ...log import get_logger
-from ...util import copy_file
+from mlxtk.cwd import WorkingDir
+from mlxtk.inout import dmat2
+from mlxtk.inout.psi import read_psi_ascii, write_psi_ascii
+from mlxtk.log import get_logger
+from mlxtk.util import copy_file
 
 LOGGER = get_logger(__name__)
 RE_SLICE = re.compile(r"^([+-]*\d*):([+-]*\d*)(?::([+-]*\d*))?$")

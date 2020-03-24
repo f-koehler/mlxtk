@@ -1,4 +1,4 @@
-from .. import units
+from mlxtk import units
 
 
 def main():

@@ -1,7 +1,7 @@
 import argparse
 
-from ..cwd import WorkingDir
-from .base import SimulationSetBase
+from mlxtk.cwd import WorkingDir
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def cmd_task_info(self: SimulationSetBase, args: argparse.Namespace):

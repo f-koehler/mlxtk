@@ -14,12 +14,12 @@ import tempfile
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Union
 
-from .. import cwd
-from ..doit_compat import DoitAction
-from ..inout.expval import read_expval_ascii, write_expval_hdf5
-from ..log import get_logger
-from ..util import copy_file, make_path
-from .task import Task
+from mlxtk import cwd
+from mlxtk.doit_compat import DoitAction
+from mlxtk.inout.expval import read_expval_ascii, write_expval_hdf5
+from mlxtk.log import get_logger
+from mlxtk.tasks.task import Task
+from mlxtk.util import copy_file, make_path
 
 
 class ComputeExpectationValue(Task):

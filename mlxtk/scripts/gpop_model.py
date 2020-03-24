@@ -2,8 +2,8 @@ import argparse
 
 import matplotlib.pyplot as plt
 
-from ..inout import read_gpop
-from ..plot import create_gpop_model
+from mlxtk.inout import read_gpop
+from mlxtk.plot import create_gpop_model
 
 
 def main():

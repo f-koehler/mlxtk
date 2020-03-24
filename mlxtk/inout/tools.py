@@ -6,7 +6,7 @@ This module provides common functions when working with I/O.
 from pathlib import Path
 from typing import List, Tuple, Union
 
-from ..util import make_path
+from mlxtk.util import make_path
 
 HDF5_MAGIC_NUMBER = bytes([0x89, 0x48, 0x44, 0x46, 0x0D, 0x0A, 0x1A, 0x0A])
 """bytes: Magic number of the HDF5 file format.

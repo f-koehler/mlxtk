@@ -1,7 +1,6 @@
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
-
-from .single_species import SingleSpeciesSystem
+from mlxtk.systems.single_species.single_species import SingleSpeciesSystem
 
 
 class HarmonicTrap(SingleSpeciesSystem):

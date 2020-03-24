@@ -3,9 +3,9 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy
 
-from ... import units
-from ...inout import read_dmat_evals, read_natpop
-from ...plot import add_argparse_2d_args, apply_2d_args
+from mlxtk import units
+from mlxtk.inout import read_dmat_evals, read_natpop
+from mlxtk.plot import add_argparse_2d_args, apply_2d_args
 
 
 def main():

@@ -10,13 +10,12 @@ from QDTK.Operator import OCoef as Coeff
 from QDTK.Operator import Operator
 from QDTK.Operator import OTerm as Term
 
+from mlxtk.doit_compat import DoitAction
+from mlxtk.dvr import DVRSpecification
+from mlxtk.hashing import inaccurate_hash
 from mlxtk.operator import OperatorSpecification
-
-from ..doit_compat import DoitAction
-from ..dvr import DVRSpecification
-from ..hashing import inaccurate_hash
-from ..tools.operator import get_operator_matrix
-from .task import Task
+from mlxtk.tasks.task import Task
+from mlxtk.tools.operator import get_operator_matrix
 
 
 class CreateOperator(Task):

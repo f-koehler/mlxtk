@@ -4,8 +4,8 @@ import re
 
 import numpy
 
-from ..inout import read_psi_ascii, write_psi_ascii
-from ..log import get_logger
+from mlxtk.inout import read_psi_ascii, write_psi_ascii
+from mlxtk.log import get_logger
 
 LOGGER = get_logger(__name__)
 

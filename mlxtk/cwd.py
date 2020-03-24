@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 from typing import Union
 
-from . import log
+from mlxtk import log
 
 LOGGER = log.get_logger(__name__)
 

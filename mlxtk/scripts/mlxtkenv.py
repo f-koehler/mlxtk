@@ -1,4 +1,4 @@
-from ..settings import load_full_env
+from mlxtk.settings import load_full_env
 
 
 def main():

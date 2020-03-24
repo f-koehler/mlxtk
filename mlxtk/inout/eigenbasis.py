@@ -5,9 +5,9 @@ from typing import Tuple, Union
 import h5py
 import numpy
 
-from ..log import get_logger
-from ..util import make_path
-from .psi import read_psi_ascii
+from mlxtk.inout.psi import read_psi_ascii
+from mlxtk.log import get_logger
+from mlxtk.util import make_path
 
 LOGGER = get_logger(__name__)
 

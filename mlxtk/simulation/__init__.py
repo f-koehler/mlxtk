@@ -3,8 +3,8 @@ import sys
 from pathlib import Path
 from typing import List, Optional
 
-from .. import sge
-from . import base
+from mlxtk import sge
+from mlxtk.simulation import base
 
 
 class Simulation(base.SimulationBase):
@@ -64,15 +64,15 @@ class Simulation(base.SimulationBase):
         self.argparser_task_info.set_defaults(subcommand=self.cmd_task_info)
         self.argparser_task_info.add_argument("name")
 
-    from .cmd_clean import cmd_clean
-    from .cmd_dry_run import cmd_dry_run
-    from .cmd_graph import cmd_graph
-    from .cmd_list import cmd_list
-    from .cmd_propagation_status import cmd_propagation_status, check_propagation_status
-    from .cmd_qdel import cmd_qdel
-    from .cmd_qsub import cmd_qsub
-    from .cmd_run import cmd_run
-    from .cmd_task_info import cmd_task_info
+    from mlxtk.simulation.cmd_clean import cmd_clean
+    from mlxtk.simulation.cmd_dry_run import cmd_dry_run
+    from mlxtk.simulation.cmd_graph import cmd_graph
+    from mlxtk.simulation.cmd_list import cmd_list
+    from mlxtk.simulation.cmd_propagation_status import cmd_propagation_status, check_propagation_status
+    from mlxtk.simulation.cmd_qdel import cmd_qdel
+    from mlxtk.simulation.cmd_qsub import cmd_qsub
+    from mlxtk.simulation.cmd_run import cmd_run
+    from mlxtk.simulation.cmd_task_info import cmd_task_info
 
     def main(self, argv: List[str] = None):
         if argv is None:

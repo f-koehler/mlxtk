@@ -2,8 +2,8 @@ import pickle
 from pathlib import Path
 from typing import List, Union
 
-from ..tools import video
-from ..util import make_path
+from mlxtk.tools import video
+from mlxtk.util import make_path
 
 
 def create_slideshow(images: List[Union[Path, str]],

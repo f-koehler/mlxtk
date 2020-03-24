@@ -3,8 +3,8 @@ import sys
 
 from PySide2 import QtWidgets
 
-from ... import inout, plot
-from ..dmat_evec_slider import DmatEvecSlider
+from mlxtk import inout, plot
+from mlxtk.scripts.dmat_evec_slider import DmatEvecSlider
 
 
 def main():

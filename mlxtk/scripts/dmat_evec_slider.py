@@ -4,8 +4,8 @@ import sys
 import numpy
 from PySide2 import QtWidgets
 
-from .. import inout, plot, units
-from ..ui import MatplotlibWidget, load_ui
+from mlxtk import inout, plot, units
+from mlxtk.ui import MatplotlibWidget, load_ui
 
 
 class DmatEvecSlider(QtWidgets.QWidget):

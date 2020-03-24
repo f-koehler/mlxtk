@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from .util import memoize
+from mlxtk.util import memoize
 
 try:
     from yaml import CLoader as YamlLoader

@@ -2,9 +2,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from .. import sge
-from ..cwd import WorkingDir
-from .base import SimulationBase
+from mlxtk import sge
+from mlxtk.cwd import WorkingDir
+from mlxtk.simulation.base import SimulationBase
 
 
 def cmd_qsub(self: SimulationBase, args: argparse.Namespace):

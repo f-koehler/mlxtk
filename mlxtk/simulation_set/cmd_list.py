@@ -1,6 +1,6 @@
 import argparse
 
-from .base import SimulationSetBase
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def cmd_list(self: SimulationSetBase, args: argparse.Namespace):

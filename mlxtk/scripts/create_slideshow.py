@@ -1,8 +1,8 @@
 import argparse
 from pathlib import Path
 
-from ..tools.video import create_slideshow
-from ..util import list_files
+from mlxtk.tools.video import create_slideshow
+from mlxtk.util import list_files
 
 
 def main():

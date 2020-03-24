@@ -4,8 +4,7 @@ Todo:
 """
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
-
-from . import harmonic_trap
+from mlxtk.systems.single_species import harmonic_trap
 
 
 class HarmonicTrapHim(harmonic_trap.HarmonicTrap):

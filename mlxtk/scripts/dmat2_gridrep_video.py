@@ -10,11 +10,11 @@ from typing import Tuple
 import matplotlib.pyplot as plt
 import numpy
 
-from .. import plot, units
-from ..cwd import WorkingDir
-from ..inout.dmat2 import read_dmat2_gridrep_hdf5
-from ..log import get_logger
-from ..util import copy_file
+from mlxtk import plot, units
+from mlxtk.cwd import WorkingDir
+from mlxtk.inout.dmat2 import read_dmat2_gridrep_hdf5
+from mlxtk.log import get_logger
+from mlxtk.util import copy_file
 
 LOGGER = get_logger(__name__)
 

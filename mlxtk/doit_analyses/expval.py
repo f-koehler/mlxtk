@@ -4,13 +4,13 @@ from typing import List, Union
 import matplotlib.pyplot as plt
 import numpy
 
-from ..inout.expval import read_expval_hdf5
-from ..parameter_selection import load_scan
-from ..plot import PlotArgs2D
-from ..plot.expval import plot_expval
-from ..util import make_path
-from .collect import collect_values
-from .plot import doit_plot_individual
+from mlxtk.doit_analyses.collect import collect_values
+from mlxtk.doit_analyses.plot import doit_plot_individual
+from mlxtk.inout.expval import read_expval_hdf5
+from mlxtk.parameter_selection import load_scan
+from mlxtk.plot import PlotArgs2D
+from mlxtk.plot.expval import plot_expval
+from mlxtk.util import make_path
 
 
 def collect_initial_expval(scan_dir: Union[Path, str],

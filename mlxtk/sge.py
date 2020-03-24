@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 from typing import List
 
-from . import log, templates
+from mlxtk import log, templates
 
 LOGGER = log.get_logger(__name__)
 REGEX_QSTAT = re.compile(r"^(\d+)\s+")

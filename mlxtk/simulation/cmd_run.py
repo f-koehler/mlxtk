@@ -1,10 +1,10 @@
 import argparse
 from pathlib import Path
 
-from ..cwd import WorkingDir
-from ..doit_compat import run_doit
-from ..lock import LockFile
-from .base import SimulationBase
+from mlxtk.cwd import WorkingDir
+from mlxtk.doit_compat import run_doit
+from mlxtk.lock import LockFile
+from mlxtk.simulation.base import SimulationBase
 
 
 def cmd_run(self: SimulationBase, args: argparse.Namespace):

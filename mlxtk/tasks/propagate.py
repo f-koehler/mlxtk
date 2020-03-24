@@ -9,17 +9,18 @@ from typing import Any, Callable, Dict, List, Tuple, Union
 import h5py
 import numpy
 
-from .. import cwd
-from ..doit_compat import DoitAction
-from ..hashing import hash_file
-from ..inout.eigenbasis import add_eigenbasis_to_hdf5, read_eigenbasis_ascii
-from ..inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
-from ..inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
-from ..inout.output import add_output_to_hdf5, read_output_ascii
-from ..log import get_logger
-from ..temporary_dir import TemporaryDir
-from ..util import copy_file, make_path
-from .task import Task
+from mlxtk import cwd
+from mlxtk.doit_compat import DoitAction
+from mlxtk.hashing import hash_file
+from mlxtk.inout.eigenbasis import (add_eigenbasis_to_hdf5,
+                                    read_eigenbasis_ascii)
+from mlxtk.inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
+from mlxtk.inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
+from mlxtk.inout.output import add_output_to_hdf5, read_output_ascii
+from mlxtk.log import get_logger
+from mlxtk.tasks.task import Task
+from mlxtk.temporary_dir import TemporaryDir
+from mlxtk.util import copy_file, make_path
 
 FLAG_TYPES = {
     "MBop_apply": bool,

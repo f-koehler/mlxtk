@@ -10,14 +10,14 @@ import matplotlib.pyplot
 from matplotlib.backend_bases import LocationEvent
 from matplotlib.figure import Figure
 
-from ..log import get_logger
-from ..util import make_path
-from . import cursor
-from .energy import plot_energy, plot_energy_diff
-from .entropy import plot_entropy, plot_entropy_diff
-from .expval import plot_expval
-from .gpop import create_gpop_model, plot_gpop
-from .natpop import plot_depletion, plot_natpop
+from mlxtk.log import get_logger
+from mlxtk.plot import cursor
+from mlxtk.plot.energy import plot_energy, plot_energy_diff
+from mlxtk.plot.entropy import plot_entropy, plot_entropy_diff
+from mlxtk.plot.expval import plot_expval
+from mlxtk.plot.gpop import create_gpop_model, plot_gpop
+from mlxtk.plot.natpop import plot_depletion, plot_natpop
+from mlxtk.util import make_path
 
 LOGGER = get_logger(__name__)
 

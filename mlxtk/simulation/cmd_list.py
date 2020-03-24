@@ -1,8 +1,8 @@
 import argparse
 
-from ..cwd import WorkingDir
-from ..doit_compat import run_doit
-from .base import SimulationBase
+from mlxtk.cwd import WorkingDir
+from mlxtk.doit_compat import run_doit
+from mlxtk.simulation.base import SimulationBase
 
 
 def cmd_list(self: SimulationBase, args: argparse.Namespace):

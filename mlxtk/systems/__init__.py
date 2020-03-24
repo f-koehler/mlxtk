@@ -1,1 +1,1 @@
-from . import single_species
+from mlxtk.systems import single_species

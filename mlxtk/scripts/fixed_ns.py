@@ -4,11 +4,11 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-from .. import inout
-from ..cwd import WorkingDir
-from ..inout.psi import read_first_frame
-from ..log import get_logger
-from ..tools.wave_function import load_wave_function
+from mlxtk import inout
+from mlxtk.cwd import WorkingDir
+from mlxtk.inout.psi import read_first_frame
+from mlxtk.log import get_logger
+from mlxtk.tools.wave_function import load_wave_function
 
 LOGGER = get_logger(__name__)
 

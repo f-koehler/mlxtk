@@ -3,13 +3,13 @@ from typing import List, Union
 
 import matplotlib.pyplot as plt
 
-from ..inout.output import read_output_hdf5
-from ..parameter_selection import load_scan
-from ..plot import PlotArgs2D
-from ..plot.energy import plot_energy
-from ..util import make_path
-from .collect import collect_values
-from .plot import doit_plot_individual
+from mlxtk.doit_analyses.collect import collect_values
+from mlxtk.doit_analyses.plot import doit_plot_individual
+from mlxtk.inout.output import read_output_hdf5
+from mlxtk.parameter_selection import load_scan
+from mlxtk.plot import PlotArgs2D
+from mlxtk.plot.energy import plot_energy
+from mlxtk.util import make_path
 
 
 def collect_final_energy(scan_dir: Union[Path, str],

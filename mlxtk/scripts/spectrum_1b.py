@@ -4,13 +4,12 @@ import sys
 import h5py
 import numpy
 
+from mlxtk.tools.diagonalize import diagonalize_1b_operator
+from mlxtk.ui import load_ui, replace_widget
+from mlxtk.ui.plot_widgets import SingleLinePlot
 from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import (QApplication, QGraphicsView, QHeaderView, QLabel,
                              QListWidget, QTableWidget, QTabWidget)
-
-from ..tools.diagonalize import diagonalize_1b_operator
-from ..ui import load_ui, replace_widget
-from ..ui.plot_widgets import SingleLinePlot
 
 
 class SpectrumPlot(SingleLinePlot):

@@ -5,10 +5,10 @@ import sys
 from pathlib import Path
 from typing import List, Union
 
-from .. import sge
-from ..log import get_logger
-from ..simulation import Simulation
-from ..util import make_path
+from mlxtk import sge
+from mlxtk.log import get_logger
+from mlxtk.simulation import Simulation
+from mlxtk.util import make_path
 
 
 class SimulationSetBase:

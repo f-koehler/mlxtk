@@ -4,7 +4,7 @@ from typing import Tuple, Union
 import h5py
 import numpy
 
-from ..util import make_path
+from mlxtk.util import make_path
 
 
 def add_g1_to_hdf5(fptr: Union[h5py.File, h5py.Group],

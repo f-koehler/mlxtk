@@ -1,9 +1,9 @@
 import argparse
 from typing import Any, Callable, Dict, List
 
-from ..doit_compat import DoitAction, run_doit
-from ..simulation import Simulation
-from .base import SimulationSetBase
+from mlxtk.doit_compat import DoitAction, run_doit
+from mlxtk.simulation import Simulation
+from mlxtk.simulation_set.base import SimulationSetBase
 
 
 def dry_run_simulation(

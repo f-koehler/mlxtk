@@ -4,8 +4,7 @@ import numpy
 
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
-
-from .single_species import SingleSpeciesSystem
+from mlxtk.systems.single_species.single_species import SingleSpeciesSystem
 
 
 def gaussian(x: Union[float, numpy.ndarray], x0: float, alpha: float = 1.0):

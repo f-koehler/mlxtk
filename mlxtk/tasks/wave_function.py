@@ -7,15 +7,14 @@ from typing import Any, Callable, Dict, List, Union
 
 import numpy
 
+from mlxtk.cwd import WorkingDir
+from mlxtk.doit_compat import DoitAction
 from mlxtk.inout.psi import read_psi_frame_ascii, write_psi_ascii
-
-from ..cwd import WorkingDir
-from ..doit_compat import DoitAction
-from ..log import get_logger
-from ..parameters import Parameters
-from ..util import make_path
-from ..wave_function_db import MissingWfnError, load_db
-from .task import Task
+from mlxtk.log import get_logger
+from mlxtk.parameters import Parameters
+from mlxtk.tasks.task import Task
+from mlxtk.util import make_path
+from mlxtk.wave_function_db import MissingWfnError, load_db
 
 LOGGER = get_logger(__name__)
 

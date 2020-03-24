@@ -3,7 +3,7 @@ import matplotlib.tri
 import numpy
 import stl
 
-from ..tools.gpop import transform_to_momentum_space
+from mlxtk.tools.gpop import transform_to_momentum_space
 
 
 def plot_gpop(ax, time, grid, density):

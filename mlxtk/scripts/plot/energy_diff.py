@@ -3,9 +3,9 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy
 
-from ... import units
-from ...inout import read_output
-from ...plot import add_argparse_2d_args, apply_2d_args, plot_energy_diff
+from mlxtk import units
+from mlxtk.inout import read_output
+from mlxtk.plot import add_argparse_2d_args, apply_2d_args, plot_energy_diff
 
 
 def main():

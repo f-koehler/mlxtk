@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import Union
 
-from ..inout.fixed_ns import read_fixed_ns_total_magnitude_hdf5
-from ..util import make_path
-from .collect import collect_values
+from mlxtk.doit_analyses.collect import collect_values
+from mlxtk.inout.fixed_ns import read_fixed_ns_total_magnitude_hdf5
+from mlxtk.util import make_path
 
 
 def collect_final_total_magnitude(scan_dir: Union[Path, str],

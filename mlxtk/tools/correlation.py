@@ -5,10 +5,10 @@ from typing import Tuple, Union
 import h5py
 import numpy
 
-from ..inout.dmat import read_dmat_gridrep_ascii, write_dmat_gridrep_hdf5
-from ..inout.dmat2 import read_dmat2_gridrep_ascii
-from ..log import get_logger
-from ..util import make_path
+from mlxtk.inout.dmat import read_dmat_gridrep_ascii, write_dmat_gridrep_hdf5
+from mlxtk.inout.dmat2 import read_dmat2_gridrep_ascii
+from mlxtk.log import get_logger
+from mlxtk.util import make_path
 
 LOGGER = get_logger(__name__)
 

@@ -7,14 +7,14 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy
 
-from ..inout.natpop import read_natpop, read_natpop_hdf5
-from ..parameter_selection import load_scan
-from ..plot import PlotArgs2D, plot_natpop
-from ..tools.entropy import compute_entropy
-from ..util import list_files, make_path
-from .collect import collect_values
-from .plot import direct_plot, doit_plot_individual
-from .video import create_slideshow
+from mlxtk.doit_analyses.collect import collect_values
+from mlxtk.doit_analyses.plot import direct_plot, doit_plot_individual
+from mlxtk.doit_analyses.video import create_slideshow
+from mlxtk.inout.natpop import read_natpop, read_natpop_hdf5
+from mlxtk.parameter_selection import load_scan
+from mlxtk.plot import PlotArgs2D, plot_natpop
+from mlxtk.tools.entropy import compute_entropy
+from mlxtk.util import list_files, make_path
 
 
 def scan_plot_natpop(scan_dir: Union[Path, str],

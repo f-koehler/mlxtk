@@ -6,11 +6,10 @@ import numpy
 import scipy.fftpack
 
 import mlxtk
-
-from ... import units
-from ...inout.expval import read_expval_hdf5
-from ...plot import (add_argparse_2d_args, add_argparse_save_arg,
-                     apply_2d_args, handle_saving, plot_expval)
+from mlxtk import units
+from mlxtk.inout.expval import read_expval_hdf5
+from mlxtk.plot import (add_argparse_2d_args, add_argparse_save_arg,
+                        apply_2d_args, handle_saving, plot_expval)
 
 
 def main():

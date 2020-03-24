@@ -2,8 +2,8 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from ..cwd import WorkingDir
-from .base import SimulationBase
+from mlxtk.cwd import WorkingDir
+from mlxtk.simulation.base import SimulationBase
 
 
 def cmd_qdel(self: SimulationBase, args: argparse.Namespace):

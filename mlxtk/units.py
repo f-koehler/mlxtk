@@ -5,8 +5,8 @@ import sympy
 import sympy.abc
 from sympy.physics.quantum.constants import hbar
 
-from .settings import load_settings
-from .util import memoize
+from mlxtk.settings import load_settings
+from mlxtk.util import memoize
 
 
 class Unit:

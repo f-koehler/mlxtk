@@ -2,9 +2,9 @@ from typing import Any, Callable, Dict, List
 
 import numpy
 
-from ..doit_compat import DoitAction
-from ..inout.expval import read_expval_hdf5, write_expval_hdf5
-from .task import Task
+from mlxtk.doit_compat import DoitAction
+from mlxtk.inout.expval import read_expval_hdf5, write_expval_hdf5
+from mlxtk.tasks.task import Task
 
 
 class ComputeVariance(Task):

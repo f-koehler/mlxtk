@@ -13,13 +13,12 @@ from typing import Any, Callable, Dict, List, Optional
 from prompt_toolkit.shortcuts import checkboxlist_dialog, radiolist_dialog
 
 from mlxtk import cwd, doit_compat
+from mlxtk.hashing import hash_string
+from mlxtk.log import get_logger
+from mlxtk.parameter_scan import ParameterScan
+from mlxtk.parameters import Parameters
+from mlxtk.simulation import Simulation
 from mlxtk.util import get_main_path
-
-from .hashing import hash_string
-from .log import get_logger
-from .parameter_scan import ParameterScan
-from .parameters import Parameters
-from .simulation import Simulation
 
 assert List
 

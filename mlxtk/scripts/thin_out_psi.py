@@ -41,6 +41,8 @@ def main():
             LOGGER.info("add time %s", time)
             indices.add(numpy.abs(times - time).argmin())
 
+    # TODO: I reimplemented this code as a function for the simulation_set.
+    # Move that function to a separate module and reuse it here
     if args.slice_:
         re_slice = re.compile(r"^([+-]*\d*):([+-]*\d*)(?::([+-]*\d*))?$")
         for slice_ in args.slice_:

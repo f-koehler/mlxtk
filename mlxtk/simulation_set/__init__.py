@@ -1,11 +1,36 @@
 import argparse
+import re
 import sys
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Tuple, Union
 
 from .. import sge
 from ..simulation import Simulation
 from . import base
+
+RE_INDEX = re.compile(r"(\d+)")
+RE_RANGE = re.compile(r"(\d+)-(\d+)")
+RE_SLICE = re.compile(r"^([+-]*\d*):([+-]*\d*)(?::([+-]*\d*))?$")
+
+
+def parse_slice(slice_: str) -> Optional[Tuple[int, Optional[int], int]]:
+    m = RE_SLICE.match(slice)
+    if not m:
+        return None
+    start = 0
+    stop = None
+    step = 1
+    if m.group(1) != "":
+        start = int(m.group(1))
+    if m.group(2) != "":
+        stop = int(m.group(2))
+    try:
+        if m.group(3) != "":
+            step = int(m.group(3))
+    except IndexError:
+        pass
+
+    return (start, stop, step)
 
 
 class SimulationSet(base.SimulationSetBase):
@@ -102,6 +127,37 @@ class SimulationSet(base.SimulationSetBase):
 
         self.argparser_qdel = self.subparsers.add_parser("qdel")
         self.argparser_qdel.set_defaults(subcommand=self.cmd_qdel)
+
+    def parse_selection(self, arg: str) -> List[int]:
+        tokens = arg.strip().split(",")
+        indices = []
+
+        for token in tokens:
+            m = RE_INDEX.match(token)
+            if m:
+                indices.append(int(m.group(1)))
+                continue
+
+            m = RE_RANGE.match(token)
+            if m:
+                start = int(m.group(1))
+                stop = int(m.group(2))
+                if stop < start:
+                    raise ValueError("stop index is smaller than start index")
+                indices += list(range(start, stop))
+                continue
+
+            result = parse_slice(token)
+            if not result:
+                raise ValueError("invalid format: {}".format(token))
+            start = result[0]
+            stop = result[1]
+            if stop is None:
+                stop = len(self.simulations)
+            step = result[2]
+            indices += list(range(start, stop, step))
+
+        return list(set(indices))
 
     from .cmd_archive import cmd_archive
     from .cmd_clean import cmd_clean

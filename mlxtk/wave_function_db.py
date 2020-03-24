@@ -2,12 +2,18 @@ import argparse
 import copy
 import importlib.util
 import pickle
+import shutil
+import subprocess
+import sys
 import time
 from functools import partial
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+from prompt_toolkit.shortcuts import checkboxlist_dialog, radiolist_dialog
+
 from mlxtk import cwd, doit_compat
+from mlxtk.util import get_main_path
 
 from .hashing import hash_string
 from .log import get_logger
@@ -68,6 +74,12 @@ class WaveFunctionDB(ParameterScan):
 
         super().__init__(name, func, [], working_dir)
         self.logger = get_logger(__name__ + ".WaveFunctionDB")
+
+        self.argparser_tui = self.subparsers.add_parser("tui")
+        self.argparser_tui.set_defaults(subcommand=self.cmd_tui)
+        self.argparser_remove = self.subparsers.add_parser("remove")
+        self.argparser_remove.set_defaults(subcommand=self.cmd_remove)
+        self.argparser_remove.add_argument("selection", type=str)
 
         self.load_missing_wave_functions()
         self.load_stored_wave_functions()
@@ -190,7 +202,7 @@ class WaveFunctionDB(ParameterScan):
 
             self.stored_wave_functions.remove(parameters)
 
-    def get_path(self, parameters: Parameters) -> Optional[Path]:
+    def get_simulation_path(self, parameters: Parameters) -> Optional[Path]:
         common_parameter_names = parameters.get_common_parameter_names(
             self.prototype)
 
@@ -198,10 +210,17 @@ class WaveFunctionDB(ParameterScan):
             if p.has_same_common_parameters(parameters,
                                             common_parameter_names):
                 path = self.working_dir.resolve() / "sim" / hash_string(
-                    repr(p)) / self.wfn_path
+                    repr(p))
                 return path
 
         return None
+
+    def get_path(self, parameters: Parameters) -> Optional[Path]:
+        sim_path = self.get_simulation_path(parameters)
+        if sim_path is None:
+            return None
+
+        return sim_path / self.wfn_path
 
     def request(self, parameters: Parameters, compute: bool = True) -> Path:
         self.logger.info("request wave function for parameters %s",
@@ -278,6 +297,59 @@ class WaveFunctionDB(ParameterScan):
             "--process=" + str(args.jobs), "--backend=sqlite3",
             "--db-file=:memory:"
         ])
+
+    def cmd_remove(self, args: argparse.Namespace):
+        indices = self.parse_selection(args.selection)
+        self.logger.info("remove wave_functions with indices: %s",
+                         str(indices))
+
+        selected_parameters = [self.combinations[index] for index in indices]
+        self.unlink_simulations()
+        for parameters in selected_parameters:
+            shutil.rmtree(self.get_simulation_path(parameters))
+            self.remove_missing_wave_function(parameters)
+            self.remove_wave_function(parameters)
+            i = self.combinations.index(parameters)
+            self.combinations.pop(i)
+            self.simulations.pop(i)
+
+        self.store_parameters()
+        self.link_simulations()
+
+    def cmd_tui(self, args: argparse.Namespace):
+        self.logger.info("start terminal ui")
+        selection = checkboxlist_dialog(
+            title="Select simulations",
+            text="Select simulations to run operations on.",
+            values=[(i, repr(combination))
+                    for i, combination in enumerate(self.combinations)]).run()
+
+        if not selection:
+            self.logger.info("no simulations selected, nothing to do")
+            return
+
+        self.logger.info("selected %d simulation(s)", len(selection))
+
+        operation = radiolist_dialog(
+            title="Select operation",
+            text="Select operation to run on selected simulations",
+            values=[("remove", "remove")]).run()
+
+        if not operation:
+            self.logger.info("no operation selected, nothing to do")
+            return
+
+        self.logger.info("running operation \"%s\" on %d simulation(s)",
+                         operation, len(selection))
+
+        if operation == "remove":
+            cmd = [
+                sys.executable,
+                Path(get_main_path()).resolve(), "remove", ",".join(
+                    (str(i) for i in selection))
+            ]
+            self.logger.info("command: %s", str(cmd))
+            subprocess.run(cmd)
 
 
 def load_db(path: Path, variable_name: str = "db") -> WaveFunctionDB:

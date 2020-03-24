@@ -6,6 +6,7 @@ import os.path
 import re
 import shutil
 import subprocess
+import sys
 from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any, Iterable, List, Optional, Union
@@ -15,8 +16,8 @@ import numpy
 import tqdm
 from pathos.pools import ProcessPool as Pool
 
-from . import cwd
-from .log import get_logger
+from mlxtk import cwd
+from mlxtk.log import get_logger
 
 LOGGER = get_logger(__name__)
 
@@ -242,3 +243,7 @@ def create_relative_symlink(src: Union[Path, str], dest: Union[Path, str]):
 
 def mkdir(path: Union[str, Path]):
     make_path(path).mkdir(parents=True, exist_ok=True)
+
+
+def get_main_path() -> Path:
+    return Path(Path(sys.argv[0])).resolve()

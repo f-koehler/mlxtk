@@ -34,6 +34,14 @@ class SingleSpeciesSystem(ABC):
     def create_parameters() -> Parameters:
         pass
 
+    def get_position_operator_1b(self) -> OperatorSpecification:
+        return OperatorSpecification(
+            (self.grid_1b, ),
+            {"position_coeff": 1.0},
+            {"position": self.grid_1b.get_x()},
+            "position_coeff | 1 position",
+        )
+
     def get_kinetic_operator_1b(self) -> OperatorSpecification:
         return OperatorSpecification(
             (self.grid_1b, ),

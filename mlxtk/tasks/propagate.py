@@ -4,7 +4,7 @@ import pickle
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import h5py
 import numpy
@@ -32,6 +32,9 @@ FLAG_TYPES = {
     "exact_diag": bool,
     "exproj": bool,
     "gauge": str,
+    "gauge_reg": float,
+    "gauge_relax": float,
+    "diag_gauge_oper": str,
     "gramschmidt": bool,
     "improved_relax": bool,
     "itg": str,
@@ -81,7 +84,7 @@ DEFAULT_FLAGS = {
 def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     flags = copy.copy(DEFAULT_FLAGS)
 
-    non_qdtk_flags = ["extra_files"]
+    non_qdtk_flags = ["extra_files", "gauge_diag_oper"]
 
     for flag in kwargs:
         if flag not in FLAG_TYPES:
@@ -119,9 +122,14 @@ class Propagate(Task):
         self.wave_function = wave_function
         self.hamiltonian = hamiltonian
         self.logger = get_logger(__name__ + ".Propagate")
+        self.diag_gauge_oper: Optional[str] = kwargs.get(
+            "diag_gauge_oper", None)
 
         self.flags, self.flag_list = create_flags(**kwargs)
         self.flag_list += ["-rst", "restart", "-opr", "hamiltonian"]
+
+        if self.flags.get("gauge", "standard") == "diagonalization":
+            self.flag_list += ["-diag_gauge_oper", "gauge_oper"]
 
         if self.flags["relax"]:
             self.basename = "relaxation"
@@ -137,6 +145,8 @@ class Propagate(Task):
         self.path_pickle = Path(self.name + ".prop_pickle")
         self.path_wave_function = make_path(wave_function).with_suffix(".wfn")
         self.path_hamiltonian = make_path(hamiltonian).with_suffix(".mb_opr")
+        self.path_diag_gauge_oper: Optional[Path] = Path(
+            self.diag_gauge_oper) if self.diag_gauge_oper else None
 
         self.path_hdf5 = self.path_name / (
             "exact_diag.h5" if self.flags["exact_diag"] else "propagate.h5")
@@ -156,6 +166,8 @@ class Propagate(Task):
             del targets
 
             obj = [self.name, self.wave_function, self.hamiltonian, self.flags]
+            if self.diag_gauge_oper:
+                obj.append(self.diag_gauge_oper)
 
             path_temp = self.path_name.resolve().with_name("." +
                                                            self.path_name.name)
@@ -233,6 +245,8 @@ class Propagate(Task):
                 wave_function = self.path_wave_function.resolve()
                 output_dir = self.path_name.resolve()
                 hdf5_file = self.path_hdf5.resolve()
+                diag_gauge_oper = self.path_diag_gauge_oper.resolve(
+                ) if self.path_diag_gauge_oper else None
 
                 with cwd.WorkingDir(tmpdir.path):
                     self.logger.info("propagate wave function")
@@ -240,6 +254,13 @@ class Propagate(Task):
                         copy_file(operator, "hamiltonian")
                         copy_file(wave_function, "initial")
                         copy_file(wave_function, "restart")
+                    if self.flags.get("gauge",
+                                      "standard") == "diagonalization":
+                        if not diag_gauge_oper:
+                            raise ValueError(
+                                "no operator specified for diagonalization gauge"
+                            )
+                        copy_file(diag_gauge_oper, "gauge_oper")
                     cmd = ["qdtk_propagate.x"] + self.flag_list
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
@@ -283,6 +304,12 @@ class Propagate(Task):
 
                     tmpdir.complete = True
 
+        deps = [
+            self.path_pickle, self.path_wave_function, self.path_hamiltonian
+        ]
+        if self.path_diag_gauge_oper:
+            deps.append(self.path_diag_gauge_oper)
+
         return {
             "name":
             "{}:{}:run".format(self.basename, self.name),
@@ -291,7 +318,7 @@ class Propagate(Task):
             [str(self.path_name / fname)
              for fname in self.qdtk_files] + [str(self.path_hdf5)],
             "file_dep":
-            [self.path_pickle, self.path_wave_function, self.path_hamiltonian],
+            deps,
             "verbosity":
             2,
         }

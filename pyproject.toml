@@ -63,7 +63,7 @@ mypy = "*"
 pylint = "^2.4"
 tuna = "^0.4"
 typed-ast = "^1.4"
-yapf = "^0.29"
+yapf = "^0.30"
 pytest = "^5.4"
 
 [tool.poetry.scripts]

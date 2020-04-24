@@ -11,7 +11,7 @@ LOGGER = log.get_logger(__name__)
 
 
 def diagonalize_1b_operator(
-    matrix: numpy.ndarray, number_eigenfunctions: int
+        matrix: numpy.ndarray, number_eigenfunctions: int
 ) -> Tuple[numpy.ndarray, List[numpy.ndarray]]:
     """Diagonalize the supplied one-dimensional one-body hamiltonian
 

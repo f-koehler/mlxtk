@@ -10,18 +10,19 @@ from mlxtk.parameters import Parameters
 from mlxtk.util import make_path
 
 
-def doit_plot_individual(
-    selection: ParameterSelection,
-    plot_name: str,
-    file_deps: List[Union[str, Path]],
-    plot_func: Callable[[int, str, Parameters], Tuple[matplotlib.figure.Figure,
-                                                      matplotlib.axes.Axes]],
-    plotting_args: plot.PlotArgs2D = None,
-    extensions: List[str] = [".pdf", ".png"],
-    decorator_funcs: List[Callable[
-        [matplotlib.figure.Figure, matplotlib.axes.Axes, int, str, Parameters],
-        Any]] = [],
-    **extra_args):
+def doit_plot_individual(selection: ParameterSelection,
+                         plot_name: str,
+                         file_deps: List[Union[str, Path]],
+                         plot_func: Callable[[int, str, Parameters],
+                                             Tuple[matplotlib.figure.Figure,
+                                                   matplotlib.axes.Axes]],
+                         plotting_args: plot.PlotArgs2D = None,
+                         extensions: List[str] = [".pdf", ".png"],
+                         decorator_funcs: List[Callable[[
+                             matplotlib.figure.Figure, matplotlib.axes.
+                             Axes, int, str, Parameters
+                         ], Any]] = [],
+                         **extra_args):
     if plotting_args is None:
         plotting_args = plot.PlotArgs2D()
 

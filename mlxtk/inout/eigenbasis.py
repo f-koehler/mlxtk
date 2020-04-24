@@ -13,8 +13,8 @@ LOGGER = get_logger(__name__)
 
 
 def read_eigenbasis_ascii(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str,
+                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     path_energies = path / "eigenenergies"
     path_vectors = path / "eigenvectors"

@@ -9,8 +9,8 @@ from mlxtk.util import make_path
 
 
 def read_fixed_ns_ascii(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str,
+                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 
     with open(path, "r") as fptr:
@@ -33,8 +33,8 @@ def read_fixed_ns_ascii(
 
 
 def read_fixed_ns_hdf5(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
+        path: Union[str,
+                    Path]) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
     with h5py.File(path, "r") as fptr:
         time = fptr["fixed_ns"]["time"][:]
@@ -46,8 +46,8 @@ def read_fixed_ns_hdf5(
 
 
 def read_fixed_ns_total_magnitude_hdf5(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
+        path: Union[str,
+                    Path]) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
 
     time, coefficients, N, m = read_fixed_ns_hdf5(path)

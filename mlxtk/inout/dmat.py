@@ -10,8 +10,8 @@ from mlxtk.util import make_path
 
 
 def read_dmat_gridrep(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str,
+                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
         return read_dmat_gridrep_hdf5(path, interior_path)
@@ -39,8 +39,8 @@ def add_dmat_evals_to_hdf5(fptr: Union[h5py.File, h5py.Group],
 
 
 def read_dmat_evecs_grid_ascii(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str,
+                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path, "r") as fp:
         m = (len(fp.readline().strip().split()) - 2) // 2

@@ -44,8 +44,8 @@ def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 
 def read_psi_ascii(
-    path: Union[str, Path]
-) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str,
+                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = str(path)
 
     times: List[float] = []

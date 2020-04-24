@@ -202,8 +202,8 @@ class ParameterSelection:
         ]
 
     def plot_foreach(
-        self, name: str, func: Callable[[int, str, Parameters], None]
-    ) -> Optional[List[Any]]:
+            self, name: str, func: Callable[[int, str, Parameters],
+                                            None]) -> Optional[List[Any]]:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
 

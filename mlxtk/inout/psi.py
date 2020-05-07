@@ -64,6 +64,7 @@ def read_psi_ascii(
                 time = float(m.group(1))
                 times.append(time)
             elif line.startswith("$psi"):
+                tape_finished = True
                 psis.append([])
                 match = RE_ELEMENT.match(fhandle.readline())
                 while match:

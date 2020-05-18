@@ -1,0 +1,3 @@
+#!/bin/bash
+set -euf -o pipefail
+dephell deps convert --from=pyproject.toml --to=requirements.txt

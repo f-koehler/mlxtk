@@ -1,4 +1,0 @@
-#!/bin/bash
-set -euf -o pipefail
-
-tools/format-code || exit

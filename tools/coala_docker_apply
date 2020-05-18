@@ -1,6 +1,0 @@
-#!/bin/bash
-# -*- mode: bash -*-
-set -euf -o pipefail
-
-echo "Running coala..."
-docker run -v $(pwd):/app --workdir=/app coala coala -a --ci

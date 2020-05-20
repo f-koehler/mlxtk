@@ -3,6 +3,8 @@ mlxtk
 ![PyPI](https://img.shields.io/pypi/v/mlxtk)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mlxtk)
 ![PyPI - License](https://img.shields.io/pypi/l/mlxtk)
+[![Updates](https://pyup.io/repos/github/f-koehler/mlxtk/shield.svg)](https://pyup.io/repos/github/f-koehler/mlxtk/)
+[![Python 3](https://pyup.io/repos/github/f-koehler/mlxtk/python-3-shield.svg)](https://pyup.io/repos/github/f-koehler/mlxtk/)
 
 Toolkit to design, run and analyze ML-MCTDH(X) simulations
 

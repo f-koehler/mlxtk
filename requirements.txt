@@ -9,7 +9,7 @@ matplotlib==3.2.1
 mypy==0.770
 numpy==1.18.4
 numpy-stl==2.11.2
-pandas==1.0.3
+pandas==1.0.4
 pathos==0.2.5
 prompt-toolkit==3.0.5
 pylint==2.5.2

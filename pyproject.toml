@@ -64,7 +64,7 @@ pylint = "2.5.2"
 tuna = "0.4.5"
 typed-ast = "1.4.1"
 yapf = "0.30"
-pytest = "5.4.2"
+pytest = "5.4.3"
 dephell = "0.8.3"
 
 [tool.poetry.scripts]

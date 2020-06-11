@@ -130,7 +130,7 @@ def read_psi_frame_ascii(
         raise KeyError("index {} is out of bounds".format(index))
 
     return numpy.array(tape, dtype=numpy.int64), numpy.array(
-        [times[index]]), numpy.array(psi, dtype=numpy.complex128)
+        times[index]), numpy.array(psi, dtype=numpy.complex128)
 
 
 def read_psi_hdf5(path):

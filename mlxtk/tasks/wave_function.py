@@ -124,17 +124,17 @@ class FrameFromPsi(Task):
             with open(self.pickle_path, "rb") as fptr:
                 index = pickle.load(fptr)
 
-            tape, times, frame = read_psi_frame_ascii(self.psi, self.index)
+            tape, time, frame = read_psi_frame_ascii(self.psi, self.index)
             write_psi_ascii(
                 targets[0],
-                (tape, numpy.array([times[index]]), numpy.array([frame])))
+                (tape, numpy.array([time]), numpy.array([frame])))
 
         return {
             "name": "frame_from_psi:{}_{}:grab".format(self.path.stem,
                                                        self.index),
             "actions": [action_grab],
             "file_dep": [self.pickle_path, self.psi],
-            "targets": [self.path]
+            "targets": [self.path],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

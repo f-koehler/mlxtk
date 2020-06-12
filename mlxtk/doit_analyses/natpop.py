@@ -12,7 +12,7 @@ from mlxtk.doit_analyses.plot import direct_plot, doit_plot_individual
 from mlxtk.doit_analyses.video import create_slideshow
 from mlxtk.inout.natpop import read_natpop, read_natpop_hdf5
 from mlxtk.parameter_selection import load_scan
-from mlxtk.plot import PlotArgs2D, plot_natpop
+from mlxtk.plot import PlotArgs2D, plot_natpop, plot_entropy
 from mlxtk.tools.entropy import compute_entropy
 from mlxtk.util import list_files, make_path
 
@@ -46,6 +46,43 @@ def scan_plot_natpop(scan_dir: Union[Path, str],
 
     return doit_plot_individual(selection,
                                 "natpop_{}_{}".format(node, dof),
+                                [str(Path(propagation) / "propagate.h5")],
+                                plot_func,
+                                plotting_args,
+                                extensions,
+                                decorator_funcs=kwargs.get(
+                                    "decorator_funcs", []))
+
+
+def scan_plot_entropy(scan_dir: Union[Path, str],
+                      propagation: str = "propagate",
+                      node: int = 1,
+                      dof: int = 1,
+                      extensions: List[str] = [
+                          ".png",
+                      ],
+                      **kwargs):
+    scan_dir = make_path(scan_dir)
+
+    plotting_args = PlotArgs2D.from_dict(kwargs)
+
+    selection = load_scan(scan_dir)
+
+    def plot_func(index, path, parameters):
+        del path
+        del parameters
+
+        data = read_natpop(str(scan_dir / "by_index" / str(index) /
+                               propagation / "propagate.h5") + "/natpop",
+                           node=node,
+                           dof=dof)
+        entropy = compute_entropy(data[1])
+        fig, axis = plt.subplots(1, 1)
+        plot_entropy(axis, data[0], entropy)
+        return fig, [axis]
+
+    return doit_plot_individual(selection,
+                                "entropy",
                                 [str(Path(propagation) / "propagate.h5")],
                                 plot_func,
                                 plotting_args,

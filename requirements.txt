@@ -10,7 +10,7 @@ mypy==0.780
 numpy==1.18.5
 numpy-stl==2.11.2
 pandas==1.0.4
-pathos==0.2.5
+pathos==0.2.6
 prompt-toolkit==3.0.5
 pylint==2.5.3
 pyside2==5.15.0

@@ -5,7 +5,7 @@ future==0.18.2
 h5py==2.10
 isort==4.3.21
 jinja2==2.11.2
-matplotlib==3.2.1
+matplotlib==3.2.2
 mypy==0.780
 numpy==1.18.5
 numpy-stl==2.11.2

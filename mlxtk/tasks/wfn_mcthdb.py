@@ -7,8 +7,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
-from QDTK.Wavefunction import Wavefunction as WaveFunction
-from QDTK.Wavefunction import grab_lowest_eigenfct
 
 from mlxtk import cwd, inout
 from mlxtk.doit_compat import DoitAction
@@ -20,6 +18,8 @@ from mlxtk.tools.wave_function import (add_momentum, add_momentum_split,
                                        get_spfs, load_wave_function,
                                        save_wave_function)
 from mlxtk.util import copy_file, make_path
+from QDTK.Wavefunction import Wavefunction as WaveFunction
+from QDTK.Wavefunction import grab_lowest_eigenfct
 
 LOGGER = get_logger(__name__)
 

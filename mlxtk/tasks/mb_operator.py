@@ -2,16 +2,15 @@ import pickle
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Union
 
-from QDTK.Operatorb import OCoef as Coeff
-from QDTK.Operatorb import Operatorb as Operator
-from QDTK.Operatorb import OTerm as Term
-
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
 from mlxtk.hashing import inaccurate_hash
 from mlxtk.log import get_logger
 from mlxtk.operator import MBOperatorSpecification
 from mlxtk.tasks.task import Task
+from QDTK.Operatorb import OCoef as Coeff
+from QDTK.Operatorb import Operatorb as Operator
+from QDTK.Operatorb import OTerm as Term
 
 
 class CreateMBOperator(Task):

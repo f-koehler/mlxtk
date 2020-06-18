@@ -1,10 +1,10 @@
 from typing import List, Tuple
 
 import numpy
-import QDTK.Tools.Mathematics
-import QDTK.Wavefunction
 import scipy.linalg
 
+import QDTK.Tools.Mathematics
+import QDTK.Wavefunction
 from mlxtk import log
 
 LOGGER = log.get_logger(__name__)

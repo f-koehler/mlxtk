@@ -12,7 +12,7 @@ from mlxtk.doit_analyses.plot import direct_plot, doit_plot_individual
 from mlxtk.doit_analyses.video import create_slideshow
 from mlxtk.inout.natpop import read_natpop, read_natpop_hdf5
 from mlxtk.parameter_selection import load_scan
-from mlxtk.plot import PlotArgs2D, plot_natpop, plot_entropy
+from mlxtk.plot import PlotArgs2D, plot_entropy, plot_natpop
 from mlxtk.tools.entropy import compute_entropy
 from mlxtk.util import list_files, make_path
 

@@ -1,13 +1,13 @@
 from typing import Any, List, Tuple, Union
 
 import numpy
-from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import Operator
-from QDTK.Operator import OTerm as Term
 
 from mlxtk.dvr import DVRSpecification
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.operator import get_operator_matrix
+from QDTK.Operator import OCoef as Coeff
+from QDTK.Operator import Operator
+from QDTK.Operator import OTerm as Term
 
 
 class OperatorSpecification:

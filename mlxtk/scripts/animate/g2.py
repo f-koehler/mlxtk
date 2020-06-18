@@ -26,8 +26,9 @@ def create_frame(index: int, time: float, x1: numpy.ndarray, x2: numpy.ndarray,
                  str(unitsys.get_time_unit()) + "$")
     ax.set_xlabel(unitsys.get_length_unit().format_label("x_1"))
     ax.set_ylabel(unitsys.get_length_unit().format_label("x_2"))
-    ax.set_title(r"$\left|g_2(x_1,x_2,t)\right|,\quad " + "t=" + "{:8.2f}".format(time) +
-                 r"\," + str(unitsys.get_time_unit()) + "$")
+    ax.set_title(r"$\left|g_2(x_1,x_2,t)\right|,\quad " + "t=" +
+                 "{:8.2f}".format(time) + r"\," +
+                 str(unitsys.get_time_unit()) + "$")
     mesh = ax.pcolormesh(X1,
                          X2,
                          values,

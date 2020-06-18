@@ -125,9 +125,8 @@ class FrameFromPsi(Task):
                 index = pickle.load(fptr)
 
             tape, time, frame = read_psi_frame_ascii(self.psi, self.index)
-            write_psi_ascii(
-                targets[0],
-                (tape, numpy.array([time]), numpy.array([frame])))
+            write_psi_ascii(targets[0],
+                            (tape, numpy.array([time]), numpy.array([frame])))
 
         return {
             "name": "frame_from_psi:{}_{}:grab".format(self.path.stem,

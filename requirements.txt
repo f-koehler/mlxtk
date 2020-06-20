@@ -6,7 +6,7 @@ h5py==2.10
 isort==4.3.21
 jinja2==2.11.2
 matplotlib==3.2.2
-mypy==0.780
+mypy==0.781
 numpy==1.18.5
 numpy-stl==2.11.2
 pandas==1.0.5

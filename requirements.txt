@@ -16,7 +16,7 @@ pylint==2.5.3
 pyside2==5.15.0
 pytest==5.4.3
 pyyaml==5.3.1
-scipy==1.4.1
+scipy==1.5.0
 sympy==1.6
 tabulate==0.8.7
 tqdm==4.46.1

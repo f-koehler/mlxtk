@@ -2,7 +2,7 @@ import argparse
 import shutil
 import subprocess
 from pathlib import Path
-from typing import Union
+from typing import List, Optional, Union
 
 import matplotlib
 import matplotlib.figure
@@ -104,14 +104,15 @@ def create_subplots(*args, **kwargs):
 
 class PlotArgs2D:
     def __init__(self):
-        self.xmin = None
-        self.xmax = None
-        self.ymin = None
-        self.ymax = None
-        self.logx = False
-        self.logy = False
-        self.grid = True
-        self.extensions = [".pdf", ".png"]
+        self.xmin: Optional[float] = None
+        self.xmax: Optional[float] = None
+        self.ymin: Optional[float] = None
+        self.ymax: Optional[float] = None
+        self.logx: bool = False
+        self.logy: bool = False
+        self.grid: bool = True
+        self.dpi: int = 600
+        self.extensions: List[str] = [".pdf", ".png"]
 
     @staticmethod
     def from_dict(kwargs):

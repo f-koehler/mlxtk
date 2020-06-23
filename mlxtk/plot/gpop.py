@@ -1,3 +1,6 @@
+from typing import Optional
+
+import matplotlib.colors
 import matplotlib.pyplot
 import matplotlib.tri
 import numpy
@@ -6,11 +9,31 @@ import stl
 from mlxtk.tools.gpop import transform_to_momentum_space
 
 
-def plot_gpop(ax, time, grid, density):
+def plot_gpop(ax,
+              time,
+              grid,
+              density,
+              zmin: Optional[float] = None,
+              zmax: Optional[float] = None,
+              logz: bool = False):
     Y, X = numpy.meshgrid(grid, time)
-    ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
+
+    if logz:
+        if zmin is not None:
+            density[density < zmin] = zmin
+        ret = ax.pcolormesh(X,
+                            Y,
+                            density,
+                            cmap="gnuplot",
+                            rasterized=True,
+                            norm=matplotlib.colors.LogNorm(zmin, zmax))
+    else:
+        ret = ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
+
     ax.set_xlabel("$t$")
-    ax.set_ylabel(r"$x$")
+    ax.set_ylabel("$x$")
+
+    return ret
 
 
 def plot_gpop_momentum(ax, time, grid, density):

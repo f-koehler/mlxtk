@@ -25,6 +25,10 @@ def main():
     parser.add_argument("--momentum",
                         action="store_true",
                         help="whether to transform to momentum space")
+    parser.add_argument("--logz", action="store_true")
+    parser.add_argument("--zmin", type=float)
+    parser.add_argument("--zmax", type=float)
+    parser.add_argument("--colorbar", type=bool)
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()
@@ -34,7 +38,8 @@ def main():
     data = read_gpop(args.path, dof=args.dof)
     if args.momentum:
         data = transform_to_momentum_space(data)
-    plot_gpop(ax, *data)
+    mesh = plot_gpop(ax, *data, args.zmin, args.zmax, args.logz)
+    figure.colorbar(mesh, ax=ax).solids.set_rasterized(True)
 
     unitsys = units.get_default_unit_system()
     try:

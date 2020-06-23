@@ -59,7 +59,7 @@ prompt-toolkit = "3.0.5"
 
 [tool.poetry.dev-dependencies]
 isort = "4.3.21"
-mypy = "0.781"
+mypy = "0.782"
 pylint = "2.5.3"
 tuna = "0.4.5"
 typed-ast = "1.4.1"

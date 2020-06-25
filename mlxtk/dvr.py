@@ -1,7 +1,6 @@
 from typing import Any, Dict, Tuple
 
 import numpy
-
 from QDTK.Primitive import (FFT, Dvr, Expdvr, Harmdvr, Laguerredvr,
                             Legendredvr, Sindvr, rHarmdvr)
 

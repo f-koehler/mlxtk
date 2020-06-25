@@ -1,9 +1,10 @@
 from typing import Any, Dict, Iterable, List, Union
 
-from mlxtk.dvr import DVRSpecification
 from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
+
+from mlxtk.dvr import DVRSpecification
 
 
 class MBOperatorSpecification:

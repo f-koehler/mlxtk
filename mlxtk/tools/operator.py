@@ -1,5 +1,4 @@
 import numpy
-
 from QDTK.Operator import Operator
 
 

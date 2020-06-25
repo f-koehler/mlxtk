@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import mlxtk
+from mlxtk import tasks
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
 grid = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
@@ -19,26 +20,23 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("harmonic_trap")
 
-    sim += mlxtk.tasks.CreateOperator("hamiltonian_1b",
-                                      system.get_hamiltonian_1b())
-    sim += mlxtk.tasks.CreateMBOperator("hamiltonian",
-                                        system.get_hamiltonian())
-    sim += mlxtk.tasks.CreateMBOperator("hamiltonian_quenched",
-                                        system_quenched.get_hamiltonian())
-    sim += mlxtk.tasks.CreateMBOperator("com",
-                                        system_quenched.get_com_operator())
-    sim += mlxtk.tasks.CreateMBOperator(
-        "com_2", system_quenched.get_com_operator_squared())
+    sim += tasks.CreateOperator("hamiltonian_1b", system.get_hamiltonian_1b())
+    sim += tasks.CreateMBOperator("hamiltonian", system.get_hamiltonian())
+    sim += tasks.CreateMBOperator("hamiltonian_quenched",
+                                  system_quenched.get_hamiltonian())
+    sim += tasks.CreateMBOperator("com", system_quenched.get_com_operator())
+    sim += tasks.CreateMBOperator("com_2",
+                                  system_quenched.get_com_operator_squared())
 
-    sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
-                                                parameters.N, parameters.m)
-    sim += mlxtk.tasks.ImprovedRelax("gs_relax",
-                                     "initial",
-                                     "hamiltonian",
-                                     1,
-                                     tfinal=1000.0,
-                                     dt=0.01)
-    sim += mlxtk.tasks.Propagate(
+    sim += tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b",
+                                          parameters.N, parameters.m)
+    sim += tasks.ImprovedRelax("gs_relax",
+                               "initial",
+                               "hamiltonian",
+                               1,
+                               tfinal=1000.0,
+                               dt=0.01)
+    sim += tasks.Propagate(
         "propagate",
         "gs_relax/final",
         "hamiltonian_quenched",
@@ -47,16 +45,19 @@ if __name__ == "__main__":
         psi=True,
     )
 
-    sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com")
-    sim += mlxtk.tasks.ComputeExpectationValue("propagate/psi", "com_2")
-    sim += mlxtk.tasks.ComputeVariance("propagate/com", "propagate/com_2")
+    sim += tasks.ComputeExpectationValue("propagate/psi", "com")
+    sim += tasks.ComputeExpectationValue("propagate/psi", "com_2")
+    sim += tasks.ComputeVariance("propagate/com", "propagate/com_2")
 
-    sim += mlxtk.tasks.ComputeExpectationValueStatic("propagate/final", "com")
+    sim += tasks.MCTDHBMomentumDistribution("propagate/psi", "hamiltonian",
+                                            "initial", grid)
 
-    sim += mlxtk.tasks.NumberStateAnalysisStatic("propagate/final", "initial")
+    sim += tasks.ComputeExpectationValueStatic("propagate/final", "com")
 
-    sim += mlxtk.tasks.MCTDHBCreateWaveFunction("basis_ED", "hamiltonian_1b",
-                                                parameters.N, 20)
-    sim += mlxtk.tasks.Diagonalize("ED", "basis_ED", "hamiltonian", 5)
+    sim += tasks.NumberStateAnalysisStatic("propagate/final", "initial")
+
+    sim += tasks.MCTDHBCreateWaveFunction("basis_ED", "hamiltonian_1b",
+                                          parameters.N, 20)
+    sim += tasks.Diagonalize("ED", "basis_ED", "hamiltonian", 5)
 
     sim.main()

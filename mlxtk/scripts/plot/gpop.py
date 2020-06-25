@@ -39,7 +39,8 @@ def main():
     if args.momentum:
         data = transform_to_momentum_space(data)
     mesh = plot_gpop(ax, *data, args.zmin, args.zmax, args.logz)
-    figure.colorbar(mesh, ax=ax).solids.set_rasterized(True)
+    if args.colorbar:
+        figure.colorbar(mesh, ax=ax).solids.set_rasterized(True)
 
     unitsys = units.get_default_unit_system()
     try:

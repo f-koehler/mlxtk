@@ -6,6 +6,9 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
+from QDTK.Operator import OCoef as Coeff
+from QDTK.Operator import Operator
+from QDTK.Operator import OTerm as Term
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
@@ -13,9 +16,6 @@ from mlxtk.hashing import inaccurate_hash
 from mlxtk.operator import OperatorSpecification
 from mlxtk.tasks.task import Task
 from mlxtk.tools.operator import get_operator_matrix
-from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import Operator
-from QDTK.Operator import OTerm as Term
 
 
 class CreateOperator(Task):

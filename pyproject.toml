@@ -114,6 +114,8 @@ plot_spfs_vs_norbs = "mlxtk.scripts.plot.spfs_vs_norbs:main"
 print_unit_system = "mlxtk.scripts.print_unit_system:main"
 
 recreate_output = "mlxtk.scripts.recreate_output:main"
+repickle_simulation = "mlxtk.scripts.repickle_simulation:main"
+repickle_scan = "mlxtk.scripts.repickle_scan:main"
 
 scan_plot_depletion = "mlxtk.scripts.scan_plot.depletion:main"
 scan_plot_energy = "mlxtk.scripts.scan_plot.energy:main"

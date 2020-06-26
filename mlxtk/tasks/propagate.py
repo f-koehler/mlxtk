@@ -165,7 +165,11 @@ class Propagate(Task):
         def action_write_parameters(targets: List[str]):
             del targets
 
-            obj = [self.name, self.wave_function, self.hamiltonian, self.flags]
+            obj = [
+                self.name,
+                str(self.wave_function),
+                str(self.hamiltonian), self.flags
+            ]
             if self.diag_gauge_oper:
                 obj.append(self.diag_gauge_oper)
 
@@ -177,7 +181,7 @@ class Propagate(Task):
                 if self.path_pickle.exists():
                     with open(self.path_pickle, "rb") as fptr:
                         if pickle.load(fptr) != obj:
-                            self.logger.debug("propagation parameters changed")
+                            self.logger.warn("propagation parameters changed")
                             shutil.rmtree(path_temp)
                 else:
                     shutil.rmtree(path_temp)

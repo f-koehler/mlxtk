@@ -3,17 +3,18 @@ import mlxtk
 from mlxtk import tasks
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
-grid = mlxtk.dvr.add_harmdvr(225, 0.0, 0.3)
+grid = mlxtk.dvr.add_fft(675, -20, 20)
 
 parameters = HarmonicTrap.create_parameters()
 parameters.N = 2
 parameters.m = 3
 parameters.g = 0.1
+parameters.x0 = 10.0
 
 if __name__ == "__main__":
 
     parameters_quenched = parameters.copy()
-    parameters_quenched.omega = 0.7
+    parameters_quenched.x0 = 0.0
 
     system = HarmonicTrap(parameters, grid)
     system_quenched = HarmonicTrap(parameters_quenched, grid)
@@ -40,7 +41,7 @@ if __name__ == "__main__":
         "propagate",
         "gs_relax/final",
         "hamiltonian_quenched",
-        tfinal=5.0,
+        tfinal=10.0,
         dt=0.05,
         psi=True,
     )

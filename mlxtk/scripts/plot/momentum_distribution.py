@@ -26,8 +26,14 @@ def main():
 
     times, momenta, density = read_momentum_distribution_hdf5(
         args.path, "momentum_distribution")
+
+    average_momentum = numpy.zeros_like(times)
+    for i, _ in enumerate(average_momentum):
+        average_momentum[i] = numpy.sum(momenta*density[i])
+
     Y, X = numpy.meshgrid(momenta, times)
     mesh = ax.pcolormesh(X, Y, density)
+    plt.plot(times, average_momentum)
 
     apply_2d_args(ax, figure, args)
 

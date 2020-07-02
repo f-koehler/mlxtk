@@ -58,14 +58,16 @@ tqdm = "4.47.0"
 prompt-toolkit = "3.0.5"
 
 [tool.poetry.dev-dependencies]
+bandit = "1.6.2"
+black = "19.10b0"
+dephell = "0.8.3"
+flake8 = "3.8.3"
 isort = "4.3.21"
+jedi = "0.17.1"
 mypy = "0.782"
 pylint = "2.5.3"
-tuna = "0.4.5"
-typed-ast = "1.4.1"
-yapf = "0.30"
 pytest = "5.4.3"
-dephell = "0.8.3"
+rope = "0.17.0"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"

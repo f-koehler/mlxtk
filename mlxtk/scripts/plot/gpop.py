@@ -28,7 +28,7 @@ def main():
     parser.add_argument("--logz", action="store_true")
     parser.add_argument("--zmin", type=float)
     parser.add_argument("--zmax", type=float)
-    parser.add_argument("--colorbar", type=bool)
+    parser.add_argument("--colorbar", action="store_true")
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()

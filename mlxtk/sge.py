@@ -25,27 +25,28 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         "-q",
         "--queues",
         default="none",
-        help=("comma separated list of queues for the SGE batch system,"
-              ' "none" if you do not want to specify a queue'),
+        help=(
+            "comma separated list of queues for the SGE batch system,"
+            ' "none" if you do not want to specify a queue'
+        ),
     )
-    parser.add_argument("-m",
-                        "--memory",
-                        default="2G",
-                        help="amount of memory available to the job(s)")
-    parser.add_argument("-t",
-                        "--time",
-                        default="00:10:00",
-                        help="maximum computation time for the job(s)")
-    parser.add_argument("-c",
-                        "--cpus",
-                        default="1",
-                        help="number of cpus to use for SMP")
+    parser.add_argument(
+        "-m", "--memory", default="2G", help="amount of memory available to the job(s)"
+    )
+    parser.add_argument(
+        "-t",
+        "--time",
+        default="00:10:00",
+        help="maximum computation time for the job(s)",
+    )
+    parser.add_argument(
+        "-c", "--cpus", default="1", help="number of cpus to use for SMP"
+    )
     parser.add_argument(
         "-e",
         "--email",
         default=None,
-        help=("email address to notify about finished, aborted and suspended"
-              "jobs"),
+        help=("email address to notify about finished, aborted and suspended" "jobs"),
     )
 
 
@@ -64,10 +65,12 @@ def get_jobs_in_queue() -> List[int]:
     return job_ids
 
 
-def submit(command: str,
-           namespace: argparse.Namespace,
-           sge_dir: Path = Path(os.path.curdir),
-           job_name="") -> int:
+def submit(
+    command: str,
+    namespace: argparse.Namespace,
+    sge_dir: Path = Path(os.path.curdir),
+    job_name="",
+) -> int:
     """Create a jobfile for a command and submit it.
 
     This function takes an arbitrary shell command and submits it to SGE.
@@ -100,8 +103,8 @@ def submit(command: str,
             job_id = int(fptr.read())
             if job_id in get_jobs_in_queue():
                 LOGGER.error(
-                    "job seems to be in the queue already (with id %d)",
-                    job_id)
+                    "job seems to be in the queue already (with id %d)", job_id
+                )
                 return -1
 
     # set up args for the job script
@@ -148,19 +151,20 @@ def submit(command: str,
     # write epilogue script
     LOGGER.debug("create epilogue script")
     with open(epilogue_script, "w") as fptr:
-        fptr.write(
-            templates.get_template("sge_epilogue.j2").render(job_id=job_id))
+        fptr.write(templates.get_template("sge_epilogue.j2").render(job_id=job_id))
     epilogue_script.chmod(0o755)
     LOGGER.debug("done")
 
     return job_id
 
 
-def submit_array(command: str,
-                 number_of_tasks: int,
-                 namespace: argparse.Namespace,
-                 sge_dir: Path = Path(os.path.curdir),
-                 job_name: str = ""):
+def submit_array(
+    command: str,
+    number_of_tasks: int,
+    namespace: argparse.Namespace,
+    sge_dir: Path = Path(os.path.curdir),
+    job_name: str = "",
+):
     array_script = "sge_array"
 
     args = {
@@ -184,7 +188,6 @@ def submit_array(command: str,
 
     # submit array
     LOGGER.debug("submit job array")
-    for line in subprocess.check_output(["qsub",
-                                         array_script]).decode().splitlines():
+    for line in subprocess.check_output(["qsub", array_script]).decode().splitlines():
         LOGGER.debug(line)
     LOGGER.debug("done")

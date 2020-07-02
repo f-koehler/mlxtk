@@ -15,8 +15,7 @@ assert List
 
 
 def read_gpop(
-    path: str,
-    dof: Optional[int] = None
+    path: str, dof: Optional[int] = None
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read the one-body densities from a file.
 
@@ -37,10 +36,11 @@ def read_gpop(
 
 
 def read_gpop_ascii(
-    path: str,
-    dof: Optional[int] = None
-) -> Union[Tuple[numpy.ndarray, numpy.ndarray], Tuple[numpy.ndarray, Dict[
-        int, numpy.ndarray], Dict[int, numpy.ndarray]]]:
+    path: str, dof: Optional[int] = None
+) -> Union[
+    Tuple[numpy.ndarray, numpy.ndarray],
+    Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
+]:
     """Read the one-body densities from a raw ML-X file.
 
     Args:
@@ -65,8 +65,7 @@ def read_gpop_ascii(
             try:
                 dof_s, grid_points_s = fhandle.readline().split()
             except ValueError:
-                raise RuntimeError(
-                    "Failed to determine DOF and number of grid points")
+                raise RuntimeError("Failed to determine DOF and number of grid points")
             dof_index = int(dof_s)
             grid_points = int(grid_points_s)
 
@@ -114,12 +113,11 @@ def read_gpop_ascii(
 
 
 def read_gpop_hdf5(
-    path: Union[Path, str],
-    interior_path: str,
-    dof: Optional[int] = None
-) -> Union[Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[
-        int, numpy.ndarray]], Tuple[numpy.ndarray, numpy.ndarray,
-                                    numpy.ndarray], ]:
+    path: Union[Path, str], interior_path: str, dof: Optional[int] = None
+) -> Union[
+    Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
+    Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
+]:
     """Read the one-body densities from a HDF5 file.
 
     Args:
@@ -140,25 +138,30 @@ def read_gpop_hdf5(
 
         grids = {}
         densities = {}
-        for dof_str in (key for key in fp[interior_path].keys()
-                        if key.startswith("dof_")):
+        for dof_str in (
+            key for key in fp[interior_path].keys() if key.startswith("dof_")
+        ):
             dof_i = int(dof_str.replace("dof_", ""))
             grids[dof_i] = fp[interior_path][dof_str]["grid"][:]
             densities[dof_i] = fp[interior_path][dof_str]["density"][:, :]
         return (time, grids, densities)
 
 
-def add_gpop_to_hdf5(fptr: Union[h5py.Group, h5py.File], time: numpy.ndarray,
-                     grids: Dict[int, numpy.ndarray],
-                     densities: Dict[int, numpy.ndarray]):
+def add_gpop_to_hdf5(
+    fptr: Union[h5py.Group, h5py.File],
+    time: numpy.ndarray,
+    grids: Dict[int, numpy.ndarray],
+    densities: Dict[int, numpy.ndarray],
+):
     fptr.create_dataset("time", time.shape, dtype=numpy.float64)[:] = time
 
     for dof in grids:
         grp = fptr.create_group("dof_" + str(dof))
 
-        grp.create_dataset("grid", grids[dof].shape,
-                           dtype=numpy.float64)[:] = grids[dof]
+        grp.create_dataset("grid", grids[dof].shape, dtype=numpy.float64)[:] = grids[
+            dof
+        ]
 
-        grp.create_dataset("density",
-                           densities[dof].shape,
-                           dtype=numpy.float64)[:, :] = densities[dof]
+        grp.create_dataset("density", densities[dof].shape, dtype=numpy.float64)[
+            :, :
+        ] = densities[dof]

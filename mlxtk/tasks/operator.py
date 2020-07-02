@@ -6,9 +6,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import h5py
 import numpy
-from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import Operator
-from QDTK.Operator import OTerm as Term
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
@@ -16,6 +13,9 @@ from mlxtk.hashing import inaccurate_hash
 from mlxtk.operator import OperatorSpecification
 from mlxtk.tasks.task import Task
 from mlxtk.tools.operator import get_operator_matrix
+from QDTK.Operator import OCoef as Coeff
+from QDTK.Operator import Operator
+from QDTK.Operator import OTerm as Term
 
 
 class CreateOperator(Task):
@@ -55,7 +55,7 @@ class CreateOperator(Task):
         return {
             "name": "operator:{}:write_parameters".format(self.name),
             "actions": [action_write_parameters],
-            "targets": [self.path_pickle]
+            "targets": [self.path_pickle],
         }
 
     def task_write_operator(self) -> Dict[str, Any]:
@@ -70,10 +70,9 @@ class CreateOperator(Task):
 
             matrix = get_operator_matrix(op)
             with h5py.File(self.path_matrix, "w") as fptr:
-                dset = fptr.create_dataset("matrix",
-                                           matrix.shape,
-                                           dtype=numpy.complex128,
-                                           compression="gzip")
+                dset = fptr.create_dataset(
+                    "matrix", matrix.shape, dtype=numpy.complex128, compression="gzip"
+                )
                 dset[:, :] = matrix
 
                 for i, dof in enumerate(self.specification.dofs):
@@ -115,7 +114,7 @@ class CreateOperator(Task):
 
         return {
             "name": "operator:{}:remove".format(self.name),
-            "actions": [action_remove_operator]
+            "actions": [action_remove_operator],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

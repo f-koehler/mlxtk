@@ -12,8 +12,7 @@ import numpy
 from mlxtk import cwd
 from mlxtk.doit_compat import DoitAction
 from mlxtk.hashing import hash_file
-from mlxtk.inout.eigenbasis import (add_eigenbasis_to_hdf5,
-                                    read_eigenbasis_ascii)
+from mlxtk.inout.eigenbasis import add_eigenbasis_to_hdf5, read_eigenbasis_ascii
 from mlxtk.inout.gpop import add_gpop_to_hdf5, read_gpop_ascii
 from mlxtk.inout.natpop import add_natpop_to_hdf5, read_natpop_ascii
 from mlxtk.inout.output import add_output_to_hdf5, read_output_ascii
@@ -89,7 +88,7 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     for flag in kwargs:
         if flag not in FLAG_TYPES:
             if flag not in non_qdtk_flags:
-                raise RuntimeError("Unknown flag \"{}\"".format(flag))
+                raise RuntimeError('Unknown flag "{}"'.format(flag))
         else:
             flags[flag] = kwargs[flag]
 
@@ -116,14 +115,18 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
 
 
 class Propagate(Task):
-    def __init__(self, name: str, wave_function: Union[str, Path],
-                 hamiltonian: Union[str, Path], **kwargs):
+    def __init__(
+        self,
+        name: str,
+        wave_function: Union[str, Path],
+        hamiltonian: Union[str, Path],
+        **kwargs,
+    ):
         self.name = name
         self.wave_function = wave_function
         self.hamiltonian = hamiltonian
         self.logger = get_logger(__name__ + ".Propagate")
-        self.diag_gauge_oper: Optional[str] = kwargs.get(
-            "diag_gauge_oper", None)
+        self.diag_gauge_oper: Optional[str] = kwargs.get("diag_gauge_oper", None)
 
         self.flags, self.flag_list = create_flags(**kwargs)
         self.flag_list += ["-rst", "restart", "-opr", "hamiltonian"]
@@ -146,10 +149,12 @@ class Propagate(Task):
         self.path_wave_function = make_path(wave_function).with_suffix(".wfn")
         self.path_hamiltonian = make_path(hamiltonian).with_suffix(".mb_opr")
         self.path_diag_gauge_oper: Optional[Path] = Path(
-            self.diag_gauge_oper) if self.diag_gauge_oper else None
+            self.diag_gauge_oper
+        ) if self.diag_gauge_oper else None
 
         self.path_hdf5 = self.path_name / (
-            "exact_diag.h5" if self.flags["exact_diag"] else "propagate.h5")
+            "exact_diag.h5" if self.flags["exact_diag"] else "propagate.h5"
+        )
 
         if self.flags["exact_diag"]:
             self.qdtk_files: List[str] = []
@@ -168,13 +173,13 @@ class Propagate(Task):
             obj = [
                 self.name,
                 str(self.wave_function),
-                str(self.hamiltonian), self.flags
+                str(self.hamiltonian),
+                self.flags,
             ]
             if self.diag_gauge_oper:
                 obj.append(self.diag_gauge_oper)
 
-            path_temp = self.path_name.resolve().with_name("." +
-                                                           self.path_name.name)
+            path_temp = self.path_name.resolve().with_name("." + self.path_name.name)
             if path_temp.exists() and self.flags["exact_diag"]:
                 shutil.rmtree(path_temp)
             if path_temp.exists():
@@ -203,15 +208,15 @@ class Propagate(Task):
             if not self.path_name.exists():
                 self.path_name.mkdir()
 
-            path_temp = self.path_name.resolve().with_name("." +
-                                                           self.path_name.name)
+            path_temp = self.path_name.resolve().with_name("." + self.path_name.name)
 
             if path_temp.exists():
                 path_temp_operator = path_temp / "hamiltonian"
                 if not path_temp_operator.exists():
                     self.logger.debug(
-                        "temporary operator \"%s\" does not exist",
-                        str(path_temp_operator))
+                        'temporary operator "%s" does not exist',
+                        str(path_temp_operator),
+                    )
                     shutil.rmtree(path_temp)
                 else:
                     hash_a = hash_file(path_temp_operator)
@@ -224,8 +229,9 @@ class Propagate(Task):
                 path_temp_wfn = path_temp / "initial"
                 if not path_temp_wfn.exists():
                     self.logger.debug(
-                        "temporary wave function \"%s\" does not exist",
-                        str(path_temp_wfn))
+                        'temporary wave function "%s" does not exist',
+                        str(path_temp_wfn),
+                    )
                     shutil.rmtree(path_temp)
                 else:
                     hash_a = hash_file(path_temp_wfn)
@@ -249,8 +255,11 @@ class Propagate(Task):
                 wave_function = self.path_wave_function.resolve()
                 output_dir = self.path_name.resolve()
                 hdf5_file = self.path_hdf5.resolve()
-                diag_gauge_oper = self.path_diag_gauge_oper.resolve(
-                ) if self.path_diag_gauge_oper else None
+                diag_gauge_oper = (
+                    self.path_diag_gauge_oper.resolve()
+                    if self.path_diag_gauge_oper
+                    else None
+                )
 
                 with cwd.WorkingDir(tmpdir.path):
                     self.logger.info("propagate wave function")
@@ -258,8 +267,7 @@ class Propagate(Task):
                         copy_file(operator, "hamiltonian")
                         copy_file(wave_function, "initial")
                         copy_file(wave_function, "restart")
-                    if self.flags.get("gauge",
-                                      "standard") == "diagonalization":
+                    if self.flags.get("gauge", "standard") == "diagonalization":
                         if not diag_gauge_oper:
                             raise ValueError(
                                 "no operator specified for diagonalization gauge"
@@ -275,31 +283,34 @@ class Propagate(Task):
 
                     if self.flags["exact_diag"]:
                         with h5py.File("result.h5", "w") as fptr:
-                            add_eigenbasis_to_hdf5(fptr,
-                                                   *read_eigenbasis_ascii("."))
+                            add_eigenbasis_to_hdf5(fptr, *read_eigenbasis_ascii("."))
                     else:
                         shutil.move("restart", "final.wfn")
                         with h5py.File("result.h5", "w") as fptr:
-                            add_gpop_to_hdf5(fptr.create_group("gpop"),
-                                             *read_gpop_ascii("gpop"))
-                            add_natpop_to_hdf5(fptr.create_group("natpop"),
-                                               *read_natpop_ascii("natpop"))
-                            add_output_to_hdf5(fptr.create_group("output"),
-                                               *read_output_ascii("output"))
+                            add_gpop_to_hdf5(
+                                fptr.create_group("gpop"), *read_gpop_ascii("gpop")
+                            )
+                            add_natpop_to_hdf5(
+                                fptr.create_group("natpop"),
+                                *read_natpop_ascii("natpop"),
+                            )
+                            add_output_to_hdf5(
+                                fptr.create_group("output"),
+                                *read_output_ascii("output"),
+                            )
 
                             if "gauge" in self.flags:
                                 if self.flags["gauge"] != "standard":
                                     time, error = numpy.loadtxt(
-                                        "constraint_error.txt", unpack=True)
-                                    group = fptr.create_group(
-                                        "constraint_error")
+                                        "constraint_error.txt", unpack=True
+                                    )
+                                    group = fptr.create_group("constraint_error")
                                     group.create_dataset(
-                                        "time", time.shape,
-                                        dtype=time.dtype)[:] = time
+                                        "time", time.shape, dtype=time.dtype
+                                    )[:] = time
                                     group.create_dataset(
-                                        "error",
-                                        error.shape,
-                                        dtype=error.dtype)[:] = error
+                                        "error", error.shape, dtype=error.dtype
+                                    )[:] = error
 
                     shutil.move("result.h5", hdf5_file)
 
@@ -308,23 +319,17 @@ class Propagate(Task):
 
                     tmpdir.complete = True
 
-        deps = [
-            self.path_pickle, self.path_wave_function, self.path_hamiltonian
-        ]
+        deps = [self.path_pickle, self.path_wave_function, self.path_hamiltonian]
         if self.path_diag_gauge_oper:
             deps.append(self.path_diag_gauge_oper)
 
         return {
-            "name":
-            "{}:{}:run".format(self.basename, self.name),
+            "name": "{}:{}:run".format(self.basename, self.name),
             "actions": [action_run],
-            "targets":
-            [str(self.path_name / fname)
-             for fname in self.qdtk_files] + [str(self.path_hdf5)],
-            "file_dep":
-            deps,
-            "verbosity":
-            2,
+            "targets": [str(self.path_name / fname) for fname in self.qdtk_files]
+            + [str(self.path_hdf5)],
+            "file_dep": deps,
+            "verbosity": 2,
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
@@ -332,8 +337,13 @@ class Propagate(Task):
 
 
 class Relax(Propagate):
-    def __init__(self, name: str, wave_function: Union[str, Path],
-                 hamiltonian: Union[str, Path], **kwargs):
+    def __init__(
+        self,
+        name: str,
+        wave_function: Union[str, Path],
+        hamiltonian: Union[str, Path],
+        **kwargs,
+    ):
         kwargs["relax"] = True
         kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
         kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -345,8 +355,14 @@ class Relax(Propagate):
 
 
 class ImprovedRelax(Propagate):
-    def __init__(self, name: str, wave_function: Union[str, Path],
-                 hamiltonian: Union[str, Path], eig_index: int, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        wave_function: Union[str, Path],
+        hamiltonian: Union[str, Path],
+        eig_index: int,
+        **kwargs,
+    ):
         kwargs["improved_relax"] = True
         kwargs["tfinal"] = kwargs.get("tfinal", 1000.0)
         kwargs["stat_energ_tol"] = kwargs.get("stat_energ_tol", 1e-8)
@@ -361,9 +377,14 @@ class ImprovedRelax(Propagate):
 
 
 class Diagonalize(Propagate):
-    def __init__(self, name: str, wave_function: Union[str, Path],
-                 hamiltonian: Union[str,
-                                    Path], number_of_states: int, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        wave_function: Union[str, Path],
+        hamiltonian: Union[str, Path],
+        number_of_states: int,
+        **kwargs,
+    ):
         kwargs["exact_diag"] = True
         kwargs["eig_tot"] = number_of_states
 

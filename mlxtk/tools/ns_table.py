@@ -75,8 +75,9 @@ class NumberStateLookupTableBosonic:
     def insert_state(self, state: numpy.ndarray, index: int):
         self._insert_state_impl(state, index, 0, self.table)
 
-    def _insert_state_impl(self, state: numpy.ndarray, index: int,
-                           position: int, current: Dict[int, Any]):
+    def _insert_state_impl(
+        self, state: numpy.ndarray, index: int, position: int, current: Dict[int, Any]
+    ):
         occupation = state[position]
         if position == state.shape[0] - 1:
             current[occupation] = index
@@ -85,14 +86,14 @@ class NumberStateLookupTableBosonic:
         if occupation not in current:
             current[occupation] = {}
 
-        self._insert_state_impl(state, index, position + 1,
-                                current[occupation])
+        self._insert_state_impl(state, index, position + 1, current[occupation])
 
     def get_index(self, state: numpy.ndarray) -> int:
         return self._get_index_impl(state, 0, self.table)
 
-    def _get_index_impl(self, state: numpy.ndarray, position: int,
-                        current: Dict[int, Any]) -> int:
+    def _get_index_impl(
+        self, state: numpy.ndarray, position: int, current: Dict[int, Any]
+    ) -> int:
         occupation = state[position]
         if position == state.shape[0] - 1:
             return current[occupation]

@@ -1,19 +1,20 @@
 from typing import Any, List, Tuple, Union
 
 import numpy
-from QDTK.Operator import OCoef as Coeff
-from QDTK.Operator import Operator
-from QDTK.Operator import OTerm as Term
 
 from mlxtk.dvr import DVRSpecification
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.operator import get_operator_matrix
+from QDTK.Operator import OCoef as Coeff
+from QDTK.Operator import Operator
+from QDTK.Operator import OTerm as Term
 
 
 class OperatorSpecification:
     """Object used to specify how to construct an operator acting on degrees
     of freedom.
     """
+
     def __init__(
         self,
         dofs: List[DVRSpecification],
@@ -32,10 +33,12 @@ class OperatorSpecification:
 
     def __add__(self, other):
         if not isinstance(other, OperatorSpecification):
-            raise RuntimeError(("other object must be of type "
-                                "OperatorSpecification as well"))
-        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
-                                    self.table)
+            raise RuntimeError(
+                ("other object must be of type " "OperatorSpecification as well")
+            )
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
         cpy.__iadd__(other)
         return cpy
 
@@ -44,14 +47,14 @@ class OperatorSpecification:
 
     def __iadd__(self, other):
         if not isinstance(other, OperatorSpecification):
-            raise RuntimeError(("other object must be of type "
-                                "OperatorSpecification as well"))
+            raise RuntimeError(
+                ("other object must be of type " "OperatorSpecification as well")
+            )
 
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
 
-        if not set(self.coefficients.keys()).isdisjoint(
-                set(other.coefficients.keys())):
+        if not set(self.coefficients.keys()).isdisjoint(set(other.coefficients.keys())):
             raise ValueError("coefficient names are not unique")
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
@@ -69,8 +72,9 @@ class OperatorSpecification:
         return self
 
     def __mul__(self, other):
-        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
-                                    self.table)
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
         cpy.__imul__(other)
         return cpy
 
@@ -83,8 +87,9 @@ class OperatorSpecification:
         return self
 
     def __truediv__(self, other):
-        cpy = OperatorSpecification(self.dofs, self.coefficients, self.terms,
-                                    self.table)
+        cpy = OperatorSpecification(
+            self.dofs, self.coefficients, self.terms, self.table
+        )
         cpy.__itruediv__(other)
         return cpy
 
@@ -106,8 +111,7 @@ class OperatorSpecification:
         return get_operator_matrix(self.get_operator())
 
     def diagonalize(
-            self,
-            number_eigenfunctions: int) -> Tuple[numpy.ndarray, numpy.ndarray]:
-        evals, evecs = diagonalize_1b_operator(self.get_matrix(),
-                                               number_eigenfunctions)
+        self, number_eigenfunctions: int
+    ) -> Tuple[numpy.ndarray, numpy.ndarray]:
+        evals, evecs = diagonalize_1b_operator(self.get_matrix(), number_eigenfunctions)
         return evals, numpy.array(evecs)

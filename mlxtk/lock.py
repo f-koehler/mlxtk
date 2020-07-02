@@ -24,9 +24,11 @@ class LockFileExistsError(Exception):
         host: host on which the file is locked
         pid: id of the process that locked the file
     """
+
     def __init__(self, path: Path, host: str, pid: int):
         message = "Lock file {} exists (locked by PID {} on host {})".format(
-            path, pid, host)
+            path, pid, host
+        )
         super().__init__(message)
 
 

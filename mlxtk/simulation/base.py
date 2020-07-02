@@ -10,8 +10,9 @@ from mlxtk.log import get_logger
 class SimulationBase:
     def __init__(self, name: Path, working_dir: Optional[Path] = None):
         self.name = name
-        self.working_dir = (Path(name)
-                            if working_dir is None else working_dir).resolve()
+        self.working_dir = (
+            Path(name) if working_dir is None else working_dir
+        ).resolve()
         self.tasks_run = []
         self.tasks_clean = []
         self.tasks_dry_run = []

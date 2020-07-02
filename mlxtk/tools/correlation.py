@@ -14,8 +14,7 @@ LOGGER = get_logger(__name__)
 
 
 def compute_g1(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                     numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
@@ -26,16 +25,14 @@ def compute_g1(
     for i in range(len(time)):
         for j in range(len(x1)):
             for k in range(len(x2)):
-                g1[i, j, k] = dmat[i, j, k] / cmath.sqrt(
-                    dmat[i, j, j] * dmat[i, k, k])
+                g1[i, j, k] = dmat[i, j, k] / cmath.sqrt(dmat[i, j, j] * dmat[i, k, k])
     LOGGER.info("finished computing g1")
 
     return time, x1, x2, g1
 
 
 def compute_g1_diff(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                     numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
@@ -46,18 +43,17 @@ def compute_g1_diff(
     for i in range(len(time)):
         for j in range(len(x1)):
             for k in range(len(x2)):
-                g1[i, j, k] = dmat[i, j, k] - cmath.sqrt(
-                    dmat[i, j, j]) * cmath.sqrt(dmat[i, k, k])
+                g1[i, j, k] = dmat[i, j, k] - cmath.sqrt(dmat[i, j, j]) * cmath.sqrt(
+                    dmat[i, k, k]
+                )
     LOGGER.info("finished computing g1")
 
     return time, x1, x2, g1
 
 
 def compute_g2(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                     numpy.ndarray],
-    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                      numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
+    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 
@@ -83,10 +79,8 @@ def compute_g2(
 
 
 def compute_g2_diff(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                     numpy.ndarray],
-    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                      numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
+    data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 

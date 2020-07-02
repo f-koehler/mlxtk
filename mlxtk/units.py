@@ -12,8 +12,7 @@ from mlxtk.util import memoize
 class Unit:
     def __init__(self, expression: Union[str, Any]):
         if isinstance(expression, str):
-            self.expression = sympy.sympify(expression,
-                                            locals=sympy.abc._clash)
+            self.expression = sympy.sympify(expression, locals=sympy.abc._clash)
         else:
             self.expression = sympy.simplify(expression)
 
@@ -43,13 +42,13 @@ class Unit:
 
     def __pow__(self, other):
         if isinstance(other, Unit):
-            return Unit(self.expression**other.expression)
-        return Unit(self.expression**other)
+            return Unit(self.expression ** other.expression)
+        return Unit(self.expression ** other)
 
     def __rpow__(self, other):
         if isinstance(other, Unit):
-            return Unit(other.expression**self.expression)
-        return Unit(other**self.expression)
+            return Unit(other.expression ** self.expression)
+        return Unit(other ** self.expression)
 
     def is_arbitrary(self) -> bool:
         return False
@@ -190,12 +189,10 @@ class UnitSystem:
             "UnitSystem:",
         ]
         for dimension in self.units:
-            output.append("\t" + dimension + ":  " +
-                          str(self.units[dimension]))
+            output.append("\t" + dimension + ":  " + str(self.units[dimension]))
 
         return "\n".join(output)
 
 
-def get_default_unit_system(working_directory: Path = Path.cwd()
-                            ) -> UnitSystem:
+def get_default_unit_system(working_directory: Path = Path.cwd()) -> UnitSystem:
     return UnitSystem.from_config(working_directory)

@@ -14,11 +14,13 @@ class Gui(g1.Gui):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        nargs="?",
-                        type=str,
-                        default="dmat.h5/dmat_gridrep",
-                        help="path to the dmat file")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        type=str,
+        default="dmat.h5/dmat_gridrep",
+        help="path to the dmat file",
+    )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 

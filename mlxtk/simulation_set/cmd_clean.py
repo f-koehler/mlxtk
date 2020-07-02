@@ -6,8 +6,7 @@ from mlxtk.simulation import Simulation
 from mlxtk.simulation_set.base import SimulationSetBase
 
 
-def clean_simulation(
-        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+def clean_simulation(simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     def task_clean_simulation():
         @DoitAction
         def action_clean_simulation(targets: List[str]):
@@ -34,9 +33,5 @@ def cmd_clean(self: SimulationSetBase, args: argparse.Namespace):
         tasks += clean_simulation(simulation)
     run_doit(
         tasks,
-        [
-            "--process=" + str(args.jobs),
-            "--backend=sqlite3",
-            "--db-file=:memory:",
-        ],
+        ["--process=" + str(args.jobs), "--backend=sqlite3", "--db-file=:memory:",],
     )

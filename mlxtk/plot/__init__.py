@@ -26,10 +26,12 @@ def make_headless():
     matplotlib.use("agg")
 
 
-def save(figure: matplotlib.figure.Figure,
-         path: Union[str, Path],
-         crop: bool = False,
-         optimize: bool = False):
+def save(
+    figure: matplotlib.figure.Figure,
+    path: Union[str, Path],
+    crop: bool = False,
+    optimize: bool = False,
+):
     path = make_path(path)
 
     if path.suffix == ".pdf":
@@ -42,10 +44,12 @@ def save(figure: matplotlib.figure.Figure,
         figure.savefig(path)
 
 
-def save_pdf(figure: matplotlib.figure.Figure,
-             path: Union[str, Path],
-             crop: bool = True,
-             optimize: bool = True):
+def save_pdf(
+    figure: matplotlib.figure.Figure,
+    path: Union[str, Path],
+    crop: bool = True,
+    optimize: bool = True,
+):
     path = make_path(path)
 
     figure.savefig(path)
@@ -67,8 +71,7 @@ def crop_pdf(path: Union[str, Path]):
     gs = shutil.which("gs")
     if gs:
         try:
-            output = subprocess.check_output(["gs",
-                                              "--version"]).decode().strip()
+            output = subprocess.check_output(["gs", "--version"]).decode().strip()
             if output == "9.27":
                 LOGGER.error(
                     "There is a bug when using pdfcrop with ghostscript==9.27 that might remove actual content of the PDF, skip cropping"
@@ -131,8 +134,7 @@ class PlotArgs2D:
     def from_namespace(namespace: argparse.Namespace):
         return PlotArgs2D.from_dict(namespace.__dict__)
 
-    def apply(self, axes: matplotlib.axes.Axes,
-              figure: matplotlib.figure.Figure):
+    def apply(self, axes: matplotlib.axes.Axes, figure: matplotlib.figure.Figure):
 
         axes.grid(self.grid)
         if self.logx:
@@ -154,20 +156,18 @@ class PlotArgs2D:
 
 
 def add_argparse_2d_args(parser: argparse.ArgumentParser):
-    parser.add_argument("--logx",
-                        action="store_true",
-                        dest="logx",
-                        help="use log scale on the x-axis")
+    parser.add_argument(
+        "--logx", action="store_true", dest="logx", help="use log scale on the x-axis"
+    )
     parser.add_argument(
         "--no-logx",
         action="store_false",
         dest="logx",
         help="do not use log scale on the x-axis",
     )
-    parser.add_argument("--logy",
-                        action="store_true",
-                        dest="logy",
-                        help="use log scale on the y-axis")
+    parser.add_argument(
+        "--logy", action="store_true", dest="logy", help="use log scale on the y-axis"
+    )
     parser.add_argument(
         "--no-logy",
         action="store_false",
@@ -178,52 +178,54 @@ def add_argparse_2d_args(parser: argparse.ArgumentParser):
     parser.add_argument("--xmax", type=float, help="maximum for the x axis")
     parser.add_argument("--ymin", type=float, help="minimum for the y axis")
     parser.add_argument("--ymax", type=float, help="maximum for the y axis")
-    parser.add_argument("--grid",
-                        action="store_true",
-                        dest="grid",
-                        help="draw a grid")
-    parser.add_argument("--no-grid",
-                        action="store_false",
-                        dest="grid",
-                        help="do not draw a grid")
-    parser.add_argument("--dpi",
-                        type=int,
-                        default=600,
-                        help="resolution (dpi) of figure")
+    parser.add_argument("--grid", action="store_true", dest="grid", help="draw a grid")
+    parser.add_argument(
+        "--no-grid", action="store_false", dest="grid", help="do not draw a grid"
+    )
+    parser.add_argument(
+        "--dpi", type=int, default=600, help="resolution (dpi) of figure"
+    )
 
 
-def apply_2d_args(ax: matplotlib.axes.Axes, figure: matplotlib.figure.Figure,
-                  namespace: argparse.Namespace):
+def apply_2d_args(
+    ax: matplotlib.axes.Axes,
+    figure: matplotlib.figure.Figure,
+    namespace: argparse.Namespace,
+):
     PlotArgs2D.from_namespace(namespace).apply(ax, figure)
 
 
 def add_argparse_save_arg(parser: argparse.ArgumentParser):
-    parser.add_argument("-o",
-                        "--output",
-                        type=Path,
-                        help="path to the output file")
-    parser.add_argument("--crop-pdf",
-                        action="store_true",
-                        dest="crop_pdf",
-                        help="crop PDF file")
-    parser.add_argument("--no-crop-pdf",
-                        action="store_false",
-                        dest="crop_pdf",
-                        help="do not crop PDF file")
-    parser.add_argument("--optimize-pdf",
-                        action="store_true",
-                        dest="optimize_pdf",
-                        help="optimize PDF file")
-    parser.add_argument("--no-optimize-pdf",
-                        action="store_false",
-                        dest="optimize_pdf",
-                        help="do not optimize PDF file")
+    parser.add_argument("-o", "--output", type=Path, help="path to the output file")
+    parser.add_argument(
+        "--crop-pdf", action="store_true", dest="crop_pdf", help="crop PDF file"
+    )
+    parser.add_argument(
+        "--no-crop-pdf",
+        action="store_false",
+        dest="crop_pdf",
+        help="do not crop PDF file",
+    )
+    parser.add_argument(
+        "--optimize-pdf",
+        action="store_true",
+        dest="optimize_pdf",
+        help="optimize PDF file",
+    )
+    parser.add_argument(
+        "--no-optimize-pdf",
+        action="store_false",
+        dest="optimize_pdf",
+        help="do not optimize PDF file",
+    )
     parser.set_defaults(crop_pdf=False, optimize_pdf=False)
 
 
 def handle_saving(figure: Figure, namespace: argparse.Namespace):
     if namespace.output:
-        save(figure,
-             namespace.output,
-             crop=namespace.crop_pdf,
-             optimize=namespace.optimize_pdf)
+        save(
+            figure,
+            namespace.output,
+            crop=namespace.crop_pdf,
+            optimize=namespace.optimize_pdf,
+        )

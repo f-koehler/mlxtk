@@ -24,6 +24,7 @@ class SimulationSetBase:
         simulations (list): the list of simulations
         working_dir (str): optional working directory (defaults to ``name``)
     """
+
     def __init__(
         self,
         name: str,
@@ -32,8 +33,9 @@ class SimulationSetBase:
     ):
         self.name = name
         self.simulations = simulations
-        self.working_dir = Path(
-            name).resolve() if working_dir is None else make_path(working_dir)
+        self.working_dir = (
+            Path(name).resolve() if working_dir is None else make_path(working_dir)
+        )
 
         self.logger = get_logger(__name__ + ".SimulationSet")
 

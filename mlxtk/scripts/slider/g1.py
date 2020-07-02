@@ -12,21 +12,19 @@ from mlxtk.ui.plot_slider import PlotSlider
 
 
 class Gui(PlotSlider):
-    def __init__(self,
-                 data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray,
-                             numpy.ndarray],
-                 min_index: int,
-                 max_index: int,
-                 projection: str = None,
-                 plot_args: Optional[argparse.Namespace] = None,
-                 parent: QtWidgets.QWidget = None):
+    def __init__(
+        self,
+        data: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
+        min_index: int,
+        max_index: int,
+        projection: str = None,
+        plot_args: Optional[argparse.Namespace] = None,
+        parent: QtWidgets.QWidget = None,
+    ):
         self.time, self.x1, self.x2, self.values = data
         self.values = numpy.abs(self.values)
         self.mesh: matplotlib.collections.QuadMesh = None
-        super().__init__(min_index,
-                         max_index,
-                         plot_args=plot_args,
-                         parent=parent)
+        super().__init__(min_index, max_index, plot_args=plot_args, parent=parent)
 
         self.spin.valueChanged.connect(self.update_label)
 
@@ -45,17 +43,14 @@ class Gui(PlotSlider):
         self.axes.set_ylabel(unit_system.get_length_unit().format_label("x_2"))
 
         X2, X1 = numpy.meshgrid(self.x2, self.x1)
-        self.mesh = self.axes.pcolormesh(X1,
-                                         X2,
-                                         self.values[0],
-                                         cmap="gnuplot",
-                                         rasterized=True)
+        self.mesh = self.axes.pcolormesh(
+            X1, X2, self.values[0], cmap="gnuplot", rasterized=True
+        )
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):
         self.mesh.set_array(self.values[index, :-1, :-1].ravel())
-        self.mesh.set_clim(vmin=self.values[index].min(),
-                           vmax=self.values[index].max())
+        self.mesh.set_clim(vmin=self.values[index].min(), vmax=self.values[index].max())
         self.plot.canvas.draw()
 
     def update_label(self, index: int):

@@ -11,8 +11,7 @@ parameters = mlxtk.load_scan("harmonic_trap_scan")
 
 
 def load_gs_energy(idx, path, parameter):
-    data = mlxtk.inout.output.read_output(os.path.join(path,
-                                                       "gs_relax/output"))
+    data = mlxtk.inout.output.read_output(os.path.join(path, "gs_relax/output"))
     return parameter.m, data[2][-1]
 
 

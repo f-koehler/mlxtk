@@ -5,26 +5,29 @@ import matplotlib.pyplot as plt
 
 from mlxtk import units
 from mlxtk.inout import read_gpop
-from mlxtk.plot import (add_argparse_2d_args, add_argparse_save_arg,
-                        apply_2d_args, handle_saving, plot_gpop)
+from mlxtk.plot import (
+    add_argparse_2d_args,
+    add_argparse_save_arg,
+    apply_2d_args,
+    handle_saving,
+    plot_gpop,
+)
 from mlxtk.tools.gpop import transform_to_momentum_space
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        nargs="?",
-                        type=Path,
-                        default=Path("propagate.h5/gpop"),
-                        help="path to the gpop file")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom")
-    parser.add_argument("--momentum",
-                        action="store_true",
-                        help="whether to transform to momentum space")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        type=Path,
+        default=Path("propagate.h5/gpop"),
+        help="path to the gpop file",
+    )
+    parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
+    parser.add_argument(
+        "--momentum", action="store_true", help="whether to transform to momentum space"
+    )
     parser.add_argument("--logz", action="store_true")
     parser.add_argument("--zmin", type=float)
     parser.add_argument("--zmax", type=float)

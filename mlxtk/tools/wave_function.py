@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Union
 
 import numpy
 import scipy.special
+
 from QDTK.Wavefunction import Wavefunction
 
 
@@ -30,16 +31,17 @@ def add_momentum(wfn: Wavefunction, momentum: float) -> Wavefunction:
     return wfn
 
 
-def add_momentum_split(wfn: Wavefunction, momentum: float,
-                       x_center: float) -> Wavefunction:
+def add_momentum_split(
+    wfn: Wavefunction, momentum: float, x_center: float
+) -> Wavefunction:
     # pylint: disable=protected-access
     num_spfs = wfn.tree._subnodes[0]._dim  # type: int
     len_spfs = wfn.tree._subnodes[0]._phiLen  # type: int
     grid = wfn.tree._topNode._pgrid[0]
 
     phase = numpy.exp(
-        1j * (2.0 * numpy.heaviside(grid - x_center, 0.5) - 1.0) * momentum *
-        grid)
+        1j * (2.0 * numpy.heaviside(grid - x_center, 0.5) - 1.0) * momentum * grid
+    )
 
     for i in range(0, num_spfs):
         start = wfn.tree._subnodes[0]._z0 + i * len_spfs

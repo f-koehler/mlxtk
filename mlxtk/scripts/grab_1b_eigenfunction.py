@@ -12,12 +12,10 @@ LOGGER = get_logger(__name__)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        type=Path,
-                        help="path to the one-body operator matrix")
-    parser.add_argument("index",
-                        type=int,
-                        help="index of the eigenfunction to write out")
+    parser.add_argument("path", type=Path, help="path to the one-body operator matrix")
+    parser.add_argument(
+        "index", type=int, help="index of the eigenfunction to write out"
+    )
     parser.add_argument("output", type=Path, help="name of the output file")
     args = parser.parse_args()
 
@@ -28,9 +26,9 @@ def main():
 
     LOGGER.info("eigenvalue = %f", evals[index])
     with h5py.File(args.output, "w") as fptr:
-        fptr.create_dataset("wave_function",
-                            shape=evecs[index].shape,
-                            dtype=evecs[index].dtype)[:] = evecs[index]
+        fptr.create_dataset(
+            "wave_function", shape=evecs[index].shape, dtype=evecs[index].dtype
+        )[:] = evecs[index]
 
 
 if __name__ == "__main__":

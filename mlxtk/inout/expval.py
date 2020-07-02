@@ -13,17 +13,16 @@ def read_expval(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndarray]:
     return read_expval_ascii(path)
 
 
-def read_expval_ascii(
-        path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndarray]:
+def read_expval_ascii(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with open(path, "r") as fp:
         line = fp.readline().split()
         if len(line) == 2:
-            return numpy.array([0.]), numpy.array(
-                [float(line[0]) + 1j * float(line[1])])
+            return (
+                numpy.array([0.0]),
+                numpy.array([float(line[0]) + 1j * float(line[1])]),
+            )
 
-    df = pandas.read_csv(path,
-                         delim_whitespace=True,
-                         names=["time", "real", "imag"])
+    df = pandas.read_csv(path, delim_whitespace=True, names=["time", "real", "imag"])
     return (
         df["time"].values,
         df["real"].values + 1j * df["imag"].values,
@@ -31,15 +30,18 @@ def read_expval_ascii(
 
 
 def read_expval_hdf5(
-        path: Union[Path, str],
-        interior_path: str = "/") -> Tuple[numpy.ndarray, numpy.ndarray]:
+    path: Union[Path, str], interior_path: str = "/"
+) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
-        return fptr[interior_path]["time"][:], fptr[interior_path][
-            "real"][:] + 1j * fptr[interior_path]["imag"][:]
+        return (
+            fptr[interior_path]["time"][:],
+            fptr[interior_path]["real"][:] + 1j * fptr[interior_path]["imag"][:],
+        )
 
 
-def write_expval_hdf5(path: Union[Path, str], time: numpy.ndarray,
-                      values: numpy.ndarray):
+def write_expval_hdf5(
+    path: Union[Path, str], time: numpy.ndarray, values: numpy.ndarray
+):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset("time", time.shape, dtype=numpy.float64)
         dset[:] = time
@@ -51,8 +53,9 @@ def write_expval_hdf5(path: Union[Path, str], time: numpy.ndarray,
         dset[:] = values.imag
 
 
-def write_expval_ascii(path: Union[Path, str], data: Tuple[numpy.ndarray,
-                                                           numpy.ndarray]):
+def write_expval_ascii(
+    path: Union[Path, str], data: Tuple[numpy.ndarray, numpy.ndarray]
+):
     pandas.DataFrame(
         numpy.column_stack((data[0], data[1].real, data[1].imag)),
         columns=["time", "real", "imag"],

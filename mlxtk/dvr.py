@@ -1,8 +1,17 @@
 from typing import Any, Dict, Tuple
 
 import numpy
-from QDTK.Primitive import (FFT, Dvr, Expdvr, Harmdvr, Laguerredvr,
-                            Legendredvr, Sindvr, rHarmdvr)
+
+from QDTK.Primitive import (
+    FFT,
+    Dvr,
+    Expdvr,
+    Harmdvr,
+    Laguerredvr,
+    Legendredvr,
+    Sindvr,
+    rHarmdvr,
+)
 
 assert Any
 assert Dict
@@ -17,9 +26,9 @@ DVR_CLASSES = {
     "LaguerreDVR": Laguerredvr,
     "FFT": FFT,
 }
-DVR_CACHE = {CLASS: {}
-             for CLASS in DVR_CLASSES
-             }  # type: Dict[Any, Dict[Tuple[Any], Dvr]]
+DVR_CACHE = {
+    CLASS: {} for CLASS in DVR_CLASSES
+}  # type: Dict[Any, Dict[Tuple[Any], Dvr]]
 
 for dvr_class in DVR_CLASSES:
 
@@ -41,14 +50,14 @@ class DVRSpecification:
        args (list): list of arguments to construct the DVR
        dvr: the DVR object once it is constructed
     """
+
     def __init__(self, type_: str, *args):
         self.type_ = type_
         self.args = args
         self.dvr = None  # type: Dvr
 
         if (type_ == "ExponentialDVR") and (args[0] % 2 == 0):
-            raise RuntimeError(
-                "ExponentialDVR requires an odd number of grid points")
+            raise RuntimeError("ExponentialDVR requires an odd number of grid points")
 
     def compute(self):
         """Compute the dvr.
@@ -163,14 +172,18 @@ class DVRSpecification:
         self.args = state["args"]
 
     def __str__(self) -> str:
-        return ("DVRSpecification<" + self.type_ + ", " + ", ".join(
-            (str(arg) for arg in self.args)) + ">")
+        return (
+            "DVRSpecification<"
+            + self.type_
+            + ", "
+            + ", ".join((str(arg) for arg in self.args))
+            + ">"
+        )
 
 
-def add_harmdvr(npoints: int,
-                xeq: float,
-                xho: float,
-                tolerance: float = 1e-15) -> DVRSpecification:
+def add_harmdvr(
+    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
+) -> DVRSpecification:
     """Register a new harmonic oscillator DVR
 
     Args:
@@ -182,10 +195,9 @@ def add_harmdvr(npoints: int,
     return DVRSpecification("HarmonicDVR", npoints, xeq, xho, tolerance)
 
 
-def add_rharmdvr(npoints: int,
-                 xeq: float,
-                 xho: float,
-                 tolerance: float = 1e-15) -> DVRSpecification:
+def add_rharmdvr(
+    npoints: int, xeq: float, xho: float, tolerance: float = 1e-15
+) -> DVRSpecification:
     """Register a new radial harmonic oscillator DVR
 
     Args:
@@ -219,17 +231,15 @@ def add_expdvr(npoints: int, qmin: float, qmax: float) -> DVRSpecification:
     return DVRSpecification("ExponentialDVR", npoints, qmin, qmax)
 
 
-def add_lengendredvr(npoints: int,
-                     m: int,
-                     tolerance: float = 1e-10) -> DVRSpecification:
+def add_lengendredvr(
+    npoints: int, m: int, tolerance: float = 1e-10
+) -> DVRSpecification:
     return DVRSpecification("LegendreDVR", npoints, m, tolerance)
 
 
-def add_laguerredvr(npoints: int,
-                    alpha: float,
-                    xlag: float,
-                    x0: float,
-                    tolerance: float = 1e-11) -> DVRSpecification:
+def add_laguerredvr(
+    npoints: int, alpha: float, xlag: float, x0: float, tolerance: float = 1e-11
+) -> DVRSpecification:
     return DVRSpecification("LaguerreDVR", npoints, alpha, xlag, x0, tolerance)
 
 

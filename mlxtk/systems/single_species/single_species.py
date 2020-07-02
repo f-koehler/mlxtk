@@ -19,6 +19,7 @@ class SingleSpeciesSystem(ABC):
         parameters (mlxtk.parameters.Parameters): the system parameters
         grid (mlxtk.dvr.DVRSpecification): the grid of the harmonic oscillator
     """
+
     def __init__(self, parameters: Parameters, grid: DVRSpecification):
         self.parameters = parameters
         self.grid = grid
@@ -36,7 +37,7 @@ class SingleSpeciesSystem(ABC):
 
     def get_position_operator_1b(self) -> OperatorSpecification:
         return OperatorSpecification(
-            (self.grid_1b, ),
+            (self.grid_1b,),
             {"position_coeff": 1.0},
             {"position": self.grid_1b.get_x()},
             "position_coeff | 1 position",
@@ -44,7 +45,7 @@ class SingleSpeciesSystem(ABC):
 
     def get_kinetic_operator_1b(self) -> OperatorSpecification:
         return OperatorSpecification(
-            (self.grid_1b, ),
+            (self.grid_1b,),
             {"kinetic_coeff": -0.5},
             {"kinetic": self.grid_1b.get_d2()},
             "kinetic_coeff | 1 kinetic",
@@ -52,44 +53,40 @@ class SingleSpeciesSystem(ABC):
 
     def get_kinetic_operator(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
+            (1,),
+            (self.grid,),
             {"kinetic_coeff": -0.5},
-            {
-                "kinetic": {
-                    "value": self.grid.get_d2(),
-                    "fft": self.grid.is_fft()
-                }
-            },
+            {"kinetic": {"value": self.grid.get_d2(), "fft": self.grid.is_fft()}},
             "kinetic_coeff | 1 kinetic",
         )
 
     def get_com_operator(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
-            (1, ), (self.grid, ), {"com_coeff": 1. / self.parameters.N},
-            {"com": self.grid.get_x()}, "com_coeff | 1 com")
+            (1,),
+            (self.grid,),
+            {"com_coeff": 1.0 / self.parameters.N},
+            {"com": self.grid.get_x()},
+            "com_coeff | 1 com",
+        )
 
     def get_momentum_operator(self) -> MBOperatorSpecification:
-        return MBOperatorSpecification((1, ), (self.grid, ),
-                                       {"momentum_coeff": -1j}, {
-                                           "momentum": {
-                                               "value": self.grid.get_d1(),
-                                               "fft": self.grid.is_fft()
-                                           }
-                                       }, "momentum_coeff | 1 momentum")
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"momentum_coeff": -1j},
+            {"momentum": {"value": self.grid.get_d1(), "fft": self.grid.is_fft()}},
+            "momentum_coeff | 1 momentum",
+        )
 
     def get_com_operator_squared(self) -> MBOperatorSpecification:
-        N_squared = self.parameters.N**2
+        N_squared = self.parameters.N ** 2
         return MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
-            {
-                "com_squared_coeff_1": 1.0,
-                "com_squared_coeff_2": 2.0,
-            },
+            (1,),
+            (self.grid,),
+            {"com_squared_coeff_1": 1.0, "com_squared_coeff_2": 2.0,},
             {
                 "com_squared_x": self.grid.get_x() / N_squared,
-                "com_squared_x^2": self.grid.get_x()**2 / N_squared,
+                "com_squared_x^2": self.grid.get_x() ** 2 / N_squared,
             },
             [
                 "com_squared_coeff_1 | 1 com_squared_x^2",
@@ -97,39 +94,42 @@ class SingleSpeciesSystem(ABC):
             ],
         )
 
-    def get_truncated_unit_operator(self, xmin: float,
-                                    xmax: float) -> MBOperatorSpecification:
+    def get_truncated_unit_operator(
+        self, xmin: float, xmax: float
+    ) -> MBOperatorSpecification:
         term = numpy.zeros_like(self.grid.get_x())
-        term[numpy.logical_and(self.grid.get_x() >= xmin,
-                               self.grid.get_x() <= xmax)] = 1.
+        term[
+            numpy.logical_and(self.grid.get_x() >= xmin, self.grid.get_x() <= xmax)
+        ] = 1.0
         return MBOperatorSpecification(
-            (1, ), (self.grid, ), {"norm": 1. / self.parameters.N},
-            {"truncated_one": term}, "norm | 1 truncated_one")
+            (1,),
+            (self.grid,),
+            {"norm": 1.0 / self.parameters.N},
+            {"truncated_one": term},
+            "norm | 1 truncated_one",
+        )
 
-    def get_truncated_com_operator(self, xmin: float,
-                                   xmax: float) -> MBOperatorSpecification:
+    def get_truncated_com_operator(
+        self, xmin: float, xmax: float
+    ) -> MBOperatorSpecification:
         term = numpy.copy(self.grid.get_x())
-        term[numpy.logical_or(term < xmin, term > xmax)] = 0.
-        return MBOperatorSpecification((1, ), (self.grid, ), {"com_coeff": 1.},
-                                       {"com": term}, "com_coeff | 1 com")
+        term[numpy.logical_or(term < xmin, term > xmax)] = 0.0
+        return MBOperatorSpecification(
+            (1,), (self.grid,), {"com_coeff": 1.0}, {"com": term}, "com_coeff | 1 com"
+        )
 
     def get_truncated_com_operator_squared(
-            self, xmin: float, xmax: float) -> MBOperatorSpecification:
+        self, xmin: float, xmax: float
+    ) -> MBOperatorSpecification:
         term = numpy.copy(self.grid.get_x())
-        term[numpy.logical_or(term < xmin, term > xmax)] = 0.
+        term[numpy.logical_or(term < xmin, term > xmax)] = 0.0
 
-        term2 = term**2
+        term2 = term ** 2
         return MBOperatorSpecification(
-            (1, ),
-            (self.grid, ),
-            {
-                "com_squared_coeff_1": 1.0,
-                "com_squared_coeff_2": 2.0,
-            },
-            {
-                "com_squared_x": term,
-                "com_squared_x^2": term2,
-            },
+            (1,),
+            (self.grid,),
+            {"com_squared_coeff_1": 1.0, "com_squared_coeff_2": 2.0,},
+            {"com_squared_x": term, "com_squared_x^2": term2,},
             [
                 "com_squared_coeff_1 | 1 com_squared_x^2",
                 "com_squared_coeff_2 | 1 com_squared_x | 1* com_squared_x",

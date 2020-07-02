@@ -9,24 +9,28 @@ import stl
 from mlxtk.tools.gpop import transform_to_momentum_space
 
 
-def plot_gpop(ax,
-              time,
-              grid,
-              density,
-              zmin: Optional[float] = None,
-              zmax: Optional[float] = None,
-              logz: bool = False):
+def plot_gpop(
+    ax,
+    time,
+    grid,
+    density,
+    zmin: Optional[float] = None,
+    zmax: Optional[float] = None,
+    logz: bool = False,
+):
     Y, X = numpy.meshgrid(grid, time)
 
     if logz:
         if zmin is not None:
             density[density < zmin] = zmin
-        ret = ax.pcolormesh(X,
-                            Y,
-                            density,
-                            cmap="gnuplot",
-                            rasterized=True,
-                            norm=matplotlib.colors.LogNorm(zmin, zmax))
+        ret = ax.pcolormesh(
+            X,
+            Y,
+            density,
+            cmap="gnuplot",
+            rasterized=True,
+            norm=matplotlib.colors.LogNorm(zmin, zmax),
+        )
     else:
         ret = ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
 
@@ -37,8 +41,7 @@ def plot_gpop(ax,
 
 
 def plot_gpop_momentum(ax, time, grid, density):
-    time, momentum, density = transform_to_momentum_space(
-        (time, grid, density))
+    time, momentum, density = transform_to_momentum_space((time, grid, density))
     Y, X = numpy.meshgrid(momentum, time)
     ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
     ax.set_xlabel("$t$")
@@ -63,8 +66,7 @@ def create_gpop_model(time, grid, density):
     Z = Z / Z.max() * 0.1
 
     # , remove_empty_areas=False)
-    mesh = stl.mesh.Mesh(
-        numpy.zeros(len(tri.triangles), dtype=stl.mesh.Mesh.dtype))
+    mesh = stl.mesh.Mesh(numpy.zeros(len(tri.triangles), dtype=stl.mesh.Mesh.dtype))
     mesh.x[:] = X[tri.triangles]
     mesh.y[:] = Y[tri.triangles]
     mesh.z[:] = Z[tri.triangles]

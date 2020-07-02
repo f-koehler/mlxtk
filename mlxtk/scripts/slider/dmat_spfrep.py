@@ -12,22 +12,21 @@ from mlxtk.ui.plot_slider import PlotSlider
 
 
 class Gui(PlotSlider):
-    def __init__(self,
-                 data: Tuple[numpy.ndarray, numpy.ndarray],
-                 min_index: int,
-                 max_index: int,
-                 projection: str = None,
-                 plot_args: Optional[argparse.Namespace] = None,
-                 parent: QtWidgets.QWidget = None):
+    def __init__(
+        self,
+        data: Tuple[numpy.ndarray, numpy.ndarray],
+        min_index: int,
+        max_index: int,
+        projection: str = None,
+        plot_args: Optional[argparse.Namespace] = None,
+        parent: QtWidgets.QWidget = None,
+    ):
         self.time, self.values = data
         self.indices1 = list(range(self.values.shape[1]))
         self.indices2 = list(range(self.values.shape[2]))
         self.values = numpy.abs(self.values)
         self.mesh: matplotlib.collections.QuadMesh = None
-        super().__init__(min_index,
-                         max_index,
-                         plot_args=plot_args,
-                         parent=parent)
+        super().__init__(min_index, max_index, plot_args=plot_args, parent=parent)
 
         self.spin.valueChanged.connect(self.update_label)
 
@@ -43,23 +42,18 @@ class Gui(PlotSlider):
 
         self.axes.set_xlabel("i")
         self.axes.set_ylabel("j")
-        self.axes.xaxis.set_major_locator(
-            matplotlib.ticker.MaxNLocator(integer=True))
-        self.axes.yaxis.set_major_locator(
-            matplotlib.ticker.MaxNLocator(integer=True))
+        self.axes.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
+        self.axes.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True))
 
         X2, X1 = numpy.meshgrid(self.indices2, self.indices1)
-        self.mesh = self.axes.pcolormesh(X1 - 0.5,
-                                         X2 - 0.5,
-                                         self.values[0],
-                                         cmap="gnuplot",
-                                         rasterized=True)
+        self.mesh = self.axes.pcolormesh(
+            X1 - 0.5, X2 - 0.5, self.values[0], cmap="gnuplot", rasterized=True
+        )
         self.plot.canvas.draw()
 
     def update_plot(self, index: int):
         self.mesh.set_array(self.values[index, :-1, :-1].ravel())
-        self.mesh.set_clim(vmin=self.values[index].min(),
-                           vmax=self.values[index].max())
+        self.mesh.set_clim(vmin=self.values[index].min(), vmax=self.values[index].max())
         self.plot.canvas.draw()
 
     def update_label(self, index: int):

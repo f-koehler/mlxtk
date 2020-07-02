@@ -22,25 +22,32 @@ class DmatEvecSlider(QtWidgets.QWidget):
         self.line_imag = None  # type: Line2D
         self.line_abs = None  # type: Line2D
 
-        self.window = load_ui(
-            "dmat_evec_slider.ui")  # type: QtWidgets.QMainWindow
+        self.window = load_ui("dmat_evec_slider.ui")  # type: QtWidgets.QMainWindow
 
-        self.plot = self.window.findChild(MatplotlibWidget,
-                                          "plot")  # type: MatplotlibWidget
+        self.plot = self.window.findChild(
+            MatplotlibWidget, "plot"
+        )  # type: MatplotlibWidget
         self.slider_time = self.window.findChild(
-            QtWidgets.QSlider, "slider_time")  # type: QtWidgets.QSlider
+            QtWidgets.QSlider, "slider_time"
+        )  # type: QtWidgets.QSlider
         self.spin_time = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_time")  # type: QtWidgets.QSpinBox
+            QtWidgets.QSpinBox, "spin_time"
+        )  # type: QtWidgets.QSpinBox
         self.label_time = self.window.findChild(
-            QtWidgets.QLabel, "label_time")  # type: QtWidgets.QLabel
+            QtWidgets.QLabel, "label_time"
+        )  # type: QtWidgets.QLabel
         self.spin_index = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_index")  # type: QtWidgets.QSpinBox
+            QtWidgets.QSpinBox, "spin_index"
+        )  # type: QtWidgets.QSpinBox
         self.check_real = self.window.findChild(
-            QtWidgets.QCheckBox, "check_real")  # type: QtWidgets.QCheckBox
+            QtWidgets.QCheckBox, "check_real"
+        )  # type: QtWidgets.QCheckBox
         self.check_imag = self.window.findChild(
-            QtWidgets.QCheckBox, "check_imag")  # type: QtWidgets.QCheckBox
+            QtWidgets.QCheckBox, "check_imag"
+        )  # type: QtWidgets.QCheckBox
         self.check_abs = self.window.findChild(
-            QtWidgets.QCheckBox, "check_absolute")  # type: QtWidgets.QCheckBox
+            QtWidgets.QCheckBox, "check_absolute"
+        )  # type: QtWidgets.QCheckBox
 
         self.axes = self.plot.figure.subplots(1, 1)
         self.plot.figure.set_tight_layout(True)
@@ -84,11 +91,14 @@ class DmatEvecSlider(QtWidgets.QWidget):
             self.line_abs = None
 
         self.line_abs = self.axes.plot(
-            self.grid, numpy.abs(self.evecs[self.index, self.time_index]))[0]
+            self.grid, numpy.abs(self.evecs[self.index, self.time_index])
+        )[0]
         self.line_real = self.axes.plot(
-            self.grid, numpy.real(self.evecs[self.index, self.time_index]))[0]
+            self.grid, numpy.real(self.evecs[self.index, self.time_index])
+        )[0]
         self.line_imag = self.axes.plot(
-            self.grid, numpy.imag(self.evecs[self.index, self.time_index]))[0]
+            self.grid, numpy.imag(self.evecs[self.index, self.time_index])
+        )[0]
 
         self.line_abs.set_visible(self.check_abs.isChecked())
         self.line_real.set_visible(self.check_real.isChecked())
@@ -120,12 +130,9 @@ class DmatEvecSlider(QtWidgets.QWidget):
     def set_index(self, index: int):
         self.index = index
 
-        self.line_real.set_ydata(
-            numpy.real(self.evecs[self.index, self.time_index]))
-        self.line_imag.set_ydata(
-            numpy.imag(self.evecs[self.index, self.time_index]))
-        self.line_abs.set_ydata(
-            numpy.abs(self.evecs[self.index, self.time_index]))
+        self.line_real.set_ydata(numpy.real(self.evecs[self.index, self.time_index]))
+        self.line_imag.set_ydata(numpy.imag(self.evecs[self.index, self.time_index]))
+        self.line_abs.set_ydata(numpy.abs(self.evecs[self.index, self.time_index]))
 
         self.update_yrange()
 
@@ -144,12 +151,12 @@ class DmatEvecSlider(QtWidgets.QWidget):
         y_min, y_max = self.axes.get_ylim()
 
         def safety_min(x: float) -> float:
-            if x < 0.:
+            if x < 0.0:
                 return x * 1.02
             return 0.98 * x
 
         def safety_max(x: float) -> float:
-            if x < 0.:
+            if x < 0.0:
                 return x * 0.98
             return 1.02 * x
 
@@ -174,7 +181,8 @@ def main():
         "path",
         nargs="?",
         default="evec_dmat_dof1_spf",
-        help="path to the file containing the eigenvectors of the dmat")
+        help="path to the file containing the eigenvectors of the dmat",
+    )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 

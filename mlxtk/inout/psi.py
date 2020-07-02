@@ -44,8 +44,8 @@ def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 
 def read_psi_ascii(
-    path: Union[str,
-                Path]) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
+    path: Union[str, Path]
+) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = str(path)
 
     times: List[float] = []
@@ -59,8 +59,8 @@ def read_psi_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        "Error extracting time point from label: {}".format(
-                            line))
+                        "Error extracting time point from label: {}".format(line)
+                    )
                 time = float(m.group(1))
                 times.append(time)
             elif line.startswith("$psi"):
@@ -68,8 +68,7 @@ def read_psi_ascii(
                 psis.append([])
                 match = RE_ELEMENT.match(fhandle.readline())
                 while match:
-                    psis[-1].append(
-                        float(match.group(1)) + 1j * float(match.group(2)))
+                    psis[-1].append(float(match.group(1)) + 1j * float(match.group(2)))
                     match = RE_ELEMENT.match(fhandle.readline())
 
             if not tape_finished:
@@ -81,15 +80,18 @@ def read_psi_ascii(
 
                 tape.append(int(line))
 
-    return numpy.array(tape,
-                       dtype=numpy.int64), numpy.array(times), numpy.array(
-                           [numpy.array(psi).transpose() for psi in psis],
-                           dtype=numpy.complex128)
+    return (
+        numpy.array(tape, dtype=numpy.int64),
+        numpy.array(times),
+        numpy.array(
+            [numpy.array(psi).transpose() for psi in psis], dtype=numpy.complex128
+        ),
+    )
 
 
 def read_psi_frame_ascii(
-        path: Union[str, Path],
-        index: int) -> Tuple[numpy.ndarray, float, numpy.ndarray]:
+    path: Union[str, Path], index: int
+) -> Tuple[numpy.ndarray, float, numpy.ndarray]:
     path = str(path)
 
     counter = -1
@@ -104,8 +106,8 @@ def read_psi_frame_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        "Error extracting time point from label: {}".format(
-                            line))
+                        "Error extracting time point from label: {}".format(line)
+                    )
                 time = float(m.group(1))
                 times.append(time)
             elif line.startswith("$psi"):
@@ -113,8 +115,7 @@ def read_psi_frame_ascii(
                 match = RE_ELEMENT.match(fhandle.readline())
                 while match:
                     if counter == index:
-                        psi.append(
-                            float(match.group(1)) + 1j * float(match.group(2)))
+                        psi.append(float(match.group(1)) + 1j * float(match.group(2)))
                     match = RE_ELEMENT.match(fhandle.readline())
 
             if not tape_finished:
@@ -129,8 +130,11 @@ def read_psi_frame_ascii(
     if not psi:
         raise KeyError("index {} is out of bounds".format(index))
 
-    return numpy.array(tape, dtype=numpy.int64), numpy.array(
-        times[index]), numpy.array(psi, dtype=numpy.complex128)
+    return (
+        numpy.array(tape, dtype=numpy.int64),
+        numpy.array(times[index]),
+        numpy.array(psi, dtype=numpy.complex128),
+    )
 
 
 def read_psi_hdf5(path):
@@ -144,22 +148,19 @@ def read_psi_hdf5(path):
 def write_psi_hdf5(path, data):
     tape, time, psis = data
     with h5py.File(path, "w") as fptr:
-        dset = fptr.create_dataset("tape",
-                                   tape.shape,
-                                   dtype=numpy.int64,
-                                   compression="gzip")
+        dset = fptr.create_dataset(
+            "tape", tape.shape, dtype=numpy.int64, compression="gzip"
+        )
         dset[:] = tape
 
-        dset = fptr.create_dataset("time",
-                                   time.shape,
-                                   dtype=numpy.float64,
-                                   compression="gzip")
+        dset = fptr.create_dataset(
+            "time", time.shape, dtype=numpy.float64, compression="gzip"
+        )
         dset[:] = time
 
-        dset = fptr.create_dataset("psis",
-                                   psis.shape,
-                                   dtype=numpy.complex128,
-                                   compression="gzip")
+        dset = fptr.create_dataset(
+            "psis", psis.shape, dtype=numpy.complex128, compression="gzip"
+        )
         dset[:, :] = psis[:, :]
 
 
@@ -170,6 +171,9 @@ def write_psi_ascii(path, data):
         fptr.writelines(("\t{}\n".format(entry) for entry in tape))
         for i, time in enumerate(time):
             fptr.write("\n$time\n\t{}  [au]\n$psi\n".format(time))
-            fptr.writelines((" ({},{})\n".format(numpy.real(entry),
-                                                 numpy.imag(entry))
-                             for entry in psis[i]))
+            fptr.writelines(
+                (
+                    " ({},{})\n".format(numpy.real(entry), numpy.imag(entry))
+                    for entry in psis[i]
+                )
+            )

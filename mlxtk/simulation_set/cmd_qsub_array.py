@@ -20,13 +20,12 @@ def cmd_qsub(self: SimulationSetBase, args: argparse.Namespace):
         if not simulation_dir.exists():
             os.makedirs(simulation_dir)
         with WorkingDir(simulation_dir):
-            sge.submit(" ".join(
-                [sys.executable,
-                 str(script_path), "run-index",
-                 str(index)]),
-                       args,
-                       sge_dir=script_path.parent,
-                       job_name=simulation.name)
+            sge.submit(
+                " ".join([sys.executable, str(script_path), "run-index", str(index)]),
+                args,
+                sge_dir=script_path.parent,
+                job_name=simulation.name,
+            )
 
 
 def cmd_qsub_array(self: SimulationSetBase, args: argparse.Namespace):
@@ -37,8 +36,10 @@ def cmd_qsub_array(self: SimulationSetBase, args: argparse.Namespace):
     command = " ".join([sys.executable, str(script_path), "run-index"])
 
     with WorkingDir(self.working_dir):
-        sge.submit_array(command,
-                         len(self.simulations),
-                         args,
-                         sge_dir=script_path.parent,
-                         job_name=self.name)
+        sge.submit_array(
+            command,
+            len(self.simulations),
+            args,
+            sge_dir=script_path.parent,
+            job_name=self.name,
+        )

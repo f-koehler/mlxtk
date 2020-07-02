@@ -14,15 +14,21 @@ def create_frame_worker(args):
     create_frame(*args)
 
 
-def create_frame(index: int, time: float, grid: numpy.ndarray,
-                 density: numpy.ndarray, file_name_fmt: str,
-                 args: argparse.Namespace):
+def create_frame(
+    index: int,
+    time: float,
+    grid: numpy.ndarray,
+    density: numpy.ndarray,
+    file_name_fmt: str,
+    args: argparse.Namespace,
+):
     unitsys = mlxtk.units.get_default_unit_system()
 
     fig, ax = plt.subplots(1, 1)
     mlxtk.plot.apply_2d_args(ax, fig, args)
-    ax.set_title("$t=" + "{:8.2f}".format(time) + r"\," +
-                 str(unitsys.get_time_unit()) + "$")
+    ax.set_title(
+        "$t=" + "{:8.2f}".format(time) + r"\," + str(unitsys.get_time_unit()) + "$"
+    )
     ax.set_xlabel(unitsys.get_length_unit().format_label("x"))
     ax.set_ylabel(r"$\rho_1(x,t)$")
     ax.grid(True)
@@ -33,22 +39,20 @@ def create_frame(index: int, time: float, grid: numpy.ndarray,
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i",
-                        "--input",
-                        dest="input_",
-                        type=Path,
-                        default="propagate.h5/gpop",
-                        help="path to the gpop file")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom to use")
-    parser.add_argument("-o",
-                        "--output",
-                        type=Path,
-                        default=None,
-                        help="path for the video file")
+    parser.add_argument(
+        "-i",
+        "--input",
+        dest="input_",
+        type=Path,
+        default="propagate.h5/gpop",
+        help="path to the gpop file",
+    )
+    parser.add_argument(
+        "-d", "--dof", type=int, default=1, help="degree of freedom to use"
+    )
+    parser.add_argument(
+        "-o", "--output", type=Path, default=None, help="path for the video file"
+    )
     mlxtk.plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -63,19 +67,19 @@ def main():
     file_name_fmt = "{:0" + str(len(str(len(times)))) + "d}.png"
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        parameters = [(index, time, grid, density, file_name_fmt, args)
-                      for index, (time, density) in enumerate(zip(times, gpop))
-                      ]
+        parameters = [
+            (index, time, grid, density, file_name_fmt, args)
+            for index, (time, density) in enumerate(zip(times, gpop))
+        ]
         with mlxtk.cwd.WorkingDir(tmpdir):
             with multiprocessing.Pool() as pool:
-                for _ in tqdm(pool.imap_unordered(create_frame_worker,
-                                                  parameters),
-                              total=len(times)):
+                for _ in tqdm(
+                    pool.imap_unordered(create_frame_worker, parameters),
+                    total=len(times),
+                ):
                     pass
 
-        files = [
-            Path(tmpdir) / file_name_fmt.format(i) for i, _ in enumerate(times)
-        ]
+        files = [Path(tmpdir) / file_name_fmt.format(i) for i, _ in enumerate(times)]
         mlxtk.tools.video.create_slideshow(files, args.output, 30.0)
 
 

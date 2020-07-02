@@ -23,8 +23,7 @@ from mlxtk.util import copy_file, make_path
 
 
 class ComputeExpectationValue(Task):
-    def __init__(self, psi: Union[str, Path], operator: Union[str, Path],
-                 **kwargs):
+    def __init__(self, psi: Union[str, Path], operator: Union[str, Path], **kwargs):
         self.logger = get_logger(__name__ + ".ComputeExpectationValue")
         self.unique_name = kwargs.get("unique_name", False)
 
@@ -32,16 +31,15 @@ class ComputeExpectationValue(Task):
         self.operator = make_path(operator).with_suffix(".mb_opr")
         self.psi = make_path(psi)
         if self.unique_name:
-            self.expval = self.psi.with_name(self.psi.stem + "_" +
-                                             self.operator.stem).with_suffix(
-                                                 ".exp.h5")
+            self.expval = self.psi.with_name(
+                self.psi.stem + "_" + self.operator.stem
+            ).with_suffix(".exp.h5")
         else:
-            self.expval = (self.psi.parent /
-                           self.operator.stem).with_suffix(".exp.h5")
+            self.expval = (self.psi.parent / self.operator.stem).with_suffix(".exp.h5")
 
         self.wave_function = make_path(
-            kwargs.get("wave_function",
-                       self.psi.parent / "final")).with_suffix(".wfn")
+            kwargs.get("wave_function", self.psi.parent / "final")
+        ).with_suffix(".wfn")
 
         self.name = str(self.expval.with_suffix(""))
 
@@ -62,16 +60,22 @@ class ComputeExpectationValue(Task):
                     copy_file(psi, "psi")
                     copy_file(wave_function, "restart")
                     cmd = [
-                        "qdtk_expect.x", "-opr", "operator", "-rst", "restart",
-                        "-psi", "psi", "-save", "expval"
+                        "qdtk_expect.x",
+                        "-opr",
+                        "operator",
+                        "-rst",
+                        "restart",
+                        "-psi",
+                        "psi",
+                        "-save",
+                        "expval",
                     ]
                     self.logger.info("command: %s", " ".join(cmd))
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                     subprocess.run(cmd, env=env)
 
-                    write_expval_hdf5("expval.h5",
-                                      *read_expval_ascii("expval"))
+                    write_expval_hdf5("expval.h5", *read_expval_ascii("expval"))
 
                     copy_file("expval.h5", expval)
 
@@ -87,16 +91,15 @@ class ComputeExpectationValue(Task):
 
 
 class ComputeExpectationValueStatic(Task):
-    def __init__(self, wave_function: Union[str, Path], operator: Union[str,
-                                                                        Path]):
+    def __init__(self, wave_function: Union[str, Path], operator: Union[str, Path]):
         self.logger = get_logger(__name__ + ".ComputeExpectationValueStatic")
 
         # compute required paths
         self.operator = make_path(operator).with_suffix(".mb_opr")
         self.wave_function = make_path(wave_function).with_suffix(".wfn")
         self.expval = self.wave_function.with_name(
-            self.wave_function.stem + "_" +
-            self.operator.stem).with_suffix(".exp.h5")
+            self.wave_function.stem + "_" + self.operator.stem
+        ).with_suffix(".exp.h5")
 
         self.name = str(self.expval.with_suffix(""))
 
@@ -115,24 +118,27 @@ class ComputeExpectationValueStatic(Task):
                     copy_file(operator, "operator")
                     copy_file(wave_function, "restart")
                     cmd = [
-                        "qdtk_expect.x", "-opr", "operator", "-rst", "restart",
-                        "-save", "expval"
+                        "qdtk_expect.x",
+                        "-opr",
+                        "operator",
+                        "-rst",
+                        "restart",
+                        "-save",
+                        "expval",
                     ]
                     self.logger.info("command: %s", " ".join(cmd))
                     env = os.environ.copy()
                     env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
                     subprocess.run(cmd, env=env)
 
-                    write_expval_hdf5("expval.h5",
-                                      *read_expval_ascii("expval"))
+                    write_expval_hdf5("expval.h5", *read_expval_ascii("expval"))
                     copy_file("expval.h5", expval)
 
         return {
             "name": "expval_static:{}:compute".format(self.name),
             "actions": [action_compute],
             "targets": [str(self.expval)],
-            "file_dep": [str(self.wave_function),
-                         str(self.operator)],
+            "file_dep": [str(self.wave_function), str(self.operator)],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

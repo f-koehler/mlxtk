@@ -15,12 +15,14 @@ LOGGER = log.get_logger(__name__)
 plot.make_headless()
 
 
-def plot_expval(index: int,
-                path: Path,
-                parameters: Parameters,
-                file_path: Path,
-                extension: str = ".pdf",
-                modfunc: Callable[[Figure, Axes, Parameters], None] = None):
+def plot_expval(
+    index: int,
+    path: Path,
+    parameters: Parameters,
+    file_path: Path,
+    extension: str = ".pdf",
+    modfunc: Callable[[Figure, Axes, Parameters], None] = None,
+):
     total_path = path / file_path
     try:
         fig, ax = plot.create_subplots(1, 1)
@@ -42,19 +44,19 @@ def main():
     parser.add_argument(
         "scan_dir",
         type=Path,
-        help="directory of the scan containing the file scan.pickle")
-    parser.add_argument("expval",
-                        type=Path,
-                        help="relative path to expval within each simulation")
-    parser.add_argument("-e",
-                        "--extension",
-                        type=str,
-                        default=".pdf",
-                        help="file extensions for the plots")
-    parser.add_argument("-o",
-                        "--output",
-                        type=str,
-                        help="name of the output directory")
+        help="directory of the scan containing the file scan.pickle",
+    )
+    parser.add_argument(
+        "expval", type=Path, help="relative path to expval within each simulation"
+    )
+    parser.add_argument(
+        "-e",
+        "--extension",
+        type=str,
+        default=".pdf",
+        help="file extensions for the plots",
+    )
+    parser.add_argument("-o", "--output", type=str, help="name of the output directory")
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -67,10 +69,13 @@ def main():
 
     load_scan(args.scan_dir).plot_foreach(
         args.output,
-        partial(plot_expval,
-                file_path=args.expval,
-                modfunc=apply_args,
-                extension=args.extension))
+        partial(
+            plot_expval,
+            file_path=args.expval,
+            modfunc=apply_args,
+            extension=args.extension,
+        ),
+    )
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import mlxtk
 from mlxtk.systems.single_species.harmonic_trap import HarmonicTrap
 
 if __name__ == "__main__":
-    x = mlxtk.dvr.add_harmdvr(512, 0.0, 1.)
+    x = mlxtk.dvr.add_harmdvr(512, 0.0, 1.0)
 
     parameters = HarmonicTrap.create_parameters()
     parameters.m = 19
@@ -16,8 +16,7 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("spectrum")
 
-    sim += mlxtk.tasks.CreateOperator("hamiltonian_1b",
-                                      system.get_hamiltonian_1b())
+    sim += mlxtk.tasks.CreateOperator("hamiltonian_1b", system.get_hamiltonian_1b())
     sim += mlxtk.tasks.ComputeSpectrum("hamiltonian_1b", parameters.m)
 
     sim.main()

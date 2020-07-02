@@ -19,20 +19,24 @@ def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
             state = json.load(fptr)
 
         pickle_extensions = {
-            ".mb_opr_pickle", ".prop_pickle", ".opr_pickle", ".wfn_pickle"
+            ".mb_opr_pickle",
+            ".prop_pickle",
+            ".opr_pickle",
+            ".wfn_pickle",
         }
 
-        for task_name in tqdm.tqdm(state,
-                                   position=bar_offset,
-                                   leave=False,
-                                   desc="tasks"):
+        for task_name in tqdm.tqdm(
+            state, position=bar_offset, leave=False, desc="tasks"
+        ):
             if "deps:" not in state[task_name]:
                 continue
 
-            for dep in tqdm.tqdm(state[task_name]["deps:"],
-                                 position=bar_offset + 1,
-                                 leave=False,
-                                 desc="dependencies"):
+            for dep in tqdm.tqdm(
+                state[task_name]["deps:"],
+                position=bar_offset + 1,
+                leave=False,
+                desc="dependencies",
+            ):
                 if Path(dep).suffix not in pickle_extensions:
                     continue
 
@@ -42,20 +46,16 @@ def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
                 with open(dep, "wb") as fptr:
                     pickle.dump(obj, fptr, protocol=3)
 
-                new_hash = subprocess.check_output(["md5sum",
-                                                    dep]).decode().split()[0]
+                new_hash = subprocess.check_output(["md5sum", dep]).decode().split()[0]
                 old_mtime, old_size, old_hash = state[task_name][dep]
                 stat = os.stat(dep)
                 new_mtime = stat.st_mtime
                 new_size = stat.st_size
 
                 tqdm.auto.tqdm.write("\t" + dep + ":")
-                tqdm.auto.tqdm.write("\t\tsize:  {} -> {}".format(
-                    old_size, new_size))
-                tqdm.auto.tqdm.write("\t\tmtime: {} -> {}".format(
-                    old_mtime, new_mtime))
-                tqdm.auto.tqdm.write("\t\tmd5:   {} -> {}".format(
-                    old_hash, new_hash))
+                tqdm.auto.tqdm.write("\t\tsize:  {} -> {}".format(old_size, new_size))
+                tqdm.auto.tqdm.write("\t\tmtime: {} -> {}".format(old_mtime, new_mtime))
+                tqdm.auto.tqdm.write("\t\tmd5:   {} -> {}".format(old_hash, new_hash))
 
                 state[task_name][dep] = [new_mtime, new_size, new_hash]
 

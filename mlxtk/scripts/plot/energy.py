@@ -5,17 +5,24 @@ import matplotlib.pyplot as plt
 
 from mlxtk import units
 from mlxtk.inout import read_output
-from mlxtk.plot import (add_argparse_2d_args, add_argparse_save_arg,
-                        apply_2d_args, handle_saving, plot_energy)
+from mlxtk.plot import (
+    add_argparse_2d_args,
+    add_argparse_save_arg,
+    apply_2d_args,
+    handle_saving,
+    plot_energy,
+)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        nargs="?",
-                        type=Path,
-                        default="propagate.h5/output",
-                        help="path to the output file")
+    parser.add_argument(
+        "path",
+        nargs="?",
+        type=Path,
+        default="propagate.h5/output",
+        help="path to the output file",
+    )
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()

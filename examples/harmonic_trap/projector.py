@@ -11,8 +11,12 @@ if __name__ == "__main__":
 
     projector = numpy.outer(spf, numpy.conjugate(spf))
     spec = MBOperatorSpecification(
-        (1, ), (grid, ), {"coefficient": 1 / parameters.N},
-        {"projector": projector}, "coefficient | 1 projector")
+        (1,),
+        (grid,),
+        {"coefficient": 1 / parameters.N},
+        {"projector": projector},
+        "coefficient | 1 projector",
+    )
 
     with open("projector.mb_opr", "w") as fptr:
         spec.get_operator().createOperatorFileb(fptr)

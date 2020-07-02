@@ -6,8 +6,7 @@ from mlxtk.dvr import DVRSpecification
 from mlxtk.tools import ns_table
 
 
-def get_delta_interaction_dvr(dvr: DVRSpecification,
-                              g: float = 1.0) -> numpy.ndarray:
+def get_delta_interaction_dvr(dvr: DVRSpecification, g: float = 1.0) -> numpy.ndarray:
     n = dvr.args[0]
     V = numpy.zeros((n, n, n, n), dtype=numpy.float64)
     weights = dvr.get_weights()
@@ -18,9 +17,9 @@ def get_delta_interaction_dvr(dvr: DVRSpecification,
     return V
 
 
-def get_kinetic_spf(dvr: DVRSpecification,
-                    spfs: numpy.ndarray,
-                    prefactor: float = -0.5) -> numpy.ndarray:
+def get_kinetic_spf(
+    dvr: DVRSpecification, spfs: numpy.ndarray, prefactor: float = -0.5
+) -> numpy.ndarray:
     m = spfs.shape[0]
     n = spfs.shape[1]
     spfs_c = numpy.conjugate(spfs)
@@ -36,10 +35,12 @@ def get_kinetic_spf(dvr: DVRSpecification,
     return T
 
 
-def get_potential_spf(dvr: DVRSpecification,
-                      spfs: numpy.ndarray,
-                      potential: Callable[[numpy.ndarray], numpy.ndarray],
-                      prefactor: float = 1.0) -> numpy.ndarray:
+def get_potential_spf(
+    dvr: DVRSpecification,
+    spfs: numpy.ndarray,
+    potential: Callable[[numpy.ndarray], numpy.ndarray],
+    prefactor: float = 1.0,
+) -> numpy.ndarray:
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
     V_dvr = prefactor * potential(dvr.get_x())
@@ -52,9 +53,9 @@ def get_potential_spf(dvr: DVRSpecification,
     return V
 
 
-def get_delta_interaction_spf(dvr: DVRSpecification,
-                              spfs: numpy.ndarray,
-                              g: float = 1.0) -> numpy.ndarray:
+def get_delta_interaction_spf(
+    dvr: DVRSpecification, spfs: numpy.ndarray, g: float = 1.0
+) -> numpy.ndarray:
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
     V = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
@@ -65,14 +66,15 @@ def get_delta_interaction_spf(dvr: DVRSpecification,
             for c in range(m):
                 for d in range(m):
                     V[a, b, c, d] = g * numpy.sum(
-                        (1 / w) * spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d])
+                        (1 / w) * spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d]
+                    )
 
     return V
 
 
-def get_dmat_spf_naive(coefficients: numpy.ndarray,
-                       states: numpy.ndarray,
-                       normalize: bool = True):
+def get_dmat_spf_naive(
+    coefficients: numpy.ndarray, states: numpy.ndarray, normalize: bool = True
+):
     m = len(states[0])
     N = numpy.sum(states[0])
     rho_1 = numpy.zeros((m, m), dtype=numpy.complex128)
@@ -94,9 +96,11 @@ def get_dmat_spf_naive(coefficients: numpy.ndarray,
                     if not numpy.array_equal(state_l, state_r):
                         continue
 
-                    rho_1[i, j] += numpy.conjugate(
-                        coefficient1) * coefficient2 * numpy.sqrt(
-                            state1[i] * state2[j])
+                    rho_1[i, j] += (
+                        numpy.conjugate(coefficient1)
+                        * coefficient2
+                        * numpy.sqrt(state1[i] * state2[j])
+                    )
 
     if normalize:
         return rho_1 / N
@@ -104,10 +108,12 @@ def get_dmat_spf_naive(coefficients: numpy.ndarray,
     return rho_1
 
 
-def get_dmat_spf(coefficients: numpy.ndarray,
-                 states_Nm1: numpy.ndarray,
-                 states: numpy.ndarray,
-                 normalize: bool = True) -> numpy.ndarray:
+def get_dmat_spf(
+    coefficients: numpy.ndarray,
+    states_Nm1: numpy.ndarray,
+    states: numpy.ndarray,
+    normalize: bool = True,
+) -> numpy.ndarray:
     m = len(states_Nm1[0])
     N = numpy.sum(states[0])
     rho_1 = numpy.zeros((m, m), dtype=numpy.complex128)
@@ -119,8 +125,7 @@ def get_dmat_spf(coefficients: numpy.ndarray,
             if numpy.array_equal(entry, ns):
                 return i
 
-        raise KeyError(
-            "ns \"{}\" not contained in number state table!".format(ns))
+        raise KeyError('ns "{}" not contained in number state table!'.format(ns))
 
     for i in range(m):
         for j in range(m):
@@ -129,10 +134,11 @@ def get_dmat_spf(coefficients: numpy.ndarray,
                 state_b[:] = state
                 state_a[i] += 1
                 state_b[j] += 1
-                rho_1[i, j] += numpy.sqrt(
-                    (state[i] + 1) *
-                    (state[j] + 1)) * numpy.conjugate(coefficients[get_index(
-                        state_a)]) * coefficients[get_index(state_b)]
+                rho_1[i, j] += (
+                    numpy.sqrt((state[i] + 1) * (state[j] + 1))
+                    * numpy.conjugate(coefficients[get_index(state_a)])
+                    * coefficients[get_index(state_b)]
+                )
 
     if normalize:
         return rho_1 / N
@@ -140,9 +146,9 @@ def get_dmat_spf(coefficients: numpy.ndarray,
     return rho_1
 
 
-def get_dmat2_spf_naive(coefficients: numpy.ndarray,
-                        states: numpy.ndarray,
-                        normalize: bool = True) -> numpy.ndarray:
+def get_dmat2_spf_naive(
+    coefficients: numpy.ndarray, states: numpy.ndarray, normalize: bool = True
+) -> numpy.ndarray:
     m = len(states[0])
     N = numpy.sum(states[0])
     rho_2 = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
@@ -175,10 +181,16 @@ def get_dmat2_spf_naive(coefficients: numpy.ndarray,
                             delta_l = 1 if (i == j) else 0
                             delta_r = 1 if (k == l) else 0
 
-                            rho_2[i, j, k, l] += numpy.conjugate(
-                                coefficient1) * coefficient2 * numpy.sqrt(
-                                    (state1[i] - delta_l) * state1[j] *
-                                    state2[k] * (state2[l] - delta_r))
+                            rho_2[i, j, k, l] += (
+                                numpy.conjugate(coefficient1)
+                                * coefficient2
+                                * numpy.sqrt(
+                                    (state1[i] - delta_l)
+                                    * state1[j]
+                                    * state2[k]
+                                    * (state2[l] - delta_r)
+                                )
+                            )
 
     if normalize:
         return rho_2 / (N * (N - 1))
@@ -186,10 +198,12 @@ def get_dmat2_spf_naive(coefficients: numpy.ndarray,
     return rho_2
 
 
-def get_dmat2_spf(coefficients: numpy.ndarray,
-                  states_Nm2: numpy.ndarray,
-                  states: numpy.ndarray,
-                  normalize: bool = True) -> numpy.ndarray:
+def get_dmat2_spf(
+    coefficients: numpy.ndarray,
+    states_Nm2: numpy.ndarray,
+    states: numpy.ndarray,
+    normalize: bool = True,
+) -> numpy.ndarray:
     m = len(states_Nm2[0])
     N = numpy.sum(states[0])
     rho_2 = numpy.zeros((m, m, m, m), dtype=numpy.complex128)
@@ -201,8 +215,7 @@ def get_dmat2_spf(coefficients: numpy.ndarray,
             if numpy.array_equal(entry, ns):
                 return i
 
-        raise KeyError(
-            "ns \"{}\" not contained in number state table!".format(ns))
+        raise KeyError('ns "{}" not contained in number state table!'.format(ns))
 
     for i in range(m):
         for j in range(m):
@@ -211,8 +224,8 @@ def get_dmat2_spf(coefficients: numpy.ndarray,
                     for state in states_Nm2:
                         state_a[:] = state
                         state_b[:] = state
-                        delta_a = (1 if i == j else 0)
-                        delta_b = (1 if k == l else 0)
+                        delta_a = 1 if i == j else 0
+                        delta_b = 1 if k == l else 0
                         factor_a = state[j] + 1 - delta_a
                         if factor_a <= 0:
                             continue
@@ -223,10 +236,13 @@ def get_dmat2_spf(coefficients: numpy.ndarray,
                         state_a[j] += 1
                         state_b[k] += 1
                         state_b[l] += 1
-                        rho_2[i, j, k, l] += numpy.sqrt(
-                            (state[i] + 1) * factor_a * (state[j] + 1) *
-                            factor_b) * numpy.conjugate(coefficients[get_index(
-                                state_a)]) * coefficients[get_index(state_b)]
+                        rho_2[i, j, k, l] += (
+                            numpy.sqrt(
+                                (state[i] + 1) * factor_a * (state[j] + 1) * factor_b
+                            )
+                            * numpy.conjugate(coefficients[get_index(state_a)])
+                            * coefficients[get_index(state_b)]
+                        )
 
     if normalize:
         return rho_2 / (N * (N - 1))

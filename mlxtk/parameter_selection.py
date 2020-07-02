@@ -4,8 +4,7 @@ import os
 import pickle
 from copy import deepcopy
 from pathlib import Path
-from typing import (Any, Callable, Dict, Iterable, List, Optional, Set, Tuple,
-                    Union)
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import numpy
 from tqdm import tqdm
@@ -19,10 +18,12 @@ LOGGER = get_logger(__name__)
 
 
 class ParameterSelection:
-    def __init__(self,
-                 parameters: Iterable[Parameters],
-                 path: Union[str, Path] = None,
-                 indices: Iterable[int] = None):
+    def __init__(
+        self,
+        parameters: Iterable[Parameters],
+        path: Union[str, Path] = None,
+        indices: Iterable[int] = None,
+    ):
         if indices is None:
             self.parameters = [(i, p) for i, p in enumerate(parameters)]
         else:
@@ -34,21 +35,27 @@ class ParameterSelection:
 
     def copy(self):
         return ParameterSelection(
-            deepcopy([p[1].copy() for p in self.parameters], self.path,
-                     [p[0] for p in self.parameters]))
+            deepcopy(
+                [p[1].copy() for p in self.parameters],
+                self.path,
+                [p[0] for p in self.parameters],
+            )
+        )
 
     def partition_single(self, parameter_name: str):
         parameter_values = self.get_values(parameter_name)
-        partitions = {value: [[], []]
-                      for value in parameter_values
-                      }  # type: Dict[Any, List[List[int], List[Parameters]]]
+        partitions = {
+            value: [[], []] for value in parameter_values
+        }  # type: Dict[Any, List[List[int], List[Parameters]]]
         for index, parameter in self.parameters:
             partitions[parameter[parameter_name]][0].append(index)
             partitions[parameter[parameter_name]][1].append(
-                parameter.copy().remove_parameter(parameter_name))
+                parameter.copy().remove_parameter(parameter_name)
+            )
         return {
-            value: ParameterSelection(partitions[value][1], self.path,
-                                      partitions[value][0])
+            value: ParameterSelection(
+                partitions[value][1], self.path, partitions[value][0]
+            )
             for value in parameter_values
         }
 
@@ -79,8 +86,7 @@ class ParameterSelection:
 
     def group_by(self, name: str):
         return {
-            value: self.fix_parameter(name, value)
-            for value in self.get_values(name)
+            value: self.fix_parameter(name, value) for value in self.get_values(name)
         }
 
     def select_parameter(self, name: str, values: Iterable[Any]):
@@ -93,14 +99,13 @@ class ParameterSelection:
         Returns:
             A new ParameterSelection containing only matching parameter sets.
         """
-        return ParameterSelection([
-            entry[1] for entry in self.parameters if entry[1][name] in values
-        ], self.path, [
-            entry[0] for entry in self.parameters if entry[1][name] in values
-        ])
+        return ParameterSelection(
+            [entry[1] for entry in self.parameters if entry[1][name] in values],
+            self.path,
+            [entry[0] for entry in self.parameters if entry[1][name] in values],
+        )
 
-    def select_parameters(self, names: Iterable[str],
-                          values: Iterable[Iterable[Any]]):
+    def select_parameters(self, names: Iterable[str], values: Iterable[Iterable[Any]]):
         """Select by multiple values of a single parameter.
 
         Args:
@@ -131,8 +136,7 @@ class ParameterSelection:
             if parameters.has_same_common_parameters(entry[1]):
                 return path
 
-        raise RuntimeError("cannot find path for parameters: " +
-                           str(parameters))
+        raise RuntimeError("cannot find path for parameters: " + str(parameters))
 
     def get_paths(self) -> List[Path]:
         """Compute the paths for all included parameter sets.
@@ -172,9 +176,9 @@ class ParameterSelection:
 
         return variables, values
 
-    def foreach(self,
-                func: Callable[[int, str, Parameters], Any],
-                parallel=True) -> List[Any]:
+    def foreach(
+        self, func: Callable[[int, str, Parameters], Any], parallel=True
+    ) -> List[Any]:
         """Call a function for each included parameter set.
 
         Args:
@@ -187,23 +191,26 @@ class ParameterSelection:
             list of all return values created by calling the function for each
             parameter set.
         """
+
         def helper(item):
             return func(item[0], item[1], item[2])
 
-        work = [[entry[0], path, entry[1]]
-                for entry, path in zip(self.parameters, self.get_paths())]
+        work = [
+            [entry[0], path, entry[1]]
+            for entry, path in zip(self.parameters, self.get_paths())
+        ]
 
         if parallel:
             return map_parallel_progress(helper, work)
 
         return [
-            func(entry[0], path, entry[1]) for entry, path in tqdm(
-                list(zip(self.parameters, self.get_paths())))
+            func(entry[0], path, entry[1])
+            for entry, path in tqdm(list(zip(self.parameters, self.get_paths())))
         ]
 
     def plot_foreach(
-            self, name: str, func: Callable[[int, str, Parameters],
-                                            None]) -> Optional[List[Any]]:
+        self, name: str, func: Callable[[int, str, Parameters], None]
+    ) -> Optional[List[Any]]:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
 
@@ -230,15 +237,18 @@ def load_scan(path: Union[str, Path]) -> ParameterSelection:
         return ParameterSelection((parameter for parameter in obj), path)
 
 
-def group_scans_by(selections: List[ParameterSelection],
-                   parameter_name: str) -> Dict[Any, List[ParameterSelection]]:
+def group_scans_by(
+    selections: List[ParameterSelection], parameter_name: str
+) -> Dict[Any, List[ParameterSelection]]:
     values = set()
     for selection in selections:
         scan_values = selection.get_values(parameter_name)
         if len(scan_values) != 1:
             raise RuntimeError(
-                "exactly one parameter for \"{}\" required per scan".format(
-                    parameter_name))
+                'exactly one parameter for "{}" required per scan'.format(
+                    parameter_name
+                )
+            )
         values.add(scan_values.pop())
 
     result = {}

@@ -23,14 +23,18 @@ class DmatSlider(QtWidgets.QWidget):
 
         self.window = load_ui("dmat_spf_slider.ui")
 
-        self.plot = self.window.findChild(MatplotlibWidget,
-                                          "plot")  # type: MatplotlibWidget
+        self.plot = self.window.findChild(
+            MatplotlibWidget, "plot"
+        )  # type: MatplotlibWidget
         self.slider_time = self.window.findChild(
-            QtWidgets.QSlider, "slider_time")  # type: QtWidgets.QSlider
+            QtWidgets.QSlider, "slider_time"
+        )  # type: QtWidgets.QSlider
         self.spin_time = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_time")  # type: QtWidgets.QSpinBox
+            QtWidgets.QSpinBox, "spin_time"
+        )  # type: QtWidgets.QSpinBox
         self.label_time = self.window.findChild(
-            QtWidgets.QLabel, "label_time")  # type: QtWidgets.QLabel
+            QtWidgets.QLabel, "label_time"
+        )  # type: QtWidgets.QLabel
 
         self.axes = self.plot.figure.subplots(1, 1)
         self.plot.figure.set_tight_layout(True)
@@ -59,11 +63,13 @@ class DmatSlider(QtWidgets.QWidget):
             self.mesh = None
 
         X2, X1 = numpy.meshgrid(self.index2, self.index1)
-        self.mesh = self.axes.pcolormesh(X1,
-                                         X2,
-                                         numpy.abs(self.dmat[self.time_index]),
-                                         cmap="gnuplot",
-                                         rasterized=True)
+        self.mesh = self.axes.pcolormesh(
+            X1,
+            X2,
+            numpy.abs(self.dmat[self.time_index]),
+            cmap="gnuplot",
+            rasterized=True,
+        )
         plot.apply_2d_args(self.axes, self.plot.figure, self.plot_args)
         self.plot.canvas.draw()
 

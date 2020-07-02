@@ -12,8 +12,9 @@ from mlxtk.tools.diagonalize import diagonalize_1b_operator
 
 
 class ComputeSpectrum(Task):
-    def __init__(self, hamiltonian_1b: Union[str, OperatorSpecification],
-                 num_spfs: int):
+    def __init__(
+        self, hamiltonian_1b: Union[str, OperatorSpecification], num_spfs: int
+    ):
         self.name = hamiltonian_1b
         self.num_spfs = num_spfs
 
@@ -34,7 +35,7 @@ class ComputeSpectrum(Task):
 
         return {
             "name": "spectrum:{}:check_num_spfs".format(self.name),
-            "actions": [action_check_num_spfs]
+            "actions": [action_check_num_spfs],
         }
 
     def task_compute(self):

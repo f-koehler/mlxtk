@@ -2,16 +2,15 @@ import pickle
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Union
 
-from QDTK.Operatorb import OCoef as Coeff
-from QDTK.Operatorb import Operatorb as Operator
-from QDTK.Operatorb import OTerm as Term
-
 from mlxtk.doit_compat import DoitAction
 from mlxtk.dvr import DVRSpecification
 from mlxtk.hashing import inaccurate_hash
 from mlxtk.log import get_logger
 from mlxtk.operator import MBOperatorSpecification
 from mlxtk.tasks.task import Task
+from QDTK.Operatorb import OCoef as Coeff
+from QDTK.Operatorb import Operatorb as Operator
+from QDTK.Operatorb import OTerm as Term
 
 
 class CreateMBOperator(Task):
@@ -48,11 +47,9 @@ class CreateMBOperator(Task):
                         for key in self.specification.terms
                     }
                     if "value" in obj[4][term]:
-                        obj[4][term]["value"] = inaccurate_hash(
-                            obj[4][term]["value"])
+                        obj[4][term]["value"] = inaccurate_hash(obj[4][term]["value"])
                 else:
-                    obj[4][term] = inaccurate_hash(
-                        self.specification.terms[term])
+                    obj[4][term] = inaccurate_hash(self.specification.terms[term])
 
             with open(targets[0], "wb") as fp:
                 pickle.dump(obj, fp, protocol=3)
@@ -88,7 +85,7 @@ class CreateMBOperator(Task):
 
         return {
             "name": "mb_operator:{}:remove".format(self.name),
-            "actions": [action_remove_operator]
+            "actions": [action_remove_operator],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

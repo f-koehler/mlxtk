@@ -11,9 +11,9 @@ from mlxtk.scripts.dmat_evec_slider import DmatEvecSlider
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("path_psi", nargs="?", help="path to psi file")
-    parser.add_argument("path_norbs",
-                        nargs="?",
-                        help="path to file with natural orbitals")
+    parser.add_argument(
+        "path_norbs", nargs="?", help="path to file with natural orbitals"
+    )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 
@@ -27,8 +27,7 @@ def main():
             norbs[i][j] *= weights
 
     app = QtWidgets.QApplication(sys.argv)
-    window = DmatEvecSlider(times, grid,
-                            numpy.abs(spfs) - numpy.abs(norbs), args)
+    window = DmatEvecSlider(times, grid, numpy.abs(spfs) - numpy.abs(norbs), args)
     assert window
     sys.exit(app.exec_())
 

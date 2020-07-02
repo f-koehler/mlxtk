@@ -4,24 +4,24 @@ import matplotlib.pyplot as plt
 
 from mlxtk import units
 from mlxtk.inout import read_natpop
-from mlxtk.plot import (add_argparse_2d_args, add_argparse_save_arg,
-                        apply_2d_args, handle_saving, plot_entropy)
+from mlxtk.plot import (
+    add_argparse_2d_args,
+    add_argparse_save_arg,
+    apply_2d_args,
+    handle_saving,
+    plot_entropy,
+)
 from mlxtk.tools.entropy import compute_entropy
 from mlxtk.util import labels_from_paths
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        nargs="*",
-                        default=["natpop"],
-                        help="path to the natpop file")
+    parser.add_argument(
+        "path", nargs="*", default=["natpop"], help="path to the natpop file"
+    )
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom")
+    parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()

@@ -9,15 +9,13 @@ from mlxtk.scripts.dmat_evec_slider import DmatEvecSlider
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        nargs="?",
-                        default="psi",
-                        help="path to psi file")
+    parser.add_argument("path", nargs="?", default="psi", help="path to psi file")
     parser.add_argument(
         "gpop",
         nargs="?",
         default="gpop",
-        help="path to a gpop file in order to determin the grid")
+        help="path to a gpop file in order to determin the grid",
+    )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()
 

@@ -32,9 +32,9 @@ def read_output_ascii(
           simulation times. The other entries contain the norm, energy and
           maximum SPF overlap of the wave function at all times.
     """
-    dataFrame = pandas.read_csv(str(path),
-                                sep=r"\s+",
-                                names=["time", "norm", "energy", "overlap"])
+    dataFrame = pandas.read_csv(
+        str(path), sep=r"\s+", names=["time", "norm", "energy", "overlap"]
+    )
     return (
         dataFrame["time"].values,
         dataFrame["norm"].values,
@@ -44,8 +44,7 @@ def read_output_ascii(
 
 
 def read_output_hdf5(
-    path: Union[Path, str],
-    interior_path: str = "/"
+    path: Union[Path, str], interior_path: str = "/"
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -56,12 +55,14 @@ def read_output_hdf5(
         )
 
 
-def add_output_to_hdf5(fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray,
-                       norm: numpy.ndarray, energy: numpy.ndarray,
-                       overlap: numpy.ndarray):
+def add_output_to_hdf5(
+    fptr: Union[h5py.File, h5py.Group],
+    time: numpy.ndarray,
+    norm: numpy.ndarray,
+    energy: numpy.ndarray,
+    overlap: numpy.ndarray,
+):
     fptr.create_dataset("time", time.shape, dtype=numpy.float64)[:] = time
     fptr.create_dataset("norm", norm.shape, dtype=numpy.float64)[:] = norm
-    fptr.create_dataset("energy", energy.shape,
-                        dtype=numpy.float64)[:] = energy
-    fptr.create_dataset("overlap", overlap.shape,
-                        dtype=numpy.float64)[:] = overlap
+    fptr.create_dataset("energy", energy.shape, dtype=numpy.float64)[:] = energy
+    fptr.create_dataset("overlap", overlap.shape, dtype=numpy.float64)[:] = overlap

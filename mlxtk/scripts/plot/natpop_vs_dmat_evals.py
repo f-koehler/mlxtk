@@ -10,21 +10,17 @@ from mlxtk.plot import add_argparse_2d_args, apply_2d_args
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path_natpop",
-                        nargs="?",
-                        default="natpop",
-                        help="path to the natpop file")
+    parser.add_argument(
+        "path_natpop", nargs="?", default="natpop", help="path to the natpop file"
+    )
     parser.add_argument(
         "path_evals",
         nargs="?",
         default="eval_dmat_dof1",
-        help="path to the file containing the dmat eigenvalues")
+        help="path to the file containing the dmat eigenvalues",
+    )
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom")
+    parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

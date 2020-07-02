@@ -12,22 +12,19 @@ LOGGER = get_logger(__name__)
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument(metavar="input",
-                        dest="input_",
-                        type=str,
-                        help="input psi file")
+    parser.add_argument(metavar="input", dest="input_", type=str, help="input psi file")
     parser.add_argument("-o", "--output", type=str, help="output psi file")
-    parser.add_argument("-t",
-                        "--time",
-                        type=float,
-                        action="append",
-                        help="time point for psi")
-    parser.add_argument("-s",
-                        "--slice",
-                        dest="slice_",
-                        type=str,
-                        action="append",
-                        help="index slices for new psi")
+    parser.add_argument(
+        "-t", "--time", type=float, action="append", help="time point for psi"
+    )
+    parser.add_argument(
+        "-s",
+        "--slice",
+        dest="slice_",
+        type=str,
+        action="append",
+        help="index slices for new psi",
+    )
     args = parser.parse_args()
 
     initial_size = os.path.getsize(os.path.realpath(args.input_))
@@ -49,7 +46,7 @@ def main():
             LOGGER.info("add slice: %s", slice_)
             m = re_slice.match(slice_)
             if not m:
-                raise RuntimeError("Invalid slice: \"%s\"", slice_)
+                raise RuntimeError('Invalid slice: "%s"', slice_)
             start = 0
             stop = len(times)
             step = 1

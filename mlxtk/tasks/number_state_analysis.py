@@ -16,8 +16,9 @@ from mlxtk.util import copy_file, make_path
 
 
 class NumberStateAnalysisStatic(Task):
-    def __init__(self, wave_function: Union[str, Path],
-                 basis: Union[str, Path], **kwargs):
+    def __init__(
+        self, wave_function: Union[str, Path], basis: Union[str, Path], **kwargs
+    ):
         self.logger = get_logger(__name__ + ".NumberStateAnalysisStatic")
 
         self.wave_function = make_path(wave_function).with_suffix(".wfn")
@@ -25,9 +26,11 @@ class NumberStateAnalysisStatic(Task):
         self.result = make_path(
             kwargs.get(
                 "name",
-                self.wave_function.with_name(self.wave_function.stem + "_" +
-                                             self.basis.stem))).with_suffix(
-                                                 ".fixed_ns.h5")
+                self.wave_function.with_name(
+                    self.wave_function.stem + "_" + self.basis.stem
+                ),
+            )
+        ).with_suffix(".fixed_ns.h5")
 
         self.name = str(self.result.with_suffix(""))
 
@@ -48,8 +51,14 @@ class NumberStateAnalysisStatic(Task):
                     copy_file(wave_function, "restart")
                     copy_file(basis, "basis")
                     cmd = [
-                        "qdtk_analysis.x", "-fixed_ns", "-rst_bra", "basis",
-                        "-rst_ket", "restart", "-save", "result"
+                        "qdtk_analysis.x",
+                        "-fixed_ns",
+                        "-rst_bra",
+                        "basis",
+                        "-rst_ket",
+                        "restart",
+                        "-save",
+                        "result",
                     ]
                     self.logger.info("command: %s", " ".join(cmd))
                     env = os.environ.copy()
@@ -58,25 +67,23 @@ class NumberStateAnalysisStatic(Task):
 
                     times, real, imag = inout.read_fixed_ns_ascii("result")
                     wfn = load_wave_function("basis")
-                    inout.write_fixed_ns_hdf5("result.h5", times, real, imag,
-                                              wfn._tape[1], wfn._tape[3])
+                    inout.write_fixed_ns_hdf5(
+                        "result.h5", times, real, imag, wfn._tape[1], wfn._tape[3]
+                    )
 
                     with h5py.File("result.h5", "a") as fptr:
                         dset = fptr["fixed_ns"].create_dataset(
-                            "total_magnitude",
-                            shape=(1, ),
-                            dtype=numpy.float64)
-                        dset[:] = numpy.sum((real**2) + (imag**2))
+                            "total_magnitude", shape=(1,), dtype=numpy.float64
+                        )
+                        dset[:] = numpy.sum((real ** 2) + (imag ** 2))
 
                     copy_file("result.h5", result)
 
         return {
-            "name":
-            "number_state_analysis_static:{}:compute".format(self.name),
+            "name": "number_state_analysis_static:{}:compute".format(self.name),
             "actions": [action_compute],
             "targets": [str(self.result)],
-            "file_dep": [str(self.wave_function),
-                         str(self.basis)]
+            "file_dep": [str(self.wave_function), str(self.basis)],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

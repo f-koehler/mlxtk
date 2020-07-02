@@ -20,12 +20,14 @@ LOGGER = get_logger(__name__)
 
 
 class RequestWaveFunction(Task):
-    def __init__(self,
-                 name: str,
-                 parameters: Parameters,
-                 db_path: Union[str, Path],
-                 variable_name: str = "db",
-                 compute: bool = True):
+    def __init__(
+        self,
+        name: str,
+        parameters: Parameters,
+        db_path: Union[str, Path],
+        variable_name: str = "db",
+        compute: bool = True,
+    ):
 
         db_path = make_path(db_path)
         if not db_path.is_absolute():
@@ -58,7 +60,7 @@ class RequestWaveFunction(Task):
             "actions": [action_copy],
             "targets": [self.path],
             "file_dep": [src_path],
-            "verbosity": 2
+            "verbosity": 2,
         }
 
     def task_request_wave_function_dry_run(self) -> Dict[str, Any]:
@@ -79,7 +81,7 @@ class RequestWaveFunction(Task):
         return {
             "name": "wfn:{}:request_dry_run".format(self.name),
             "actions": [action_noop],
-            "verbosity": 2
+            "verbosity": 2,
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
@@ -90,10 +92,9 @@ class RequestWaveFunction(Task):
 
 
 class FrameFromPsi(Task):
-    def __init__(self,
-                 psi: Union[str, Path],
-                 index: int,
-                 path: Union[Path, str] = None):
+    def __init__(
+        self, psi: Union[str, Path], index: int, path: Union[Path, str] = None
+    ):
         self.logger = get_logger(__name__ + ".FrameFromPsi")
         self.psi = make_path(psi)
         self.index = index
@@ -112,10 +113,9 @@ class FrameFromPsi(Task):
                 pickle.dump(self.index, fptr, protocol=3)
 
         return {
-            "name":
-            "frame_from_psi:{}_{}:pickle".format(self.path.stem, self.index),
+            "name": "frame_from_psi:{}_{}:pickle".format(self.path.stem, self.index),
             "actions": [action_pickle],
-            "targets": [str(self.pickle_path)]
+            "targets": [str(self.pickle_path)],
         }
 
     def task_grab(self) -> Dict[str, Any]:
@@ -125,12 +125,12 @@ class FrameFromPsi(Task):
                 index = pickle.load(fptr)
 
             tape, time, frame = read_psi_frame_ascii(self.psi, self.index)
-            write_psi_ascii(targets[0],
-                            (tape, numpy.array([time]), numpy.array([frame])))
+            write_psi_ascii(
+                targets[0], (tape, numpy.array([time]), numpy.array([frame]))
+            )
 
         return {
-            "name": "frame_from_psi:{}_{}:grab".format(self.path.stem,
-                                                       self.index),
+            "name": "frame_from_psi:{}_{}:grab".format(self.path.stem, self.index),
             "actions": [action_grab],
             "file_dep": [self.pickle_path, self.psi],
             "targets": [self.path],

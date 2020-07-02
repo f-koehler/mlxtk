@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 import h5py
-from QDTK.Operator import trafo_to_momentum_rep
 
 from mlxtk import dvr
 from mlxtk.cwd import WorkingDir
@@ -14,17 +13,22 @@ from mlxtk.doit_analyses import output
 from mlxtk.doit_compat import DoitAction
 from mlxtk.hashing import inaccurate_hash
 from mlxtk.inout.momentum_distribution import (
-    add_momentum_distribution_to_hdf5, read_momentum_distribution_ascii)
+    add_momentum_distribution_to_hdf5,
+    read_momentum_distribution_ascii,
+)
 from mlxtk.tasks.task import Task
+from QDTK.Operator import trafo_to_momentum_rep
 
 
 class MCTDHBMomentumDistribution(Task):
-    def __init__(self,
-                 psi: str,
-                 operator: str,
-                 wfn: str,
-                 grid: dvr.DVRSpecification,
-                 output_file: Optional[str] = None):
+    def __init__(
+        self,
+        psi: str,
+        operator: str,
+        wfn: str,
+        grid: dvr.DVRSpecification,
+        output_file: Optional[str] = None,
+    ):
         self.psi = psi
         self.name = psi.replace("/", "_")
 
@@ -38,31 +42,30 @@ class MCTDHBMomentumDistribution(Task):
         self.wfn = wfn + ".wfn"
 
         if output_file is None:
-            self.output_file = str(
-                Path(psi).parent / "momentum_distribution.h5")
+            self.output_file = str(Path(psi).parent / "momentum_distribution.h5")
         else:
             self.output_file = output_file
 
-        self.pickle_file = str(Path(
-            self.output_file).with_suffix("")) + ".pickle"
+        self.pickle_file = str(Path(self.output_file).with_suffix("")) + ".pickle"
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
         def action_write_parameters(targets: List[str]):
             obj = [
-                self.psi, self.operator,
+                self.psi,
+                self.operator,
                 inaccurate_hash(self.momentum_operator.real),
-                inaccurate_hash(self.momentum_operator.imag), self.wfn,
-                self.output_file
+                inaccurate_hash(self.momentum_operator.imag),
+                self.wfn,
+                self.output_file,
             ]
             with open(targets[0], "wb") as fptr:
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name":
-            "momentum_distribution:{}:write_parameters".format(self.name),
+            "name": "momentum_distribution:{}:write_parameters".format(self.name),
             "actions": [action_write_parameters],
-            "targets": [self.pickle_file]
+            "targets": [self.pickle_file],
         }
 
     def task_compute(self) -> Dict[str, Any]:
@@ -83,15 +86,18 @@ class MCTDHBMomentumDistribution(Task):
                 shutil.copy(path_operator, "oper")
                 shutil.copy(path_wfn, "restart")
 
-                trafo_to_momentum_rep([
-                    self.momentum_operator,
-                ], [
-                    1,
-                ])
+                trafo_to_momentum_rep([self.momentum_operator,], [1,])
 
                 cmd = [
-                    "qdtk_analysis.x", "-mtrafo", "trafo_mom_rep", "-opr",
-                    "oper", "-psi", "psi", "-rst", "restart"
+                    "qdtk_analysis.x",
+                    "-mtrafo",
+                    "trafo_mom_rep",
+                    "-opr",
+                    "oper",
+                    "-psi",
+                    "psi",
+                    "-rst",
+                    "restart",
                 ]
                 env = os.environ.copy()
                 env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
@@ -102,7 +108,8 @@ class MCTDHBMomentumDistribution(Task):
 
                 with h5py.File(path_output, "w") as fptr:
                     add_momentum_distribution_to_hdf5(
-                        fptr, *read_momentum_distribution_ascii("mom_distr_1"))
+                        fptr, *read_momentum_distribution_ascii("mom_distr_1")
+                    )
 
             shutil.rmtree(path_temp)
 

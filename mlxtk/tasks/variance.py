@@ -8,8 +8,9 @@ from mlxtk.tasks.task import Task
 
 
 class ComputeVariance(Task):
-    def __init__(self, expectation_value: str, expectation_value_squared: str,
-                 **kwargs):
+    def __init__(
+        self, expectation_value: str, expectation_value_squared: str, **kwargs
+    ):
         self.name = kwargs.get("name", expectation_value)
         self.expectation_value = expectation_value
         self.expectation_value_squared = expectation_value_squared
@@ -29,15 +30,16 @@ class ComputeVariance(Task):
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")
 
-            write_expval_hdf5(self.path_variance, t1, exp2 - (exp**2))
+            write_expval_hdf5(self.path_variance, t1, exp2 - (exp ** 2))
 
         return {
-            "name":
-            "variance:{}:compute".format(self.name),
+            "name": "variance:{}:compute".format(self.name),
             "actions": [action_compute],
             "targets": [self.path_variance],
-            "file_dep":
-            [self.path_expectation_value, self.path_expectation_value_squared],
+            "file_dep": [
+                self.path_expectation_value,
+                self.path_expectation_value_squared,
+            ],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

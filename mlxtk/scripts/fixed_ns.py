@@ -20,21 +20,21 @@ def main():
     parser.add_argument(
         "basis",
         type=Path,
-        help="wave function file containing the basis to project onto")
+        help="wave function file containing the basis to project onto",
+    )
     parser.add_argument(
         "psi",
         type=Path,
-        help="wave function file containing the wave function to analyse")
-    parser.add_argument("-o",
-                        "--output",
-                        type=Path,
-                        help="name of the output file (optional)")
+        help="wave function file containing the wave function to analyse",
+    )
+    parser.add_argument(
+        "-o", "--output", type=Path, help="name of the output file (optional)"
+    )
     args = parser.parse_args()
 
     output = args.output
     if not output:
-        output = Path("{}_{}.fixed_ns.h5".format(args.psi.stem,
-                                                 args.basis.stem))
+        output = Path("{}_{}.fixed_ns.h5".format(args.psi.stem, args.basis.stem))
 
     output = output.resolve()
 
@@ -51,16 +51,25 @@ def main():
 
         with WorkingDir(tmpdir):
             cmd = [
-                "qdtk_analysis.x", "-fixed_ns", "-rst_bra", "basis",
-                "-rst_ket", "restart", "-psi", "psi", "-save", "result"
+                "qdtk_analysis.x",
+                "-fixed_ns",
+                "-rst_bra",
+                "basis",
+                "-rst_ket",
+                "restart",
+                "-psi",
+                "psi",
+                "-save",
+                "result",
             ]
             LOGGER.info("run qdtk_analysis.x: %s", " ".join(cmd))
             subprocess.check_output(cmd)
 
             times, real, imag = inout.read_fixed_ns_ascii("result")
             wfn = load_wave_function("basis")
-            inout.write_fixed_ns_hdf5("result.h5", times, real, imag,
-                                      wfn._tape[1], wfn._tape[3])
+            inout.write_fixed_ns_hdf5(
+                "result.h5", times, real, imag, wfn._tape[1], wfn._tape[3]
+            )
             LOGGER.info("copy result")
             shutil.copy2("result.h5", output)
 

@@ -4,8 +4,7 @@ import numpy
 import tabulate
 
 
-def list_arg_closest(array: List[Union[int, float]],
-                     value: Union[int, float]) -> int:
+def list_arg_closest(array: List[Union[int, float]], value: Union[int, float]) -> int:
     if len(array) < 1:
         return 0
 
@@ -57,14 +56,12 @@ def make_table(
 
     arrays = []
     for arg in args:
-        arrays.append(list(arg) + [
-            None,
-        ] * (length - len(arg)))
+        arrays.append(list(arg) + [None,] * (length - len(arg)))
 
     return numpy.array(arrays).T.tolist()
 
 
-def format_simple_table(table: List[List[Any]],
-                        headers: List[str],
-                        formatter="latex_booktabs") -> str:
+def format_simple_table(
+    table: List[List[Any]], headers: List[str], formatter="latex_booktabs"
+) -> str:
     return tabulate.tabulate(table, headers, tablefmt=formatter)

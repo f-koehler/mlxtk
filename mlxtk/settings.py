@@ -38,7 +38,8 @@ def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
     if "paths" in settings:
         for path in settings["paths"]:
             settings["paths"][path] = (
-                Path(directory) / Path(settings["paths"][path])).resolve()
+                Path(directory) / Path(settings["paths"][path])
+            ).resolve()
     else:
         settings["paths"] = {}
 
@@ -52,8 +53,9 @@ def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
             else:
                 if settings["env"][entry].startswith("+"):
                     settings["env"][entry] = [
-                        (settings_path.parent /
-                         Path(settings["env"][entry][1:])).resolve()
+                        (
+                            settings_path.parent / Path(settings["env"][entry][1:])
+                        ).resolve()
                     ]
     else:
         settings["env"] = {}
@@ -63,8 +65,7 @@ def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
     return settings
 
 
-def merge_settings(first: Dict[Any, Any], second: Dict[Any,
-                                                       Any]) -> Dict[Any, Any]:
+def merge_settings(first: Dict[Any, Any], second: Dict[Any, Any]) -> Dict[Any, Any]:
     new = {key: second[key] for key in second}
 
     for entry in first["paths"]:
@@ -98,7 +99,7 @@ def load_path(name: str, start_directory: Path = Path.cwd()) -> Path:
     if not "paths" in settings:
         raise ValueError("no paths stored in settings")
     if not name in settings["paths"]:
-        raise ValueError("path \"{}\" not stored in settings".format(name))
+        raise ValueError('path "{}" not stored in settings'.format(name))
     return settings["paths"][name]
 
 

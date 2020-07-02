@@ -8,8 +8,15 @@ from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.ui import load_ui, replace_widget
 from mlxtk.ui.plot_widgets import SingleLinePlot
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import (QApplication, QGraphicsView, QHeaderView, QLabel,
-                             QListWidget, QTableWidget, QTabWidget)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QGraphicsView,
+    QHeaderView,
+    QLabel,
+    QListWidget,
+    QTableWidget,
+    QTabWidget,
+)
 
 
 class SpectrumPlot(SingleLinePlot):
@@ -37,14 +44,9 @@ class SpectrumPlot(SingleLinePlot):
 
 
 class GUI(QObject):
-    def __init__(self,
-                 min_index,
-                 max_index,
-                 grid,
-                 weights,
-                 energies,
-                 spfs,
-                 parent=None):
+    def __init__(
+        self, min_index, max_index, grid, weights, energies, spfs, parent=None
+    ):
         super(GUI, self).__init__(parent)
 
         self.min_index = min_index
@@ -61,13 +63,11 @@ class GUI(QObject):
         # get UI elements
         self.spf_list = self.window.findChild(QListWidget, "list_spfs")
         self.label_energy = self.window.findChild(QLabel, "label_energy")
-        self.plot_spectrum = self.window.findChild(QGraphicsView,
-                                                   "plot_spectrum")
+        self.plot_spectrum = self.window.findChild(QGraphicsView, "plot_spectrum")
         self.plot_abs = self.window.findChild(QGraphicsView, "plot_abs")
         self.plot_real = self.window.findChild(QGraphicsView, "plot_real")
         self.plot_imag = self.window.findChild(QGraphicsView, "plot_imag")
-        self.table_properties = self.window.findChild(QTableWidget,
-                                                      "table_properties")
+        self.table_properties = self.window.findChild(QTableWidget, "table_properties")
         self.tabs = self.window.findChild(QTabWidget, "tabs")
         self.tab_spectrum = self.window.findChild(QTabWidget, "tab_spectrum")
 
@@ -86,7 +86,8 @@ class GUI(QObject):
         self.spf_list.currentRowChanged.connect(self.select_item)
         self.update_table(0)
         self.table_properties.horizontalHeader().setSectionResizeMode(
-            0, QHeaderView.Stretch)
+            0, QHeaderView.Stretch
+        )
         self.tabs.currentChanged.connect(self.switch_tab)
 
         plot = SpectrumPlot(self.indices, self.energies)
@@ -117,8 +118,7 @@ class GUI(QObject):
                 self.grid,
                 numpy.real(self.spfs[index]),
                 xlabel="$x$",
-                ylabel=r"$\mathrm{Re}\left[\varphi_{" + str(index) +
-                r"}(x)\right]$",
+                ylabel=r"$\mathrm{Re}\left[\varphi_{" + str(index) + r"}(x)\right]$",
             )
         replace_widget(self.plot_real, self.cache_plot_real[index])
         self.plot_real = self.cache_plot_real[index]
@@ -129,8 +129,7 @@ class GUI(QObject):
                 self.grid,
                 numpy.imag(self.spfs[index]),
                 xlabel="$x$",
-                ylabel=r"$\mathrm{Im}\left[\varphi_{" + str(index) +
-                r"}(x)\right]$",
+                ylabel=r"$\mathrm{Im}\left[\varphi_{" + str(index) + r"}(x)\right]$",
             )
         replace_widget(self.plot_imag, self.cache_plot_imag[index])
         self.plot_imag = self.cache_plot_imag[index]
@@ -140,13 +139,15 @@ class GUI(QObject):
         self.table_properties.item(1, 0).setText(str(index + self.min_index))
         self.table_properties.item(2, 0).setText(
             str(
-                numpy.vdot(self.spfs[index] * numpy.sqrt(self.weights),
-                           self.spfs[index])))
+                numpy.vdot(
+                    self.spfs[index] * numpy.sqrt(self.weights), self.spfs[index]
+                )
+            )
+        )
 
     def update(self, index, tab_index):
         if tab_index == 0:
-            self.plot_spectrum.mark(index + self.min_index,
-                                    self.energies[index])
+            self.plot_spectrum.mark(index + self.min_index, self.energies[index])
         elif tab_index == 1:
             self.set_abs_plot(index)
         elif tab_index == 2:
@@ -168,8 +169,7 @@ class GUI(QObject):
 def main():
     # parse command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("path",
-                        help="path to the one body operator matrix file")
+    parser.add_argument("path", help="path to the one body operator matrix file")
     parser.add_argument(
         "--min",
         dest="min_",
@@ -202,8 +202,7 @@ def main():
 
     # create app
     app = QApplication(sys.argv)
-    GUI(min_, max_, grid, weights, energies[min_:max_ + 1],
-        spfs[min_:max_ + 1])
+    GUI(min_, max_, grid, weights, energies[min_ : max_ + 1], spfs[min_ : max_ + 1])
 
     # run app
     sys.exit(app.exec_())

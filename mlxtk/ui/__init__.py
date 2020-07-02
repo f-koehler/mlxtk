@@ -2,15 +2,15 @@ import os
 
 import pkg_resources
 from matplotlib.backends.backend_qt5agg import FigureCanvas
-from matplotlib.backends.backend_qt5agg import \
-    NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from PySide2 import QtCore, QtUiTools, QtWidgets
 
 if os.environ["QT_API"] != "pyside2":
     raise RuntimeError(
-        "Please set the QT_API environment variable to \"pyside2\" for now.")
+        'Please set the QT_API environment variable to "pyside2" for now.'
+    )
 
 
 class MatplotlibWidget(QtWidgets.QWidget):

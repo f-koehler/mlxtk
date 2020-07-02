@@ -13,13 +13,9 @@ class Cursor1D:
     def set_position(self, p: float):
         if self.line is None:
             if self.is_xcursor:
-                self.line = self.axes.axvline(p,
-                                              ls=self.line_style,
-                                              color=self.color)
+                self.line = self.axes.axvline(p, ls=self.line_style, color=self.color)
             else:
-                self.line = self.axes.axhline(p,
-                                              ls=self.line_style,
-                                              color=self.color)
+                self.line = self.axes.axhline(p, ls=self.line_style, color=self.color)
         else:
             if self.is_xcursor:
                 self.line.set_xdata([p for _ in self.line.get_xdata()])

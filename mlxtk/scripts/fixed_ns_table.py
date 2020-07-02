@@ -11,10 +11,12 @@ from mlxtk.util import compute_magnitude_split
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("result", help="result of the ns analysis")
-    parser.add_argument("--sort",
-                        action="store_true",
-                        default=False,
-                        help="whether to sort by magnitude")
+    parser.add_argument(
+        "--sort",
+        action="store_true",
+        default=False,
+        help="whether to sort by magnitude",
+    )
     args = parser.parse_args()
 
     with h5py.File(args.result, "r") as fp:
@@ -26,7 +28,8 @@ def main():
 
         magnitudes = compute_magnitude_split(
             fp["fixed_ns"]["real"][:, :].flatten(),
-            fp["fixed_ns"]["imag"][:, :].flatten())
+            fp["fixed_ns"]["imag"][:, :].flatten(),
+        )
         N = fp["fixed_ns"].attrs["N"]
         m = fp["fixed_ns"].attrs["m"]
 
@@ -44,12 +47,12 @@ def main():
     print()
 
     print(
-        tabulate.tabulate({
-            "states": states,
-            "magnitudes": magnitudes
-        },
-                          headers="keys",
-                          tablefmt="orgtbl"))
+        tabulate.tabulate(
+            {"states": states, "magnitudes": magnitudes},
+            headers="keys",
+            tablefmt="orgtbl",
+        )
+    )
 
 
 if __name__ == "__main__":

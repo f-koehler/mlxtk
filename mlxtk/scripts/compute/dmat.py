@@ -18,48 +18,44 @@ RE_SLICE = re.compile(r"^([+-]*\d*):([+-]*\d*)(?::([+-]*\d*))?$")
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("operator",
-                        type=Path,
-                        help="path of the operator file")
+    parser.add_argument("operator", type=Path, help="path of the operator file")
     parser.add_argument("restart", type=Path, help="path of the restart file")
     parser.add_argument("psi", type=Path, help="path of the psi file")
     parser.add_argument("--node", type=int, default=0, help="node to use")
-    parser.add_argument("--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom to use")
-    parser.add_argument("-o",
-                        "--output",
-                        type=Path,
-                        default=Path.cwd() / "dmat.h5",
-                        help="output file")
+    parser.add_argument("--dof", type=int, default=1, help="degree of freedom to use")
+    parser.add_argument(
+        "-o", "--output", type=Path, default=Path.cwd() / "dmat.h5", help="output file"
+    )
     parser.add_argument("--slice", type=str)
 
     group_diag = parser.add_mutually_exclusive_group()
     group_diag.add_argument(
         "--diagonalize",
         action="store_true",
-        help="whether to diagonalize the one-body density matrix")
+        help="whether to diagonalize the one-body density matrix",
+    )
     group_diag.add_argument(
         "--only-diagonalize",
         action="store_true",
-        help="whether to only diagonalize the one-body density matrix")
+        help="whether to only diagonalize the one-body density matrix",
+    )
 
-    parser.add_argument("--only-eigenvalues",
-                        action="store_true",
-                        help="whether to only output the eigenvalues")
+    parser.add_argument(
+        "--only-eigenvalues",
+        action="store_true",
+        help="whether to only output the eigenvalues",
+    )
 
     group_rep = parser.add_mutually_exclusive_group()
-    group_rep.add_argument("--spfrep",
-                           action="store_true",
-                           help="use spf representation")
-    group_rep.add_argument("--gridrep",
-                           action="store_true",
-                           help="use grid representation")
+    group_rep.add_argument(
+        "--spfrep", action="store_true", help="use spf representation"
+    )
+    group_rep.add_argument(
+        "--gridrep", action="store_true", help="use grid representation"
+    )
 
     args = parser.parse_args()
-    if args.only_eigenvalues and not (args.diagonalize
-                                      or args.only_diagonalize):
+    if args.only_eigenvalues and not (args.diagonalize or args.only_diagonalize):
         parser.error(
             "--only-eigenvalues only applies when --diagonalize or --only-diagonalize is specified"
         )
@@ -78,8 +74,7 @@ def main():
 
                 m = RE_SLICE.match(args.slice)
                 if not m:
-                    raise RuntimeError("Invalid slice format \"{}\"".format(
-                        args.slice))
+                    raise RuntimeError('Invalid slice format "{}"'.format(args.slice))
 
                 start = 0
                 end = len(times)
@@ -99,14 +94,21 @@ def main():
             else:
                 copy_file(psi, "psi")
 
-            gridrep = args.gridrep or ((not args.gridrep) and
-                                       (not args.spfrep))
+            gridrep = args.gridrep or ((not args.gridrep) and (not args.spfrep))
 
             cmd = [
-                "qdtk_analysis.x", "-opr", "opr", "-rst", "rst", "-psi", "psi",
-                "-dmat", "-nd",
-                str(args.node), "-dof",
-                str(args.dof)
+                "qdtk_analysis.x",
+                "-opr",
+                "opr",
+                "-rst",
+                "rst",
+                "-psi",
+                "psi",
+                "-dmat",
+                "-nd",
+                str(args.node),
+                "-dof",
+                str(args.dof),
             ]
             if not gridrep:
                 cmd.append("-spfrep")
@@ -128,29 +130,37 @@ def main():
                         dmat.add_dmat_gridrep_to_hdf5(
                             fptr,
                             dmat.read_dmat_gridrep_ascii(
-                                "dmat_dof{}_grid".format(args.dof)))
+                                "dmat_dof{}_grid".format(args.dof)
+                            ),
+                        )
                     else:
                         dmat.add_dmat_spfrep_to_hdf5(
                             fptr,
                             *dmat.read_dmat_spfrep_ascii(
-                                "dmat_dof{}_spf".format(args.dof)))
+                                "dmat_dof{}_spf".format(args.dof)
+                            ),
+                        )
 
                 if args.diagonalize or args.only_diagonalize:
                     dmat.add_dmat_evals_to_hdf5(
                         fptr,
-                        *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(
-                            args.dof)))
+                        *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(args.dof)),
+                    )
                     if not args.only_eigenvalues:
                         if gridrep:
                             dmat.add_dmat_evecs_grid_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_grid_ascii(
-                                    "evec_dmat_dof{}_grid".format(args.dof)))
+                                    "evec_dmat_dof{}_grid".format(args.dof)
+                                ),
+                            )
                         else:
                             dmat.add_dmat_evecs_spf_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_spf_ascii(
-                                    "evec_dmat_dof{}_spf".format(args.dof)))
+                                    "evec_dmat_dof{}_spf".format(args.dof)
+                                ),
+                            )
 
 
 if __name__ == "__main__":

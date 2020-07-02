@@ -1,10 +1,9 @@
 from typing import Any, Dict, Iterable, List, Union
 
+from mlxtk.dvr import DVRSpecification
 from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term
-
-from mlxtk.dvr import DVRSpecification
 
 
 class MBOperatorSpecification:
@@ -34,8 +33,9 @@ class MBOperatorSpecification:
             output.append("\t\t{}: {}".format(i, grid))
         output.append("\tCoefficients:")
         for i, coefficient in enumerate(self.coefficients):
-            output.append("\t\t{}: {} = {}".format(
-                i, coefficient, self.coefficients[coefficient]))
+            output.append(
+                "\t\t{}: {} = {}".format(i, coefficient, self.coefficients[coefficient])
+            )
         output.append("\tTerms:")
         for i, term in enumerate(self.terms):
             output.append("\t\t{}: {}".format(i, term))
@@ -45,8 +45,9 @@ class MBOperatorSpecification:
         return "\n".join(output)
 
     def __add__(self, other):
-        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
-                                      self.terms, self.table)
+        cpy = MBOperatorSpecification(
+            self.dofs, self.grids, self.coefficients, self.terms, self.table
+        )
         cpy.__iadd__(other)
         return cpy
 
@@ -56,9 +57,13 @@ class MBOperatorSpecification:
     def __iadd__(self, other):
         if not isinstance(other, MBOperatorSpecification):
             raise RuntimeError(
-                ("other object must be of type "
-                 "MBOperatorSpecification as well (not {})".format(
-                     type(other).__name__)))
+                (
+                    "other object must be of type "
+                    "MBOperatorSpecification as well (not {})".format(
+                        type(other).__name__
+                    )
+                )
+            )
 
         if self.dofs != other.dofs:
             raise ValueError("dofs differ")
@@ -66,11 +71,13 @@ class MBOperatorSpecification:
         if self.grids != other.grids:
             raise ValueError("grids differ")
 
-        if not set(self.coefficients.keys()).isdisjoint(
-                set(other.coefficients.keys())):
-            raise ValueError("coefficient names are not unique\n" +
-                             str(self.coefficients) + "\n" +
-                             str(other.coefficients))
+        if not set(self.coefficients.keys()).isdisjoint(set(other.coefficients.keys())):
+            raise ValueError(
+                "coefficient names are not unique\n"
+                + str(self.coefficients)
+                + "\n"
+                + str(other.coefficients)
+            )
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
             raise ValueError("term names are not unique")
@@ -87,8 +94,9 @@ class MBOperatorSpecification:
         return self
 
     def __mul__(self, other):
-        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
-                                      self.terms, self.table)
+        cpy = MBOperatorSpecification(
+            self.dofs, self.grids, self.coefficients, self.terms, self.table
+        )
         cpy.__imul__(other)
         return cpy
 
@@ -101,8 +109,9 @@ class MBOperatorSpecification:
         return self
 
     def __truediv__(self, other):
-        cpy = MBOperatorSpecification(self.dofs, self.grids, self.coefficients,
-                                      self.terms, self.table)
+        cpy = MBOperatorSpecification(
+            self.dofs, self.grids, self.coefficients, self.terms, self.table
+        )
         cpy.__itruediv__(other)
         return cpy
 
@@ -123,7 +132,8 @@ class MBOperatorSpecification:
 
         if term_kwargs.get("type", "diag") != "diag":
             raise NotImplementedError(
-                "Only diagonal time-dependent terms are supported by QDTK")
+                "Only diagonal time-dependent terms are supported by QDTK"
+            )
         term_kwargs["type"] = "diag"
 
         term_kwargs["tf_label"] = term["td_name"]
@@ -137,8 +147,7 @@ class MBOperatorSpecification:
 
     def get_operator(self) -> Operator:
         op = Operator()
-        op.define_dofs_and_grids(self.dofs,
-                                 [grid.get() for grid in self.grids])
+        op.define_dofs_and_grids(self.dofs, [grid.get() for grid in self.grids])
 
         for coeff in self.coefficients:
             op.addLabel(coeff, Coeff(self.coefficients[coeff]))

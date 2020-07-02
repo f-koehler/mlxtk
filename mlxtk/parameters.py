@@ -11,6 +11,7 @@ class Parameters:
     to document them.
     All parameters are exposed as member variables of this class.
     """
+
     def __init__(self, params: List[Dict[str, Any]] = []):
         self.names = []  # type: List[str]
         self.docs = {}  # type: Dict[str, str]
@@ -18,10 +19,7 @@ class Parameters:
         for param in params:
             Parameters.__iadd__(self, param)
 
-    def add_parameter(self,
-                      name: str,
-                      value: Optional[Any] = None,
-                      doc: str = ""):
+    def add_parameter(self, name: str, value: Optional[Any] = None, doc: str = ""):
         """Add a new parameter
 
         Args:
@@ -37,19 +35,19 @@ class Parameters:
 
     def remove_parameter(self, name: str):
         if not name in self.names:
-            raise KeyError("No parameter \"{}\"".format(name))
+            raise KeyError('No parameter "{}"'.format(name))
         del self.docs[name]
         delattr(self, name)
         self.names.remove(name)
         return self
 
     def to_json(self) -> str:
-        return json.dumps({
-            "values": {name: self[name]
-                       for name in self.names},
-            "docs": {name: self.docs[name]
-                     for name in self.names},
-        })
+        return json.dumps(
+            {
+                "values": {name: self[name] for name in self.names},
+                "docs": {name: self.docs[name] for name in self.names},
+            }
+        )
 
     def set_values(self, values: Iterable[Any]):
         for name, value in zip(self.names, values):
@@ -65,10 +63,9 @@ class Parameters:
         for name in self.get_common_parameter_names(other):
             self[name] = other[name]
 
-    def has_same_common_parameters(self,
-                                   other,
-                                   common_parameters: List[str] = None
-                                   ) -> bool:
+    def has_same_common_parameters(
+        self, other, common_parameters: List[str] = None
+    ) -> bool:
         if common_parameters:
             names = common_parameters
         else:
@@ -82,9 +79,9 @@ class Parameters:
     def copy(self):
         parameter = Parameters()
         for name in self.names:
-            parameter.add_parameter(name,
-                                    copy.deepcopy(self.__getitem__(name)),
-                                    self.docs[name])
+            parameter.add_parameter(
+                name, copy.deepcopy(self.__getitem__(name)), self.docs[name]
+            )
         return parameter
 
     def __iadd__(self, param: Union[dict, list]):
@@ -96,8 +93,7 @@ class Parameters:
 
     def __getstate__(self) -> Dict[str, Any]:
         return {
-            "values": {name: self.__getitem__(name)
-                       for name in self.names},
+            "values": {name: self.__getitem__(name) for name in self.names},
             "docs": self.docs,
         }
 
@@ -105,8 +101,7 @@ class Parameters:
         self.names = []
         self.docs = {}
         for name in state["values"]:
-            self.add_parameter(name, state["values"][name],
-                               state["docs"].get(name, ""))
+            self.add_parameter(name, state["values"][name], state["docs"].get(name, ""))
 
     def __hash__(self):
         return hash(self.__repr__())
@@ -115,11 +110,18 @@ class Parameters:
         return "_".join([name + "=" + str(self[name]) for name in self.names])
 
     def __str__(self) -> str:
-        return ("{\n" + "\n".join([
-            "  {}:\n    value: {}\n    doc:   {}".format(
-                name, self.__getitem__(name), self.docs[name])
-            for name in self.names
-        ]) + "\n}")
+        return (
+            "{\n"
+            + "\n".join(
+                [
+                    "  {}:\n    value: {}\n    doc:   {}".format(
+                        name, self.__getitem__(name), self.docs[name]
+                    )
+                    for name in self.names
+                ]
+            )
+            + "\n}"
+        )
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Parameters):
@@ -144,14 +146,12 @@ class Parameters:
         setattr(self, name, value)
 
 
-def generate_all(parameters: Parameters,
-                 values: Dict[str, Any]) -> List[Parameters]:
+def generate_all(parameters: Parameters, values: Dict[str, Any]) -> List[Parameters]:
     for name in parameters.names:
         values[name] = values.get(name, [parameters[name]])
 
     ret = []
-    for combination in itertools.product(
-            *[values[name] for name in parameters.names]):
+    for combination in itertools.product(*[values[name] for name in parameters.names]):
         ret.append(copy.deepcopy(parameters))
         ret[-1].set_values(combination)
 
@@ -159,9 +159,8 @@ def generate_all(parameters: Parameters,
 
 
 def filter_combinations(
-    parameters: List[Parameters], filters: Union[Callable[[Parameters], bool],
-                                                 List[Callable[[Parameters],
-                                                               bool]]]
+    parameters: List[Parameters],
+    filters: Union[Callable[[Parameters], bool], List[Callable[[Parameters], bool]]],
 ) -> List[Parameters]:
     if not isinstance(filters, list):
         filters = [filters]

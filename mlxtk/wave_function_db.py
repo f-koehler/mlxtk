@@ -28,8 +28,7 @@ LOGGER = get_logger(__name__)
 class MissingWfnError(Exception):
     def __init__(self, parameters: Parameters):
         self.parameters = copy.deepcopy(parameters)
-        super().__init__("Missing wave function for parameters: " +
-                         str(parameters))
+        super().__init__("Missing wave function for parameters: " + str(parameters))
 
 
 class WaveFunctionDBLockError(Exception):
@@ -59,12 +58,14 @@ class WaveFunctionDBLock:
 
 
 class WaveFunctionDB(ParameterScan):
-    def __init__(self,
-                 name: str,
-                 wfn_path: Path,
-                 prototype: Parameters,
-                 func: Callable[[Parameters], Simulation],
-                 working_dir: str = None):
+    def __init__(
+        self,
+        name: str,
+        wfn_path: Path,
+        prototype: Parameters,
+        func: Callable[[Parameters], Simulation],
+        working_dir: str = None,
+    ):
         self.logger = get_logger(__name__ + ".WaveFunctionDB")
         self.prototype = prototype
         self.stored_wave_functions = []  # type: List[Parameters]
@@ -202,14 +203,11 @@ class WaveFunctionDB(ParameterScan):
             self.stored_wave_functions.remove(parameters)
 
     def get_simulation_path(self, parameters: Parameters) -> Optional[Path]:
-        common_parameter_names = parameters.get_common_parameter_names(
-            self.prototype)
+        common_parameter_names = parameters.get_common_parameter_names(self.prototype)
 
         for p in self.stored_wave_functions:
-            if p.has_same_common_parameters(parameters,
-                                            common_parameter_names):
-                path = self.working_dir.resolve() / "sim" / hash_string(
-                    repr(p))
+            if p.has_same_common_parameters(parameters, common_parameter_names):
+                path = self.working_dir.resolve() / "sim" / hash_string(repr(p))
                 return path
 
         return None
@@ -222,12 +220,12 @@ class WaveFunctionDB(ParameterScan):
         return sim_path / self.wfn_path
 
     def request(self, parameters: Parameters, compute: bool = True) -> Path:
-        self.logger.info("request wave function for parameters %s",
-                         repr(parameters))
+        self.logger.info("request wave function for parameters %s", repr(parameters))
 
         with cwd.WorkingDir(self.working_dir.parent):
             common_parameter_names = parameters.get_common_parameter_names(
-                self.prototype)
+                self.prototype
+            )
 
             path = self.get_path(parameters)
             if path:
@@ -242,7 +240,9 @@ class WaveFunctionDB(ParameterScan):
 
             if p not in self.missing_wave_functions:
                 self.store_missing_wave_function(p)
-                self.combinations = self.stored_wave_functions + self.missing_wave_functions
+                self.combinations = (
+                    self.stored_wave_functions + self.missing_wave_functions
+                )
 
             if not compute:
                 raise MissingWfnError(p)
@@ -252,8 +252,7 @@ class WaveFunctionDB(ParameterScan):
             return self.request(parameters, compute)
 
     def _compute(self, parameters: Parameters):
-        self.logger.info("computing wave function for parameters %s",
-                         repr(parameters))
+        self.logger.info("computing wave function for parameters %s", repr(parameters))
         self.run_by_param(parameters)
 
         with WaveFunctionDBLock(self.working_dir / "wave_function_db.lock"):
@@ -276,8 +275,7 @@ class WaveFunctionDB(ParameterScan):
 
         self.create_working_dir()
 
-        def task_run_simulation(parameters: Parameters,
-                                name: str) -> Dict[str, Any]:
+        def task_run_simulation(parameters: Parameters, name: str) -> Dict[str, Any]:
             @doit_compat.DoitAction
             def action_run_simulation(targets: List[str]):
                 del targets
@@ -285,22 +283,21 @@ class WaveFunctionDB(ParameterScan):
 
             return {
                 "name": "run_simulation:" + name.replace("=", ":"),
-                "actions": [action_run_simulation]
+                "actions": [action_run_simulation],
             }
 
         tasks = []  # type: List[Callable[[], Dict[str, Any]]]
         for simulation, parameter in zip(self.simulations, self.combinations):
             tasks += [partial(task_run_simulation, parameter, simulation.name)]
 
-        doit_compat.run_doit(tasks, [
-            "--process=" + str(args.jobs), "--backend=sqlite3",
-            "--db-file=:memory:"
-        ])
+        doit_compat.run_doit(
+            tasks,
+            ["--process=" + str(args.jobs), "--backend=sqlite3", "--db-file=:memory:"],
+        )
 
     def cmd_remove(self, args: argparse.Namespace):
         indices = self.parse_selection(args.selection)
-        self.logger.info("remove wave_functions with indices: %s",
-                         str(indices))
+        self.logger.info("remove wave_functions with indices: %s", str(indices))
 
         selected_parameters = [self.combinations[index] for index in indices]
         self.unlink_simulations()
@@ -320,8 +317,11 @@ class WaveFunctionDB(ParameterScan):
         selection = checkboxlist_dialog(
             title="Select simulations",
             text="Select simulations to run operations on.",
-            values=[(i, repr(combination))
-                    for i, combination in enumerate(self.combinations)]).run()
+            values=[
+                (i, repr(combination))
+                for i, combination in enumerate(self.combinations)
+            ],
+        ).run()
 
         if not selection:
             self.logger.info("no simulations selected, nothing to do")
@@ -332,20 +332,23 @@ class WaveFunctionDB(ParameterScan):
         operation = radiolist_dialog(
             title="Select operation",
             text="Select operation to run on selected simulations",
-            values=[("remove", "remove")]).run()
+            values=[("remove", "remove")],
+        ).run()
 
         if not operation:
             self.logger.info("no operation selected, nothing to do")
             return
 
-        self.logger.info("running operation \"%s\" on %d simulation(s)",
-                         operation, len(selection))
+        self.logger.info(
+            'running operation "%s" on %d simulation(s)', operation, len(selection)
+        )
 
         if operation == "remove":
             cmd = [
                 sys.executable,
-                Path(get_main_path()).resolve(), "remove", ",".join(
-                    (str(i) for i in selection))
+                Path(get_main_path()).resolve(),
+                "remove",
+                ",".join((str(i) for i in selection)),
             ]
             self.logger.info("command: %s", str(cmd))
             subprocess.run(cmd)

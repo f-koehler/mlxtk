@@ -13,11 +13,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("path", nargs=2, help="path to the natpop file")
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
-    parser.add_argument("-d",
-                        "--dof",
-                        type=int,
-                        default=1,
-                        help="degree of freedom")
+    parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
     add_argparse_2d_args(parser)
     args = parser.parse_args()
 

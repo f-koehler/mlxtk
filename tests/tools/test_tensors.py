@@ -5,12 +5,15 @@ from mlxtk import dvr
 from mlxtk.tools import tensors
 
 
-@pytest.mark.parametrize("dvr", [
-    dvr.add_harmdvr(201, 0.5, 1.1),
-    dvr.add_expdvr(51, -10, 10),
-    dvr.add_sinedvr(127, -3., 5.1),
-    dvr.add_fft(201, -22.0, 17.0)
-])
+@pytest.mark.parametrize(
+    "dvr",
+    [
+        dvr.add_harmdvr(201, 0.5, 1.1),
+        dvr.add_expdvr(51, -10, 10),
+        dvr.add_sinedvr(127, -3.0, 5.1),
+        dvr.add_fft(201, -22.0, 17.0),
+    ],
+)
 def test_delta_interaction_dvr(dvr: dvr.DVRSpecification):
     delta = tensors.get_delta_interaction_dvr(dvr)
     n = len(dvr.get_weights())

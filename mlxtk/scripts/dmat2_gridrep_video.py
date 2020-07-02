@@ -34,26 +34,22 @@ def render_frame(i, times, dmat2, X1, X2, num_digits, dpi):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input", type=Path, help="path for the input file")
-    parser.add_argument("-o",
-                        "--output",
-                        type=Path,
-                        default=None,
-                        help="path for the video file")
-    parser.add_argument("-f",
-                        "--fps",
-                        type=float,
-                        default=5,
-                        help="frames per second for the video")
-    parser.add_argument("--dpi",
-                        type=int,
-                        default=600,
-                        help="resolution (dpi) of the individual frames")
+    parser.add_argument(
+        "-o", "--output", type=Path, default=None, help="path for the video file"
+    )
+    parser.add_argument(
+        "-f", "--fps", type=float, default=5, help="frames per second for the video"
+    )
+    parser.add_argument(
+        "--dpi", type=int, default=600, help="resolution (dpi) of the individual frames"
+    )
     parser.add_argument(
         "-j",
         "--jobs",
         type=int,
         default=os.cpu_count(),
-        help="number of threads to use to create the individual frames")
+        help="number of threads to use to create the individual frames",
+    )
     args = parser.parse_args()
 
     times, x1, x2, dmat2 = read_dmat2_gridrep_hdf5(args.input)
@@ -70,18 +66,26 @@ def main():
         with WorkingDir(tmpdir):
             with multiprocessing.Pool(args.jobs) as pool:
                 pool.map(
-                    partial(render_frame,
-                            times=times,
-                            dmat2=dmat2,
-                            X1=X1,
-                            X2=X2,
-                            num_digits=num_digits,
-                            dpi=args.dpi), [i for i, _ in enumerate(times)])
+                    partial(
+                        render_frame,
+                        times=times,
+                        dmat2=dmat2,
+                        X1=X1,
+                        X2=X2,
+                        num_digits=num_digits,
+                        dpi=args.dpi,
+                    ),
+                    [i for i, _ in enumerate(times)],
+                )
 
             cmd = [
-                "ffmpeg", "-y", "-framerate",
-                str(args.fps), "-i", "%0" + str(num_digits) + "d.png",
-                "out.mp4"
+                "ffmpeg",
+                "-y",
+                "-framerate",
+                str(args.fps),
+                "-i",
+                "%0" + str(num_digits) + "d.png",
+                "out.mp4",
             ]
             LOGGER.info("ffmpeg command: %s", " ".join(cmd))
             subprocess.run(cmd)

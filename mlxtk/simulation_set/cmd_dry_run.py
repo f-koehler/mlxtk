@@ -6,8 +6,7 @@ from mlxtk.simulation import Simulation
 from mlxtk.simulation_set.base import SimulationSetBase
 
 
-def dry_run_simulation(
-        simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
+def dry_run_simulation(simulation: Simulation) -> List[Callable[[], Dict[str, Any]]]:
     """Create a task for running the given simulation dry.
 
     Args:
@@ -16,6 +15,7 @@ def dry_run_simulation(
     Returns:
         list: list with a single doit task description for simulation run
     """
+
     def task_dry_run_simulation():
         @DoitAction
         def action_dry_run_simulation(targets: List[str]):
@@ -43,9 +43,5 @@ def cmd_dry_run(self: SimulationSetBase, args: argparse.Namespace):
     for simulation in self.simulations:
         tasks += dry_run_simulation(simulation)
     run_doit(
-        tasks,
-        [
-            "--backend=sqlite3",
-            "--db-file=:memory:",
-        ],
+        tasks, ["--backend=sqlite3", "--db-file=:memory:",],
     )

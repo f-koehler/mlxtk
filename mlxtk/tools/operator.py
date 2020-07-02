@@ -1,4 +1,5 @@
 import numpy
+
 from QDTK.Operator import Operator
 
 
@@ -29,7 +30,9 @@ def get_operator_matrix(operator: Operator) -> numpy.ndarray:
             if term.dim != grid_points:
                 raise ValueError(
                     "invalid dimension {} of matrix term, expected {}".format(
-                        term.dim, grid_points))
+                        term.dim, grid_points
+                    )
+                )
             matrix += coefficient * term.oterm.astype(numpy.complex128)
             continue
 
@@ -38,9 +41,10 @@ def get_operator_matrix(operator: Operator) -> numpy.ndarray:
             if term.dim != grid_points:
                 raise ValueError(
                     "invalid dimension {} of vector term, expected {}".format(
-                        term.dim, grid_points))
-            matrix += coefficient * numpy.diag(
-                term.oterm.astype(numpy.complex128))
+                        term.dim, grid_points
+                    )
+                )
+            matrix += coefficient * numpy.diag(term.oterm.astype(numpy.complex128))
             continue
 
         # invalid type

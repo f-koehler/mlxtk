@@ -63,8 +63,7 @@ class DoitAction:
 
         if isinstance(ret, dict):
             ret[self.func.__name__] = ret.get(self.func.__name__, {})
-            ret[self.func.
-                __name__]["monotonic_time"] = timer.get_monotonic_time()
+            ret[self.func.__name__]["monotonic_time"] = timer.get_monotonic_time()
             ret[self.func.__name__]["perf_time"] = timer.get_perf_time()
             ret[self.func.__name__]["process_time"] = timer.get_process_time()
             return ret
@@ -81,7 +80,8 @@ class DoitAction:
             }
 
         raise NotImplementedError(
-            "The return type {} is not supported for Doit actions")
+            "The return type {} is not supported for Doit actions"
+        )
 
 
 def load_doit_db(path: str) -> Dict[str, Dict[str, Any]]:
@@ -99,8 +99,7 @@ def load_doit_timings(path: str) -> Dict[str, Dict[str, float]]:
     for task in data:
         timings[task] = timings.get(task, {})
         for action in data[task]["_values_:"]:
-            timings[task][action] = data[task]["_values_:"][action][
-                "monotonic_time"]
+            timings[task][action] = data[task]["_values_:"][action]["monotonic_time"]
     return timings
 
 
@@ -108,13 +107,12 @@ def load_doit_timing(path: str, task: str, action: str) -> float:
     return load_doit_timings(path)[task][action]
 
 
-def format_doit_profile(timings: Dict[str, Dict[str, float]],
-                        tablefmt: str = "fancy_grid") -> str:
+def format_doit_profile(
+    timings: Dict[str, Dict[str, float]], tablefmt: str = "fancy_grid"
+) -> str:
     profile = []  # type: List[Tuple[str, str, float]]
     for task in timings:
         for action in timings[task]:
             profile.append((task, action, timings[task][action]))
     profile.sort(key=lambda x: x[2], reverse=True)
-    return tabulate(profile,
-                    headers=["Task", "Action", "Time/s"],
-                    tablefmt=tablefmt)
+    return tabulate(profile, headers=["Task", "Action", "Time/s"], tablefmt=tablefmt)

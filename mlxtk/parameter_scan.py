@@ -41,11 +41,10 @@ class ParameterScan(SimulationSet):
         for combination in self.combinations:
             self.simulations.append(self.func(combination))
             self.simulations[-1].name = repr(combination)
-            self.simulations[
-                -1].working_dir = self.working_dir / "sim" / hash_string(
-                    self.simulations[-1].name)
-            self.simulations[-1].name = self.name + \
-                "_" + self.simulations[-1].name
+            self.simulations[-1].working_dir = (
+                self.working_dir / "sim" / hash_string(self.simulations[-1].name)
+            )
+            self.simulations[-1].name = self.name + "_" + self.simulations[-1].name
 
     def store_parameters(self):
         self.logger.info("storing scan parameters")
@@ -55,8 +54,7 @@ class ParameterScan(SimulationSet):
             return
 
         with cwd.WorkingDir(self.working_dir):
-            for combination, simulation in zip(self.combinations,
-                                               self.simulations):
+            for combination, simulation in zip(self.combinations, self.simulations):
                 simulation.create_working_dir()
                 with cwd.WorkingDir(simulation.working_dir):
                     with open("parameters.pickle", "wb") as fptr:
@@ -66,9 +64,9 @@ class ParameterScan(SimulationSet):
                         fptr.write(combination.to_json() + "\n")
 
             with open("scan.pickle", "wb") as fptr:
-                pickle.dump([combination for combination in self.combinations],
-                            fptr,
-                            protocol=3)
+                pickle.dump(
+                    [combination for combination in self.combinations], fptr, protocol=3
+                )
 
     def link_simulations(self):
         if not self.combinations:
@@ -97,18 +95,22 @@ class ParameterScan(SimulationSet):
             if not path_by_param.exists():
                 os.makedirs(path_by_param)
 
-            variables, constants = mlxtk.parameters.get_variables(
-                self.combinations)
-            for combination, simulation in zip(self.combinations,
-                                               self.simulations):
+            variables, constants = mlxtk.parameters.get_variables(self.combinations)
+            for combination, simulation in zip(self.combinations, self.simulations):
                 if not variables:
                     name = "_".join(
-                        (constant + "=" + str(combination[constant])
-                         for constant in constants))
+                        (
+                            constant + "=" + str(combination[constant])
+                            for constant in constants
+                        )
+                    )
                 else:
                     name = "_".join(
-                        (variable + "=" + str(combination[variable])
-                         for variable in variables))
+                        (
+                            variable + "=" + str(combination[variable])
+                            for variable in variables
+                        )
+                    )
                 path = simulation.working_dir
                 link = path_by_param / name
 

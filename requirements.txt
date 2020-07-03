@@ -23,6 +23,6 @@ pytest==5.4.3
 pyyaml==5.3.1
 rope==0.17.0
 scipy==1.5.0
-sympy==1.6
+sympy==1.6.1
 tabulate==0.8.7
 tqdm==4.47.0

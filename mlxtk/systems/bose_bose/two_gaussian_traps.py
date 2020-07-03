@@ -201,9 +201,6 @@ class TwoGaussianTraps(BoseBoseSystem):
         if (self.parameters.N_B > 1) and (self.parameters.g_BB != 0.0):
             operator += self.get_interaction_operator_BB()
 
-        self.logger.info(self.parameters)
-        self.logger.info(operator.table)
-
         return operator
 
     def get_hamiltonian_colliding(
@@ -226,11 +223,11 @@ class TwoGaussianTraps(BoseBoseSystem):
             {
                 "potential_left_A": {
                     "td_name": "moving_gaussian",
-                    "td_args:": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
+                    "td_args": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
                 },
                 "potential_left_B": {
                     "td_name": "moving_gaussian",
-                    "td_args:": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
+                    "td_args": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
                 },
             },
             [
@@ -246,11 +243,11 @@ class TwoGaussianTraps(BoseBoseSystem):
             {
                 "potential_right_A": {
                     "td_name": "moving_gaussian",
-                    "td_args:": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
+                    "td_args": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
                 },
                 "potential_right_B": {
                     "td_name": "moving_gaussian",
-                    "td_args:": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
+                    "td_args": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
                 },
             },
             [

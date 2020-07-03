@@ -31,7 +31,7 @@ class BoseBoseSystem(ABC):
             (self.grid_1b,),
             {"kinetic_coeff_A": -0.5 * self.parameters.mass_A},
             {"kinetic_A": self.grid_1b.get_d2()},
-            "kinetic_coeff | 1 kinetic",
+            "kinetic_coeff_A | 1 kinetic_A",
         )
 
     def get_kinetic_operator_1b_B(self) -> OperatorSpecification:
@@ -39,14 +39,14 @@ class BoseBoseSystem(ABC):
             (self.grid_1b,),
             {"kinetic_coeff_B": -0.5 * self.parameters.mass_B},
             {"kinetic_B": self.grid_1b.get_d2()},
-            "kinetic_coeff | 1 kinetic",
+            "kinetic_coeff_B | 1 kinetic_B",
         )
 
     def get_kinetic_operator_A(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"kinetic_coeff_A": -0.5 * parameters.m_A,},
+            {"kinetic_coeff_A": -0.5 * self.parameters.mass_A,},
             {"kinetic_A": {"value": self.grid.get_d2(), "fft": self.grid.is_fft(),},},
             "kinetic_coeff_A | 1 kinetic_A",
         )
@@ -55,9 +55,9 @@ class BoseBoseSystem(ABC):
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"kinetic_coeff_B": -0.5 * parameters.m_B,},
+            {"kinetic_coeff_B": -0.5 * self.parameters.mass_B,},
             {"kinetic_B": {"value": self.grid.get_d2(), "fft": self.grid.is_fft(),},},
-            "kinetic_coeff_B | 1 kinetic_B",
+            "kinetic_coeff_B | 2 kinetic_B",
         )
 
     def get_kinetic_operator(self) -> MBOperatorSpecification:
@@ -78,7 +78,7 @@ class BoseBoseSystem(ABC):
             (self.grid, self.grid),
             {"interaction_coeff_BB": self.parameters.g_BB},
             {"interaction_BB": self.grid.get_delta()},
-            ["interaction_coeff_BB | {1:1} interaction_BB"],
+            ["interaction_coeff_BB | {2:2} interaction_BB"],
         )
 
     def get_interaction_operator_AB(self) -> MBOperatorSpecification:
@@ -87,5 +87,5 @@ class BoseBoseSystem(ABC):
             (self.grid, self.grid),
             {"interaction_coeff_AB": self.parameters.g_AB},
             {"interaction_AB": self.grid.get_delta()},
-            ["interaction_coeff_AB | {1:1} interaction_AB"],
+            ["interaction_coeff_AB | {1:2} interaction_AB"],
         )

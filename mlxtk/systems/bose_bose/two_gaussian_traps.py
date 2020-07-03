@@ -18,10 +18,10 @@ class TwoGaussianTraps(BoseBoseSystem):
             [
                 ("N_A", 2, "number of A particles"),
                 ("N_B", 2, "number of B particles"),
-                ("m_A", 5, "number of SPFs (A species)"),
-                ("m_B", 5, "number of SPFs (B species)"),
                 ("M_A", 5, "number of SBSs (A species)"),
                 ("M_B", 5, "number of SBSs (B species)"),
+                ("m_A", 5, "number of SPFs (A species)"),
+                ("m_B", 5, "number of SPFs (B species)"),
                 ("mass_A", 1.0, "mass of A species particles"),
                 ("mass_B", 1.0, "mass of B species particles"),
                 ("g_AA", 0.1, "intra-species interaction (A species)"),
@@ -29,8 +29,8 @@ class TwoGaussianTraps(BoseBoseSystem):
                 ("g_AB", 1.0, "inter-species interaction"),
                 ("V0L", 1.0, "depth of the left Gaussian well"),
                 ("V0R", 1.0, "depth of the right Gaussian well"),
-                ("x0L", 0.0, "center of the left Gaussian well"),
-                ("x0R", 0.0, "center of the right Gaussian well"),
+                ("x0L", -3.5, "center of the left Gaussian well"),
+                ("x0R", 3.5, "center of the right Gaussian well"),
                 ("alpha", 1.0, "well asymmetry"),
             ]
         )
@@ -38,7 +38,7 @@ class TwoGaussianTraps(BoseBoseSystem):
     def get_potential_operator_left_1b_A(self) -> OperatorSpecification:
         return OperatorSpecification(
             (self.grid_1b,),
-            {"potential_left_coeff_A": -parameters.V0L},
+            {"potential_left_coeff_A": -self.parameters.V0L},
             {
                 "potential_left_A": gaussian(
                     self.grid.get_x(), self.parameters.x0L, 1.0
@@ -50,7 +50,7 @@ class TwoGaussianTraps(BoseBoseSystem):
     def get_potential_operator_left_1b_B(self) -> OperatorSpecification:
         return OperatorSpecification(
             (self.grid_1b,),
-            {"potential_left_coeff_A": -parameters.V0L},
+            {"potential_left_coeff_A": -self.parameters.V0L},
             {
                 "potential_left_A": gaussian(
                     self.grid.get_x(), self.parameters.x0L, 1.0
@@ -62,10 +62,10 @@ class TwoGaussianTraps(BoseBoseSystem):
     def get_potential_operator_right_1b_A(self) -> OperatorSpecification:
         return OperatorSpecification(
             (self.grid_1b,),
-            {"potential_right_coeff_A": -parameters.V0R},
+            {"potential_right_coeff_A": -self.parameters.V0R},
             {
                 "potential_right_A": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, parameters.alpha
+                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
                 ),
             },
             "potential_right_coeff_A | 1 potential_right_A",
@@ -74,10 +74,10 @@ class TwoGaussianTraps(BoseBoseSystem):
     def get_potential_operator_right_1b_B(self) -> OperatorSpecification:
         return OperatorSpecification(
             (self.grid_1b,),
-            {"potential_right_coeff_B": -parameters.V0R},
+            {"potential_right_coeff_B": -self.parameters.V0R},
             {
                 "potential_right_B": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, parameters.alpha
+                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
                 ),
             },
             "potential_right_coeff_B | 1 potential_right_B",
@@ -99,44 +99,44 @@ class TwoGaussianTraps(BoseBoseSystem):
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"potential_left_coeff_A": -parameters.V0L},
+            {"potential_left_coeff_A": -self.parameters.V0L},
             {"potential_left_A": gaussian(self.grid.get_x(), self.parameters.x0L, 1.0)},
-            "potenial_left_coeff_A | 1 potential_left_A",
+            "potential_left_coeff_A | 1 potential_left_A",
         )
 
     def get_potential_operator_left_B(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"potential_left_coeff_B": -parameters.V0L},
+            {"potential_left_coeff_B": -self.parameters.V0L},
             {"potential_left_B": gaussian(self.grid.get_x(), self.parameters.x0L, 1.0)},
-            "potenial_left_coeff_B | 1 potential_left_B",
+            "potential_left_coeff_B | 2 potential_left_B",
         )
 
     def get_potential_operator_right_A(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"potential_right_coeff_A": -parameters.V0R},
+            {"potential_right_coeff_A": -self.parameters.V0R},
             {
                 "potential_right_A": gaussian(
                     self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
                 )
             },
-            "potenial_right_coeff_A | 1 potential_right_A",
+            "potential_right_coeff_A | 1 potential_right_A",
         )
 
     def get_potential_operator_right_B(self) -> MBOperatorSpecification:
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"potential_right_coeff_B": -parameters.V0R},
+            {"potential_right_coeff_B": -self.parameters.V0R},
             {
                 "potential_right_B": gaussian(
                     self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
                 )
             },
-            "potenial_right_coeff_B | 1 potential_right_B",
+            "potential_right_coeff_B | 2 potential_right_B",
         )
 
     def get_potential_operator_left(self) -> MBOperatorSpecification:
@@ -144,22 +144,22 @@ class TwoGaussianTraps(BoseBoseSystem):
             self.get_potential_operator_left_A() + self.get_potential_operator_left_B()
         )
 
-    def get_hamiltonian_left_well_A(self) -> OperatorSpecification:
+    def get_hamiltonian_left_well_1b_A(self) -> OperatorSpecification:
         return (
             self.get_kinetic_operator_1b_A() + self.get_potential_operator_left_1b_A()
         )
 
-    def get_hamiltonian_left_well_B(self) -> OperatorSpecification:
+    def get_hamiltonian_left_well_1b_B(self) -> OperatorSpecification:
         return (
             self.get_kinetic_operator_1b_B() + self.get_potential_operator_left_1b_B()
         )
 
-    def get_hamiltonian_right_well_A(self) -> OperatorSpecification:
+    def get_hamiltonian_right_well_1b_A(self) -> OperatorSpecification:
         return (
             self.get_kinetic_operator_1b_A() + self.get_potential_operator_right_1b_A()
         )
 
-    def get_hamiltonian_right_well_B(self) -> OperatorSpecification:
+    def get_hamiltonian_right_well_1b_B(self) -> OperatorSpecification:
         return (
             self.get_kinetic_operator_1b_B() + self.get_potential_operator_right_1b_B()
         )
@@ -201,6 +201,9 @@ class TwoGaussianTraps(BoseBoseSystem):
         if (self.parameters.N_B > 1) and (self.parameters.g_BB != 0.0):
             operator += self.get_interaction_operator_BB()
 
+        self.logger.info(self.parameters)
+        self.logger.info(operator.table)
+
         return operator
 
     def get_hamiltonian_colliding(
@@ -230,7 +233,10 @@ class TwoGaussianTraps(BoseBoseSystem):
                     "td_args:": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
                 },
             },
-            [],
+            [
+                "potential_left_coeff_A | 1 potential_left_A",
+                "potential_left_coeff_B | 2 potential_left_B",
+            ],
         )
 
         right_potential = MBOperatorSpecification(
@@ -247,7 +253,10 @@ class TwoGaussianTraps(BoseBoseSystem):
                     "td_args:": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
                 },
             },
-            [],
+            [
+                "potential_right_coeff_A | 1 potential_right_A",
+                "potential_right_coeff_B | 2 potential_right_B",
+            ],
         )
 
         operator = self.get_kinetic_operator() + left_potential + right_potential

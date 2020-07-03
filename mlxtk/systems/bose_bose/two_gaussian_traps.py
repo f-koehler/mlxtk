@@ -144,6 +144,26 @@ class TwoGaussianTraps(BoseBoseSystem):
             self.get_potential_operator_left_A() + self.get_potential_operator_left_B()
         )
 
+    def get_hamiltonian_left_well_A(self) -> OperatorSpecification:
+        return (
+            self.get_kinetic_operator_1b_A() + self.get_potential_operator_left_1b_A()
+        )
+
+    def get_hamiltonian_left_well_B(self) -> OperatorSpecification:
+        return (
+            self.get_kinetic_operator_1b_B() + self.get_potential_operator_left_1b_B()
+        )
+
+    def get_hamiltonian_right_well_A(self) -> OperatorSpecification:
+        return (
+            self.get_kinetic_operator_1b_A() + self.get_potential_operator_right_1b_A()
+        )
+
+    def get_hamiltonian_right_well_B(self) -> OperatorSpecification:
+        return (
+            self.get_kinetic_operator_1b_B() + self.get_potential_operator_right_1b_B()
+        )
+
     def get_potential_operator_right(self) -> MBOperatorSpecification:
         return (
             self.get_potential_operator_right_A()

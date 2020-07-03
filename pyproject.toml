@@ -68,6 +68,7 @@ mypy = "0.782"
 pylint = "2.5.3"
 pytest = "5.4.3"
 rope = "0.17.0"
+memory_profiler = "0.57.0"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"

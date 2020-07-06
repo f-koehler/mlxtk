@@ -89,3 +89,21 @@ class BoseBoseSystem(ABC):
             {"interaction_AB": self.grid.get_delta()},
             ["interaction_coeff_AB | {1:2} interaction_AB"],
         )
+
+    def get_com_operator_A(self) -> MBOperatorSpecification:
+        return MBOperatorSpecification(
+            (1, 1),
+            (self.grid, self.grid),
+            {"com_coeff_A": 1.0 / self.parameters.N_A},
+            {"com_A": self.grid.get_x()},
+            ["com_coeff_A | 1 com_A"],
+        )
+
+    def get_com_operator_B(self) -> MBOperatorSpecification:
+        return MBOperatorSpecification(
+            (1, 1),
+            (self.grid, self.grid),
+            {"com_coeff_B": 1.0 / self.parameters.N_B},
+            {"com_B": self.grid.get_x()},
+            ["com_coeff_B | 1 com_B"],
+        )

@@ -105,5 +105,5 @@ class BoseBoseSystem(ABC):
             (self.grid, self.grid),
             {"com_coeff_B": 1.0 / self.parameters.N_B},
             {"com_B": self.grid.get_x()},
-            ["com_coeff_B | 1 com_B"],
+            ["com_coeff_B | 2 com_B"],
         )

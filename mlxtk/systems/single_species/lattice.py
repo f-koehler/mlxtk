@@ -15,8 +15,7 @@ class Lattice(SingleSpeciesSystem):
                 ("N", 2, "number of particles"),
                 ("m", 5, "number of single particle functions"),
                 ("g", 0.1, "strength of the contact interaction between the particles"),
-                ("x0", 0.0, "center of the harmonic trap"),
-                ("wells", 3, "number of wells"),
+                ("wells", 5, "number of wells"),
                 ("V0", 1.0, "depth of the lattice"),
             ]
         )

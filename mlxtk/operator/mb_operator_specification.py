@@ -2,7 +2,6 @@ from typing import Any, Dict, Iterable, List, Union
 
 from mlxtk.dvr import DVRSpecification
 from mlxtk.log import get_logger
-
 from QDTK.Operatorb import OCoef as Coeff
 from QDTK.Operatorb import Operatorb as Operator
 from QDTK.Operatorb import OTerm as Term

@@ -7,7 +7,7 @@ from mlxtk.parameters import Parameters
 from mlxtk.systems.single_species.single_species import SingleSpeciesSystem
 
 
-class HarmonicTrap(SingleSpeciesSystem):
+class Lattice(SingleSpeciesSystem):
     @staticmethod
     def create_parameters() -> Parameters:
         return Parameters(

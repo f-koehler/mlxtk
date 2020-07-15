@@ -28,10 +28,11 @@ class Lattice(SingleSpeciesSystem):
             return numpy.cos(numpy.pi * self.parameters.wells * x) ** 2
         return numpy.sin(numpy.pi * self.parameters.wells * x) ** 2
 
+    @staticmethod
     def convert_recoil_energy(
-        self, energy: Union[float, numpy.ndarray]
+        parameters: Parameters, energy: Union[float, numpy.ndarray]
     ) -> Union[float, numpy.ndarray]:
-        return 0.5 * (numpy.pi ** 2) * (self.parameters.wells ** 2) * energy
+        return 0.5 * (numpy.pi ** 2) * (parameters.wells ** 2) * energy
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(

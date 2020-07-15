@@ -29,7 +29,7 @@ class Lattice(SingleSpeciesSystem):
 
     @staticmethod
     def convert_recoil_energy(
-        parameters: Parameters, energy: Union[float, numpy.ndarray]
+        energy: Union[float, numpy.ndarray], parameters: Parameters
     ) -> Union[float, numpy.ndarray]:
         return 0.5 * (numpy.pi ** 2) * (parameters.wells ** 2) * energy
 

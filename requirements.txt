@@ -6,7 +6,7 @@ doit==0.32
 flake8==3.8.3
 future==0.18.2
 h5py==2.10
-isort==4.3.21
+isort==5.1.1
 jedi==0.17.1
 jinja2==2.11.2
 matplotlib==3.2.2

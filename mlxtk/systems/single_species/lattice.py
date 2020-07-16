@@ -37,7 +37,7 @@ class Lattice(SingleSpeciesSystem):
         return tasks.OperatorSpecification(
             (self.grid_1b,),
             {"potential_coeff": self.parameters.V0},
-            {"potential": self.potential(self.grid_1b.get_x())},
+            {"potential": self.get_potential(self.grid_1b.get_x())},
             "potential_coeff | 1 potential",
         )
 
@@ -49,7 +49,7 @@ class Lattice(SingleSpeciesSystem):
             (1,),
             (self.grid,),
             {"potential_coeff": self.parameters.V0},
-            {"potential": self.potential(self.grid_1b.get_x())},
+            {"potential": self.get_potential(self.grid_1b.get_x())},
             "potential_coeff | 1 potential",
         )
 

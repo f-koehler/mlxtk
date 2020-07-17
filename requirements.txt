@@ -9,7 +9,7 @@ h5py==2.10
 isort==4.3.21
 jedi==0.17.1
 jinja2==2.11.2
-matplotlib==3.2.2
+matplotlib==3.3.0
 memory-profiler==0.57.0
 mypy==0.782
 numpy==1.19.0

@@ -302,7 +302,10 @@ class WaveFunctionDB(ParameterScan):
         selected_parameters = [self.combinations[index] for index in indices]
         self.unlink_simulations()
         for parameters in selected_parameters:
-            shutil.rmtree(self.get_simulation_path(parameters))
+            if (self.get_simulation_path(parameters) is not None) and (
+                self.get_simulation_path(parameters).exists()
+            ):
+                shutil.rmtree(self.get_simulation_path(parameters))
             self.remove_missing_wave_function(parameters)
             self.remove_wave_function(parameters)
             i = self.combinations.index(parameters)

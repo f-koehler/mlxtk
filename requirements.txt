@@ -12,7 +12,7 @@ jinja2==2.11.2
 matplotlib==3.3.0
 memory-profiler==0.57.0
 mypy==0.782
-numpy==1.19.0
+numpy==1.19.1
 numpy-stl==2.11.2
 pandas==1.0.5
 pathos==0.2.6

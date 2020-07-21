@@ -11,10 +11,25 @@ import tqdm
 import tqdm.auto
 
 from mlxtk.cwd import WorkingDir
+from mlxtk.log import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
+    if not Path(simulation_dir).exists():
+        LOGGER.info(
+            "simulation directory does not exist, simulation was not yet executed -> skipping"
+        )
+        return
+
     with WorkingDir(Path(simulation_dir).resolve()):
+        if not Path("doit.json").exists():
+            LOGGER.info(
+                "doit.json does not exist, simulation was not yet executed -> skipping"
+            )
+            return
+
         with open("doit.json", "r") as fptr:
             state = json.load(fptr)
 

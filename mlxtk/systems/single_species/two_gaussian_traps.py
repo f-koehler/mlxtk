@@ -49,6 +49,34 @@ class TwoGaussianTraps(GaussianTrap):
             self.parameters.x0R, self.parameters.V0R, "potential_right"
         )
 
+    def get_hamiltonian_moved_wells_1b(
+        self,
+        t: float,
+        vL: float = 1.0,
+        aL: float = 0.0,
+        vR: float = None,
+        aR: float = None,
+    ) -> tasks.OperatorSpecification:
+        if vR is None:
+            vR = -vL
+
+        if aR is None:
+            aR = -aL
+
+        return (
+            self.get_kinetic_operator_1b()
+            + self.create_gaussian_potential_operator_1b(
+                self.parameters.x0L + vL * t + 0.5 * aL * (t ** 2),
+                self.parameters.V0L,
+                "potential_left",
+            )
+            + self.create_gaussian_potential_operator_1b(
+                self.parameters.x0R + vR * t + 0.5 * aR * (t ** 2),
+                self.parameters.V0R,
+                "potential_right",
+            )
+        )
+
     def get_hamiltonian_left_well(self) -> tasks.MBOperatorSpecification:
         operator = self.get_kinetic_operator() + self.create_gaussian_potential_operator(
             self.parameters.x0L, self.parameters.V0L, "potential_left"

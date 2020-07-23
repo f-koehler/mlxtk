@@ -115,7 +115,11 @@ class SingleSpeciesSystem(ABC):
         term = numpy.copy(self.grid.get_x())
         term[numpy.logical_or(term < xmin, term > xmax)] = 0.0
         return MBOperatorSpecification(
-            (1,), (self.grid,), {"com_coeff": 1.0}, {"com": term}, "com_coeff | 1 com"
+            (1,),
+            (self.grid,),
+            {"com_coeff": 1.0 / self.parameters.N},
+            {"com": term},
+            "com_coeff | 1 com",
         )
 
     def get_truncated_com_operator_squared(

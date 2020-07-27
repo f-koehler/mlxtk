@@ -15,14 +15,17 @@ def main():
     parser.add_argument("dmat", type=Path)
     parser.add_argument("-o", "--output", default="g1.h5", type=Path)
     parser.add_argument("--diff", action="store_true")
+    parser.add_argument("--normalize", action="store_true")
     args = parser.parse_args()
 
     LOGGER.info("read dmat")
     data_dmat = dmat.read_dmat_gridrep_hdf5(args.dmat, "dmat_gridrep")
 
     if args.diff:
-        data = compute_g1_diff(data_dmat)
+        data = compute_g1_diff(data_dmat, parser.normalize)
     else:
+        if args.normalize:
+            parser.error("The --normalize flag requires the --dif flag to be set.")
         data = compute_g1(data_dmat)
 
     with h5py.File(args.output, "w") as fptr:

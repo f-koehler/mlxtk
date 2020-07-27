@@ -32,7 +32,8 @@ def compute_g1(
 
 
 def compute_g1_diff(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
+    normalize: bool = True,
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
@@ -46,6 +47,9 @@ def compute_g1_diff(
                 g1[i, j, k] = dmat[i, j, k] - cmath.sqrt(dmat[i, j, j]) * cmath.sqrt(
                     dmat[i, k, k]
                 )
+
+    if normalize:
+        g1 /= numpy.abs(dmat).max()
     LOGGER.info("finished computing g1")
 
     return time, x1, x2, g1
@@ -81,6 +85,7 @@ def compute_g2(
 def compute_g2_diff(
     data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
     data_dmat2: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
+    normalize: bool = True,
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g2")
 
@@ -100,6 +105,9 @@ def compute_g2_diff(
         for j in range(len(x1)):
             for k in range(len(x2)):
                 g2[i, j, k] = dmat2[i, j, k] - (dmat[i, j, j] * dmat[i, k, k])
+
+    if normalize:
+        g2 /= numpy.abs(dmat2).max()
     LOGGER.info("finished computing g2")
 
     return time, x1, x2, g2

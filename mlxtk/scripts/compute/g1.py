@@ -22,7 +22,7 @@ def main():
     data_dmat = dmat.read_dmat_gridrep_hdf5(args.dmat, "dmat_gridrep")
 
     if args.diff:
-        data = compute_g1_diff(data_dmat, parser.normalize)
+        data = compute_g1_diff(data_dmat, args.normalize)
     else:
         if args.normalize:
             parser.error("The --normalize flag requires the --dif flag to be set.")

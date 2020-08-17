@@ -4,12 +4,12 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 import h5py
 import numpy
+from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 from mlxtk.doit_compat import DoitAction
 from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import save_wave_function
-from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 
 class CreateBoseBoseWaveFunction(Task):

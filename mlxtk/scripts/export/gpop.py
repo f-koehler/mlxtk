@@ -1,7 +1,9 @@
 import argparse
 from pathlib import Path
-from mlxtk.inout.gpop import read_gpop_hdf5
+
 import h5py
+
+from mlxtk.inout.gpop import read_gpop_hdf5
 
 
 def main():

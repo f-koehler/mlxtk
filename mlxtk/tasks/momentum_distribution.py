@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
 import h5py
+from QDTK.Operator import trafo_to_momentum_rep
 
 from mlxtk import dvr
 from mlxtk.cwd import WorkingDir
@@ -17,7 +18,6 @@ from mlxtk.inout.momentum_distribution import (
     read_momentum_distribution_ascii,
 )
 from mlxtk.tasks.task import Task
-from QDTK.Operator import trafo_to_momentum_rep
 
 
 class MCTDHBMomentumDistribution(Task):

@@ -1,7 +1,6 @@
 from typing import Any, Dict, Tuple
 
 import numpy
-
 from QDTK.Primitive import (
     FFT,
     Dvr,

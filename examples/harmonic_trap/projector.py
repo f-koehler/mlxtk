@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import h5py
 import numpy
-
 from harmonic_trap import grid, parameters
+
 from mlxtk.tasks.mb_operator import MBOperatorSpecification
 
 if __name__ == "__main__":

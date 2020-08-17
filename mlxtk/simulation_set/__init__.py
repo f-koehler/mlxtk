@@ -160,14 +160,14 @@ class SimulationSet(base.SimulationSetBase):
     from mlxtk.simulation_set.cmd_archive import cmd_archive
     from mlxtk.simulation_set.cmd_clean import cmd_clean
     from mlxtk.simulation_set.cmd_dry_run import cmd_dry_run
-    from mlxtk.simulation_set.cmd_list_tasks import cmd_list_tasks
     from mlxtk.simulation_set.cmd_list import cmd_list
+    from mlxtk.simulation_set.cmd_list_tasks import cmd_list_tasks
     from mlxtk.simulation_set.cmd_lockfiles import cmd_lockfiles
     from mlxtk.simulation_set.cmd_propagation_status import cmd_propagation_status
     from mlxtk.simulation_set.cmd_qdel import cmd_qdel
     from mlxtk.simulation_set.cmd_qsub_array import cmd_qsub_array
-    from mlxtk.simulation_set.cmd_run_index import cmd_run_index
     from mlxtk.simulation_set.cmd_run import cmd_run
+    from mlxtk.simulation_set.cmd_run_index import cmd_run_index
     from mlxtk.simulation_set.cmd_task_info import cmd_task_info
 
     def main(self, argv: List[str]):

@@ -65,8 +65,8 @@ class Simulation(base.SimulationBase):
     from mlxtk.simulation.cmd_graph import cmd_graph
     from mlxtk.simulation.cmd_list import cmd_list
     from mlxtk.simulation.cmd_propagation_status import (
-        cmd_propagation_status,
         check_propagation_status,
+        cmd_propagation_status,
     )
     from mlxtk.simulation.cmd_qdel import cmd_qdel
     from mlxtk.simulation.cmd_qsub import cmd_qsub

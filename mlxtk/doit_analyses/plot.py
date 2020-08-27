@@ -139,5 +139,7 @@ def direct_plot(
         + [str(pickle_file)],
         "targets": [str(output_file_base) + ext for ext in extensions],
         "clean": True,
-        "actions": [action_plot,],
+        "actions": [
+            action_plot,
+        ],
     }

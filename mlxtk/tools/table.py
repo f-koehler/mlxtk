@@ -56,7 +56,13 @@ def make_table(
 
     arrays = []
     for arg in args:
-        arrays.append(list(arg) + [None,] * (length - len(arg)))
+        arrays.append(
+            list(arg)
+            + [
+                None,
+            ]
+            * (length - len(arg))
+        )
 
     return numpy.array(arrays).T.tolist()
 

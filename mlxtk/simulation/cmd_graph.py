@@ -14,7 +14,8 @@ def cmd_graph(self: SimulationBase, args: argparse.Namespace):
     self.create_working_dir()
     with WorkingDir(self.working_dir):
         run_doit(
-            self.tasks_run, ["graph", "--backend=json", "--db-file=doit.json"],
+            self.tasks_run,
+            ["graph", "--backend=json", "--db-file=doit.json"],
         )
 
         with open("tasks.dot") as fptr:

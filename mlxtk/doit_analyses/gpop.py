@@ -22,7 +22,9 @@ def scan_plot_gpop(
     scan_dir: Union[Path, str],
     propagation: str = "propagate",
     dof: int = 1,
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)
@@ -62,7 +64,9 @@ def scan_plot_gpop_momentum(
     scan_dir: Union[Path, str],
     propagation: str = "propagate",
     dof: int = 1,
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)
@@ -101,7 +105,12 @@ def scan_gpop_slideshow(
 ):
     scan_dir = make_path(scan_dir)
     yield create_slideshow(
-        list_files(scan_dir / "plots" / ("gpop_" + str(dof)), [".png",]),
+        list_files(
+            scan_dir / "plots" / ("gpop_" + str(dof)),
+            [
+                ".png",
+            ],
+        ),
         (Path("videos") / ("gpop_" + str(dof)) / scan_dir.name).with_suffix(
             scan_dir.suffix + ".mp4"
         ),

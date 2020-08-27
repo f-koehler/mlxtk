@@ -22,7 +22,9 @@ def scan_plot_natpop(
     propagation: str = "propagate",
     node: int = 1,
     dof: int = 1,
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)
@@ -62,7 +64,9 @@ def scan_plot_entropy(
     propagation: str = "propagate",
     node: int = 1,
     dof: int = 1,
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)
@@ -212,7 +216,9 @@ def collect_max_depletion(
 
     return collect_values(
         scan_dir,
-        [Path(propagation_name) / "propagate.h5",],
+        [
+            Path(propagation_name) / "propagate.h5",
+        ],
         output_file,
         fetch,
         missing_ok=missing_ok,
@@ -246,7 +252,12 @@ def scan_natpop_slideshow(
 ):
     scan_dir = make_path(scan_dir)
     yield create_slideshow(
-        list_files(scan_dir / "plots" / "natpop_{}_{}".format(node, dof), [".png",]),
+        list_files(
+            scan_dir / "plots" / "natpop_{}_{}".format(node, dof),
+            [
+                ".png",
+            ],
+        ),
         (
             Path("videos") / ("natpop_{}_{}".format(node, dof)) / scan_dir.name
         ).with_suffix(scan_dir.suffix + ".mp4"),

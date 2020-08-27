@@ -33,5 +33,9 @@ def cmd_clean(self: SimulationSetBase, args: argparse.Namespace):
         tasks += clean_simulation(simulation)
     run_doit(
         tasks,
-        ["--process=" + str(args.jobs), "--backend=sqlite3", "--db-file=:memory:",],
+        [
+            "--process=" + str(args.jobs),
+            "--backend=sqlite3",
+            "--db-file=:memory:",
+        ],
     )

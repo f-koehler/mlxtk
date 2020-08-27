@@ -29,5 +29,11 @@ def collect_final_total_magnitude(
         return data[-1]
 
     return collect_values(
-        scan_dir, [fixed_ns_path,], output_file, fetch, missing_ok=missing_ok
+        scan_dir,
+        [
+            fixed_ns_path,
+        ],
+        output_file,
+        fetch,
+        missing_ok=missing_ok,
     )

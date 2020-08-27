@@ -43,5 +43,9 @@ def cmd_dry_run(self: SimulationSetBase, args: argparse.Namespace):
     for simulation in self.simulations:
         tasks += dry_run_simulation(simulation)
     run_doit(
-        tasks, ["--backend=sqlite3", "--db-file=:memory:",],
+        tasks,
+        [
+            "--backend=sqlite3",
+            "--db-file=:memory:",
+        ],
     )

@@ -20,16 +20,13 @@ class Timer:
         self.monotonic_stop = monotonic()
 
     def get_monotonic_time(self) -> float:
-        """Get time between start and stop time from monotonic timer.
-        """
+        """Get time between start and stop time from monotonic timer."""
         return self.monotonic_stop - self.monotonic_start
 
     def get_process_time(self) -> float:
-        """Get time between start and stop time from process timer.
-        """
+        """Get time between start and stop time from process timer."""
         return self.process_stop - self.process_start
 
     def get_perf_time(self) -> float:
-        """Get time between start and stop time from perf timer.
-        """
+        """Get time between start and stop time from perf timer."""
         return self.perf_stop - self.perf_start

@@ -42,5 +42,9 @@ def cmd_run(self: SimulationSetBase, args: argparse.Namespace):
         tasks += run_simulation(simulation)
     run_doit(
         tasks,
-        ["--process=" + str(args.jobs), "--backend=sqlite3", "--db-file=:memory:",],
+        [
+            "--process=" + str(args.jobs),
+            "--backend=sqlite3",
+            "--db-file=:memory:",
+        ],
     )

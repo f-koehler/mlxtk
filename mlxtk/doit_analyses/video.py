@@ -22,7 +22,9 @@ def create_slideshow(
 
     yield {
         "name": "slideshow:{}:pickle".format(str(pickle_file)).replace("=", "_"),
-        "targets": [pickle_file,],
+        "targets": [
+            pickle_file,
+        ],
         "clean": True,
         "actions": [(action_write_pickle, [duration])],
     }
@@ -32,7 +34,9 @@ def create_slideshow(
 
     yield {
         "name": "slideshow:{}:create".format(str(output_file)).replace("=", "_"),
-        "targets": [output_file,],
+        "targets": [
+            output_file,
+        ],
         "clean": True,
         "actions": [(action_create_slideshow, [duration, images])],
     }

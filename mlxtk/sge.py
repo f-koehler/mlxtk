@@ -73,24 +73,24 @@ def submit(
 ) -> int:
     """Create a jobfile for a command and submit it.
 
-    This function takes an arbitrary shell command and submits it to SGE.
-    Therefore the following files are created:
-    - ``sge.id``: a file containing the job id
-    - ``sge_job``: the job script that is submitted using ``qsub``
-    - ``sge_stop``: a script to stop this job
-    - ``sge_epilogue``: a script to gather accounting information using
-      ``qacct``.
+     This function takes an arbitrary shell command and submits it to SGE.
+     Therefore the following files are created:
+     - ``sge.id``: a file containing the job id
+     - ``sge_job``: the job script that is submitted using ``qsub``
+     - ``sge_stop``: a script to stop this job
+     - ``sge_epilogue``: a script to gather accounting information using
+       ``qacct``.
 
-   Before doing anything this method checks if the ``sge.id`` file exists and
-   checks whether the corresponding job is still running.
+    Before doing anything this method checks if the ``sge.id`` file exists and
+    checks whether the corresponding job is still running.
 
-    Args:
-        command (str): the shell command as a string.
-        args (argparse.Namespace): the command line arguments
-        sge_dir (str): working dir for the job
+     Args:
+         command (str): the shell command as a string.
+         args (argparse.Namespace): the command line arguments
+         sge_dir (str): working dir for the job
 
-    Returns:
-        int: job id of the new job
+     Returns:
+         int: job id of the new job
     """
     id_file = Path("sge.id")
     job_script = Path("sge_job")

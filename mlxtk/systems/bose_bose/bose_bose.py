@@ -10,7 +10,9 @@ from mlxtk.tasks import MBOperatorSpecification, OperatorSpecification
 
 class BoseBoseSystem(ABC):
     def __init__(
-        self, parameters: Parameters, grid: DVRSpecification,
+        self,
+        parameters: Parameters,
+        grid: DVRSpecification,
     ):
         self.parameters = parameters
         self.grid = grid
@@ -46,8 +48,15 @@ class BoseBoseSystem(ABC):
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"kinetic_coeff_A": -0.5 * self.parameters.mass_A,},
-            {"kinetic_A": {"value": self.grid.get_d2(), "fft": self.grid.is_fft(),},},
+            {
+                "kinetic_coeff_A": -0.5 * self.parameters.mass_A,
+            },
+            {
+                "kinetic_A": {
+                    "value": self.grid.get_d2(),
+                    "fft": self.grid.is_fft(),
+                },
+            },
             "kinetic_coeff_A | 1 kinetic_A",
         )
 
@@ -55,8 +64,15 @@ class BoseBoseSystem(ABC):
         return MBOperatorSpecification(
             (1, 1),
             (self.grid, self.grid),
-            {"kinetic_coeff_B": -0.5 * self.parameters.mass_B,},
-            {"kinetic_B": {"value": self.grid.get_d2(), "fft": self.grid.is_fft(),},},
+            {
+                "kinetic_coeff_B": -0.5 * self.parameters.mass_B,
+            },
+            {
+                "kinetic_B": {
+                    "value": self.grid.get_d2(),
+                    "fft": self.grid.is_fft(),
+                },
+            },
             "kinetic_coeff_B | 2 kinetic_B",
         )
 

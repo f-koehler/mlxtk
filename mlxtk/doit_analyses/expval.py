@@ -62,7 +62,9 @@ def collect_final_expval(
 def scan_plot_expval(
     scan_dir: Union[Path, str],
     expval: Union[Path, str],
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)
@@ -100,7 +102,9 @@ def scan_plot_expval(
 def scan_plot_variance(
     scan_dir: Union[Path, str],
     variance: Union[Path, str],
-    extensions: List[str] = [".png",],
+    extensions: List[str] = [
+        ".png",
+    ],
     **kwargs,
 ):
     scan_dir = make_path(scan_dir)

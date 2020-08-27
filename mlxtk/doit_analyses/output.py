@@ -33,7 +33,9 @@ def collect_final_energy(
 
     return collect_values(
         scan_dir,
-        [Path(propagation_name) / "propagate.h5",],
+        [
+            Path(propagation_name) / "propagate.h5",
+        ],
         output_file,
         fetch,
         missing_ok=missing_ok,

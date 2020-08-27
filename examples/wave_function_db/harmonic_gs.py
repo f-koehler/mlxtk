@@ -29,7 +29,10 @@ def create_simulation(p: mlxtk.parameters.Parameters):
 
 
 db = mlxtk.WaveFunctionDB(
-    "harmonic_gs", "gs_relax/final.wfn", parameters, create_simulation,
+    "harmonic_gs",
+    "gs_relax/final.wfn",
+    parameters,
+    create_simulation,
 )
 
 if __name__ == "__main__":

@@ -86,7 +86,14 @@ class MCTDHBMomentumDistribution(Task):
                 shutil.copy(path_operator, "oper")
                 shutil.copy(path_wfn, "restart")
 
-                trafo_to_momentum_rep([self.momentum_operator,], [1,])
+                trafo_to_momentum_rep(
+                    [
+                        self.momentum_operator,
+                    ],
+                    [
+                        1,
+                    ],
+                )
 
                 cmd = [
                     "qdtk_analysis.x",

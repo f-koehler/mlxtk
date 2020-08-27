@@ -158,8 +158,14 @@ class CreateBoseBoseWaveFunction(Task):
 
         return {
             "name": "wfn_bose_bose:{}:create".format(self.name),
-            "actions": [action_write_wave_function,],
-            "targets": [self.path, self.path_basis_A, self.path_basis_B,],
+            "actions": [
+                action_write_wave_function,
+            ],
+            "targets": [
+                self.path,
+                self.path_basis_A,
+                self.path_basis_B,
+            ],
             "file_dep": [self.path_pickle, self.path_matrix_A, self.path_matrix_B],
         }
 

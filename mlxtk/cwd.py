@@ -31,14 +31,12 @@ class WorkingDir:
         self.path = path.resolve()
 
     def __enter__(self):
-        """Enter this context.
-        """
+        """Enter this context."""
         LOGGER.debug("set new cwd: %s", self.path)
         os.chdir(str(self.path))
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Exit this context.
-        """
+        """Exit this context."""
         del exc_type
         del exc_value
         del traceback

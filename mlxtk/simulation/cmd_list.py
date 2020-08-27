@@ -11,5 +11,6 @@ def cmd_list(self: SimulationBase, args: argparse.Namespace):
     self.create_working_dir()
     with WorkingDir(self.working_dir):
         run_doit(
-            self.tasks_run, ["list", "--backend=json", "--db-file=doit.json"],
+            self.tasks_run,
+            ["list", "--backend=json", "--db-file=doit.json"],
         )

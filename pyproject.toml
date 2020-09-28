@@ -82,7 +82,9 @@ compute_dmat2 = "mlxtk.scripts.compute.dmat2:main"
 compute_g1 = "mlxtk.scripts.compute.g1:main"
 compute_g2 = "mlxtk.scripts.compute.g2:main"
 
+export_expval = "mlxtk.scripts.export.expval:main"
 export_gpop = "mlxtk.scripts.export.gpop:main"
+export_output = "mlxtk.scripts.export.output:main"
 
 slider_dmat_gridrep = "mlxtk.scripts.slider.dmat_gridrep:main"
 slider_dmat_spfrep = "mlxtk.scripts.slider.dmat_spfrep:main"

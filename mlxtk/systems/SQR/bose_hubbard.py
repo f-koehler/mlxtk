@@ -2,7 +2,7 @@ from typing import List
 
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
-from mlxtk.systems.SQR.Bosonic import BosonicSQR
+from mlxtk.systems.SQR.bosonic import BosonicSQR
 from mlxtk.tasks import OperatorSpecification
 
 
@@ -15,8 +15,8 @@ class BoseHubbardSQR(BosonicSQR):
     def create_parameters() -> Parameters:
         return Parameters(
             [
-                ("N", 4, "number of particles"),
                 ("sites", 4, "number of sites"),
+                ("N", 4, "number of particles"),
                 ("U", 1.0, "interaction strength in units of hopping constant"),
                 ("pbc", True, "whether to use periodic boundary conditions"),
             ]

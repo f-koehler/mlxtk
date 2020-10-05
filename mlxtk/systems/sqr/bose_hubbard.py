@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
-from mlxtk.systems.SQR.bosonic import BosonicSQR
+from mlxtk.systems.sqr.bosonic import BosonicSQR
 from mlxtk.tasks import OperatorSpecification
 
 

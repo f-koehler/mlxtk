@@ -57,19 +57,13 @@ class BoseHubbardSQR(BosonicSQR):
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {
-                "interaction_coeff_1": self.parameters.U,
-                "interaction_coeff_2": -self.parameters.U,
+                "interaction_coeff": self.parameters.U / 2.0,
             },
             {
-                "interaction_1": self.grid.get_x() ** 2,
-                "interaction_2": self.grid.get_x(),
+                "interaction": self.grid.get_x() * (self.grid.get_x() - 1.0),
             },
             [
-                "interaction_coeff_1 | {} interaction_1".format(i + 1)
-                for i in range(self.parameters.sites)
-            ]
-            + [
-                "interaction_coeff_2 | {} interaction_2".format(i + 1)
+                "interaction_coeff | {} interaction".format(i + 1)
                 for i in range(self.parameters.sites)
             ],
         )

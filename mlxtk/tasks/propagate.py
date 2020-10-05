@@ -146,8 +146,8 @@ class Propagate(Task):
         # compute required paths
         self.path_name = Path(self.name)
         self.path_pickle = Path(self.name + ".prop_pickle")
-        self.path_wave_function = make_path(wave_function).with_suffix(".wfn")
-        self.path_hamiltonian = make_path(hamiltonian).with_suffix(".mb_opr")
+        self.path_wave_function = make_path(wave_function)
+        self.path_hamiltonian = make_path(hamiltonian)
         self.path_diag_gauge_oper: Optional[Path] = (
             Path(self.diag_gauge_oper) if self.diag_gauge_oper else None
         )

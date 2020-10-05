@@ -48,10 +48,10 @@ class MCTDHBCreateWaveFunction(Task):
         else:
             self.number_state = numpy.copy(numpy.array(number_state))
 
-        self.path = Path(name + ".wfn")
-        self.path_pickle = Path(name + ".wfn_pickle")
-        self.path_basis = Path(name + ".wfn_basis.h5")
-        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.h5")
+        self.path = Path(name)
+        self.path_pickle = Path(name + ".pickle")
+        self.path_basis = Path(name + "_basis.h5")
+        self.path_matrix = Path(self.hamiltonian_1b + "_mat.h5")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -143,10 +143,10 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
         self.max_number = max_number
         self.hamiltonian_1b = hamiltonian_1b
 
-        self.path = Path(name + ".wfn")
-        self.path_pickle = Path(name + ".wfn_pickle")
-        self.path_basis = Path(name + ".wfn_basis.h5")
-        self.path_matrix = Path(self.hamiltonian_1b + ".opr_mat.h5")
+        self.path = Path(name)
+        self.path_pickle = Path(name + ".pickle")
+        self.path_basis = Path(name + "_basis.h5")
+        self.path_matrix = Path(self.hamiltonian_1b + "_mat.h5")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -256,13 +256,13 @@ class MCTDHBCreateWaveFunctionMulti(Task):
         else:
             self.number_state = numpy.copy(number_state)
 
-        self.path = name + ".wfn"
-        self.path_pickle = name + ".wfn_pickle"
+        self.path = Path(name)
+        self.path_pickle = Path(name + ".pickle")
         self.path_bases = [
-            name + "_{}.wfn_basis.h5".format(i)
+            Path(name + "_{}_basis.h5".format(i))
             for i, _ in enumerate(self.hamiltonians_1b)
         ]
-        self.path_matrices = [name + ".opr_mat.h5" for name in self.hamiltonians_1b]
+        self.path_matrices = [name + "_mat.h5" for name in self.hamiltonians_1b]
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -350,9 +350,9 @@ class MCTDHBAddMomentum(Task):
         self.momentum = momentum
         self.grid = grid
 
-        self.path = self.name + ".wfn"
-        self.path_initial = self.initial + ".wfn"
-        self.path_pickle = self.name + ".wfn_pickle"
+        self.path = Path(self.name)
+        self.path_initial = Path(self.initial)
+        self.path_pickle = Path(self.name + ".pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -407,9 +407,9 @@ class MCTDHBAddMomentumSplit(Task):
         self.x0 = x0
         self.grid = grid
 
-        self.path = name + ".wfn"
-        self.path_initial = self.initial + ".wfn"
-        self.path_pickle = self.name + ".wfn_pickle"
+        self.path = Path(name)
+        self.path_initial = Path(self.initial)
+        self.path_pickle = Path(self.name + ".pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -461,9 +461,9 @@ class MCTDHBExtendGrid(Task):
         self.nright = nright
         self.value = value
 
-        self.path = name + ".wfn"
-        self.path_initial = self.initial + ".wfn"
-        self.path_pickle = self.name + ".wfn_pickle"
+        self.path = Path(name)
+        self.path_initial = Path(self.initial)
+        self.path_pickle = Path(self.name)
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -531,8 +531,8 @@ class MCTDHBOverlapStatic(Task):
     ):
         self.logger = get_logger(__name__ + ".MCTDHBOverlapStatic")
 
-        self.wave_function = make_path(wave_function).with_suffix(".wfn")
-        self.basis = make_path(basis).with_suffix(".wfn")
+        self.wave_function = make_path(wave_function)
+        self.basis = make_path(basis)
         self.result = make_path(
             kwargs.get(
                 "name",

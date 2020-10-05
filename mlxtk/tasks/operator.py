@@ -30,9 +30,9 @@ class CreateOperator(Task):
             else:
                 self.specification = OperatorSpecification(*args, **kwargs)
 
-        self.path = Path(name + ".opr")
-        self.path_matrix = Path(name + ".opr_mat.h5")
-        self.path_pickle = Path(name + ".opr_pickle")
+        self.path = Path(name)
+        self.path_matrix = Path(name + "_mat.h5")
+        self.path_pickle = Path(name + ".pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction

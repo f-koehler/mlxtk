@@ -21,19 +21,21 @@ if __name__ == "__main__":
     system = TwoGaussianTraps(parameters, grid)
 
     sim += tasks.CreateOperator(
-        "hamiltonian_1b_A", system.get_hamiltonian_left_well_1b_A()
+        "hamiltonian_1b_A.opr", system.get_hamiltonian_left_well_1b_A()
     )
     sim += tasks.CreateOperator(
-        "hamiltonian_1b_B", system.get_hamiltonian_right_well_1b_B()
+        "hamiltonian_1b_B.opr", system.get_hamiltonian_right_well_1b_B()
     )
     sim += tasks.CreateMBOperator(
-        "hamiltonian_relax", system.get_hamiltonian_left_right()
+        "hamiltonian_relax.mb_opr", system.get_hamiltonian_left_right()
     )
-    sim += tasks.CreateMBOperator("hamiltonian", system.get_hamiltonian_colliding())
+    sim += tasks.CreateMBOperator(
+        "hamiltonian.mb_opr", system.get_hamiltonian_colliding()
+    )
     sim += tasks.CreateBoseBoseWaveFunction(
-        "initial",
-        "hamiltonian_1b_A",
-        "hamiltonian_1b_B",
+        "initial.wfn",
+        "hamiltonian_1b_A.opr",
+        "hamiltonian_1b_B.opr",
         parameters.N_A,
         parameters.N_B,
         parameters.M_A,
@@ -42,10 +44,20 @@ if __name__ == "__main__":
         parameters.m_B,
     )
     sim += tasks.ImprovedRelax(
-        "gs_relax", "initial", "hamiltonian_relax", 1, tfinal=10000.0, dt=0.01
+        "gs_relax",
+        "initial.wfn",
+        "hamiltonian_relax.mb_opr",
+        1,
+        tfinal=10000.0,
+        dt=0.01,
     )
     sim += tasks.Propagate(
-        "propagate", "gs_relax/final", "hamiltonian", tfinal=10.0, dt=0.05, psi=True
+        "propagate",
+        "gs_relax/final.wfn",
+        "hamiltonian.mb_opr",
+        tfinal=10.0,
+        dt=0.05,
+        psi=True,
     )
 
     sim.main()

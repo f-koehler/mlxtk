@@ -49,12 +49,12 @@ class CreateBoseBoseWaveFunction(Task):
         else:
             self.ns_B = numpy.copy(numpy.array(ns_B))
 
-        self.path = Path(name + ".wfn")
-        self.path_pickle = Path(name + ".wfn_pickle")
-        self.path_basis_A = Path(name + "_A.wfn_basis.h5")
-        self.path_basis_B = Path(name + "_B.wfn_basis.h5")
-        self.path_matrix_A = Path(self.hamiltonian_1b_A + ".opr_mat.h5")
-        self.path_matrix_B = Path(self.hamiltonian_1b_B + ".opr_mat.h5")
+        self.path = Path(name)
+        self.path_pickle = Path(name + ".pickle")
+        self.path_basis_A = Path(name + "_A_basis.h5")
+        self.path_basis_B = Path(name + "_B_basis.h5")
+        self.path_matrix_A = Path(self.hamiltonian_1b_A + "_mat.h5")
+        self.path_matrix_B = Path(self.hamiltonian_1b_B + "_mat.h5")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction

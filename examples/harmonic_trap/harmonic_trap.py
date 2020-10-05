@@ -21,44 +21,46 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("harmonic_trap")
 
-    sim += tasks.CreateOperator("hamiltonian_1b", system.get_hamiltonian_1b())
-    sim += tasks.CreateMBOperator("hamiltonian", system.get_hamiltonian())
+    sim += tasks.CreateOperator("hamiltonian_1b.opr", system.get_hamiltonian_1b())
+    sim += tasks.CreateMBOperator("hamiltonian.mb_opr", system.get_hamiltonian())
     sim += tasks.CreateMBOperator(
-        "hamiltonian_quenched", system_quenched.get_hamiltonian()
+        "hamiltonian_quenched.mb_opr", system_quenched.get_hamiltonian()
     )
-    sim += tasks.CreateMBOperator("com", system_quenched.get_com_operator())
-    sim += tasks.CreateMBOperator("com_2", system_quenched.get_com_operator_squared())
+    sim += tasks.CreateMBOperator("com,mb_opr", system_quenched.get_com_operator())
+    sim += tasks.CreateMBOperator(
+        "com_2.mb_opr", system_quenched.get_com_operator_squared()
+    )
 
     sim += tasks.MCTDHBCreateWaveFunction(
-        "initial", "hamiltonian_1b", parameters.N, parameters.m
+        "initial.wfn", "hamiltonian_1b.opr", parameters.N, parameters.m
     )
     sim += tasks.ImprovedRelax(
-        "gs_relax", "initial", "hamiltonian", 1, tfinal=1000.0, dt=0.01
+        "gs_relax", "initial.wfn", "hamiltonian.mb_opr", 1, tfinal=1000.0, dt=0.01
     )
     sim += tasks.Propagate(
         "propagate",
-        "gs_relax/final",
-        "hamiltonian_quenched",
+        "gs_relax/final.wfn",
+        "hamiltonian_quenched.mb_opr",
         tfinal=10.0,
         dt=0.05,
         psi=True,
     )
 
-    sim += tasks.ComputeExpectationValue("propagate/psi", "com")
-    sim += tasks.ComputeExpectationValue("propagate/psi", "com_2")
+    sim += tasks.ComputeExpectationValue("propagate/psi", "com.mb_opr")
+    sim += tasks.ComputeExpectationValue("propagate/psi", "com_2.mb_opr")
     sim += tasks.ComputeVariance("propagate/com", "propagate/com_2")
 
     sim += tasks.MCTDHBMomentumDistribution(
-        "propagate/psi", "hamiltonian", "initial", grid
+        "propagate/psi", "hamiltonian.mb_opr", "initial.wfn", grid
     )
 
-    sim += tasks.ComputeExpectationValueStatic("propagate/final", "com")
+    sim += tasks.ComputeExpectationValueStatic("propagate/final.wfn", "com.mb_opr")
 
-    sim += tasks.NumberStateAnalysisStatic("propagate/final", "initial")
+    sim += tasks.NumberStateAnalysisStatic("propagate/final.wfn", "initial.wfn")
 
     sim += tasks.MCTDHBCreateWaveFunction(
-        "basis_ED", "hamiltonian_1b", parameters.N, 20
+        "basis_ED.wfn", "hamiltonian_1b.opr", parameters.N, 20
     )
-    sim += tasks.Diagonalize("ED", "basis_ED", "hamiltonian", 5)
+    sim += tasks.Diagonalize("ED", "basis_ED.wfn", "hamiltonian.mb_opr", 5)
 
     sim.main()

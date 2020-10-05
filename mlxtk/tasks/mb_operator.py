@@ -27,8 +27,8 @@ class CreateMBOperator(Task):
             else:
                 self.specification = MBOperatorSpecification(*args, **kwargs)
 
-        self.path = Path(self.name + ".mb_opr")
-        self.path_pickle = Path(self.name + ".mb_opr_pickle")
+        self.path = Path(self.name)
+        self.path_pickle = Path(self.name + ".pickle.pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction

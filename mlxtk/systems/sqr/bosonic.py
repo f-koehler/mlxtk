@@ -52,7 +52,7 @@ class BosonicSQR(ABC):
                 "penalty_1": self.grid.get_x() ** 2,
                 "penalty_2": self.grid.get_x(),
                 "penalty_3": self.grid.get_x(),
-                "penalty_4": self.grid.get_unit_operator(),
+                "penalty_4": self.grid.get().get_unit_operator(),
             },
             table,
         )

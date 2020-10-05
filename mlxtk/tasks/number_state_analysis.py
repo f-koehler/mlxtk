@@ -21,8 +21,8 @@ class NumberStateAnalysisStatic(Task):
     ):
         self.logger = get_logger(__name__ + ".NumberStateAnalysisStatic")
 
-        self.wave_function = make_path(wave_function).with_suffix(".wfn")
-        self.basis = make_path(basis).with_suffix(".wfn")
+        self.wave_function = make_path(wave_function)
+        self.basis = make_path(basis)
         self.result = make_path(
             kwargs.get(
                 "name",

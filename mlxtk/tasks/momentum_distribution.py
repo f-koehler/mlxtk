@@ -32,14 +32,14 @@ class MCTDHBMomentumDistribution(Task):
         self.psi = psi
         self.name = psi.replace("/", "_")
 
-        self.operator = operator + ".mb_opr"
+        self.operator = operator
 
         if grid.is_fft():
             self.momentum_operator = -1j * grid.get_expdvr().get_d1()
         else:
             self.momentum_operator = -1j * grid.get_d1()
 
-        self.wfn = wfn + ".wfn"
+        self.wfn = wfn
 
         if output_file is None:
             self.output_file = str(Path(psi).parent / "momentum_distribution.h5")

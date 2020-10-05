@@ -17,3 +17,4 @@ from mlxtk.tasks.wfn_mcthdb import (
     MCTDHBExtendGrid,
     MCTDHBOverlapStatic,
 )
+from mlxtk.tasks.wfn_sqr import CreateSQRBosonicWaveFunction

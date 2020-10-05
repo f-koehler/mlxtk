@@ -39,7 +39,7 @@ class RequestWaveFunction(Task):
         self.parameters = parameters
         self.variable_name = variable_name
         self.compute = compute
-        self.path = Path(self.name + ".wfn")
+        self.path = Path(self.name)
 
     def task_request_wave_function(self) -> Dict[str, Any]:
         db = load_db(self.db_path, self.variable_name)
@@ -104,7 +104,7 @@ class FrameFromPsi(Task):
         else:
             self.path = make_path(path)
 
-        self.pickle_path = self.path.with_suffix(".wfn_pickle")
+        self.pickle_path = Path(str(self.path) + ".pickle")
 
     def task_pickle(self) -> Dict[str, Any]:
         @DoitAction

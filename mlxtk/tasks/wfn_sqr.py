@@ -1,6 +1,6 @@
 import pickle
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union
 
 import numpy
 from QDTK.SQR.WaveFunction import create_bosonic_sqr_wave_function_with_binary_tree
@@ -17,21 +17,25 @@ class CreateSQRBosonicWaveFunction(Task):
         orbital_list: Union[List[int], numpy.ndarray],
         N: int,
         L: int,
-        initial_filling: numpy.ndarray,
+        initial_filling: Union[List[float], numpy.ndarray],
     ):
         self.logger = get_logger(__name__ + ".CreateSQRBosonicWaveFunction")
         self.name = name
         self.number_of_particles = N
         self.number_of_sites = L
-        self.initial_filling = initial_filling.copy()
+
+        if isinstance(initial_filling, numpy.ndarray):
+            self.initial_filling = initial_filling.to_list()
+        else:
+            self.initial_filling = initial_filling
 
         if isinstance(orbital_list, numpy.ndarray):
             self.orbital_list = orbital_list.astype(numpy.int64)
         else:
             self.orbital_list = orbital_list
 
-        self.path = Path(name + ".wfn")
-        self.path_pickle = Path(name + ".wfn_pickle")
+        self.path = Path(name)
+        self.path_pickle = Path(name + ".pickle")
 
     def task_write_parameters(self) -> Dict[str, Any]:
         @DoitAction
@@ -43,7 +47,7 @@ class CreateSQRBosonicWaveFunction(Task):
                 self.orbital_list,
                 self.number_of_particles,
                 self.number_of_sites,
-                self.initial_filling.to_list(),
+                self.initial_filling,
             ]
             with open(self.path_pickle, "wb") as fptr:
                 pickle.dump(obj, fptr, protocol=3)
@@ -60,15 +64,15 @@ class CreateSQRBosonicWaveFunction(Task):
         @DoitAction
         def action_write_wave_function(targets: List[str]):
             create_bosonic_sqr_wave_function_with_binary_tree(
-                self.path,
                 self.orbital_list,
                 self.number_of_particles,
                 self.number_of_sites,
-                self.initial_filling,
+                numpy.array(self.initial_filling),
+                self.path,
             )
 
         return {
-            "name": "wfn_sqr_bosonic:{}:write_parameters".format(self.name),
+            "name": "wfn_sqr_bosonic:{}:create".format(self.name),
             "actions": [
                 action_write_wave_function,
             ],
@@ -79,3 +83,6 @@ class CreateSQRBosonicWaveFunction(Task):
                 self.path_pickle,
             ],
         }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_write_parameters, self.task_write_wave_function]

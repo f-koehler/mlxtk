@@ -25,7 +25,7 @@ class CreateSQRBosonicWaveFunction(Task):
         self.number_of_sites = L
 
         if isinstance(initial_filling, numpy.ndarray):
-            self.initial_filling = initial_filling.to_list()
+            self.initial_filling = initial_filling.tolist()
         else:
             self.initial_filling = initial_filling
 

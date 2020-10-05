@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
@@ -74,9 +74,11 @@ class BoseHubbardSQR(BosonicSQR):
             ],
         )
 
-    def create_hamiltonian(self):
+    def create_hamiltonian(self, penalty: Optional[float] = None):
         return (
             self.create_hopping_term()
             + self.create_interaction_term()
-            + self.get_penalty_term(self.parameters.penalty)
+            + self.get_penalty_term(
+                self.parameters.penalty if penalty is None else penalty
+            )
         )

@@ -82,6 +82,7 @@ class CreateSQRBosonicWaveFunction(Task):
             "file_dep": [
                 self.path_pickle,
             ],
+            "verbosity": 2,
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

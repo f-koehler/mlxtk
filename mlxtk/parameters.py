@@ -2,6 +2,55 @@ import copy
 import itertools
 import json
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
+import numpy
+
+
+def map_numpy_types(value):
+    if type(value) in [
+        numpy.short,
+        numpy.ushort,
+        numpy.intc,
+        numpy.uintc,
+        numpy.int_,
+        numpy.uint,
+        numpy.longlong,
+        numpy.ulonglong,
+        numpy.int8,
+        numpy.int16,
+        numpy.int32,
+        numpy.int64,
+        numpy.uint8,
+        numpy.uint16,
+        numpy.uint64,
+    ]:
+        return int(value)
+
+    if type(value) in [
+        numpy.half,
+        numpy.float16,
+        numpy.single,
+        numpy.double,
+        numpy.longdouble,
+        numpy.float32,
+        numpy.float64,
+        numpy.float_,
+    ]:
+        return float(value)
+
+    if type(value) in [
+        numpy.csingle,
+        numpy.cdouble,
+        numpy.clongdouble,
+        numpy.complex64,
+        numpy.complex128,
+        numpy.complex_,
+    ]:
+        return complex(value)
+
+    if isinstance(value, numpy.bool_):
+        return bool(value)
+
+    return value
 
 
 class Parameters:
@@ -44,7 +93,7 @@ class Parameters:
     def to_json(self) -> str:
         return json.dumps(
             {
-                "values": {name: self[name] for name in self.names},
+                "values": {name: map_numpy_types(self[name]) for name in self.names},
                 "docs": {name: self.docs[name] for name in self.names},
             }
         )

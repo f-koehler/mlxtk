@@ -12,10 +12,16 @@ parameters.add_parameter("penalty", 100, "coefficient of the penalty term")
 if __name__ == "__main__":
     system = BoseHubbardSQR(parameters)
 
+    m = 5
+
     sim = mlxtk.Simulation("bose_hubbard")
     sim += tasks.CreateOperator("hamiltonian.opr", system.create_hamiltonian())
     sim += tasks.CreateSQRBosonicWaveFunction(
-        "initial.wfn", [3, 5, 6], parameters.N, parameters.sites, [1, 1, 1, 1]
+        "initial.wfn",
+        [m, m + 2, m + 3, m + 4, m + 4],
+        parameters.N,
+        parameters.sites,
+        [1, 1, 1, 1],
     )
     sim += tasks.Relax(
         "gs_relax", "initial.wfn", "hamiltonian.opr", tfinal=1200, dt=0.1, statsteps=50

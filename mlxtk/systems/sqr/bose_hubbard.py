@@ -23,7 +23,7 @@ class BoseHubbardSQR(BosonicSQR):
             ]
         )
 
-    def create_hopping_term(self):
+    def create_hopping_term(self) -> OperatorSpecification:
         table: List[str] = []
 
         for i in range(self.parameters.sites - 1):
@@ -54,7 +54,7 @@ class BoseHubbardSQR(BosonicSQR):
             table,
         )
 
-    def create_interaction_term(self):
+    def create_interaction_term(self) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {
@@ -69,11 +69,14 @@ class BoseHubbardSQR(BosonicSQR):
             ],
         )
 
-    def create_hamiltonian(self, penalty: Optional[float] = None):
-        return (
-            self.create_hopping_term()
-            + self.create_interaction_term()
-            + self.get_penalty_term(
-                self.parameters.penalty if penalty is None else penalty
-            )
+    def create_hamiltonian(
+        self, penalty: Optional[float] = None
+    ) -> OperatorSpecification:
+        hamiltonian = self.get_penalty_term(
+            self.parameters.penalty if penalty is None else penalty
         )
+        if self.parameters.J != 0.0:
+            hamiltonian += self.create_hopping_term()
+        if self.parameters.U != 0.0:
+            hamiltonian += self.create_interaction_term()
+        return hamiltonian

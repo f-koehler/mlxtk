@@ -45,7 +45,7 @@ class BoseHubbardSQR(BosonicSQR):
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {
-                "hopping_coeff": -parameters.J,
+                "hopping_coeff": -self.parameters.J,
             },
             {
                 "creator": self.grid.get().get_creation_operator(),

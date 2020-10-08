@@ -17,7 +17,8 @@ class BoseHubbardSQR(BosonicSQR):
             [
                 ("sites", 4, "number of sites"),
                 ("N", 4, "number of particles"),
-                ("U", 1.0, "interaction strength in units of hopping constant"),
+                ("J", 1.0, "hopping constant"),
+                ("U", 1.0, "interaction strength"),
                 ("pbc", True, "whether to use periodic boundary conditions"),
             ]
         )
@@ -44,7 +45,7 @@ class BoseHubbardSQR(BosonicSQR):
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {
-                "hopping_coeff": -1.0,
+                "hopping_coeff": -parameters.J,
             },
             {
                 "creator": self.grid.get().get_creation_operator(),

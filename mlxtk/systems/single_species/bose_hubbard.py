@@ -4,6 +4,7 @@ from mlxtk import dvr
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.tasks import MBOperatorSpecification
+from typing import List
 
 
 class BoseHubbard:
@@ -18,7 +19,8 @@ class BoseHubbard:
             [
                 ("sites", "4", "number of sites"),
                 ("N", 4, "number of particles"),
-                ("U", 1.0, "interaction strength in units of hopping constant"),
+                ("J", 1.0, "hopping constant"),
+                ("U", 1.0, "interaction strength"),
                 ("pbc", True, "whether to use periodic boundary conditions"),
             ]
         )
@@ -37,8 +39,43 @@ class BoseHubbard:
             (1,),
             (self.grid,),
             {
-                "hopping_coeff": -1.0,
+                "hopping_coeff": -self.parameters.J,
             },
             {"hopping": matrix},
-            "hopping_coeff |1 hopping",
+            "hopping_coeff | 1 hopping",
         )
+
+    def create_interaction_term(self) -> MBOperatorSpecification:
+        def create_delta_peak(n: int, i: int) -> numpy.ndarray:
+            result = numpy.zeros(n)
+            result[i] = 1.0
+            return result
+
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"interaction_coeff": self.parameters.U},
+            {
+                "interaction_term_{}".format(i): create_delta_peak(
+                    self.grid.get().npoints, i
+                )
+                for i in range(self.grid.get().npoints)
+            },
+            [
+                "interaction_coeff | 1 | 1* interaction_term_{}".format(i)
+                for i in range(self.grid.get().npoints)
+            ],
+        )
+
+    def get_hamiltonian(self) -> MBOperatorSpecification:
+        terms: List[MBOperatorSpecification] = []
+        if self.parameters.J != 0.0:
+            terms.append(self.create_hopping_term())
+        if self.parameters.U != 0.0:
+            terms.append(self.create_interaction_term())
+        if terms is None:
+            raise RuntimeError("Hamiltonian would be empty since both J and U are 0.0")
+        operator = terms[0]
+        for term in terms[1:]:
+            operator += term
+        return operator

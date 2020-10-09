@@ -72,11 +72,17 @@ class BoseHubbardSQR(BosonicSQR):
     def create_hamiltonian(
         self, penalty: Optional[float] = None
     ) -> OperatorSpecification:
-        hamiltonian = self.get_penalty_term(
-            self.parameters.penalty if penalty is None else penalty
-        )
+        terms: List[OperatorSpecification] = []
+        penalty = self.parameters.penalty if penalty is None else penalty
+        if penalty != 0.0:
+            terms.append(self.get_penalty_term(penalty))
         if self.parameters.J != 0.0:
-            hamiltonian += self.create_hopping_term()
+            terms.append(self.create_hopping_term())
         if self.parameters.U != 0.0:
-            hamiltonian += self.create_interaction_term()
+            terms.append(self.create_interaction_term())
+        if not terms:
+            raise RuntimeError("Hamiltonian would be empty: U, J and penalty are 0.0")
+        hamiltonian = terms[0]
+        for term in terms[1:]:
+            hamiltonian += term
         return hamiltonian

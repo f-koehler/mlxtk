@@ -1,3 +1,5 @@
+import numpy
+
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
 from mlxtk.systems.single_species.single_species import SingleSpeciesSystem

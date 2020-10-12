@@ -82,7 +82,6 @@ class BoseHubbard:
         operator = terms[0]
         for term in terms[1:]:
             operator += term
-        print(operator)
         return operator
 
     def get_fake_initial_state_hamiltonian(self) -> OperatorSpecification:

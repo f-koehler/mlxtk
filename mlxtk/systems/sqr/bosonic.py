@@ -16,7 +16,6 @@ class BosonicSQR(ABC):
         self.grid = dvr.add_sqr_dvr_bosonic(parameters.N)
 
     def get_particle_number_operator(self) -> OperatorSpecification:
-
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"particle_number_coeff": 1.0},
@@ -25,6 +24,24 @@ class BosonicSQR(ABC):
                 "particle_number_coeff | {} particle_number".format(i + 1)
                 for i in range(self.parameters.sites)
             ],
+        )
+
+    def get_site_occupation_operator(self, site_index: int):
+        return OperatorSpecification(
+            tuple(self.grid for i in range(self.parameters.sites)),
+            {"site_occupation_coeff": 1.0},
+            {"site_occupation": self.grid.get_x()},
+            "site_occupation_coeff | {} site_occupation".format(site_index + 1),
+        )
+
+    def get_site_occupation_operator_squared(self, site_index: int):
+        return OperatorSpecification(
+            tuple(self.grid for i in range(self.parameters.sites)),
+            {"site_occupation_squared_coeff": 1.0},
+            {"site_occupation_squared": self.grid.get_x()},
+            "site_occupation_squared_coeff | {} site_occupation_squared".format(
+                site_index + 1
+            ),
         )
 
     def get_penalty_term(self, penalty: float) -> OperatorSpecification:

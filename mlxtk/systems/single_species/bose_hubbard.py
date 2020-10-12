@@ -71,6 +71,35 @@ class BoseHubbard:
             ],
         )
 
+    def get_site_occupation_operator(self, site_index: int) -> MBOperatorSpecification:
+        term = numpy.zeros(self.grid.get().npoints)
+        term[site_index] = 1
+
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"site_occupation_coeff": 1.0},
+            {"site_occupation": term},
+            "site_occupation_coeff | 1 site_occupation",
+        )
+
+    def get_site_occupation_operator_squared(
+        self, site_index: int
+    ) -> MBOperatorSpecification:
+        term = numpy.zeros(self.grid.get().npoints)
+        term[site_index] = 1
+
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"site_occupation_coeff_1": 1.0, "site_occupation_coeff_2": 2.0},
+            {"site_occupation": term},
+            [
+                "site_occupation_coeff_1 | 1 site_occupation",
+                "site_occupation_coeff_2 | 1 site_occupation | 1* site_occupation",
+            ],
+        )
+
     def get_hamiltonian(self) -> MBOperatorSpecification:
         terms: List[MBOperatorSpecification] = []
         if self.parameters.J != 0.0:

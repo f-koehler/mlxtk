@@ -29,7 +29,7 @@ def read_natpop_ascii(
 ]:
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
-    re_node_info = re.compile(r"^node:\s+(\d+)\s+layer:\s+(\d+)$")
+    re_node_info = re.compile(r"^node:\s*(\d+)\s+layer:\s+(\d+)$")
     re_orbitals_start = re.compile(r"^m(\d+):\s+(.+)$")
 
     # read whole file

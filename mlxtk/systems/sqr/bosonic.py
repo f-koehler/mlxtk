@@ -38,7 +38,7 @@ class BosonicSQR(ABC):
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"site_occupation_squared_coeff": 1.0},
-            {"site_occupation_squared": self.grid.get_x()},
+            {"site_occupation_squared": self.grid.get_x() ** 2},
             "site_occupation_squared_coeff | {} site_occupation_squared".format(
                 site_index + 1
             ),

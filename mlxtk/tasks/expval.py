@@ -95,8 +95,8 @@ class ComputeExpectationValueStatic(Task):
         self.logger = get_logger(__name__ + ".ComputeExpectationValueStatic")
 
         # compute required paths
-        self.operator = make_path(operator).with_suffix(".mb_opr")
-        self.wave_function = make_path(wave_function).with_suffix(".wfn")
+        self.operator = make_path(operator)
+        self.wave_function = make_path(wave_function)
         self.expval = self.wave_function.with_name(
             self.wave_function.stem + "_" + self.operator.stem
         ).with_suffix(".exp.h5")

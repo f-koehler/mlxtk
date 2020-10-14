@@ -28,7 +28,7 @@ class ComputeExpectationValue(Task):
         self.unique_name = kwargs.get("unique_name", False)
 
         # compute required paths
-        self.operator = make_path(operator).with_suffix(".mb_opr")
+        self.operator = make_path(operator)
         self.psi = make_path(psi)
         if self.unique_name:
             self.expval = self.psi.with_name(
@@ -37,9 +37,12 @@ class ComputeExpectationValue(Task):
         else:
             self.expval = (self.psi.parent / self.operator.stem).with_suffix(".exp.h5")
 
-        self.wave_function = make_path(
-            kwargs.get("wave_function", self.psi.parent / "final")
-        ).with_suffix(".wfn")
+        if "wave_function" in kwargs:
+            self.wave_function = make_path(kwargs["wave_function"])
+        else:
+            self.wave_function = make_path(
+                kwargs.get("wave_function", self.psi.parent / "final")
+            ).with_suffix(".wfn")
 
         self.name = str(self.expval.with_suffix(""))
 

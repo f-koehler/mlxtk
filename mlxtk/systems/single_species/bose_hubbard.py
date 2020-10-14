@@ -100,6 +100,25 @@ class BoseHubbard:
             ],
         )
 
+    def get_site_occupation_pair_operator(
+        self, site_index_1: int, site_index_2: int
+    ) -> MBOperatorSpecification:
+        n = self.grid.get().npoints
+        term_1 = numpy.zeros(n)
+        term_1[site_index_1] = 1
+        term_2 = numpy.zeros(n)
+        term_2[site_index_2] = 1
+
+        terms = {"site_occupation_pair_1": term_1, "site_occupation_pair_2": term_2}
+        coefficients = {"site_occupation_pair_2b_coeff": 2.0}
+        table = [
+            "site_occupation_pair_2b_coeff | 1 site_occupation_pair_1 | 1* site_occupation_pair_2"
+        ]
+        if site_index_1 == site_index_2:
+            coefficients["site_occupation_pair_1b_coeff"] = 1.0
+            table.append("site_occupation_pair_1b_coeff | 1 site_occupation_pair_1")
+        return MBOperatorSpecification((1,), (self.grid,), coefficients, terms, table)
+
     def get_hamiltonian(self) -> MBOperatorSpecification:
         terms: List[MBOperatorSpecification] = []
         if self.parameters.J != 0.0:

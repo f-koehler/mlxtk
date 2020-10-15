@@ -47,6 +47,17 @@ class BoseHubbard:
             "hopping_coeff | 1 hopping",
         )
 
+    def create_correlator(self, site_a: int, site_b: int) -> MBOperatorSpecification:
+        matrix = numpy.zeros((self.parameters.sites, self.parameters.sites))
+        matrix[site_a, site_b] = 1.0
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"correlator_coeff": 1.0},
+            {"correlator": matrix},
+            "correlator_coeff | 1 correlator",
+        )
+
     def create_interaction_term(self) -> MBOperatorSpecification:
         def create_delta_peak(n: int, i: int) -> numpy.ndarray:
             result = numpy.zeros(n)

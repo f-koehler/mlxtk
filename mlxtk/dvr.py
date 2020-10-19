@@ -13,10 +13,6 @@ from QDTK.Primitive import (
 )
 from QDTK.SQR.Primitive import SQRDvrBosonic
 
-assert Any
-assert Dict
-assert Tuple
-
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
     "RadialHarmonicDVR": rHarmdvr,
@@ -27,9 +23,7 @@ DVR_CLASSES = {
     "FFT": FFT,
     "SQRDvrBosonic": SQRDvrBosonic,
 }
-DVR_CACHE = {
-    CLASS: {} for CLASS in DVR_CLASSES
-}  # type: Dict[Any, Dict[Tuple[Any], Dvr]]
+DVR_CACHE: Dict[Any, Dict[Tuple[Any], Dvr]] = {CLASS: {} for CLASS in DVR_CLASSES}
 
 for dvr_class in DVR_CLASSES:
 

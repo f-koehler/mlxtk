@@ -24,7 +24,13 @@ if __name__ == "__main__":
         [1, 1, 1, 1],
     )
     sim += tasks.Relax(
-        "gs_relax", "initial.wfn", "hamiltonian.opr", tfinal=1200, dt=0.1, statsteps=50
+        "gs_relax",
+        "initial.wfn",
+        "hamiltonian.opr",
+        tfinal=1200,
+        dt=0.1,
+        statsteps=50,
+        exproj=False,
     )
 
     sim.main()

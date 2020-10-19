@@ -45,31 +45,29 @@ class BosonicSQR(ABC):
         )
 
     def get_penalty_term(self, penalty: float) -> OperatorSpecification:
-        table: List[str] = []
-
+        table: List[str] = ["penalty_coeff_lambda_N^2 | 1 penalty_unity"]
         for i in range(self.parameters.sites):
-            table.append("penalty_coeff_1 | {} penalty_1".format(i + 1))
+            table.append("penalty_coeff_lambda | {} penalty_n_squared".format(i + 1))
+            table.append("penalty_coeff_m2_lambda_N | {} penalty_n".format(i + 1))
             for j in range(i):
                 table.append(
-                    "penalty_coeff_2 | {} penalty_2 | {} penalty_2".format(i + 1, j + 1)
+                    "penalty_coeff_2_lambda | {} penalty_n | {} penalty_n".format(
+                        i + 1, j + 1
+                    )
                 )
-            table.append("penalty_coeff_3 | {} penalty_3".format(i + 1))
-
-        table.append("penalty_coeff_4 | 1 penalty_4")
 
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {
-                "penalty_coeff_1": penalty,
-                "penalty_coeff_2": 2 * penalty,
-                "penalty_coeff_3": -2 * penalty * self.parameters.N,
-                "penalty_coeff_4": penalty * (self.parameters.N ** 2),
+                "penalty_coeff_2_lambda": 2 * penalty,
+                "penalty_coeff_lambda": penalty,
+                "penalty_coeff_lambda_N^2": penalty * (self.parameters.N ** 2),
+                "penalty_coeff_m2_lambda_N": -2 * penalty * self.parameters.N,
             },
             {
-                "penalty_1": self.grid.get_x() ** 2,
-                "penalty_2": self.grid.get_x(),
-                "penalty_3": self.grid.get_x(),
-                "penalty_4": self.grid.get().get_unit_operator(),
+                "penalty_n": self.grid.get_x(),
+                "penalty_n_squared": self.grid.get_x() ** 2,
+                "penalty_unity": self.grid.get().get_unit_operator(),
             },
             table,
         )

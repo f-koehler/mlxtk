@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+import numpy
+
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.systems.sqr.bosonic import BosonicSQR
@@ -86,3 +88,11 @@ class BoseHubbardSQR(BosonicSQR):
         for term in terms[1:]:
             hamiltonian += term
         return hamiltonian
+
+    def get_initial_filling(self) -> numpy.ndarray:
+        fillings = numpy.zeros(self.parameters.sites, dtype=numpy.int64)
+        loc = 0
+        for _ in range(self.parameters.N):
+            fillings[loc] += 1
+            loc = (loc + 1) % self.parameters.sites
+        return fillings

@@ -15,6 +15,19 @@ class BosonicSQR(ABC):
         self.parameters = parameters
         self.grid = dvr.add_sqr_dvr_bosonic(parameters.N)
 
+    def create_correlator(self, site_a: int, site_b: int) -> OperatorSpecification:
+        return OperatorSpecification(
+            tuple(self.grid for i in range(self.parameters.sites)),
+            {"correlator_coeff": 1.0},
+            {
+                "correlator_creator": self.grid.get().get_creation_operator(),
+                "correlator_annihilator": self.grid.get().get_annihilation_operator(),
+            },
+            "correlator_coeff | {} correlator_creator | {} correlator_annihilator".format(
+                site_a, site_b
+            ),
+        )
+
     def get_particle_number_operator(self) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
@@ -26,7 +39,7 @@ class BosonicSQR(ABC):
             ],
         )
 
-    def get_site_occupation_operator(self, site_index: int):
+    def get_site_occupation_operator(self, site_index: int) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"site_occupation_coeff": 1.0},
@@ -34,13 +47,27 @@ class BosonicSQR(ABC):
             "site_occupation_coeff | {} site_occupation".format(site_index + 1),
         )
 
-    def get_site_occupation_operator_squared(self, site_index: int):
+    def get_site_occupation_operator_squared(
+        self, site_index: int
+    ) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"site_occupation_squared_coeff": 1.0},
             {"site_occupation_squared": self.grid.get_x() ** 2},
             "site_occupation_squared_coeff | {} site_occupation_squared".format(
                 site_index + 1
+            ),
+        )
+
+    def get_site_occupation_pair_operator(
+        self, site_a: int, site_b: int
+    ) -> OperatorSpecification:
+        return OperatorSpecification(
+            tuple(self.grid for i in range(self.parameters.sites)),
+            {"occupation_pair_coeff": 1.0},
+            {"site_occupation": self.grid.get_x()},
+            "occupation_pair_coeff | {} occupation_pair | {} site_occupation".format(
+                site_a, site_b
             ),
         )
 

@@ -184,7 +184,7 @@ def BoseBoseAddMomentum(Task):
         self,
         name: str,
         initial: str,
-        momentum: Union[float, Union[float]],
+        momentum: Union[float, List[float]],
         grid: Union[DVRSpecification, List[DVRSpecification]],
     ):
         self.name = name

@@ -10,7 +10,6 @@ from mlxtk.tasks.wave_function import FrameFromPsi, RequestWaveFunction
 from mlxtk.tasks.wfn_bose_bose import CreateBoseBoseWaveFunction
 from mlxtk.tasks.wfn_mcthdb import (
     MCTDHBAddMomentum,
-    MCTDHBAddMomentumSplit,
     MCTDHBCreateWaveFunction,
     MCTDHBCreateWaveFunctionEnergyThreshold,
     MCTDHBCreateWaveFunctionMulti,

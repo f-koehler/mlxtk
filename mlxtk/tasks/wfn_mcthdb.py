@@ -18,7 +18,6 @@ from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (
     add_momentum,
-    add_momentum_split,
     get_spfs,
     load_wave_function,
     save_wave_function,

@@ -10,6 +10,12 @@ from mlxtk.doit_compat import DoitAction
 from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import save_wave_function
+from mlxtk.dvr import DVRSpecification
+from mlxtk.tools.wave_function import (
+    load_wave_function,
+    save_wave_function,
+    add_momentum_two_species,
+)
 
 
 class CreateBoseBoseWaveFunction(Task):
@@ -171,3 +177,67 @@ class CreateBoseBoseWaveFunction(Task):
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_write_wave_function]
+
+
+def BoseBoseAddMomentum(Task):
+    def __init__(
+        self,
+        name: str,
+        initial: str,
+        momentum: Union[float, Union[float]],
+        grid: Union[DVRSpecification, List[DVRSpecification]],
+    ):
+        self.name = name
+        self.initial = initial
+
+        if isinstance(momentum, float):
+            self.momentum = [momentum, momentum]
+        else:
+            self.momentum = momentum
+
+        if isinstance(grid, DVRSpecification):
+            self.grid = [grid, grid]
+        else:
+            self.grid = grid
+
+        self.path = Path(self.name)
+        self.path_initial = Path(self.initial)
+        self.path_pickle = Path(self.name + ".pickle")
+
+    def task_write_parameters(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_write_parameters(targets: List[str]):
+            del targets
+
+            obj = [self.name, self.initial, self.momentum]
+            with open(self.path_pickle, "wb") as fptr:
+                pickle.dump(obj, fptr, protocol=3)
+
+        return {
+            "name": "wfn_bose_bose_add_momentum:{}:write_parameters".format(self.name),
+            "actions": [action_write_parameters],
+            "targets": [self.path_pickle],
+        }
+
+    def task_add_momentum(self) -> Dict[str, Any]:
+        @DoitAction
+        def action_add_momentum(targets: List[str]):
+            del targets
+
+            # pylint: disable=protected-access
+
+            wfn = load_wave_function(Path(self.path_initial))
+            wfn.tree._topNode._pgrid[0] = self.grid[0].get_x()
+            wfn.tree._topNode._pgrid[1] = self.grid[1].get_x()
+            add_momentum_two_species(wfn, self.momentum)
+            save_wave_function(self.path, wfn)
+
+        return {
+            "name": "wfn_bose_bose_add_momentum:{}:add_momentum".format(self.name),
+            "actions": [action_add_momentum],
+            "targets": [self.path],
+            "file_dep": [self.path_pickle, self.path_initial],
+        }
+
+    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
+        return [self.task_write_parameters, self.task_add_momentum]

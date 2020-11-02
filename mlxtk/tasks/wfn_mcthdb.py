@@ -384,7 +384,7 @@ class MCTDHBAddMomentum(Task):
             "name": "wfn_mctdhb_add_momentum:{}:add_momentum".format(self.name),
             "actions": [action_add_momentum],
             "targets": [self.path],
-            "file_dep": [self.path_pickle],
+            "file_dep": [self.path_pickle, self.path_initial],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:

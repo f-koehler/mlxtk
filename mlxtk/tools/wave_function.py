@@ -37,7 +37,7 @@ def add_momentum_two_species(wfn: Wavefunction, momentum: Union[float, List[floa
     for i in range(2):
         m = wfn.tree._subnodes[i]._subnodes[0]._dim
         n = wfn.tree._subnodes[i]._subnodes[0]._phiLen
-        z0 = (wfn.tree._subnodes[i]._subnodes[0]._z0,)
+        z0 = wfn.tree._subnodes[i]._subnodes[0]._z0
         grid = wfn.tree._topNode._pgrid[i]
 
         phase = numpy.exp(1j * momentum[i] * grid)

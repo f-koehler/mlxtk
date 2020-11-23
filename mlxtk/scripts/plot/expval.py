@@ -19,7 +19,7 @@ from mlxtk.plot import (
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("path", type=Path, nargs="?", help="path to the output file")
+    parser.add_argument("path", type=Path, nargs="+", help="path to the output file")
     parser.add_argument(
         "--fft",
         action="store_true",
@@ -31,18 +31,26 @@ def main():
 
     figure, ax = plt.subplots(1, 1)
 
-    time, values = read_expval_hdf5(args.path)
-
     unitsys = mlxtk.units.get_default_unit_system()
 
-    if args.fft:
-        plot_expval(ax, *mlxtk.tools.signal.fourier_transform(time, values))
+    for file in args.path:
+        name = file.stem
+        time, values = read_expval_hdf5(file)
+        if args.fft:
+            plot_expval(
+                ax, *mlxtk.tools.signal.fourier_transform(time, values), label=name
+            )
 
-        ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
-        ax.set_ylabel(mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}"))
-    else:
-        plot_expval(ax, time, values)
-        ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
+            ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
+            ax.set_ylabel(
+                mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}")
+            )
+        else:
+            plot_expval(ax, time, values, label=name)
+            ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
+
+    if len(args.path) > 1:
+        ax.legend()
 
     apply_2d_args(ax, figure, args)
 

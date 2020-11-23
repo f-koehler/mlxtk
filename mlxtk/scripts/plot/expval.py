@@ -47,7 +47,9 @@ def main():
     apply_2d_args(ax, figure, args)
 
     handle_saving(figure, args)
-    plt.show()
+
+    if not args.output:
+        plt.show()
 
 
 if __name__ == "__main__":

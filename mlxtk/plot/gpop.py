@@ -30,9 +30,12 @@ def plot_gpop(
             cmap="gnuplot",
             rasterized=True,
             norm=matplotlib.colors.LogNorm(zmin, zmax),
+            shading="auto",
         )
     else:
-        ret = ax.pcolormesh(X, Y, density, cmap="gnuplot", rasterized=True)
+        ret = ax.pcolormesh(
+            X, Y, density, cmap="gnuplot", rasterized=True, shading="auto"
+        )
 
     ax.set_xlabel("$t$")
     ax.set_ylabel("$x$")

@@ -7,10 +7,9 @@ from mlxtk.tasks.propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from mlxtk.tasks.spectrum import ComputeSpectrum
 from mlxtk.tasks.variance import ComputeVariance
 from mlxtk.tasks.wave_function import FrameFromPsi, RequestWaveFunction
-from mlxtk.tasks.wfn_bose_bose import CreateBoseBoseWaveFunction
+from mlxtk.tasks.wfn_bose_bose import CreateBoseBoseWaveFunction, BoseBoseAddMomentum
 from mlxtk.tasks.wfn_mcthdb import (
     MCTDHBAddMomentum,
-    MCTDHBAddMomentumSplit,
     MCTDHBCreateWaveFunction,
     MCTDHBCreateWaveFunctionEnergyThreshold,
     MCTDHBCreateWaveFunctionMulti,

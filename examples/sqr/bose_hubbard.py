@@ -4,15 +4,15 @@ from mlxtk import tasks
 from mlxtk.systems.sqr.bose_hubbard import BoseHubbardSQR
 
 parameters = BoseHubbardSQR.create_parameters()
-parameters.N = 4
-parameters.sites = 4
+parameters.N = 8
+parameters.sites = 64
 parameters.pbc = True
 parameters.add_parameter("penalty", 100, "coefficient of the penalty term")
 
 if __name__ == "__main__":
     system = BoseHubbardSQR(parameters)
 
-    m = 5
+    m = min(5, parameters.N + 1)
 
     sim = mlxtk.Simulation("bose_hubbard")
     sim += tasks.CreateOperator("hamiltonian.opr", system.create_hamiltonian())
@@ -21,7 +21,7 @@ if __name__ == "__main__":
         [m, m + 2, m + 3, m + 4, m + 4],
         parameters.N,
         parameters.sites,
-        [1, 1, 1, 1],
+        system.get_initial_filling(),
     )
     sim += tasks.Relax(
         "gs_relax",

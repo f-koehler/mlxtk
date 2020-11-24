@@ -18,7 +18,6 @@ from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
 from mlxtk.tools.wave_function import (
     add_momentum,
-    add_momentum_split,
     get_spfs,
     load_wave_function,
     save_wave_function,
@@ -385,70 +384,11 @@ class MCTDHBAddMomentum(Task):
             "name": "wfn_mctdhb_add_momentum:{}:add_momentum".format(self.name),
             "actions": [action_add_momentum],
             "targets": [self.path],
-            "file_dep": [self.path_pickle],
+            "file_dep": [self.path_pickle, self.path_initial],
         }
 
     def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
         return [self.task_write_parameters, self.task_add_momentum]
-
-
-class MCTDHBAddMomentumSplit(Task):
-    def __init__(
-        self,
-        name: str,
-        initial: str,
-        momentum: float,
-        x0: float,
-        grid: DVRSpecification,
-    ):
-        self.name = name
-        self.initial = initial
-        self.momentum = momentum
-        self.x0 = x0
-        self.grid = grid
-
-        self.path = Path(name)
-        self.path_initial = Path(self.initial)
-        self.path_pickle = Path(self.name + ".pickle")
-
-    def task_write_parameters(self) -> Dict[str, Any]:
-        @DoitAction
-        def action_write_parameters(targets: List[str]):
-            del targets
-
-            obj = [self.name, self.initial, self.momentum, self.x0]
-            with open(self.path_pickle, "wb") as fp:
-                pickle.dump(obj, fp, protocol=3)
-
-        return {
-            "name": "wfn_mctdhb_add_momentum_split:{}:write_parameters".format(
-                self.name
-            ),
-            "actions": [action_write_parameters],
-            "targets": [self.path_pickle],
-        }
-
-    def task_add_momentum_split(self) -> Dict[str, Any]:
-        @DoitAction
-        def action_add_momentum_split(targets: List[str]):
-            del targets
-
-            # pylint: disable=protected-access
-
-            wfn = load_wave_function(self.path_initial)
-            wfn.tree._topNode._pgrid[0] = self.grid.get_x()
-            add_momentum_split(wfn, self.momentum, self.x0)
-            save_wave_function(self.path, wfn)
-
-        return {
-            "name": "wfn_mctdhb_add_momentum_split:{}:add_momentum".format(self.name),
-            "actions": [action_add_momentum_split],
-            "targets": [self.path],
-            "file_dep": [self.path_pickle],
-        }
-
-    def get_tasks_run(self) -> List[Callable[[], Dict[str, Any]]]:
-        return [self.task_write_parameters, self.task_add_momentum_split]
 
 
 class MCTDHBExtendGrid(Task):

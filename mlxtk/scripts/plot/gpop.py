@@ -60,7 +60,8 @@ def main():
 
     handle_saving(figure, args)
 
-    plt.show()
+    if not args.output:
+        plt.show()
 
 
 if __name__ == "__main__":

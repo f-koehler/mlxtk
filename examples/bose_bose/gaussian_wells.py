@@ -9,9 +9,9 @@ parameters = TwoGaussianTraps.create_parameters()
 parameters.N_A = 2
 parameters.N_B = 2
 parameters.M_A = 3
-parameters.M_B = 3
+parameters.M_B = 4
 parameters.m_A = 5
-parameters.m_B = 5
+parameters.m_B = 6
 parameters.V0L = 20.0
 parameters.V0R = 20.0
 

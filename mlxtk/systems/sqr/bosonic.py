@@ -66,7 +66,7 @@ class BosonicSQR(ABC):
             tuple(self.grid for i in range(self.parameters.sites)),
             {"occupation_pair_coeff": 1.0},
             {"site_occupation": self.grid.get_x()},
-            "occupation_pair_coeff | {} occupation_pair | {} site_occupation".format(
+            "occupation_pair_coeff | {} site_occupation | {} site_occupation".format(
                 site_a, site_b
             ),
         )

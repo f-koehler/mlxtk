@@ -5,7 +5,11 @@ from matplotlib.axes import Axes
 def plot_entropy(ax: Axes, time: numpy.ndarray, entropy: numpy.ndarray, **kwargs):
     ax.plot(time, entropy, label=kwargs.get("label"))
     ax.set_xlabel("$t$")
-    ax.set_ylabel(r"$S_{\mathrm{B}}(t)$")
+
+    if kwargs.get("normalize", False):
+        ax.set_ylabel(r"$S_{\mathrm{B}}(t)/S_{\mathrm{max}}$")
+    else:
+        ax.set_ylabel(r"$S_{\mathrm{B}}(t)$")
 
 
 def plot_entropy_diff(

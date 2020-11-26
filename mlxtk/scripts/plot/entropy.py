@@ -18,10 +18,13 @@ from mlxtk.util import labels_from_paths
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="*", default=["natpop"], help="path to the natpop file"
+        "path", nargs="+", default=["natpop"], help="path to the natpop file"
     )
     parser.add_argument("-n", "--node", type=int, default=1, help="node")
     parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
+    parser.add_argument(
+        "--normalize", action="store_true", help="whether to normalize the entropy"
+    )
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()
@@ -31,8 +34,8 @@ def main():
 
     for path, label in zip(args.path, labels):
         time, natpop = read_natpop(path, node=args.node, dof=args.dof)
-        entropy = compute_entropy(natpop)
-        plot_entropy(ax, time, entropy, label=label)
+        entropy = compute_entropy(natpop, args.normalize)
+        plot_entropy(ax, time, entropy, label=label, normalize=args.normalize)
 
     system = units.get_default_unit_system()
     ax.set_xlabel(system.get_time_unit().format_label("t"))

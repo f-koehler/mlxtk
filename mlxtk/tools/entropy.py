@@ -5,7 +5,9 @@ from typing import Union
 import numpy
 
 
-def compute_entropy(natpop: numpy.ndarray) -> Union[numpy.ndarray, numpy.float64]:
+def compute_entropy(
+    natpop: numpy.ndarray, normalize: bool = False
+) -> Union[numpy.ndarray, numpy.float64]:
     """Compute the Boltzmann entropy from natural populations.
 
     The entropy is computed using the formula
@@ -23,6 +25,12 @@ def compute_entropy(natpop: numpy.ndarray) -> Union[numpy.ndarray, numpy.float64
         for lam in natpop:
             if lam != 0.0:
                 result -= lam * numpy.log(lam)
+
+        if normalize:
+            m = natpop.shape[0]
+            S_max = numpy.log(m)
+            result = result / S_max
+
         return result
 
     if len(natpop.shape) == 2:
@@ -31,6 +39,12 @@ def compute_entropy(natpop: numpy.ndarray) -> Union[numpy.ndarray, numpy.float64
             for lam in natpop[i]:
                 if lam != 0.0:
                     result[i] -= lam * numpy.log(lam)
+
+        if normalize:
+            m = natpop.shape[1]
+            S_max = numpy.log(m)
+            result = result / S_max
+
         return result
 
     raise ValueError("natpop must be either 1- or 2-dimensional")

@@ -107,7 +107,7 @@ class SingleSpeciesSystem(ABC):
         return MBOperatorSpecification(
             (1,),
             (self.grid,),
-            {"norm": 1.0 / self.parameters.N},
+            {"norm": 1.0},
             {"truncated_one": term},
             "norm | 1 truncated_one",
         )
@@ -120,7 +120,7 @@ class SingleSpeciesSystem(ABC):
         return MBOperatorSpecification(
             (1,),
             (self.grid,),
-            {"com_coeff": 1.0 / self.parameters.N},
+            {"com_coeff": 1.0},
             {"com": term},
             "com_coeff | 1 com",
         )

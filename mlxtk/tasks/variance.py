@@ -33,7 +33,7 @@ class ComputeVariance(Task):
             write_expval_hdf5(self.path_variance, t1, exp2 - (exp ** 2))
 
         return {
-            "name": "variance:{}:compute".format(self.name),
+            "name": f"variance:{self.name}:compute",
             "actions": [action_compute],
             "targets": [self.path_variance],
             "file_dep": [

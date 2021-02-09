@@ -83,7 +83,7 @@ class ComputeExpectationValue(Task):
                     copy_file("expval.h5", expval)
 
         return {
-            "name": "expval:{}:compute".format(self.name),
+            "name": f"expval:{self.name}:compute",
             "actions": [action_compute],
             "targets": [str(self.expval)],
             "file_dep": [str(self.psi), str(self.operator)],
@@ -138,7 +138,7 @@ class ComputeExpectationValueStatic(Task):
                     copy_file("expval.h5", expval)
 
         return {
-            "name": "expval_static:{}:compute".format(self.name),
+            "name": f"expval_static:{self.name}:compute",
             "actions": [action_compute],
             "targets": [str(self.expval)],
             "file_dep": [str(self.wave_function), str(self.operator)],

@@ -13,7 +13,7 @@ def read_fixed_ns_ascii(
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 
-    with open(path, "r") as fptr:
+    with open(path) as fptr:
         num_coefficients = (len(fptr.readline().split()) - 1) // 3
 
         names = (

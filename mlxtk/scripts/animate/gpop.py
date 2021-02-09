@@ -26,9 +26,7 @@ def create_frame(
 
     fig, ax = plt.subplots(1, 1)
     mlxtk.plot.apply_2d_args(ax, fig, args)
-    ax.set_title(
-        "$t=" + "{:8.2f}".format(time) + r"\," + str(unitsys.get_time_unit()) + "$"
-    )
+    ax.set_title("$t=" + f"{time:8.2f}" + r"\," + str(unitsys.get_time_unit()) + "$")
     ax.set_xlabel(unitsys.get_length_unit().format_label("x"))
     ax.set_ylabel(r"$\rho_1(x,t)$")
     ax.grid(True)
@@ -57,7 +55,7 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = Path("gpop_{}.mp4".format(args.dof))
+        args.output = Path(f"gpop_{args.dof}.mp4")
     args.output = args.output.resolve()
 
     path_input = args.input_.resolve()

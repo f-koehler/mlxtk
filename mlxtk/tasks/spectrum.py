@@ -34,7 +34,7 @@ class ComputeSpectrum(Task):
                     self.path.unlink()
 
         return {
-            "name": "spectrum:{}:check_num_spfs".format(self.name),
+            "name": f"spectrum:{self.name}:check_num_spfs",
             "actions": [action_check_num_spfs],
         }
 
@@ -51,7 +51,7 @@ class ComputeSpectrum(Task):
             write_spectrum(self.path, energies, spfs_arr)
 
         return {
-            "name": "spectrum:{}:compute".format(self.name),
+            "name": f"spectrum:{self.name}:compute",
             "actions": [action_compute],
             "targets": [self.path],
             "file_dep": [self.path_matrix],

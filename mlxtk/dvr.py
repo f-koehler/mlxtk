@@ -171,7 +171,7 @@ class DVRSpecification:
             "DVRSpecification<"
             + self.type_
             + ", "
-            + ", ".join((str(arg) for arg in self.args))
+            + ", ".join(str(arg) for arg in self.args)
             + ">"
         )
 

@@ -32,7 +32,7 @@ def main():
     restart_file = Path(args.restart).resolve()
     operator_file = Path(args.operator).resolve()
     psi_file = Path(args.psi).resolve()
-    basename = "dmat2_dof{}_dof{}".format(args.dof1, args.dof2)
+    basename = f"dmat2_dof{args.dof1}_dof{args.dof2}"
     if not args.output:
         output_file = Path.cwd() / (basename + "_gridrep.h5")
     else:

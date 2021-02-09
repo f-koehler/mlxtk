@@ -53,7 +53,7 @@ class CreateSQRBosonicWaveFunction(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_sqr_bosonic:{}:write_parameters".format(self.name),
+            "name": f"wfn_sqr_bosonic:{self.name}:write_parameters",
             "actions": [
                 action_write_parameters,
             ],
@@ -72,7 +72,7 @@ class CreateSQRBosonicWaveFunction(Task):
             )
 
         return {
-            "name": "wfn_sqr_bosonic:{}:create".format(self.name),
+            "name": f"wfn_sqr_bosonic:{self.name}:create",
             "actions": [
                 action_write_wave_function,
             ],

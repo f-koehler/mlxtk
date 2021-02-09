@@ -88,7 +88,7 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     for flag in kwargs:
         if flag not in FLAG_TYPES:
             if flag not in non_qdtk_flags:
-                raise RuntimeError('Unknown flag "{}"'.format(flag))
+                raise RuntimeError(f'Unknown flag "{flag}"')
         else:
             flags[flag] = kwargs[flag]
 
@@ -195,7 +195,7 @@ class Propagate(Task):
                 pickle.dump(obj, fp, protocol=3)
 
         return {
-            "name": "{}:{}:write_parameters".format(self.basename, self.name),
+            "name": f"{self.basename}:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -324,7 +324,7 @@ class Propagate(Task):
             deps.append(self.path_diag_gauge_oper)
 
         return {
-            "name": "{}:{}:run".format(self.basename, self.name),
+            "name": f"{self.basename}:{self.name}:run",
             "actions": [action_run],
             "targets": [str(self.path_name / fname) for fname in self.qdtk_files]
             + [str(self.path_hdf5)],

@@ -47,6 +47,6 @@ def get_operator_matrix(operator: Operator) -> numpy.ndarray:
             continue
 
         # invalid type
-        raise ValueError("invalid term type {}".format(term.type))
+        raise ValueError(f"invalid term type {term.type}")
 
     return matrix

@@ -80,7 +80,7 @@ class NumberStateAnalysisStatic(Task):
                     copy_file("result.h5", result)
 
         return {
-            "name": "number_state_analysis_static:{}:compute".format(self.name),
+            "name": f"number_state_analysis_static:{self.name}:compute",
             "actions": [action_compute],
             "targets": [str(self.result)],
             "file_dep": [str(self.wave_function), str(self.basis)],

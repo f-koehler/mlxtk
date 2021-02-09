@@ -34,7 +34,7 @@ def main():
 
     output = args.output
     if not output:
-        output = Path("{}_{}.fixed_ns.h5".format(args.psi.stem, args.basis.stem))
+        output = Path(f"{args.psi.stem}_{args.basis.stem}.fixed_ns.h5")
 
     output = output.resolve()
 

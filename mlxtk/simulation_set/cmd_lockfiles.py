@@ -18,7 +18,7 @@ def cmd_lockfiles(self: SimulationSetBase, args: argparse.Namespace):
 
         counter += 1
 
-        with open(lock_file, "r") as fptr:
+        with open(lock_file) as fptr:
             self.logger.info("lock: %s", working_dir)
             lock = json.load(fptr)
             try:

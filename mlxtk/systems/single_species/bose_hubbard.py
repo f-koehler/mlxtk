@@ -70,10 +70,7 @@ class BoseHubbard:
             (1,),
             (self.grid,),
             {"interaction_coeff": self.parameters.U},
-            {
-                "interaction_term_{}".format(i): create_delta_peak(n, i)
-                for i in range(n)
-            },
+            {f"interaction_term_{i}": create_delta_peak(n, i) for i in range(n)},
             [
                 "interaction_coeff | 1 interaction_term_{} | 1* interaction_term_{}".format(
                     i, i

@@ -56,7 +56,7 @@ class CreateMBOperator(Task):
                 pickle.dump(obj, fp, protocol=3)
 
         return {
-            "name": "mb_operator:{}:write_parameters".format(self.name),
+            "name": f"mb_operator:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -70,7 +70,7 @@ class CreateMBOperator(Task):
             op.createOperatorFileb(str(self.path))
 
         return {
-            "name": "mb_operator:{}:create".format(self.name),
+            "name": f"mb_operator:{self.name}:create",
             "actions": [action_write_operator],
             "targets": [self.path],
             "file_dep": [self.path_pickle],
@@ -85,7 +85,7 @@ class CreateMBOperator(Task):
                 self.path.unlink()
 
         return {
-            "name": "mb_operator:{}:remove".format(self.name),
+            "name": f"mb_operator:{self.name}:remove",
             "actions": [action_remove_operator],
         }
 

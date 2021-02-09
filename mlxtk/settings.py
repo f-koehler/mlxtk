@@ -32,7 +32,7 @@ def find_settings(start_directory: Path = Path.cwd()) -> Optional[List[Path]]:
 
 def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
     directory = settings_path.parent
-    with open(settings_path, "r") as fptr:
+    with open(settings_path) as fptr:
         settings = yaml.load(fptr, Loader=YamlLoader)
 
     if "paths" in settings:
@@ -99,7 +99,7 @@ def load_path(name: str, start_directory: Path = Path.cwd()) -> Path:
     if not "paths" in settings:
         raise ValueError("no paths stored in settings")
     if not name in settings["paths"]:
-        raise ValueError('path "{}" not stored in settings'.format(name))
+        raise ValueError(f'path "{name}" not stored in settings')
     return settings["paths"][name]
 
 

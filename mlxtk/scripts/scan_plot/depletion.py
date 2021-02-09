@@ -67,7 +67,7 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = "depletion_{}_{}".format(args.dof, args.node)
+        args.output = f"depletion_{args.dof}_{args.node}"
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
         del fig

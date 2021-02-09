@@ -59,7 +59,7 @@ def collect_values(
 
         data = numpy.c_[parameters, values]
         header = [variable for variable in variables] + [
-            "value{}".format(i) for i in range(values.shape[1])
+            f"value{i}" for i in range(values.shape[1])
         ]
         Path(targets[0]).parent.mkdir(parents=True, exist_ok=True)
         numpy.savetxt(targets[0], data, header=" ".join(header))

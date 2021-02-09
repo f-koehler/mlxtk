@@ -115,7 +115,7 @@ def get_folder_size(path: Union[str, Path]) -> int:
         subprocess.check_output(["du", "-s", "-b", path]).decode()
     )
     if not m:
-        raise RuntimeError('Error getting folder size for "{}"'.format(path))
+        raise RuntimeError(f'Error getting folder size for "{path}"')
     return int(m.group(1))
 
 

@@ -63,7 +63,7 @@ class MCTDHBMomentumDistribution(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "momentum_distribution:{}:write_parameters".format(self.name),
+            "name": f"momentum_distribution:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.pickle_file],
         }
@@ -121,7 +121,7 @@ class MCTDHBMomentumDistribution(Task):
             shutil.rmtree(path_temp)
 
         return {
-            "name": "momentum_distribution:{}:compute".format(self.name),
+            "name": f"momentum_distribution:{self.name}:compute",
             "actions": [action_compute],
             "targets": [self.output_file],
             "file_dep": [self.pickle_file, self.psi, self.wfn, self.operator],

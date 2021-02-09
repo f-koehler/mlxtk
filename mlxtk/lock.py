@@ -38,7 +38,7 @@ class LockFile:
 
     def __enter__(self):
         if self.path.exists():
-            with open(self.path, "r") as fptr:
+            with open(self.path) as fptr:
                 lock = json.load(fptr)
                 raise LockFileExistsError(self.path, lock["host"], lock["pid"])
 

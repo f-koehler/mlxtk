@@ -23,7 +23,7 @@ def read_dmat_evals_ascii(
     path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
-    with open(path, "r") as fp:
+    with open(path) as fp:
         m = len(fp.readline().strip().split()) - 1
 
     names = ["time"] + ["orbital_" + str(i) for i in range(m)]
@@ -45,7 +45,7 @@ def read_dmat_evecs_grid_ascii(
     path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
-    with open(path, "r") as fp:
+    with open(path) as fp:
         m = (len(fp.readline().strip().split()) - 2) // 2
 
     names = ["time", "grid"]
@@ -89,7 +89,7 @@ def read_dmat_evecs_spf_ascii(
     path: Union[str, Path]
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
-    with open(path, "r") as fp:
+    with open(path) as fp:
         m = (len(fp.readline().strip().split()) - 2) // 2
 
     names = ["time", "index"]

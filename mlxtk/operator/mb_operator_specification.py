@@ -33,7 +33,7 @@ class MBOperatorSpecification:
         output.append("\tDoFs: " + str(self.dofs))
         output.append("\tGrids:")
         for i, grid in enumerate(self.grids):
-            output.append("\t\t{}: {}".format(i, grid))
+            output.append(f"\t\t{i}: {grid}")
         output.append("\tCoefficients:")
         for i, coefficient in enumerate(self.coefficients):
             output.append(
@@ -41,7 +41,7 @@ class MBOperatorSpecification:
             )
         output.append("\tTerms:")
         for i, term in enumerate(self.terms):
-            output.append("\t\t{}: {}".format(i, term))
+            output.append(f"\t\t{i}: {term}")
         output.append("\tTable:")
         for line in self.table:
             output.append("\t\t" + line)
@@ -60,12 +60,8 @@ class MBOperatorSpecification:
     def __iadd__(self, other):
         if not isinstance(other, MBOperatorSpecification):
             raise RuntimeError(
-                (
-                    "other object must be of type "
-                    "MBOperatorSpecification as well (not {})".format(
-                        type(other).__name__
-                    )
-                )
+                "other object must be of type "
+                "MBOperatorSpecification as well (not {})".format(type(other).__name__)
             )
 
         if self.dofs != other.dofs:

@@ -74,7 +74,7 @@ def main():
 
                 m = RE_SLICE.match(args.slice)
                 if not m:
-                    raise RuntimeError('Invalid slice format "{}"'.format(args.slice))
+                    raise RuntimeError(f'Invalid slice format "{args.slice}"')
 
                 start = 0
                 end = len(times)
@@ -129,36 +129,32 @@ def main():
                     if gridrep:
                         dmat.add_dmat_gridrep_to_hdf5(
                             fptr,
-                            dmat.read_dmat_gridrep_ascii(
-                                "dmat_dof{}_grid".format(args.dof)
-                            ),
+                            dmat.read_dmat_gridrep_ascii(f"dmat_dof{args.dof}_grid"),
                         )
                     else:
                         dmat.add_dmat_spfrep_to_hdf5(
                             fptr,
-                            *dmat.read_dmat_spfrep_ascii(
-                                "dmat_dof{}_spf".format(args.dof)
-                            ),
+                            *dmat.read_dmat_spfrep_ascii(f"dmat_dof{args.dof}_spf"),
                         )
 
                 if args.diagonalize or args.only_diagonalize:
                     dmat.add_dmat_evals_to_hdf5(
                         fptr,
-                        *dmat.read_dmat_evals_ascii("eval_dmat_dof{}".format(args.dof)),
+                        *dmat.read_dmat_evals_ascii(f"eval_dmat_dof{args.dof}"),
                     )
                     if not args.only_eigenvalues:
                         if gridrep:
                             dmat.add_dmat_evecs_grid_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_grid_ascii(
-                                    "evec_dmat_dof{}_grid".format(args.dof)
+                                    f"evec_dmat_dof{args.dof}_grid"
                                 ),
                             )
                         else:
                             dmat.add_dmat_evecs_spf_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_spf_ascii(
-                                    "evec_dmat_dof{}_spf".format(args.dof)
+                                    f"evec_dmat_dof{args.dof}_spf"
                                 ),
                             )
 

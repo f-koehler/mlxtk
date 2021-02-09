@@ -44,7 +44,7 @@ def doit_plot_individual(
             )
 
     yield {
-        "name": "{}:{}:pickle".format(scan_name, plot_name).replace("=", "_"),
+        "name": f"{scan_name}:{plot_name}:pickle".replace("=", "_"),
         "targets": [str(pickle_file)],
         "clean": True,
         "actions": [action_write_pickle],
@@ -76,9 +76,7 @@ def doit_plot_individual(
         ]
 
         yield {
-            "name": "{}:{}:index_{}:plot".format(scan_name, plot_name, index).replace(
-                "=", "_"
-            ),
+            "name": f"{scan_name}:{plot_name}:index_{index}:plot".replace("=", "_"),
             "file_dep": [str(pickle_file)] + other_deps,
             "targets": [
                 output_dir / (padding_format.format(index) + extension)
@@ -114,7 +112,7 @@ def direct_plot(
             pickle.dump([plotting_args, len(decorator_funcs)], fptr, protocol=3)
 
     yield {
-        "name": "direct_plot:{}:pickle".format(output_file_base.name).replace("=", "_"),
+        "name": f"direct_plot:{output_file_base.name}:pickle".replace("=", "_"),
         "targets": [str(pickle_file)],
         "clean": True,
         "actions": [action_write_pickle],
@@ -134,7 +132,7 @@ def direct_plot(
         plot.close_figure(fig)
 
     yield {
-        "name": "direct_plot:{}:plot".format(output_file_base.name).replace("=", "_"),
+        "name": f"direct_plot:{output_file_base.name}:plot".replace("=", "_"),
         "file_dep": [str(input_file) for input_file in input_files]
         + [str(pickle_file)],
         "targets": [str(output_file_base) + ext for ext in extensions],

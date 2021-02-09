@@ -16,7 +16,7 @@ def clean_simulation(simulation: Simulation) -> List[Callable[[], Dict[str, Any]
         task_name = simulation.name.replace("=", ":")
 
         return {
-            "name": "clean_simulation:{}".format(task_name),
+            "name": f"clean_simulation:{task_name}",
             "actions": [action_clean_simulation],
         }
 

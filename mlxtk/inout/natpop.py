@@ -121,7 +121,7 @@ def read_natpop_hdf5(
         time = fptr[interior_path + "/time"][:]
 
         if node and dof:
-            data = fptr[interior_path + "/node_{}/dof_{}".format(node, dof)][:, :]
+            data = fptr[interior_path + f"/node_{node}/dof_{dof}"][:, :]
             return (time, data)
 
         data = {}

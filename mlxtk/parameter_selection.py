@@ -129,7 +129,7 @@ class ParameterSelection:
         Returns:
             All unique values of the given parameter.
         """
-        return list(set((entry[1][name] for entry in self.parameters)))
+        return list({entry[1][name] for entry in self.parameters})
 
     def get_path(self, parameters: Parameters) -> Path:
         for entry, path in zip(self.parameters, self.get_paths()):
@@ -222,7 +222,7 @@ class ParameterSelection:
             return self.foreach(func)
 
     def __str__(self):
-        return "\n".join("{}: {}".format(i, p) for i, p in self.parameters)
+        return "\n".join(f"{i}: {p}" for i, p in self.parameters)
 
 
 def load_scan(path: Union[str, Path]) -> ParameterSelection:

@@ -70,7 +70,7 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = "natpop_{}_{}".format(args.dof, args.node)
+        args.output = f"natpop_{args.dof}_{args.node}"
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
         del parameters

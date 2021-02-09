@@ -85,7 +85,7 @@ class Parameters:
 
     def remove_parameter(self, name: str):
         if not name in self.names:
-            raise KeyError('No parameter "{}"'.format(name))
+            raise KeyError(f'No parameter "{name}"')
         del self.docs[name]
         delattr(self, name)
         self.names.remove(name)

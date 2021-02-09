@@ -14,7 +14,7 @@ def read_expval(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 
 def read_expval_ascii(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndarray]:
-    with open(path, "r") as fp:
+    with open(path) as fp:
         line = fp.readline().split()
         if len(line) == 2:
             return (

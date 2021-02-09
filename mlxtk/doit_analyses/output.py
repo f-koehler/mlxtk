@@ -21,7 +21,7 @@ def collect_final_energy(
     if output_file is None:
         output_file = (
             Path("data")
-            / "{}_final_energy".format(propagation_name)
+            / f"{propagation_name}_final_energy"
             / (make_path(scan_dir).name + ".txt")
         )
 

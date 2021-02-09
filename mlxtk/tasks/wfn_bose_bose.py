@@ -84,7 +84,7 @@ class CreateBoseBoseWaveFunction(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_bose_bose:{}:write_parameters".format(self.name),
+            "name": f"wfn_bose_bose:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -162,7 +162,7 @@ class CreateBoseBoseWaveFunction(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_bose_bose:{}:create".format(self.name),
+            "name": f"wfn_bose_bose:{self.name}:create",
             "actions": [
                 action_write_wave_function,
             ],
@@ -213,7 +213,7 @@ class BoseBoseAddMomentum(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_bose_bose_add_momentum:{}:write_parameters".format(self.name),
+            "name": f"wfn_bose_bose_add_momentum:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -232,7 +232,7 @@ class BoseBoseAddMomentum(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_bose_bose_add_momentum:{}:add_momentum".format(self.name),
+            "name": f"wfn_bose_bose_add_momentum:{self.name}:add_momentum",
             "actions": [action_add_momentum],
             "targets": [self.path],
             "file_dep": [self.path_pickle, self.path_initial],

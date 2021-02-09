@@ -69,7 +69,7 @@ def main():
     args = parser.parse_args()
 
     if not args.output:
-        args.output = "gpop_{}".format(args.dof)
+        args.output = f"gpop_{args.dof}"
 
     def apply_args(fig: Figure, ax: Axes, parameters: Parameters):
         del parameters

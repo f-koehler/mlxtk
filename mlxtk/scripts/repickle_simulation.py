@@ -30,7 +30,7 @@ def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
             )
             return
 
-        with open("doit.json", "r") as fptr:
+        with open("doit.json") as fptr:
             state = json.load(fptr)
 
         pickle_extensions = {
@@ -68,9 +68,9 @@ def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
                 new_size = stat.st_size
 
                 tqdm.auto.tqdm.write("\t" + dep + ":")
-                tqdm.auto.tqdm.write("\t\tsize:  {} -> {}".format(old_size, new_size))
-                tqdm.auto.tqdm.write("\t\tmtime: {} -> {}".format(old_mtime, new_mtime))
-                tqdm.auto.tqdm.write("\t\tmd5:   {} -> {}".format(old_hash, new_hash))
+                tqdm.auto.tqdm.write(f"\t\tsize:  {old_size} -> {new_size}")
+                tqdm.auto.tqdm.write(f"\t\tmtime: {old_mtime} -> {new_mtime}")
+                tqdm.auto.tqdm.write(f"\t\tmd5:   {old_hash} -> {new_hash}")
 
                 state[task_name][dep] = [new_mtime, new_size, new_hash]
 

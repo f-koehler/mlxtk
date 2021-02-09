@@ -56,7 +56,7 @@ class RequestWaveFunction(Task):
             shutil.copy2(src_path, self.path)
 
         return {
-            "name": "wfn:{}:request".format(self.name),
+            "name": f"wfn:{self.name}:request",
             "actions": [action_copy],
             "targets": [self.path],
             "file_dep": [src_path],
@@ -79,7 +79,7 @@ class RequestWaveFunction(Task):
             pass
 
         return {
-            "name": "wfn:{}:request_dry_run".format(self.name),
+            "name": f"wfn:{self.name}:request_dry_run",
             "actions": [action_noop],
             "verbosity": 2,
         }
@@ -100,7 +100,7 @@ class FrameFromPsi(Task):
         self.index = index
 
         if path is None:
-            self.path = self.psi.stem + "_{}.wfn".format(self.index)
+            self.path = self.psi.stem + f"_{self.index}.wfn"
         else:
             self.path = make_path(path)
 
@@ -113,7 +113,7 @@ class FrameFromPsi(Task):
                 pickle.dump(self.index, fptr, protocol=3)
 
         return {
-            "name": "frame_from_psi:{}_{}:pickle".format(self.path.stem, self.index),
+            "name": f"frame_from_psi:{self.path.stem}_{self.index}:pickle",
             "actions": [action_pickle],
             "targets": [str(self.pickle_path)],
         }
@@ -130,7 +130,7 @@ class FrameFromPsi(Task):
             )
 
         return {
-            "name": "frame_from_psi:{}_{}:grab".format(self.path.stem, self.index),
+            "name": f"frame_from_psi:{self.path.stem}_{self.index}:grab",
             "actions": [action_grab],
             "file_dep": [self.pickle_path, self.psi],
             "targets": [self.path],

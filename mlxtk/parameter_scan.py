@@ -99,17 +99,13 @@ class ParameterScan(SimulationSet):
             for combination, simulation in zip(self.combinations, self.simulations):
                 if not variables:
                     name = "_".join(
-                        (
-                            constant + "=" + str(combination[constant])
-                            for constant in constants
-                        )
+                        constant + "=" + str(combination[constant])
+                        for constant in constants
                     )
                 else:
                     name = "_".join(
-                        (
-                            variable + "=" + str(combination[variable])
-                            for variable in variables
-                        )
+                        variable + "=" + str(combination[variable])
+                        for variable in variables
                     )
                 path = simulation.working_dir
                 link = path_by_param / name

@@ -351,7 +351,7 @@ class WaveFunctionDB(ParameterScan):
                 sys.executable,
                 Path(get_main_path()).resolve(),
                 "remove",
-                ",".join((str(i) for i in selection)),
+                ",".join(str(i) for i in selection),
             ]
             self.logger.info("command: %s", str(cmd))
             subprocess.run(cmd)

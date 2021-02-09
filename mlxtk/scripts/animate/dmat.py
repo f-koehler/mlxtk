@@ -30,15 +30,13 @@ def create_frame(
     X2, X1 = numpy.meshgrid(x2, x1)
 
     fig, ax = plt.subplots(1, 1)
-    ax.set_title(
-        "$t=" + "{:8.2f}".format(time) + r"\," + str(unitsys.get_time_unit()) + "$"
-    )
+    ax.set_title("$t=" + f"{time:8.2f}" + r"\," + str(unitsys.get_time_unit()) + "$")
     ax.set_xlabel(unitsys.get_length_unit().format_label("x_1"))
     ax.set_ylabel(unitsys.get_length_unit().format_label("x_2"))
     ax.set_title(
         r"${\left|\rho_1(x_1,x_2,t)\right|}^2,\quad "
         + "t="
-        + "{:8.2f}".format(time)
+        + f"{time:8.2f}"
         + r"\,"
         + str(unitsys.get_time_unit())
         + "$"

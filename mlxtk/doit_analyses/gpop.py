@@ -29,7 +29,7 @@ def scan_plot_gpop(
 ):
     scan_dir = make_path(scan_dir)
 
-    plot_name = kwargs.get("plot_name", "gpop_{}".format(dof))
+    plot_name = kwargs.get("plot_name", f"gpop_{dof}")
 
     plotting_args = PlotArgs2D.from_dict(kwargs)
     plotting_args.grid = kwargs.get("grid", False)
@@ -91,7 +91,7 @@ def scan_plot_gpop_momentum(
 
     yield doit_plot_individual(
         selection,
-        "gpop_momentum_{}".format(dof),
+        f"gpop_momentum_{dof}",
         [str(Path(propagation) / "propagate.h5")],
         plot_func,
         plotting_args,

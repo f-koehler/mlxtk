@@ -53,7 +53,7 @@ class CreateOperator(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "operator:{}:write_parameters".format(self.name),
+            "name": f"operator:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -95,7 +95,7 @@ class CreateOperator(Task):
                     dset[:] = weights
 
         return {
-            "name": "operator:{}:create".format(self.name),
+            "name": f"operator:{self.name}:create",
             "actions": [action_write_operator],
             "targets": [self.path, self.path_matrix],
             "file_dep": [self.path_pickle],
@@ -113,7 +113,7 @@ class CreateOperator(Task):
                 self.path_matrix.unlink()
 
         return {
-            "name": "operator:{}:remove".format(self.name),
+            "name": f"operator:{self.name}:remove",
             "actions": [action_remove_operator],
         }
 

@@ -25,7 +25,7 @@ def dry_run_simulation(simulation: Simulation) -> List[Callable[[], Dict[str, An
         task_name = simulation.name.replace("=", ":")
 
         return {
-            "name": "dry_run_simulation:{}".format(task_name),
+            "name": f"dry_run_simulation:{task_name}",
             "actions": [action_dry_run_simulation],
         }
 

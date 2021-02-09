@@ -50,7 +50,7 @@ def scan_plot_natpop(
 
     return doit_plot_individual(
         selection,
-        "natpop_{}_{}".format(node, dof),
+        f"natpop_{node}_{dof}",
         [str(Path(propagation) / "propagate.h5")],
         plot_func,
         plotting_args,
@@ -120,7 +120,7 @@ class DefaultNatpopAnalysis:
         if output_file is None:
             self.output_file = (
                 Path("data")
-                / "natpop_{}_{}".format(node, dof)
+                / f"natpop_{node}_{dof}"
                 / (self.scan_dir.name.replace("=", "_") + ".h5")
             )
         else:
@@ -253,13 +253,13 @@ def scan_natpop_slideshow(
     scan_dir = make_path(scan_dir)
     yield create_slideshow(
         list_files(
-            scan_dir / "plots" / "natpop_{}_{}".format(node, dof),
+            scan_dir / "plots" / f"natpop_{node}_{dof}",
             [
                 ".png",
             ],
         ),
-        (
-            Path("videos") / ("natpop_{}_{}".format(node, dof)) / scan_dir.name
-        ).with_suffix(scan_dir.suffix + ".mp4"),
+        (Path("videos") / (f"natpop_{node}_{dof}") / scan_dir.name).with_suffix(
+            scan_dir.suffix + ".mp4"
+        ),
         duration,
     )

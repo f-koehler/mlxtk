@@ -56,7 +56,7 @@ def read_gpop_ascii(
     grids = {}
     densities = {}
 
-    with open(path, "r") as fhandle:
+    with open(path) as fhandle:
         match = regex_time_stamp.match(fhandle.readline())
         if match:
             times.append(float(match.group(1)))

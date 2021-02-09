@@ -147,7 +147,7 @@ class SimulationSet(base.SimulationSetBase):
 
             result = parse_slice(token)
             if not result:
-                raise ValueError("invalid format: {}".format(token))
+                raise ValueError(f"invalid format: {token}")
             start = result[0]
             stop = result[1]
             if stop is None:

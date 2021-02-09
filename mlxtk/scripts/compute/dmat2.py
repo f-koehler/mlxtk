@@ -77,7 +77,7 @@ def main():
 
                 m = RE_SLICE.match(args.slice)
                 if not m:
-                    raise RuntimeError('Invalid slice format "{}"'.format(args.slice))
+                    raise RuntimeError(f'Invalid slice format "{args.slice}"')
 
                 start = 0
                 end = len(times)
@@ -135,14 +135,14 @@ def main():
                         dmat2.add_dmat2_gridrep_to_hdf5(
                             fptr,
                             dmat2.read_dmat2_gridrep_ascii(
-                                "dmat2_dof{}_dof{}_grid".format(args.dof1, args.dof2)
+                                f"dmat2_dof{args.dof1}_dof{args.dof2}_grid"
                             ),
                         )
                     else:
                         dmat2.add_dmat2_spfrep_to_hdf5(
                             fptr,
                             *dmat2.read_dmat2_spfrep_ascii(
-                                "dmat2_dof{}_dof{}_spf".format(args.dof1, args.dof2)
+                                f"dmat2_dof{args.dof1}_dof{args.dof2}_spf"
                             ),
                         )
 

@@ -125,7 +125,7 @@ def get_dmat_spf(
             if numpy.array_equal(entry, ns):
                 return i
 
-        raise KeyError('ns "{}" not contained in number state table!'.format(ns))
+        raise KeyError(f'ns "{ns}" not contained in number state table!')
 
     for i in range(m):
         for j in range(m):
@@ -215,7 +215,7 @@ def get_dmat2_spf(
             if numpy.array_equal(entry, ns):
                 return i
 
-        raise KeyError('ns "{}" not contained in number state table!'.format(ns))
+        raise KeyError(f'ns "{ns}" not contained in number state table!')
 
     for i in range(m):
         for j in range(m):

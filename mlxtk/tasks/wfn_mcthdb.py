@@ -68,7 +68,7 @@ class MCTDHBCreateWaveFunction(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_mctdhb:{}:write_parameters".format(self.name),
+            "name": f"wfn_mctdhb:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -114,7 +114,7 @@ class MCTDHBCreateWaveFunction(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_mctdhb:{}:create".format(self.name),
+            "name": f"wfn_mctdhb:{self.name}:create",
             "actions": [action_write_wave_function],
             "targets": [self.path, self.path_basis],
             "file_dep": [self.path_pickle, self.path_matrix],
@@ -164,7 +164,7 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_mctdhb_energy_threshold:{}:write_parameters".format(self.name),
+            "name": f"wfn_mctdhb_energy_threshold:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -225,7 +225,7 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_mctdhb_energy_threshold:{}:create".format(self.name),
+            "name": f"wfn_mctdhb_energy_threshold:{self.name}:create",
             "actions": [action_write_wave_function],
             "targets": [self.path, self.path_basis],
             "file_dep": [self.path_pickle, self.path_matrix],
@@ -258,8 +258,7 @@ class MCTDHBCreateWaveFunctionMulti(Task):
         self.path = Path(name)
         self.path_pickle = Path(name + ".pickle")
         self.path_bases = [
-            Path(name + "_{}_basis.h5".format(i))
-            for i, _ in enumerate(self.hamiltonians_1b)
+            Path(name + f"_{i}_basis.h5") for i, _ in enumerate(self.hamiltonians_1b)
         ]
         self.path_matrices = [name + "_mat.h5" for name in self.hamiltonians_1b]
 
@@ -279,7 +278,7 @@ class MCTDHBCreateWaveFunctionMulti(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_mctdhb_multi:{}:write_parameters".format(self.name),
+            "name": f"wfn_mctdhb_multi:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -330,7 +329,7 @@ class MCTDHBCreateWaveFunctionMulti(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_mctdhb_multi:{}:create".format(self.name),
+            "name": f"wfn_mctdhb_multi:{self.name}:create",
             "actions": [action_write_wave_function],
             "targets": [self.path] + self.path_bases,
             "file_dep": [self.path_pickle] + self.path_matrices,
@@ -363,7 +362,7 @@ class MCTDHBAddMomentum(Task):
                 pickle.dump(obj, fptr, protocol=3)
 
         return {
-            "name": "wfn_mctdhb_add_momentum:{}:write_parameters".format(self.name),
+            "name": f"wfn_mctdhb_add_momentum:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -381,7 +380,7 @@ class MCTDHBAddMomentum(Task):
             save_wave_function(self.path, wfn)
 
         return {
-            "name": "wfn_mctdhb_add_momentum:{}:add_momentum".format(self.name),
+            "name": f"wfn_mctdhb_add_momentum:{self.name}:add_momentum",
             "actions": [action_add_momentum],
             "targets": [self.path],
             "file_dep": [self.path_pickle, self.path_initial],
@@ -415,7 +414,7 @@ class MCTDHBExtendGrid(Task):
                 pickle.dump(obj, fp, protocol=3)
 
         return {
-            "name": "wfn_mctdhb_extend_grid:{}:write_parameters".format(self.name),
+            "name": f"wfn_mctdhb_extend_grid:{self.name}:write_parameters",
             "actions": [action_write_parameters],
             "targets": [self.path_pickle],
         }
@@ -455,7 +454,7 @@ class MCTDHBExtendGrid(Task):
             save_wave_function(self.path, wfn_new)
 
         return {
-            "name": "wfn_mctdhb_extend_grid:{}:extend_grid".format(self.name),
+            "name": f"wfn_mctdhb_extend_grid:{self.name}:extend_grid",
             "actions": [action_extend_grid],
             "targets": [self.path],
             "file_dep": [self.path_pickle],
@@ -530,7 +529,7 @@ class MCTDHBOverlapStatic(Task):
                         ] = overlap
 
         return {
-            "name": "mctdhb_overlap_static:{}:compute".format(self.name),
+            "name": f"mctdhb_overlap_static:{self.name}:compute",
             "actions": [action_compute],
             "targets": [str(self.result)],
             "file_dep": [str(self.wave_function), str(self.basis)],

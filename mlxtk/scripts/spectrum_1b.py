@@ -24,7 +24,7 @@ class SpectrumPlot(SingleLinePlot):
         kwargs["linestyle"] = " "
         kwargs["xlabel"] = "Index of Eigenstate"
         kwargs["ylabel"] = "$E_i$"
-        super(SpectrumPlot, self).__init__(x, y, parent, **kwargs)
+        super().__init__(x, y, parent, **kwargs)
 
         self.vline = None
         self.hline = None
@@ -47,7 +47,7 @@ class GUI(QObject):
     def __init__(
         self, min_index, max_index, grid, weights, energies, spfs, parent=None
     ):
-        super(GUI, self).__init__(parent)
+        super().__init__(parent)
 
         self.min_index = min_index
         self.max_index = max_index

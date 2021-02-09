@@ -59,7 +59,7 @@ def read_psi_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        "Error extracting time point from label: {}".format(line)
+                        f"Error extracting time point from label: {line}"
                     )
                 time = float(m.group(1))
                 times.append(time)
@@ -106,7 +106,7 @@ def read_psi_frame_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        "Error extracting time point from label: {}".format(line)
+                        f"Error extracting time point from label: {line}"
                     )
                 time = float(m.group(1))
                 times.append(time)
@@ -128,7 +128,7 @@ def read_psi_frame_ascii(
                 tape.append(int(line))
 
     if not psi:
-        raise KeyError("index {} is out of bounds".format(index))
+        raise KeyError(f"index {index} is out of bounds")
 
     return (
         numpy.array(tape, dtype=numpy.int64),
@@ -168,12 +168,10 @@ def write_psi_ascii(path, data):
     tape, time, psis = data
     with open(path, "w") as fptr:
         fptr.write("$tape\n")
-        fptr.writelines(("\t{}\n".format(entry) for entry in tape))
+        fptr.writelines(f"\t{entry}\n" for entry in tape)
         for i, time in enumerate(time):
-            fptr.write("\n$time\n\t{}  [au]\n$psi\n".format(time))
+            fptr.write(f"\n$time\n\t{time}  [au]\n$psi\n")
             fptr.writelines(
-                (
-                    " ({},{})\n".format(numpy.real(entry), numpy.imag(entry))
-                    for entry in psis[i]
-                )
+                " ({},{})\n".format(numpy.real(entry), numpy.imag(entry))
+                for entry in psis[i]
             )

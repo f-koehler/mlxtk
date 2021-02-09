@@ -1,6 +1,6 @@
 {
     "python.pythonPath": "/home/fkoehler/.local/opt/anaconda3/envs/atom_collisions/bin/python",
-    "python.formatting.provider": "yapf",
+    "python.formatting.provider": "black",
     "files.exclude": {
         ".mypy_cache": true,
         "dist": true,

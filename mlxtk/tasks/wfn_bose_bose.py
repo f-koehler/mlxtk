@@ -7,14 +7,13 @@ import numpy
 from QDTK.Wavefunction import Wavefunction as WaveFunction
 
 from mlxtk.doit_compat import DoitAction
+from mlxtk.dvr import DVRSpecification
 from mlxtk.tasks.task import Task
 from mlxtk.tools.diagonalize import diagonalize_1b_operator
-from mlxtk.tools.wave_function import save_wave_function
-from mlxtk.dvr import DVRSpecification
 from mlxtk.tools.wave_function import (
+    add_momentum_two_species,
     load_wave_function,
     save_wave_function,
-    add_momentum_two_species,
 )
 
 
@@ -164,8 +163,14 @@ class CreateBoseBoseWaveFunction(Task):
 
         return {
             "name": "wfn_bose_bose:{}:create".format(self.name),
-            "actions": [action_write_wave_function,],
-            "targets": [self.path, self.path_basis_A, self.path_basis_B,],
+            "actions": [
+                action_write_wave_function,
+            ],
+            "targets": [
+                self.path,
+                self.path_basis_A,
+                self.path_basis_B,
+            ],
             "file_dep": [self.path_pickle, self.path_matrix_A, self.path_matrix_B],
         }
 

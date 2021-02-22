@@ -97,22 +97,25 @@ class ParameterScan(SimulationSet):
 
             variables, constants = mlxtk.parameters.get_variables(self.combinations)
             for combination, simulation in zip(self.combinations, self.simulations):
-                if not variables:
-                    name = "_".join(
-                        constant + "=" + str(combination[constant])
-                        for constant in constants
-                    )
-                else:
-                    name = "_".join(
-                        variable + "=" + str(combination[variable])
-                        for variable in variables
-                    )
-                path = simulation.working_dir
-                link = path_by_param / name
+                try:
+                    if not variables:
+                        name = "_".join(
+                            constant + "=" + str(combination[constant])
+                            for constant in constants
+                        )
+                    else:
+                        name = "_".join(
+                            variable + "=" + str(combination[variable])
+                            for variable in variables
+                        )
+                    path = simulation.working_dir
+                    link = path_by_param / name
 
-                if link.exists():
-                    link.unlink()
-                subprocess.run(["ln", "-s", "-f", "-r", path, link])
+                    if link.exists():
+                        link.unlink()
+                    subprocess.run(["ln", "-s", "-f", "-r", path, link])
+                except OSError:
+                    continue
 
     def unlink_simulations(self):
         if not self.working_dir.exists():

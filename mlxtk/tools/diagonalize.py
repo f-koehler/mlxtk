@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy
 import QDTK.Tools.Mathematics
@@ -11,7 +11,7 @@ LOGGER = log.get_logger(__name__)
 
 
 def diagonalize_1b_operator(
-    matrix: numpy.ndarray, number_eigenfunctions: int
+    matrix: numpy.ndarray, number_eigenfunctions: Optional[int] = None
 ) -> Tuple[numpy.ndarray, List[numpy.ndarray]]:
     """Diagonalize the supplied one-dimensional one-body hamiltonian
 
@@ -29,7 +29,9 @@ def diagonalize_1b_operator(
 
     QDTK.Tools.Mathematics.sortEigValsVecs(eigenvalues, eigenvectors)
 
-    if number_eigenfunctions < 0:
+    if number_eigenfunctions is None:
+        number_eigenfunctions = len(eigenvalues)
+    elif number_eigenfunctions < 0:
         number_eigenfunctions = len(eigenvalues)
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(

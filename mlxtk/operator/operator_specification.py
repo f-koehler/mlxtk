@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Tuple, Union, Optional
 
 import numpy
 from QDTK.Operator import OCoef as Coeff
@@ -111,7 +111,7 @@ class OperatorSpecification:
         return get_operator_matrix(self.get_operator())
 
     def diagonalize(
-        self, number_eigenfunctions: int
+        self, number_eigenfunctions: Optional[int] = None
     ) -> Tuple[numpy.ndarray, numpy.ndarray]:
         evals, evecs = diagonalize_1b_operator(self.get_matrix(), number_eigenfunctions)
         return evals, numpy.array(evecs)

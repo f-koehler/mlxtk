@@ -114,7 +114,7 @@ class PlotArgs2D:
         self.logx: bool = False
         self.logy: bool = False
         self.grid: bool = True
-        self.dpi: int = 600
+        self.dpi: Optional[int] = None
         self.extensions: List[str] = [".pdf", ".png"]
 
     @staticmethod
@@ -127,7 +127,7 @@ class PlotArgs2D:
         args.logx = kwargs.get("logx", False)
         args.logy = kwargs.get("logy", False)
         args.grid = kwargs.get("grid", True)
-        args.dpi = kwargs.get("dpi", 600)
+        args.dpi = kwargs.get("dpi", None)
         return args
 
     @staticmethod
@@ -182,9 +182,7 @@ def add_argparse_2d_args(parser: argparse.ArgumentParser):
     parser.add_argument(
         "--no-grid", action="store_false", dest="grid", help="do not draw a grid"
     )
-    parser.add_argument(
-        "--dpi", type=int, default=600, help="resolution (dpi) of figure"
-    )
+    parser.add_argument("--dpi", type=int, help="resolution (dpi) of figure")
 
 
 def apply_2d_args(

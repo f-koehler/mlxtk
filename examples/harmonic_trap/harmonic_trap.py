@@ -26,7 +26,7 @@ if __name__ == "__main__":
     sim += tasks.CreateMBOperator(
         "hamiltonian_quenched.mb_opr", system_quenched.get_hamiltonian()
     )
-    sim += tasks.CreateMBOperator("com,mb_opr", system_quenched.get_com_operator())
+    sim += tasks.CreateMBOperator("com.mb_opr", system_quenched.get_com_operator())
     sim += tasks.CreateMBOperator(
         "com_2.mb_opr", system_quenched.get_com_operator_squared()
     )

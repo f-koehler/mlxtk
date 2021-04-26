@@ -30,8 +30,8 @@ class BoseHubbardSQR(BosonicSQR):
 
         for i in range(self.parameters.sites - 1):
             table += [
-                "hopping_coeff | {} creator | {} annihilator".format(i + 1, i + 2),
-                "hopping_coeff | {} creator | {} annihilator".format(i + 2, i + 1),
+                f"hopping_coeff | {i + 1} creator | {i + 2} annihilator",
+                f"hopping_coeff | {i + 2} creator | {i + 1} annihilator",
             ]
 
         if self.parameters.pbc:
@@ -66,7 +66,7 @@ class BoseHubbardSQR(BosonicSQR):
                 "interaction": self.grid.get_x() * (self.grid.get_x() - 1.0),
             },
             [
-                "interaction_coeff | {} interaction".format(i + 1)
+                f"interaction_coeff | {i + 1} interaction"
                 for i in range(self.parameters.sites)
             ],
         )

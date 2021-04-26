@@ -172,6 +172,5 @@ def write_psi_ascii(path, data):
         for i, time in enumerate(time):
             fptr.write(f"\n$time\n\t{time}  [au]\n$psi\n")
             fptr.writelines(
-                " ({},{})\n".format(numpy.real(entry), numpy.imag(entry))
-                for entry in psis[i]
+                f" ({numpy.real(entry)},{numpy.imag(entry)})\n" for entry in psis[i]
             )

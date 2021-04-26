@@ -79,7 +79,7 @@ class GUI(QObject):
 
         # add items to list
         for i, E in enumerate(self.energies):
-            self.spf_list.addItem("{}: E={:.4f}".format(i + min_index, E))
+            self.spf_list.addItem(f"{i + min_index}: E={E:.4f}")
 
         # init GUI elements with first eigenstate
         self.spf_list.setCurrentItem(self.spf_list.item(0))

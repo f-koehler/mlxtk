@@ -55,7 +55,7 @@ class DmatSlider(QtWidgets.QWidget):
 
     def set_time(self, index: int):
         self.time_index = index
-        self.label_time.setText("Time: {:.4E}".format(self.times[index]))
+        self.label_time.setText(f"Time: {self.times[index]:.4E}")
 
     def init_plot(self):
         if self.mesh:

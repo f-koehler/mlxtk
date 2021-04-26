@@ -55,7 +55,7 @@ def collect_values(
         elif len(values.shape) == 2:
             pass
         else:
-            raise RuntimeError("Invalid dimensions {}".format(len(values.shape)))
+            raise RuntimeError(f"Invalid dimensions {len(values.shape)}")
 
         data = numpy.c_[parameters, values]
         header = [variable for variable in variables] + [

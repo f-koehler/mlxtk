@@ -21,7 +21,7 @@ def create_slideshow(
             pickle.dump(obj, fptr, protocol=3)
 
     yield {
-        "name": "slideshow:{}:pickle".format(str(pickle_file)).replace("=", "_"),
+        "name": f"slideshow:{str(pickle_file)}:pickle".replace("=", "_"),
         "targets": [
             pickle_file,
         ],
@@ -33,7 +33,7 @@ def create_slideshow(
         video.create_slideshow(images, targets[0], duration)
 
     yield {
-        "name": "slideshow:{}:create".format(str(output_file)).replace("=", "_"),
+        "name": f"slideshow:{str(output_file)}:create".replace("=", "_"),
         "targets": [
             output_file,
         ],

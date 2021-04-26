@@ -31,7 +31,7 @@ class Gui(PlotSlider):
         self.spin.valueChanged.connect(self.update_label)
 
     def init_plot(self):
-        self.label.setText("Time: {:6.2f}".format(self.time[0]))
+        self.label.setText(f"Time: {self.time[0]:6.2f}")
 
         if self.mesh:
             self.mesh.remove()
@@ -57,7 +57,7 @@ class Gui(PlotSlider):
         self.plot.canvas.draw()
 
     def update_label(self, index: int):
-        self.label.setText("Time: {:6.2f}".format(self.time[index]))
+        self.label.setText(f"Time: {self.time[index]:6.2f}")
 
 
 def main():

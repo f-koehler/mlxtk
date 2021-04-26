@@ -36,9 +36,7 @@ class MBOperatorSpecification:
             output.append(f"\t\t{i}: {grid}")
         output.append("\tCoefficients:")
         for i, coefficient in enumerate(self.coefficients):
-            output.append(
-                "\t\t{}: {} = {}".format(i, coefficient, self.coefficients[coefficient])
-            )
+            output.append(f"\t\t{i}: {coefficient} = {self.coefficients[coefficient]}")
         output.append("\tTerms:")
         for i, term in enumerate(self.terms):
             output.append(f"\t\t{i}: {term}")

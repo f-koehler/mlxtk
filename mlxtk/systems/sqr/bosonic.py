@@ -34,7 +34,7 @@ class BosonicSQR(ABC):
             {"particle_number_coeff": 1.0},
             {"particle_number": self.grid.get_x()},
             [
-                "particle_number_coeff | {} particle_number".format(i + 1)
+                f"particle_number_coeff | {i + 1} particle_number"
                 for i in range(self.parameters.sites)
             ],
         )
@@ -44,7 +44,7 @@ class BosonicSQR(ABC):
             tuple(self.grid for i in range(self.parameters.sites)),
             {"site_occupation_coeff": 1.0},
             {"site_occupation": self.grid.get_x()},
-            "site_occupation_coeff | {} site_occupation".format(site_index + 1),
+            f"site_occupation_coeff | {site_index + 1} site_occupation",
         )
 
     def get_site_occupation_operator_squared(
@@ -74,8 +74,8 @@ class BosonicSQR(ABC):
     def get_penalty_term(self, penalty: float) -> OperatorSpecification:
         table: List[str] = ["penalty_coeff_lambda_N^2 | 1 penalty_unity"]
         for i in range(self.parameters.sites):
-            table.append("penalty_coeff_lambda | {} penalty_n_squared".format(i + 1))
-            table.append("penalty_coeff_m2_lambda_N | {} penalty_n".format(i + 1))
+            table.append(f"penalty_coeff_lambda | {i + 1} penalty_n_squared")
+            table.append(f"penalty_coeff_m2_lambda_N | {i + 1} penalty_n")
             for j in range(i):
                 table.append(
                     "penalty_coeff_2_lambda | {} penalty_n | {} penalty_n".format(

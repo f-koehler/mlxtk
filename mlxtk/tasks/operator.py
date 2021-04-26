@@ -78,7 +78,7 @@ class CreateOperator(Task):
                 for i, dof in enumerate(self.specification.dofs):
                     grid = dof.get_x()
                     dset = fptr.create_dataset(
-                        "grid_{}".format(i + 1),
+                        f"grid_{i + 1}",
                         grid.shape,
                         dtype=numpy.float64,
                         compression="gzip",
@@ -87,7 +87,7 @@ class CreateOperator(Task):
 
                     weights = dof.get_weights()
                     dset = fptr.create_dataset(
-                        "weights_{}".format(i + 1),
+                        f"weights_{i + 1}",
                         grid.shape,
                         dtype=numpy.float64,
                         compression="gzip",

@@ -89,7 +89,7 @@ def scan_plot_expval(
 
     return doit_plot_individual(
         selection,
-        "expval_{}".format(str(expval)).replace("/", "_"),
+        f"expval_{str(expval)}".replace("/", "_"),
         [str(expval.with_suffix(".exp.h5"))],
         plot_func,
         plotting_args,
@@ -129,7 +129,7 @@ def scan_plot_variance(
 
     return doit_plot_individual(
         selection,
-        "variance_{}".format(str(variance)).replace("/", "_"),
+        f"variance_{str(variance)}".replace("/", "_"),
         [str(variance.with_suffix(".var.h5"))],
         plot_func,
         plotting_args,

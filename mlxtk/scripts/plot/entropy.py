@@ -37,7 +37,7 @@ def main():
         try:
             entropy = compute_entropy(natpop, args.normalize)
         except ZeroDivisionError:
-            entropy = compute_entropy(natpop, args.normalize)
+            entropy = compute_entropy(natpop)
             args.normalize = False
         plot_entropy(ax, time, entropy, label=label, normalize=args.normalize)
 

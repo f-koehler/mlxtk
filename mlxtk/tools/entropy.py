@@ -4,6 +4,8 @@ from typing import Union
 
 import numpy
 
+from mlxtk.log import get_logger
+
 
 def compute_entropy(
     natpop: numpy.ndarray, normalize: bool = False
@@ -28,8 +30,11 @@ def compute_entropy(
 
         if normalize:
             m = natpop.shape[0]
-            S_max = numpy.log(m)
-            result = result / S_max
+            if m == 1:
+                raise ZeroDivisionError("cannot normalize entropy for m=1")
+            else:
+                S_max = numpy.log(m)
+                result = result / S_max
 
         return result
 
@@ -42,8 +47,11 @@ def compute_entropy(
 
         if normalize:
             m = natpop.shape[1]
-            S_max = numpy.log(m)
-            result = result / S_max
+            if m == 1:
+                raise ZeroDivisionError("cannot normalize entropy for m=1")
+            else:
+                S_max = numpy.log(m)
+                result = result / S_max
 
         return result
 

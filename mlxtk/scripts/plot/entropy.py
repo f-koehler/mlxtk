@@ -34,7 +34,11 @@ def main():
 
     for path, label in zip(args.path, labels):
         time, natpop = read_natpop(path, node=args.node, dof=args.dof)
-        entropy = compute_entropy(natpop, args.normalize)
+        try:
+            entropy = compute_entropy(natpop, args.normalize)
+        except ZeroDivisionError:
+            entropy = compute_entropy(natpop, args.normalize)
+            args.normalize = False
         plot_entropy(ax, time, entropy, label=label, normalize=args.normalize)
 
     system = units.get_default_unit_system()

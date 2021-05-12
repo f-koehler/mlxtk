@@ -42,7 +42,7 @@ colorama = "^0.4.3"
 doit = "^0.33.1"
 future = "^0.18.2"
 h5py = "^3.0"
-jinja2 = "^2.11.2"
+jinja2 = ">=2.11.2,<4.0.0"
 matplotlib = "^3.3.2"
 numpy = "^1.19.2"
 numpy-stl = { version = "^2.11.2", optional = true }

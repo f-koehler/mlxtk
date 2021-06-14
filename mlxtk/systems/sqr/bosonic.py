@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+import numpy
+
 from QDTK.SQR.Primitive import SQRDvrBosonic
 
 from mlxtk import dvr
@@ -97,6 +99,41 @@ class BosonicSQR(ABC):
                 "penalty_unity": self.grid.get().get_unit_operator(),
             },
             table,
+        )
+
+    def get_efficient_penalty_term(
+        self, gamma: float = 10.0, zeta: float = 0.0625
+    ) -> OperatorSpecification:
+        prefactor_1 = gamma / (zeta ** 2) * numpy.exp(-zeta * self.parameters.N)
+        prefactor_2 = gamma / (zeta ** 2) * numpy.exp(zeta * self.parameters.N)
+        constant = -2 * gamma / (zeta ** 2)
+
+        term_1 = numpy.exp(zeta * self.grid.get_x())
+        term_2 = numpy.exp(zeta * self.grid.get_x())
+        term_unit = self.grid.get_unit_operator()
+
+        return OperatorSpecification(
+            tuple(self.grid for i in range(self.parameters.sites)),
+            {
+                "penalty_coeff_1": prefactor_1,
+                "penalty_coeff_2": prefactor_2,
+                "penalty_coeff_3": constant,
+            },
+            {"penalty_1": term_1, "penalty_2": term_2, "penalty_3": term_unit},
+            [
+                "penalty_coeff_1 "
+                + " | ".join(
+                    f"{i + 1} penalty_1" for i in range(self.parameters.sites)
+                ),
+                "penalty_coeff_2 "
+                + " | ".join(
+                    f"{i + 1} penalty_2" for i in range(self.parameters.sites)
+                ),
+                "penalty_coeff_3 "
+                + " | ".join(
+                    f"{i + 1} penalty_3" for i in range(self.parameters.sites)
+                ),
+            ],
         )
 
     @staticmethod

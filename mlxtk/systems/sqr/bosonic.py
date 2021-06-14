@@ -110,7 +110,7 @@ class BosonicSQR(ABC):
 
         term_1 = numpy.exp(zeta * self.grid.get_x())
         term_2 = numpy.exp(zeta * self.grid.get_x())
-        term_unit = self.grid.get_unit_operator()
+        term_unit = self.grid.get().get_unit_operator()
 
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),

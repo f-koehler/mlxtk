@@ -1,3 +1,4 @@
+from decimal import DivisionByZero
 from typing import List, Optional
 
 import numpy
@@ -84,6 +85,30 @@ class BoseHubbardSQR(BosonicSQR):
             terms.append(self.create_interaction_term())
         if not terms:
             raise RuntimeError("Hamiltonian would be empty: U, J and penalty are 0.0")
+        hamiltonian = terms[0]
+        for term in terms[1:]:
+            hamiltonian += term
+        return hamiltonian
+
+    def create_efficient_hamiltonian(
+        self, gamma: Optional[float] = None, zeta: Optional[float] = None
+    ) -> OperatorSpecification:
+        terms: List[OperatorSpecification] = []
+        gamma = self.parameters.gamma if gamma is None else gamma
+        zeta = self.parameters.zeta if zeta is None else zeta
+
+        if gamma != 0.0:
+            if zeta == 0.0:
+                raise DivisionByZero("zeta must be positive")
+            terms.append(self.get_efficient_penalty_term(gamma, zeta))
+
+        if self.parameters.J != 0.0:
+            terms.append(self.create_hopping_term())
+        if self.parameters.U != 0.0:
+            terms.append(self.create_interaction_term())
+        if not terms:
+            raise RuntimeError("Hamiltonian would be empty: U, J and gamma are 0.0")
+
         hamiltonian = terms[0]
         for term in terms[1:]:
             hamiltonian += term

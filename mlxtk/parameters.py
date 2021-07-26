@@ -201,7 +201,7 @@ def generate_all(parameters: Parameters, values: Dict[str, Any]) -> List[Paramet
         values[name] = values.get(name, [parameters[name]])
 
     ret = []
-    for combination in itertools.product(*[values[name] for name in parameters.names]):
+    for combination in itertools.product(*(values[name] for name in parameters.names)):
         ret.append(copy.deepcopy(parameters))
         ret[-1].set_values(combination)
 

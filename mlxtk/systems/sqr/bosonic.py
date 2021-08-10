@@ -109,7 +109,7 @@ class BosonicSQR(ABC):
         constant = -2 * gamma / (zeta ** 2)
 
         term_1 = numpy.exp(zeta * self.grid.get_x())
-        term_2 = numpy.exp(zeta * self.grid.get_x())
+        term_2 = numpy.exp(-zeta * self.grid.get_x())
         term_unit = self.grid.get().get_unit_operator()
 
         return OperatorSpecification(

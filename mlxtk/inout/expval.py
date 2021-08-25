@@ -30,21 +30,21 @@ def read_expval_ascii(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndar
 
 
 def read_expval_hdf5(
-    path: Union[Path, str], interior_path: str = "/"
+    path: Union[Path, str], interior_path: str = "/", xname:str = "time"
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
-            fptr[interior_path]["time"][:],
+            fptr[interior_path][xname][:],
             fptr[interior_path]["real"][:] + 1j * fptr[interior_path]["imag"][:],
         )
 
 
 def write_expval_hdf5(
-    path: Union[Path, str], time: numpy.ndarray, values: numpy.ndarray
+    path: Union[Path, str], x: numpy.ndarray, values: numpy.ndarray, xname: str = "time"
 ):
     with h5py.File(path, "w") as fp:
-        dset = fp.create_dataset("time", time.shape, dtype=numpy.float64)
-        dset[:] = time
+        dset = fp.create_dataset(xname, x.shape, dtype=numpy.float64)
+        dset[:] = x
 
         dset = fp.create_dataset("real", values.shape, dtype=numpy.float64)
         dset[:] = values.real

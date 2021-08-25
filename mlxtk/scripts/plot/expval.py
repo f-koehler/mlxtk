@@ -25,6 +25,7 @@ def main():
         action="store_true",
         help="whether to transform the signal to frequency space",
     )
+    parser.add_argument("--xname", help="")
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()

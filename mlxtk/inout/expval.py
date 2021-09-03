@@ -30,7 +30,7 @@ def read_expval_ascii(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndar
 
 
 def read_expval_hdf5(
-    path: Union[Path, str], interior_path: str = "/", xname:str = "time"
+    path: Union[Path, str], interior_path: str = "/", xname: str = "time"
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (

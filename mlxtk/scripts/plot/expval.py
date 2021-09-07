@@ -25,7 +25,7 @@ def main():
         action="store_true",
         help="whether to transform the signal to frequency space",
     )
-    parser.add_argument("--xname", help="")
+    parser.add_argument("--xname", help="", default="time")
     add_argparse_2d_args(parser)
     add_argparse_save_arg(parser)
     args = parser.parse_args()
@@ -36,7 +36,7 @@ def main():
 
     for file in args.path:
         name = file.stem
-        time, values = read_expval_hdf5(file)
+        time, values = read_expval_hdf5(file, xname=args.xname)
         if args.fft:
             plot_expval(
                 ax, *mlxtk.tools.signal.fourier_transform(time, values), label=name
@@ -48,7 +48,8 @@ def main():
             )
         else:
             plot_expval(ax, time, values, label=name)
-            ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
+            if args.xname == "time":
+                ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
 
     if len(args.path) > 1:
         ax.legend()

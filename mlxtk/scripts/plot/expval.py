@@ -50,6 +50,8 @@ def main():
             plot_expval(ax, time, values, label=name)
             if args.xname == "time":
                 ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
+            else:
+                ax.set_xlabel(args.xname)
 
     if len(args.path) > 1:
         ax.legend()

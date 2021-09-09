@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import numpy
-
 from QDTK.SQR.Primitive import SQRDvrBosonic
 
 from mlxtk import dvr

@@ -131,3 +131,8 @@ scan_plot_natpop = "mlxtk.scripts.scan_plot.natpop:main"
 
 spectrum_1b = "mlxtk.scripts.spectrum_1b:main"
 thin_out_psi = "mlxtk.scripts.thin_out_psi:main"
+
+[tool.isort]
+# Maintain compatibility with Black
+profile = "black"
+multi_line_output = 3

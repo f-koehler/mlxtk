@@ -4,25 +4,25 @@ This module provides facilities to create and run sets of simulations based on
 parameter ranges.
 """
 import argparse
-from multiprocessing.sharedctypes import Value
-
-from pytest import param
-from itertools import combinations
 import os
 import pickle
 import subprocess
+import sys
+from itertools import combinations
+from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Callable, List, Union
-import sys
+
+from pytest import param
 
 import mlxtk.parameters
 from mlxtk import cwd
+from mlxtk.cwd import WorkingDir
 from mlxtk.hashing import hash_string
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.simulation import Simulation
 from mlxtk.simulation_set import SimulationSet
-from mlxtk.cwd import WorkingDir
 
 assert List
 

@@ -4,11 +4,16 @@ This module provides facilities to create and run sets of simulations based on
 parameter ranges.
 """
 import argparse
+from multiprocessing.sharedctypes import Value
+
+from pytest import param
+from itertools import combinations
 import os
 import pickle
 import subprocess
 from pathlib import Path
 from typing import Callable, List, Union
+import sys
 
 import mlxtk.parameters
 from mlxtk import cwd
@@ -17,6 +22,7 @@ from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.simulation import Simulation
 from mlxtk.simulation_set import SimulationSet
+from mlxtk.cwd import WorkingDir
 
 assert List
 
@@ -35,16 +41,24 @@ class ParameterScan(SimulationSet):
         self.simulations = []  # type: List[Simulation]
         self.combinations = combinations
 
+    def compute_simulation_name(self, parameters) -> str:
+        return f"{self.name}_{repr(parameters)}"
+
+    def compute_working_dir(self, parameters: Parameters) -> Path:
+        return self.working_dir / "sim" / hash_string(repr(parameters))
+
+    def compute_simulation(self, parameters: Parameters) -> Simulation:
+        simulation = self.func(parameters)
+        simulation.name = self.compute_simulation_name(parameters)
+        simulation.working_dir = self.compute_working_dir(parameters)
+        return simulation
+
     def compute_simulations(self):
         self.simulations = []
 
-        for combination in self.combinations:
-            self.simulations.append(self.func(combination))
-            self.simulations[-1].name = repr(combination)
-            self.simulations[-1].working_dir = (
-                self.working_dir / "sim" / hash_string(self.simulations[-1].name)
-            )
-            self.simulations[-1].name = self.name + "_" + self.simulations[-1].name
+        self.simulations = [
+            self.compute_simulation(parameters) for parameters in self.combinations
+        ]
 
     def store_parameters(self):
         self.logger.info("storing scan parameters")
@@ -54,9 +68,10 @@ class ParameterScan(SimulationSet):
             return
 
         with cwd.WorkingDir(self.working_dir):
-            for combination, simulation in zip(self.combinations, self.simulations):
-                simulation.create_working_dir()
-                with cwd.WorkingDir(simulation.working_dir):
+            for combination in self.combinations:
+                working_dir = self.compute_working_dir(combination)
+                working_dir.mkdir(exist_ok=True, parents=True)
+                with cwd.WorkingDir(working_dir):
                     with open("parameters.pickle", "wb") as fptr:
                         pickle.dump(combination, fptr, protocol=3)
 
@@ -81,8 +96,8 @@ class ParameterScan(SimulationSet):
             if not path_by_index.exists():
                 os.makedirs(path_by_index)
 
-            for index, simulation in enumerate(self.simulations):
-                path = simulation.working_dir
+            for index, combination in enumerate(self.combinations):
+                path = self.compute_working_dir(combination)
                 link = path_by_index / str(index)
 
                 if link.exists():
@@ -96,7 +111,7 @@ class ParameterScan(SimulationSet):
                 os.makedirs(path_by_param)
 
             variables, constants = mlxtk.parameters.get_variables(self.combinations)
-            for combination, simulation in zip(self.combinations, self.simulations):
+            for combination in self.combinations:
                 try:
                     if not variables:
                         name = "_".join(
@@ -108,7 +123,7 @@ class ParameterScan(SimulationSet):
                             variable + "=" + str(combination[variable])
                             for variable in variables
                         )
-                    path = simulation.working_dir
+                    path = self.compute_working_dir(combination)
                     link = path_by_param / name
 
                     if link.exists():
@@ -138,31 +153,36 @@ class ParameterScan(SimulationSet):
                         if path_entry.is_symlink():
                             path_entry.unlink()
 
+    def cmd_clean(self, args: argparse.Namespace):
+        self.compute_simulations()
+        super().cmd_clean(args)
+
     def cmd_dry_run(self, args: argparse.Namespace):
+        self.compute_simulations()
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()
 
         super().cmd_dry_run(args)
 
-    def cmd_run(self, args: argparse.Namespace):
-        self.unlink_simulations()
-        self.store_parameters()
-        self.link_simulations()
+    def cmd_list(self, args: argparse.Namespace):
+        if args.directory:
+            for i, combination in enumerate(self.combinations):
+                print(i, self.compute_working_dir(combination))
+        else:
+            for i, combination in enumerate(self.combinations):
+                print(i, self.compute_simulation_name(combination))
 
-        super().cmd_run(args)
+    def cmd_list_tasks(self, args: argparse.Namespace):
+        self.compute_simulation(args.index).main(["list"])
 
-    def run_by_param(self, parameters: mlxtk.parameters.Parameters):
-        self.logger.info("run simulation for parameters %s", repr(parameters))
+    def cmd_propagation_status(self, args: argparse.Namespace):
         self.compute_simulations()
-        for i, combination in enumerate(self.combinations):
-            if combination != parameters:
-                continue
+        super().cmd_propagation_status(args)
 
-            self.main(["run-index", str(i)])
-            return
-
-        raise ValueError("Parameters not included: " + str(parameters))
+    def cmd_qdel(self, args: argparse.Namespace):
+        self.compute_simulations()
+        super().cmd_qdel(args)
 
     def cmd_qsub_array(self, args: argparse.Namespace):
         self.unlink_simulations()
@@ -171,7 +191,39 @@ class ParameterScan(SimulationSet):
 
         super().cmd_qsub_array(args)
 
-    def main(self, argv: List[str] = None):
+    def cmd_run(self, args: argparse.Namespace):
         self.compute_simulations()
+        self.unlink_simulations()
+        self.store_parameters()
+        self.link_simulations()
+
+        super().cmd_run(args)
+
+    def cmd_run_index(self, args: argparse.Namespace):
+        script_dir = Path(sys.argv[0]).parent.resolve()
+        with WorkingDir(script_dir):
+            self.logger.info("run simulation with index %d", args.index)
+            self.compute_simulation(self.combinations[args.index]).main(["run"])
+
+    def run_by_param(self, parameters: mlxtk.parameters.Parameters):
+        self.logger.info("run simulation for parameters %s", repr(parameters))
+
+        try:
+            index = combinations.index(parameters)
+            simulation = self.compute_simulation(index)
+            simulation.main(["run-index", str(index)])
+        except ValueError:
+            raise ValueError("Parameters not included: " + str(parameters))
+
+    def cmd_task_info(self, args: argparse.Namespace):
+        self.create_working_dir()
+
+        with WorkingDir(self.working_dir):
+            self.compute_simulation(self.combinations[args.index]).main(
+                ["task-info", args.name]
+            )
+
+    def main(self, argv: List[str] = None):
+        # self.compute_simulations()
 
         super().main(argv)

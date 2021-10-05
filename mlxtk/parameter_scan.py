@@ -9,11 +9,8 @@ import pickle
 import subprocess
 import sys
 from itertools import combinations
-from multiprocessing.sharedctypes import Value
 from pathlib import Path
 from typing import Callable, List, Union
-
-from pytest import param
 
 import mlxtk.parameters
 from mlxtk import cwd

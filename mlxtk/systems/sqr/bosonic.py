@@ -129,10 +129,7 @@ class BosonicSQR(ABC):
                 + " | ".join(
                     f"{i + 1} penalty_2" for i in range(self.parameters.sites)
                 ),
-                "penalty_coeff_3 "
-                + " | ".join(
-                    f"{i + 1} penalty_3" for i in range(self.parameters.sites)
-                ),
+                "penalty_coeff_3 | 1 penalty_3",
             ],
         )
 

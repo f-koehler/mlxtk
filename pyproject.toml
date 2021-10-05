@@ -66,7 +66,7 @@ jedi = "^0.18.0"
 mypy = "^0.910"
 pylint = "^2.6.0"
 pytest = "^6.1.1"
-rope = "^0.19.0"
+rope = "^0.20.1"
 pre-commit = "^2.10.1"
 
 [tool.poetry.scripts]
@@ -131,3 +131,8 @@ scan_plot_natpop = "mlxtk.scripts.scan_plot.natpop:main"
 
 spectrum_1b = "mlxtk.scripts.spectrum_1b:main"
 thin_out_psi = "mlxtk.scripts.thin_out_psi:main"
+
+[tool.isort]
+# Maintain compatibility with Black
+profile = "black"
+multi_line_output = 3

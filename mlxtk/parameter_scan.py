@@ -182,6 +182,8 @@ class ParameterScan(SimulationSet):
         super().cmd_qdel(args)
 
     def cmd_qsub_array(self, args: argparse.Namespace):
+        self.simulations = [None for _ in self.combinations]
+
         self.unlink_simulations()
         self.store_parameters()
         self.link_simulations()

@@ -23,6 +23,7 @@ def plot_gpop(
     zmin: Optional[float] = None,
     zmax: Optional[float] = None,
     logz: bool = False,
+    shading: str = "auto",
 ):
     Y, X = numpy.meshgrid(grid, time)
 
@@ -36,11 +37,11 @@ def plot_gpop(
             cmap="gnuplot",
             rasterized=True,
             norm=matplotlib.colors.LogNorm(zmin, zmax),
-            shading="auto",
+            shading=shading,
         )
     else:
         ret = ax.pcolormesh(
-            X, Y, density, cmap="gnuplot", rasterized=True, shading="auto"
+            X, Y, density, cmap="gnuplot", rasterized=True, shading=shading
         )
 
     ax.set_xlabel("$t$")

@@ -104,7 +104,6 @@ class BosonicSQR(ABC):
         self, gamma: float = 10.0, zeta: float = 0.0625
     ) -> OperatorSpecification:
         N = self.parameters.N
-        self.logger.error(f"{N = }, {gamma = }, {zeta = }")
         prefactor_1 = gamma / (zeta ** 2) * numpy.exp(-zeta * N)
         prefactor_2 = gamma / (zeta ** 2) * numpy.exp(zeta * N)
         constant = -2 * gamma / (zeta ** 2)

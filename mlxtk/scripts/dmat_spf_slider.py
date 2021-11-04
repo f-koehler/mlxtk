@@ -24,16 +24,20 @@ class DmatSlider(QtWidgets.QWidget):
         self.window = load_ui("dmat_spf_slider.ui")
 
         self.plot = self.window.findChild(
-            MatplotlibWidget, "plot"
+            MatplotlibWidget,
+            "plot",
         )  # type: MatplotlibWidget
         self.slider_time = self.window.findChild(
-            QtWidgets.QSlider, "slider_time"
+            QtWidgets.QSlider,
+            "slider_time",
         )  # type: QtWidgets.QSlider
         self.spin_time = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_time"
+            QtWidgets.QSpinBox,
+            "spin_time",
         )  # type: QtWidgets.QSpinBox
         self.label_time = self.window.findChild(
-            QtWidgets.QLabel, "label_time"
+            QtWidgets.QLabel,
+            "label_time",
         )  # type: QtWidgets.QLabel
 
         self.axes = self.plot.figure.subplots(1, 1)

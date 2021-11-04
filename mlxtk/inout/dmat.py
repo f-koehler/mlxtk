@@ -10,7 +10,7 @@ from mlxtk.util import make_path
 
 
 def read_dmat_gridrep(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -20,7 +20,7 @@ def read_dmat_gridrep(
 
 
 def read_dmat_evals_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path) as fp:
@@ -32,17 +32,20 @@ def read_dmat_evals_ascii(
 
 
 def add_dmat_evals_to_hdf5(
-    fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray, eigenvalues: numpy.ndarray
+    fptr: Union[h5py.File, h5py.Group],
+    time: numpy.ndarray,
+    eigenvalues: numpy.ndarray,
 ):
     group = fptr.create_group("eigenvalues")
     group.create_dataset("time", time.shape, time.dtype)[:] = time
     group.create_dataset("eigenvalues", eigenvalues.shape, eigenvalues.dtype)[
-        :, :
+        :,
+        :,
     ] = eigenvalues
 
 
 def read_dmat_evecs_grid_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path) as fp:
@@ -86,7 +89,7 @@ def add_dmat_evecs_grid_to_hdf5(
 
 
 def read_dmat_evecs_spf_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     with open(path) as fp:
@@ -116,7 +119,9 @@ def read_dmat_evecs_spf_ascii(
 
 
 def add_dmat_evecs_spf_to_hdf5(
-    fptr: Union[h5py.File, h5py.Group], time: numpy.array, evecs: numpy.ndarray
+    fptr: Union[h5py.File, h5py.Group],
+    time: numpy.array,
+    evecs: numpy.ndarray,
 ):
     group = fptr.create_group("evecs_spf")
     group.create_dataset("time", time.shape, time.dtype)[:] = time
@@ -125,7 +130,7 @@ def add_dmat_evecs_spf_to_hdf5(
 
 
 def read_dmat_spfrep_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     df = pandas.read_csv(
@@ -145,7 +150,9 @@ def read_dmat_spfrep_ascii(
 
 
 def add_dmat_spfrep_to_hdf5(
-    fptr: Union[h5py.File, h5py.Group], time: numpy.ndarray, dmat: numpy.ndarray
+    fptr: Union[h5py.File, h5py.Group],
+    time: numpy.ndarray,
+    dmat: numpy.ndarray,
 ):
     group = fptr.create_group("dmat_spfrep")
     group.create_dataset("time", time.shape, time.dtype)[:] = time
@@ -154,7 +161,7 @@ def add_dmat_spfrep_to_hdf5(
 
 
 def read_dmat_gridrep_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(
         path,
@@ -167,13 +174,15 @@ def read_dmat_gridrep_ascii(
     x1 = numpy.unique(df["x1"].values)
     x2 = numpy.unique(df["x2"].values)
     dmat2 = numpy.reshape(
-        df["real"].values + 1j * df["imag"].values, (len(time), len(x1), len(x2))
+        df["real"].values + 1j * df["imag"].values,
+        (len(time), len(x1), len(x2)),
     )
     return time, x1, x2, dmat2
 
 
 def read_dmat_gridrep_hdf5(
-    path: Union[str, Path], interior_path: str = "/"
+    path: Union[str, Path],
+    interior_path: str = "/",
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -186,7 +195,8 @@ def read_dmat_gridrep_hdf5(
 
 
 def read_dmat_spfrep_hdf5(
-    path: Union[str, Path], interior_path: str = "/"
+    path: Union[str, Path],
+    interior_path: str = "/",
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (

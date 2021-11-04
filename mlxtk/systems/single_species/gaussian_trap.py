@@ -21,12 +21,13 @@ class GaussianTrap(SingleSpeciesSystem):
                 ("V0", 1.0, "depth of the Gaussian well"),
                 ("x0", 0.0, "center of the Gaussian well"),
                 ("g", 0.1, "strength of the contact interaction"),
-            ]
+            ],
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return self.create_gaussian_potential_operator_1b(
-            self.parameters.x0, self.parameters.V0
+            self.parameters.x0,
+            self.parameters.V0,
         )
 
     def get_hamiltonian_1b(self) -> tasks.OperatorSpecification:
@@ -34,7 +35,8 @@ class GaussianTrap(SingleSpeciesSystem):
 
     def get_potential_operator(self) -> tasks.MBOperatorSpecification:
         return self.create_gaussian_potential_operator(
-            self.parameters.x0, self.parameters.V0
+            self.parameters.x0,
+            self.parameters.V0,
         )
 
     def get_interaction_operator(self) -> tasks.MBOperatorSpecification:
@@ -57,7 +59,11 @@ class GaussianTrap(SingleSpeciesSystem):
         return self.get_kinetic_operator() + self.get_potential_operator()
 
     def create_gaussian_potential_operator_1b(
-        self, x0: float, V0: float, name: str = "potential", alpha: float = 1.0
+        self,
+        x0: float,
+        V0: float,
+        name: str = "potential",
+        alpha: float = 1.0,
     ) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
             (self.grid_1b,),
@@ -67,7 +73,11 @@ class GaussianTrap(SingleSpeciesSystem):
         )
 
     def create_gaussian_potential_operator(
-        self, x0: float, V0: float, name: str = "potential", alpha: float = 1.0
+        self,
+        x0: float,
+        V0: float,
+        name: str = "potential",
+        alpha: float = 1.0,
     ) -> tasks.MBOperatorSpecification:
         return tasks.MBOperatorSpecification(
             (1,),
@@ -78,7 +88,9 @@ class GaussianTrap(SingleSpeciesSystem):
         )
 
     def get_hamiltonian_moving_well(
-        self, v: float = 1.0, a: float = 0.0
+        self,
+        v: float = 1.0,
+        a: float = 0.0,
     ) -> tasks.MBOperatorSpecification:
         potential = tasks.MBOperatorSpecification(
             (1,),
@@ -88,7 +100,7 @@ class GaussianTrap(SingleSpeciesSystem):
                 "potential": {
                     "td_name": "moving_gaussian",
                     "td_args": [-self.parameters.V0, self.parameters.x0, v, a],
-                }
+                },
             },
             "potential_coeff | 1 potential",
         )

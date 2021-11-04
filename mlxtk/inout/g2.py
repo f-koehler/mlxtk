@@ -20,7 +20,8 @@ def add_g2_to_hdf5(
 
 
 def read_g2_hdf5(
-    path: Union[str, Path], interior_path: str = "/g2"
+    path: Union[str, Path],
+    interior_path: str = "/g2",
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 

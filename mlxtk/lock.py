@@ -27,7 +27,9 @@ class LockFileExistsError(Exception):
 
     def __init__(self, path: Path, host: str, pid: int):
         message = "Lock file {} exists (locked by PID {} on host {})".format(
-            path, pid, host
+            path,
+            pid,
+            host,
         )
         super().__init__(message)
 

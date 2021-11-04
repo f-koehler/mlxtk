@@ -96,7 +96,7 @@ class Parameters:
             {
                 "values": {name: map_numpy_types(self[name]) for name in self.names},
                 "docs": {name: self.docs[name] for name in self.names},
-            }
+            },
         )
 
     def set_values(self, values: Iterable[Any]):
@@ -114,7 +114,9 @@ class Parameters:
             self[name] = other[name]
 
     def has_same_common_parameters(
-        self, other, common_parameters: List[str] = None
+        self,
+        other,
+        common_parameters: List[str] = None,
     ) -> bool:
         if common_parameters:
             names = common_parameters
@@ -130,7 +132,9 @@ class Parameters:
         parameter = Parameters()
         for name in self.names:
             parameter.add_parameter(
-                name, copy.deepcopy(self.__getitem__(name)), self.docs[name]
+                name,
+                copy.deepcopy(self.__getitem__(name)),
+                self.docs[name],
             )
         return parameter
 
@@ -165,10 +169,12 @@ class Parameters:
             + "\n".join(
                 [
                     "  {}:\n    value: {}\n    doc:   {}".format(
-                        name, self.__getitem__(name), self.docs[name]
+                        name,
+                        self.__getitem__(name),
+                        self.docs[name],
                     )
                     for name in self.names
-                ]
+                ],
             )
             + "\n}"
         )

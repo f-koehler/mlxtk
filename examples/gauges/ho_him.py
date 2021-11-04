@@ -23,12 +23,19 @@ def create_simulation(p):
     sim += mlxtk.tasks.CreateOperator("hamiltonian_1b", system.get_hamiltonian_1b())
     sim += mlxtk.tasks.CreateMBOperator("hamiltonian", system.get_hamiltonian())
     sim += mlxtk.tasks.CreateMBOperator(
-        "hamiltonian_quenched", system_quenched.get_hamiltonian()
+        "hamiltonian_quenched",
+        system_quenched.get_hamiltonian(),
     )
 
     sim += mlxtk.tasks.MCTDHBCreateWaveFunction("initial", "hamiltonian_1b", p.N, p.m)
     sim += mlxtk.tasks.Relax(
-        "rlx", "initial", "hamiltonian", tfinal=1000.0, dt=0.01, psi=True, gauge=p.gauge
+        "rlx",
+        "initial",
+        "hamiltonian",
+        tfinal=1000.0,
+        dt=0.01,
+        psi=True,
+        gauge=p.gauge,
     )
     # sim += mlxtk.tasks.ImprovedRelax(
     #     "imprlx",

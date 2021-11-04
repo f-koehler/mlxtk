@@ -145,7 +145,10 @@ class DefaultNatpopAnalysis:
 
                 for input_file in input_files:
                     time, data = read_natpop_hdf5(
-                        input_file, "natpop", node=self.node, dof=self.dof
+                        input_file,
+                        "natpop",
+                        node=self.node,
+                        dof=self.dof,
                     )
                     del time
 
@@ -156,24 +159,32 @@ class DefaultNatpopAnalysis:
                     max_last_orbital.append(data[:, -1].max())
 
                 dset = fptr.create_dataset(
-                    "max_depletion", (len(max_depletion),), dtype=numpy.float64
+                    "max_depletion",
+                    (len(max_depletion),),
+                    dtype=numpy.float64,
                 )
                 dset[:] = max_depletion
 
                 dset = fptr.create_dataset(
-                    "max_entropy", (len(max_entropy),), dtype=numpy.float64
+                    "max_entropy",
+                    (len(max_entropy),),
+                    dtype=numpy.float64,
                 )
                 dset[:] = max_entropy
 
                 dset = fptr.create_dataset(
-                    "max_last_orbital", (len(max_last_orbital),), dtype=numpy.float64
+                    "max_last_orbital",
+                    (len(max_last_orbital),),
+                    dtype=numpy.float64,
                 )
                 dset[:] = max_last_orbital
 
                 grp = fptr.create_group("variables")
                 for var in variables:
                     dset = grp.create_dataset(
-                        var, values[var].shape, dtype=values[var].dtype
+                        var,
+                        values[var].shape,
+                        dtype=values[var].dtype,
                     )
                     dset[:] = values[var]
 
@@ -187,7 +198,10 @@ class DefaultNatpopAnalysis:
 
         yield {
             "name": "{}:natpop:{}_{}:{}:default_analysis".format(
-                self.propagation, self.node, self.dof, scan_name_sanitized
+                self.propagation,
+                self.node,
+                self.dof,
+                scan_name_sanitized,
             ),
             "file_dep": [pickle_path] + input_files,
             "targets": [self.output_file],
@@ -210,7 +224,10 @@ def collect_max_depletion(
 
     def fetch(index, path, parameters):
         _, data = read_natpop_hdf5(
-            path / propagation_name / "propagate.h5", "natpop", node=node, dof=dof
+            path / propagation_name / "propagate.h5",
+            "natpop",
+            node=node,
+            dof=dof,
         )
         return (1 - data[:, 0]).max()
 
@@ -248,7 +265,10 @@ def plot_max_depletion(
 
 
 def scan_natpop_slideshow(
-    scan_dir: Union[Path, str], node: int = 1, dof: int = 1, duration: float = 20.0
+    scan_dir: Union[Path, str],
+    node: int = 1,
+    dof: int = 1,
+    duration: float = 20.0,
 ):
     scan_dir = make_path(scan_dir)
     yield create_slideshow(
@@ -259,7 +279,7 @@ def scan_natpop_slideshow(
             ],
         ),
         (Path("videos") / (f"natpop_{node}_{dof}") / scan_dir.name).with_suffix(
-            scan_dir.suffix + ".mp4"
+            scan_dir.suffix + ".mp4",
         ),
         duration,
     )

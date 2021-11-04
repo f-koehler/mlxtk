@@ -32,7 +32,7 @@ class TwoGaussianTraps(BoseBoseSystem):
                 ("x0L", -3.5, "center of the left Gaussian well"),
                 ("x0R", 3.5, "center of the right Gaussian well"),
                 ("alpha", 1.0, "well asymmetry"),
-            ]
+            ],
         )
 
     def get_potential_operator_left_1b_A(self) -> OperatorSpecification:
@@ -41,7 +41,9 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_left_coeff_A": -self.parameters.V0L},
             {
                 "potential_left_A": gaussian(
-                    self.grid.get_x(), self.parameters.x0L, 1.0
+                    self.grid.get_x(),
+                    self.parameters.x0L,
+                    1.0,
                 ),
             },
             "potential_left_coeff_A | 1 potential_left_A",
@@ -53,7 +55,9 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_left_coeff_A": -self.parameters.V0L},
             {
                 "potential_left_A": gaussian(
-                    self.grid.get_x(), self.parameters.x0L, 1.0
+                    self.grid.get_x(),
+                    self.parameters.x0L,
+                    1.0,
                 ),
             },
             "potential_left_coeff_A | 1 potential_left_A",
@@ -65,7 +69,9 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_right_coeff_A": -self.parameters.V0R},
             {
                 "potential_right_A": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
+                    self.grid.get_x(),
+                    self.parameters.x0R,
+                    self.parameters.alpha,
                 ),
             },
             "potential_right_coeff_A | 1 potential_right_A",
@@ -77,7 +83,9 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_right_coeff_B": -self.parameters.V0R},
             {
                 "potential_right_B": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
+                    self.grid.get_x(),
+                    self.parameters.x0R,
+                    self.parameters.alpha,
                 ),
             },
             "potential_right_coeff_B | 1 potential_right_B",
@@ -120,8 +128,10 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_right_coeff_A": -self.parameters.V0R},
             {
                 "potential_right_A": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
-                )
+                    self.grid.get_x(),
+                    self.parameters.x0R,
+                    self.parameters.alpha,
+                ),
             },
             "potential_right_coeff_A | 1 potential_right_A",
         )
@@ -133,8 +143,10 @@ class TwoGaussianTraps(BoseBoseSystem):
             {"potential_right_coeff_B": -self.parameters.V0R},
             {
                 "potential_right_B": gaussian(
-                    self.grid.get_x(), self.parameters.x0R, self.parameters.alpha
-                )
+                    self.grid.get_x(),
+                    self.parameters.x0R,
+                    self.parameters.alpha,
+                ),
             },
             "potential_right_coeff_B | 2 potential_right_B",
         )

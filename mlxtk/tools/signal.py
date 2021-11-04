@@ -17,13 +17,16 @@ def find_relative_maxima(
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if interpolation is not None:
         interp = scipy.interpolate.interp1d(
-            x, y, kind=interpolation["order"], bounds_error=True
+            x,
+            y,
+            kind=interpolation["order"],
+            bounds_error=True,
         )
         x = numpy.linspace(x.min(), x.max(), interpolation["points"])
         y = interp(x)
 
     peak_args = numpy.sort(
-        numpy.array(scipy.signal.argrelmax(y, order=order)).flatten()
+        numpy.array(scipy.signal.argrelmax(y, order=order)).flatten(),
     )
     if threshold is not None:
         peak_args = numpy.array([arg for arg in peak_args if y[arg] >= threshold])
@@ -50,13 +53,16 @@ def find_relative_minima(
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     if interpolation is not None:
         interp = scipy.interpolate.interp1d(
-            x, y, kind=interpolation["order"], bounds_error=True
+            x,
+            y,
+            kind=interpolation["order"],
+            bounds_error=True,
         )
         x = numpy.linspace(x.min(), x.max(), interpolation["points"])
         y = interp(x)
 
     peak_args = numpy.sort(
-        numpy.array(scipy.signal.argrelmin(y, order=order)).flatten()
+        numpy.array(scipy.signal.argrelmin(y, order=order)).flatten(),
     )
 
     if not len(peak_args):
@@ -94,7 +100,9 @@ def find_sign_changes(x: numpy.ndarray) -> numpy.ndarray:
 
 
 def fourier_transform(
-    t: numpy.ndarray, signal: numpy.ndarray, only_positive: bool = True
+    t: numpy.ndarray,
+    signal: numpy.ndarray,
+    only_positive: bool = True,
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     amplitudes = numpy.abs(scipy.fftpack.fftshift(scipy.fftpack.fft(signal)))
     amplitudes = amplitudes / amplitudes.max()

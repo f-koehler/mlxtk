@@ -17,7 +17,11 @@ class Simulation(base.SimulationBase):
         self.argparser_clean = self.subparsers.add_parser("clean")
         self.argparser_clean.set_defaults(subcommand=self.cmd_clean)
         self.argparser_clean.add_argument(
-            "-j", "--jobs", type=int, default=1, help="number of parallel workers"
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of parallel workers",
         )
 
         self.argparser_dry_run = self.subparsers.add_parser("dry-run")
@@ -30,10 +34,10 @@ class Simulation(base.SimulationBase):
         self.argparser_list.set_defaults(subcommand=self.cmd_list)
 
         self.argparser_propagation_status = self.subparsers.add_parser(
-            "propagation-status"
+            "propagation-status",
         )
         self.argparser_propagation_status.set_defaults(
-            subcommand=self.cmd_propagation_status
+            subcommand=self.cmd_propagation_status,
         )
         self.argparser_propagation_status.add_argument(
             "name",
@@ -53,7 +57,11 @@ class Simulation(base.SimulationBase):
         self.argparser_run = self.subparsers.add_parser("run")
         self.argparser_run.set_defaults(subcommand=self.cmd_run)
         self.argparser_run.add_argument(
-            "-j", "--jobs", type=int, default=1, help="number of parallel workers"
+            "-j",
+            "--jobs",
+            type=int,
+            default=1,
+            help="number of parallel workers",
         )
 
         self.argparser_task_info = self.subparsers.add_parser("task-info")

@@ -10,7 +10,7 @@ from mlxtk.util import make_path
 
 
 def read_dmat2_gridrep(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -20,7 +20,7 @@ def read_dmat2_gridrep(
 
 
 def read_dmat2_gridrep(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -30,10 +30,13 @@ def read_dmat2_gridrep(
 
 
 def read_dmat2_gridrep_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(
-        path, header=None, names=["time", "x1", "x2", "dmat"], delim_whitespace=True
+        path,
+        header=None,
+        names=["time", "x1", "x2", "dmat"],
+        delim_whitespace=True,
     )
 
     time = numpy.unique(df["time"].values)
@@ -44,7 +47,8 @@ def read_dmat2_gridrep_ascii(
 
 
 def read_dmat2_gridrep_hdf5(
-    path: Union[str, Path], interior_path: str = "/"
+    path: Union[str, Path],
+    interior_path: str = "/",
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -56,7 +60,8 @@ def read_dmat2_gridrep_hdf5(
 
 
 def read_dmat2_spfrep_hdf5(
-    path: Union[str, Path], interior_path: str = "/"
+    path: Union[str, Path],
+    interior_path: str = "/",
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -80,7 +85,7 @@ def add_dmat2_gridrep_to_hdf5(
 
 
 def read_dmat2_spfrep_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     df = pandas.read_csv(
         path,
@@ -103,13 +108,23 @@ def read_dmat2_spfrep_ascii(
 
 
 def add_dmat2_spfrep_to_hdf5(
-    fptr: [h5py.File, h5py.Group], time: numpy.ndarray, dmat2: numpy.ndarray
+    fptr: [h5py.File, h5py.Group],
+    time: numpy.ndarray,
+    dmat2: numpy.ndarray,
 ):
     group = fptr.create_group("dmat2_spfrep")
     group.create_dataset("time", shape=time.shape, dtype=time.dtype)[:] = time
     group.create_dataset("real", shape=dmat2.shape, dtype=dmat2.real.dtype)[
-        :, :, :, :, :
+        :,
+        :,
+        :,
+        :,
+        :,
     ] = dmat2.real
     group.create_dataset("imag", shape=dmat2.shape, dtype=dmat2.imag.dtype)[
-        :, :, :, :, :
+        :,
+        :,
+        :,
+        :,
+        :,
     ] = dmat2.imag

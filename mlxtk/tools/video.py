@@ -13,7 +13,9 @@ LOGGER = get_logger(__name__)
 
 
 def create_slideshow(
-    files: List[Union[Path, str]], output_file: Union[Path, str], duration: float = 30.0
+    files: List[Union[Path, str]],
+    output_file: Union[Path, str],
+    duration: float = 30.0,
 ):
     if not len(files):
         LOGGER.error("No image files specified! Nothing to do.")
@@ -28,7 +30,8 @@ def create_slideshow(
 
             for i, file in enumerate(files):
                 os.symlink(
-                    file, ("{:0" + str(max_number_len) + "d}{}").format(i, file.suffix)
+                    file,
+                    ("{:0" + str(max_number_len) + "d}{}").format(i, file.suffix),
                 )
 
             cmd = [

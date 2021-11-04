@@ -27,9 +27,9 @@ class NumberStateAnalysisStatic(Task):
             kwargs.get(
                 "name",
                 self.wave_function.with_name(
-                    self.wave_function.stem + "_" + self.basis.stem
+                    self.wave_function.stem + "_" + self.basis.stem,
                 ),
-            )
+            ),
         ).with_suffix(".fixed_ns.h5")
 
         self.name = str(self.result.with_suffix(""))
@@ -68,12 +68,19 @@ class NumberStateAnalysisStatic(Task):
                     times, real, imag = inout.read_fixed_ns_ascii("result")
                     wfn = load_wave_function("basis")
                     inout.write_fixed_ns_hdf5(
-                        "result.h5", times, real, imag, wfn._tape[1], wfn._tape[3]
+                        "result.h5",
+                        times,
+                        real,
+                        imag,
+                        wfn._tape[1],
+                        wfn._tape[3],
                     )
 
                     with h5py.File("result.h5", "a") as fptr:
                         dset = fptr["fixed_ns"].create_dataset(
-                            "total_magnitude", shape=(1,), dtype=numpy.float64
+                            "total_magnitude",
+                            shape=(1,),
+                            dtype=numpy.float64,
                         )
                         dset[:] = numpy.sum((real ** 2) + (imag ** 2))
 
@@ -107,7 +114,7 @@ class NumberStateAnalysis(Task):
             kwargs.get(
                 "name",
                 self.psi.with_name(self.psi.stem + "_" + self.basis.stem),
-            )
+            ),
         ).with_suffix(".fixed_ns.h5")
 
         self.name = str(self.result.with_suffix(""))
@@ -150,12 +157,19 @@ class NumberStateAnalysis(Task):
                     times, real, imag = inout.read_fixed_ns_ascii("result")
                     wfn = load_wave_function("basis")
                     inout.write_fixed_ns_hdf5(
-                        "result.h5", times, real, imag, wfn._tape[1], wfn._tape[3]
+                        "result.h5",
+                        times,
+                        real,
+                        imag,
+                        wfn._tape[1],
+                        wfn._tape[3],
                     )
 
                     with h5py.File("result.h5", "a") as fptr:
                         dset = fptr["fixed_ns"].create_dataset(
-                            "total_magnitude", shape=times.shape, dtype=numpy.float64
+                            "total_magnitude",
+                            shape=times.shape,
+                            dtype=numpy.float64,
                         )
                         dset[:] = numpy.sum((real ** 2) + (imag ** 2), axis=1)
 

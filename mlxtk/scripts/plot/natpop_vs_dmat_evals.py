@@ -11,7 +11,10 @@ from mlxtk.plot import add_argparse_2d_args, apply_2d_args
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path_natpop", nargs="?", default="natpop", help="path to the natpop file"
+        "path_natpop",
+        nargs="?",
+        default="natpop",
+        help="path to the natpop file",
     )
     parser.add_argument(
         "path_evals",

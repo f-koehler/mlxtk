@@ -27,7 +27,8 @@ def collect_final_energy(
 
     def fetch(index, path, parameters):
         _, _, energy, _ = read_output_hdf5(
-            path / propagation_name / "propagate.h5", "output"
+            path / propagation_name / "propagate.h5",
+            "output",
         )
         return energy[-1]
 
@@ -59,7 +60,8 @@ def scan_plot_energy(
         del parameters
 
         time, _, energy, _ = read_output_hdf5(
-            scan_dir / "by_index" / str(index) / propagation / "propagate.h5", "output"
+            scan_dir / "by_index" / str(index) / propagation / "propagate.h5",
+            "output",
         )
 
         fig, axis = plt.subplots(1, 1)

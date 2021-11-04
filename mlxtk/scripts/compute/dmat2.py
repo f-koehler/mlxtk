@@ -24,10 +24,17 @@ def main():
     parser.add_argument("--node", type=int, default=0, help="node to use")
     parser.add_argument("--dof1", type=int, default=1, help="degree of freedom to use")
     parser.add_argument(
-        "--dof2", type=int, default=1, help="second degree of freedom to use"
+        "--dof2",
+        type=int,
+        default=1,
+        help="second degree of freedom to use",
     )
     parser.add_argument(
-        "-o", "--output", type=Path, default=Path.cwd() / "dmat2.h5", help="output file"
+        "-o",
+        "--output",
+        type=Path,
+        default=Path.cwd() / "dmat2.h5",
+        help="output file",
     )
     parser.add_argument("--slice", type=str)
 
@@ -51,16 +58,20 @@ def main():
 
     group_rep = parser.add_mutually_exclusive_group()
     group_rep.add_argument(
-        "--spfrep", action="store_true", help="use spf representation"
+        "--spfrep",
+        action="store_true",
+        help="use spf representation",
     )
     group_rep.add_argument(
-        "--gridrep", action="store_true", help="use grid representation"
+        "--gridrep",
+        action="store_true",
+        help="use grid representation",
     )
 
     args = parser.parse_args()
     if args.only_eigenvalues and not (args.diagonalize or args.only_diagonalize):
         parser.error(
-            "--only-eigenvalues only applies when --diagonalize or --only-diagonalize is specified"
+            "--only-eigenvalues only applies when --diagonalize or --only-diagonalize is specified",
         )
 
     output = args.output.resolve()
@@ -135,14 +146,14 @@ def main():
                         dmat2.add_dmat2_gridrep_to_hdf5(
                             fptr,
                             dmat2.read_dmat2_gridrep_ascii(
-                                f"dmat2_dof{args.dof1}_dof{args.dof2}_grid"
+                                f"dmat2_dof{args.dof1}_dof{args.dof2}_grid",
                             ),
                         )
                     else:
                         dmat2.add_dmat2_spfrep_to_hdf5(
                             fptr,
                             *dmat2.read_dmat2_spfrep_ascii(
-                                f"dmat2_dof{args.dof1}_dof{args.dof2}_spf"
+                                f"dmat2_dof{args.dof1}_dof{args.dof2}_spf",
                             ),
                         )
 

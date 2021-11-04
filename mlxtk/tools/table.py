@@ -61,13 +61,15 @@ def make_table(
             + [
                 None,
             ]
-            * (length - len(arg))
+            * (length - len(arg)),
         )
 
     return numpy.array(arrays).T.tolist()
 
 
 def format_simple_table(
-    table: List[List[Any]], headers: List[str], formatter="latex_booktabs"
+    table: List[List[Any]],
+    headers: List[str],
+    formatter="latex_booktabs",
 ) -> str:
     return tabulate.tabulate(table, headers, tablefmt=formatter)

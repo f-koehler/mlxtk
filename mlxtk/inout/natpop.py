@@ -11,9 +11,12 @@ from mlxtk.inout import tools
 
 
 def read_natpop(
-    path: str, node: int = 0, dof: int = 0
+    path: str,
+    node: int = 0,
+    dof: int = 0,
 ) -> Tuple[
-    numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]
+    numpy.ndarray,
+    Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]],
 ]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -23,9 +26,12 @@ def read_natpop(
 
 
 def read_natpop_ascii(
-    path: str, node: int = 0, dof: int = 0
+    path: str,
+    node: int = 0,
+    dof: int = 0,
 ) -> Tuple[
-    numpy.ndarray, Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]]
+    numpy.ndarray,
+    Union[Dict[int, numpy.ndarray], Dict[int, Dict[int, numpy.ndarray]]],
 ]:
     re_timestamp = re.compile(r"^#time:\s+(.+)\s+\[au\]$")
     re_weight_info = re.compile(r"^Natural\s+weights")
@@ -90,7 +96,7 @@ def read_natpop_ascii(
             # construct header for DataFrame
             header = (
                 " ".join(
-                    ["orbital_" + str(orbital) for orbital in range(0, num_orbitals)]
+                    ["orbital_" + str(orbital) for orbital in range(0, num_orbitals)],
                 )
                 + "\n"
             )
@@ -112,7 +118,10 @@ def read_natpop_ascii(
 
 
 def read_natpop_hdf5(
-    path: Union[str, Path], interior_path: str, node: int = None, dof: int = None
+    path: Union[str, Path],
+    interior_path: str,
+    node: int = None,
+    dof: int = None,
 ) -> Union[
     Tuple[numpy.ndarray, numpy.ndarray],
     Tuple[numpy.ndarray, Dict[str, Dict[str, numpy.ndarray]]],
@@ -145,5 +154,7 @@ def add_natpop_to_hdf5(
         grp = fptr.create_group("node_" + str(node))
         for dof in natpops[node]:
             grp.create_dataset(
-                "dof_" + str(dof), natpops[node][dof].shape, dtype=numpy.float64
+                "dof_" + str(dof),
+                natpops[node][dof].shape,
+                dtype=numpy.float64,
             )[:, :] = natpops[node][dof]

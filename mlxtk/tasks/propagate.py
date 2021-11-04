@@ -186,7 +186,7 @@ class Propagate(Task):
                 if self.path_pickle.exists():
                     with open(self.path_pickle, "rb") as fptr:
                         if pickle.load(fptr) != obj:
-                            self.logger.warn("propagation parameters changed")
+                            self.logger.warning("propagation parameters changed")
                             shutil.rmtree(path_temp)
                 else:
                     shutil.rmtree(path_temp)
@@ -270,7 +270,7 @@ class Propagate(Task):
                     if self.flags.get("gauge", "standard") == "diagonalization":
                         if not diag_gauge_oper:
                             raise ValueError(
-                                "no operator specified for diagonalization gauge"
+                                "no operator specified for diagonalization gauge",
                             )
                         copy_file(diag_gauge_oper, "gauge_oper")
                     cmd = ["qdtk_propagate.x"] + self.flag_list
@@ -302,14 +302,19 @@ class Propagate(Task):
                             if "gauge" in self.flags:
                                 if self.flags["gauge"] != "standard":
                                     time, error = numpy.loadtxt(
-                                        "constraint_error.txt", unpack=True
+                                        "constraint_error.txt",
+                                        unpack=True,
                                     )
                                     group = fptr.create_group("constraint_error")
                                     group.create_dataset(
-                                        "time", time.shape, dtype=time.dtype
+                                        "time",
+                                        time.shape,
+                                        dtype=time.dtype,
                                     )[:] = time
                                     group.create_dataset(
-                                        "error", error.shape, dtype=error.dtype
+                                        "error",
+                                        error.shape,
+                                        dtype=error.dtype,
                                     )[:] = error
 
                     shutil.move("result.h5", hdf5_file)

@@ -20,7 +20,7 @@ class HarmonicTrapHim(harmonic_trap.HarmonicTrap):
                     "strength of the harmonic interaction between the particles",
                 ),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
-            ]
+            ],
         )
 
     def get_interaction_operator(self) -> tasks.MBOperatorSpecification:

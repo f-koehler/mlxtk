@@ -12,7 +12,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("path_psi", nargs="?", help="path to psi file")
     parser.add_argument(
-        "path_norbs", nargs="?", help="path to file with natural orbitals"
+        "path_norbs",
+        nargs="?",
+        help="path to file with natural orbitals",
     )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()

@@ -9,7 +9,7 @@ from PySide2 import QtCore, QtUiTools, QtWidgets
 
 if os.environ["QT_API"] != "pyside2":
     raise RuntimeError(
-        'Please set the QT_API environment variable to "pyside2" for now.'
+        'Please set the QT_API environment variable to "pyside2" for now.',
     )
 
 

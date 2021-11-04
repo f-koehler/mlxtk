@@ -24,7 +24,11 @@ def main():
     parser.add_argument("--node", type=int, default=0, help="node to use")
     parser.add_argument("--dof", type=int, default=1, help="degree of freedom to use")
     parser.add_argument(
-        "-o", "--output", type=Path, default=Path.cwd() / "dmat.h5", help="output file"
+        "-o",
+        "--output",
+        type=Path,
+        default=Path.cwd() / "dmat.h5",
+        help="output file",
     )
     parser.add_argument("--slice", type=str)
 
@@ -48,16 +52,20 @@ def main():
 
     group_rep = parser.add_mutually_exclusive_group()
     group_rep.add_argument(
-        "--spfrep", action="store_true", help="use spf representation"
+        "--spfrep",
+        action="store_true",
+        help="use spf representation",
     )
     group_rep.add_argument(
-        "--gridrep", action="store_true", help="use grid representation"
+        "--gridrep",
+        action="store_true",
+        help="use grid representation",
     )
 
     args = parser.parse_args()
     if args.only_eigenvalues and not (args.diagonalize or args.only_diagonalize):
         parser.error(
-            "--only-eigenvalues only applies when --diagonalize or --only-diagonalize is specified"
+            "--only-eigenvalues only applies when --diagonalize or --only-diagonalize is specified",
         )
 
     output = args.output.resolve()
@@ -147,14 +155,14 @@ def main():
                             dmat.add_dmat_evecs_grid_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_grid_ascii(
-                                    f"evec_dmat_dof{args.dof}_grid"
+                                    f"evec_dmat_dof{args.dof}_grid",
                                 ),
                             )
                         else:
                             dmat.add_dmat_evecs_spf_to_hdf5(
                                 fptr,
                                 *dmat.read_dmat_evecs_spf_ascii(
-                                    f"evec_dmat_dof{args.dof}_spf"
+                                    f"evec_dmat_dof{args.dof}_spf",
                                 ),
                             )
 

@@ -21,16 +21,20 @@ if __name__ == "__main__":
     system = TwoGaussianTraps(parameters, grid)
 
     sim += tasks.CreateOperator(
-        "hamiltonian_1b_A.opr", system.get_hamiltonian_left_well_1b_A()
+        "hamiltonian_1b_A.opr",
+        system.get_hamiltonian_left_well_1b_A(),
     )
     sim += tasks.CreateOperator(
-        "hamiltonian_1b_B.opr", system.get_hamiltonian_right_well_1b_B()
+        "hamiltonian_1b_B.opr",
+        system.get_hamiltonian_right_well_1b_B(),
     )
     sim += tasks.CreateMBOperator(
-        "hamiltonian_relax.mb_opr", system.get_hamiltonian_left_right()
+        "hamiltonian_relax.mb_opr",
+        system.get_hamiltonian_left_right(),
     )
     sim += tasks.CreateMBOperator(
-        "hamiltonian.mb_opr", system.get_hamiltonian_colliding()
+        "hamiltonian.mb_opr",
+        system.get_hamiltonian_colliding(),
     )
     sim += tasks.CreateBoseBoseWaveFunction(
         "initial.wfn",

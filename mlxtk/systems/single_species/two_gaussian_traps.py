@@ -16,12 +16,14 @@ class TwoGaussianTraps(GaussianTrap):
                 ("x0R", 0.0, "center of the right Gaussian well"),
                 ("alpha", 1.0, "well asymmetry"),
                 ("g", 0.1, "strength of the contact interaction"),
-            ]
+            ],
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return self.create_gaussian_potential_operator_1b(
-            self.parameters.x0L, self.parameters.V0L, "potential_left"
+            self.parameters.x0L,
+            self.parameters.V0L,
+            "potential_left",
         ) + self.create_gaussian_potential_operator_1b(
             self.parameters.x0R,
             self.parameters.V0R,
@@ -31,7 +33,9 @@ class TwoGaussianTraps(GaussianTrap):
 
     def get_potential_operator(self) -> tasks.MBOperatorSpecification:
         return self.create_gaussian_potential_operator(
-            self.parameters.x0L, self.parameters.V0L, "potential_left"
+            self.parameters.x0L,
+            self.parameters.V0L,
+            "potential_left",
         ) + self.create_gaussian_potential_operator(
             self.parameters.x0R,
             self.parameters.V0R,
@@ -43,7 +47,9 @@ class TwoGaussianTraps(GaussianTrap):
         return (
             self.get_kinetic_operator_1b()
             + self.create_gaussian_potential_operator_1b(
-                self.parameters.x0L, self.parameters.V0L, "potential_left"
+                self.parameters.x0L,
+                self.parameters.V0L,
+                "potential_left",
             )
         )
 
@@ -51,7 +57,9 @@ class TwoGaussianTraps(GaussianTrap):
         return (
             self.get_kinetic_operator_1b()
             + self.create_gaussian_potential_operator_1b(
-                self.parameters.x0R, self.parameters.V0R, "potential_right"
+                self.parameters.x0R,
+                self.parameters.V0R,
+                "potential_right",
             )
         )
 
@@ -87,7 +95,9 @@ class TwoGaussianTraps(GaussianTrap):
         operator = (
             self.get_kinetic_operator()
             + self.create_gaussian_potential_operator(
-                self.parameters.x0L, self.parameters.V0L, "potential_left"
+                self.parameters.x0L,
+                self.parameters.V0L,
+                "potential_left",
             )
         )
 
@@ -100,7 +110,9 @@ class TwoGaussianTraps(GaussianTrap):
         operator = (
             self.get_kinetic_operator()
             + self.create_gaussian_potential_operator(
-                self.parameters.x0R, self.parameters.V0R, "potential_right"
+                self.parameters.x0R,
+                self.parameters.V0R,
+                "potential_right",
             )
         )
         if (self.parameters.N > 1) and (self.parameters.g != 0.0):
@@ -112,12 +124,18 @@ class TwoGaussianTraps(GaussianTrap):
         return (
             self.get_hamiltonian_left_well()
             + self.create_gaussian_potential_operator(
-                self.parameters.x0R, self.parameters.V0R, "potential_right"
+                self.parameters.x0R,
+                self.parameters.V0R,
+                "potential_right",
             )
         )
 
     def get_hamiltonian_colliding_wells(
-        self, vL: float = 1.0, aL: float = 0.0, vR: float = None, aR: float = None
+        self,
+        vL: float = 1.0,
+        aL: float = 0.0,
+        vR: float = None,
+        aR: float = None,
     ) -> tasks.MBOperatorSpecification:
         if vR is None:
             vR = -vL
@@ -133,7 +151,7 @@ class TwoGaussianTraps(GaussianTrap):
                 "potential_left": {
                     "td_name": "moving_gaussian",
                     "td_args": [-self.parameters.V0L, self.parameters.x0L, vL, aL],
-                }
+                },
             },
             "potential_left_coeff | 1 potential_left",
         )
@@ -146,7 +164,7 @@ class TwoGaussianTraps(GaussianTrap):
                 "potential_right": {
                     "td_name": "moving_gaussian",
                     "td_args": [-self.parameters.V0R, self.parameters.x0R, vR, aR],
-                }
+                },
             },
             "potential_right_coeff | 1 potential_right",
         )

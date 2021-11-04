@@ -9,7 +9,7 @@ from mlxtk.inout import tools
 
 
 def read_output(
-    path: Union[Path, str]
+    path: Union[Path, str],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     is_hdf5, path, interior_path = tools.is_hdf5_path(path)
     if is_hdf5:
@@ -19,7 +19,7 @@ def read_output(
 
 
 def read_output_ascii(
-    path: Union[Path, str]
+    path: Union[Path, str],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read an output file (raw ASCII format)
 
@@ -33,7 +33,9 @@ def read_output_ascii(
           maximum SPF overlap of the wave function at all times.
     """
     dataFrame = pandas.read_csv(
-        str(path), sep=r"\s+", names=["time", "norm", "energy", "overlap"]
+        str(path),
+        sep=r"\s+",
+        names=["time", "norm", "energy", "overlap"],
     )
     return (
         dataFrame["time"].values,
@@ -44,7 +46,8 @@ def read_output_ascii(
 
 
 def read_output_hdf5(
-    path: Union[Path, str], interior_path: str = "/"
+    path: Union[Path, str],
+    interior_path: str = "/",
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (

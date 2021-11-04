@@ -15,7 +15,7 @@ class HarmonicTrap(SingleSpeciesSystem):
                 ("g", 0.1, "strength of the contact interaction between the particles"),
                 ("omega", 1.0, "angular frequency of the harmonic trap"),
                 ("x0", 0.0, "center of the harmonic trap"),
-            ]
+            ],
         )
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:

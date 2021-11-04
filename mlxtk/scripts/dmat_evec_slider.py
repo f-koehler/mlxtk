@@ -25,28 +25,36 @@ class DmatEvecSlider(QtWidgets.QWidget):
         self.window = load_ui("dmat_evec_slider.ui")  # type: QtWidgets.QMainWindow
 
         self.plot = self.window.findChild(
-            MatplotlibWidget, "plot"
+            MatplotlibWidget,
+            "plot",
         )  # type: MatplotlibWidget
         self.slider_time = self.window.findChild(
-            QtWidgets.QSlider, "slider_time"
+            QtWidgets.QSlider,
+            "slider_time",
         )  # type: QtWidgets.QSlider
         self.spin_time = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_time"
+            QtWidgets.QSpinBox,
+            "spin_time",
         )  # type: QtWidgets.QSpinBox
         self.label_time = self.window.findChild(
-            QtWidgets.QLabel, "label_time"
+            QtWidgets.QLabel,
+            "label_time",
         )  # type: QtWidgets.QLabel
         self.spin_index = self.window.findChild(
-            QtWidgets.QSpinBox, "spin_index"
+            QtWidgets.QSpinBox,
+            "spin_index",
         )  # type: QtWidgets.QSpinBox
         self.check_real = self.window.findChild(
-            QtWidgets.QCheckBox, "check_real"
+            QtWidgets.QCheckBox,
+            "check_real",
         )  # type: QtWidgets.QCheckBox
         self.check_imag = self.window.findChild(
-            QtWidgets.QCheckBox, "check_imag"
+            QtWidgets.QCheckBox,
+            "check_imag",
         )  # type: QtWidgets.QCheckBox
         self.check_abs = self.window.findChild(
-            QtWidgets.QCheckBox, "check_absolute"
+            QtWidgets.QCheckBox,
+            "check_absolute",
         )  # type: QtWidgets.QCheckBox
 
         self.axes = self.plot.figure.subplots(1, 1)
@@ -91,13 +99,16 @@ class DmatEvecSlider(QtWidgets.QWidget):
             self.line_abs = None
 
         self.line_abs = self.axes.plot(
-            self.grid, numpy.abs(self.evecs[self.index, self.time_index])
+            self.grid,
+            numpy.abs(self.evecs[self.index, self.time_index]),
         )[0]
         self.line_real = self.axes.plot(
-            self.grid, numpy.real(self.evecs[self.index, self.time_index])
+            self.grid,
+            numpy.real(self.evecs[self.index, self.time_index]),
         )[0]
         self.line_imag = self.axes.plot(
-            self.grid, numpy.imag(self.evecs[self.index, self.time_index])
+            self.grid,
+            numpy.imag(self.evecs[self.index, self.time_index]),
         )[0]
 
         self.line_abs.set_visible(self.check_abs.isChecked())

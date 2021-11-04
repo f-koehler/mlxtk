@@ -41,7 +41,12 @@ def plot_gpop(
         )
     else:
         ret = ax.pcolormesh(
-            X, Y, density, cmap="gnuplot", rasterized=True, shading=shading
+            X,
+            Y,
+            density,
+            cmap="gnuplot",
+            rasterized=True,
+            shading=shading,
         )
 
     ax.set_xlabel("$t$")

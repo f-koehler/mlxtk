@@ -66,7 +66,8 @@ def collect_values(
 
     yield {
         "name": "{}:collect_values:{}".format(
-            str(scan_dir.name), str(output_file.with_suffix(""))
+            str(scan_dir.name),
+            str(output_file.with_suffix("")),
         )
         .replace("=", "_")
         .replace("/", "_"),

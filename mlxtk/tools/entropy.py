@@ -8,7 +8,8 @@ from mlxtk.log import get_logger
 
 
 def compute_entropy(
-    natpop: numpy.ndarray, normalize: bool = False
+    natpop: numpy.ndarray,
+    normalize: bool = False,
 ) -> Union[numpy.ndarray, numpy.float64]:
     """Compute the Boltzmann entropy from natural populations.
 

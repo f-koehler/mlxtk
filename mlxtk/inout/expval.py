@@ -30,7 +30,9 @@ def read_expval_ascii(path: Union[Path, str]) -> Tuple[numpy.ndarray, numpy.ndar
 
 
 def read_expval_hdf5(
-    path: Union[Path, str], interior_path: str = "/", xname: str = "time"
+    path: Union[Path, str],
+    interior_path: str = "/",
+    xname: str = "time",
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -40,7 +42,10 @@ def read_expval_hdf5(
 
 
 def write_expval_hdf5(
-    path: Union[Path, str], x: numpy.ndarray, values: numpy.ndarray, xname: str = "time"
+    path: Union[Path, str],
+    x: numpy.ndarray,
+    values: numpy.ndarray,
+    xname: str = "time",
 ):
     with h5py.File(path, "w") as fp:
         dset = fp.create_dataset(xname, x.shape, dtype=numpy.float64)
@@ -54,7 +59,8 @@ def write_expval_hdf5(
 
 
 def write_expval_ascii(
-    path: Union[Path, str], data: Tuple[numpy.ndarray, numpy.ndarray]
+    path: Union[Path, str],
+    data: Tuple[numpy.ndarray, numpy.ndarray],
 ):
     pandas.DataFrame(
         numpy.column_stack((data[0], data[1].real, data[1].imag)),

@@ -25,7 +25,8 @@ class BosonicSQR(ABC):
                 "correlator_annihilator": self.grid.get().get_annihilation_operator(),
             },
             "correlator_coeff | {} correlator_creator | {} correlator_annihilator".format(
-                site_a, site_b
+                site_a,
+                site_b,
             ),
         )
 
@@ -49,26 +50,30 @@ class BosonicSQR(ABC):
         )
 
     def get_site_occupation_operator_squared(
-        self, site_index: int
+        self,
+        site_index: int,
     ) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"site_occupation_squared_coeff": 1.0},
             {"site_occupation_squared": self.grid.get_x() ** 2},
             "site_occupation_squared_coeff | {} site_occupation_squared".format(
-                site_index + 1
+                site_index + 1,
             ),
         )
 
     def get_site_occupation_pair_operator(
-        self, site_a: int, site_b: int
+        self,
+        site_a: int,
+        site_b: int,
     ) -> OperatorSpecification:
         return OperatorSpecification(
             tuple(self.grid for i in range(self.parameters.sites)),
             {"occupation_pair_coeff": 1.0},
             {"site_occupation": self.grid.get_x()},
             "occupation_pair_coeff | {} site_occupation | {} site_occupation".format(
-                site_a, site_b
+                site_a,
+                site_b,
             ),
         )
 
@@ -80,8 +85,9 @@ class BosonicSQR(ABC):
             for j in range(i):
                 table.append(
                     "penalty_coeff_2_lambda | {} penalty_n | {} penalty_n".format(
-                        i + 1, j + 1
-                    )
+                        i + 1,
+                        j + 1,
+                    ),
                 )
 
         return OperatorSpecification(
@@ -101,7 +107,9 @@ class BosonicSQR(ABC):
         )
 
     def get_efficient_penalty_term(
-        self, gamma: float = 10.0, zeta: float = 0.0625
+        self,
+        gamma: float = 10.0,
+        zeta: float = 0.0625,
     ) -> OperatorSpecification:
         N = self.parameters.N
         prefactor_1 = gamma / (zeta ** 2) * numpy.exp(-zeta * N)

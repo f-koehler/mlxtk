@@ -106,18 +106,24 @@ class CreateBoseBoseWaveFunction(Task):
 
             with h5py.File(self.path_basis_A, "w") as fptr:
                 fptr.create_dataset(
-                    "energies", (self.num_spfs_A,), dtype=numpy.float64
+                    "energies",
+                    (self.num_spfs_A,),
+                    dtype=numpy.float64,
                 )[:] = energies_A
                 fptr.create_dataset("spfs", spfs_arr_A.shape, dtype=numpy.complex128)[
-                    :, :
+                    :,
+                    :,
                 ] = spfs_arr_A
 
             with h5py.File(self.path_basis_B, "w") as fptr:
                 fptr.create_dataset(
-                    "energies", (self.num_spfs_B,), dtype=numpy.float64
+                    "energies",
+                    (self.num_spfs_B,),
+                    dtype=numpy.float64,
                 )[:] = energies_B
                 fptr.create_dataset("spfs", spfs_arr_B.shape, dtype=numpy.complex128)[
-                    :, :
+                    :,
+                    :,
                 ] = spfs_arr_B
 
             n_A = matrix_A.shape[0]
@@ -157,7 +163,12 @@ class CreateBoseBoseWaveFunction(Task):
 
             wfn = WaveFunction(tape=tape)
             wfn.init_coef_multi_spec(
-                2, [self.ns_A, self.ns_B], [spfs_A, spfs_B], 1e-15, 1e-15, full_spf=True
+                2,
+                [self.ns_A, self.ns_B],
+                [spfs_A, spfs_B],
+                1e-15,
+                1e-15,
+                full_spf=True,
             )
             save_wave_function(self.path, wfn)
 

@@ -28,7 +28,10 @@ def main():
         help="wave function file containing the wave function to analyse",
     )
     parser.add_argument(
-        "-o", "--output", type=Path, help="name of the output file (optional)"
+        "-o",
+        "--output",
+        type=Path,
+        help="name of the output file (optional)",
     )
     args = parser.parse_args()
 
@@ -68,7 +71,12 @@ def main():
             times, real, imag = inout.read_fixed_ns_ascii("result")
             wfn = load_wave_function("basis")
             inout.write_fixed_ns_hdf5(
-                "result.h5", times, real, imag, wfn._tape[1], wfn._tape[3]
+                "result.h5",
+                times,
+                real,
+                imag,
+                wfn._tape[1],
+                wfn._tape[3],
             )
             LOGGER.info("copy result")
             shutil.copy2("result.h5", output)

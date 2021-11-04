@@ -26,10 +26,12 @@ class PlotSlider(QtWidgets.QWidget):
         self.window: QtWidgets.QMainWindow = load_ui("plot_slider.ui")
         self.plot: MatplotlibWidget = self.window.findChild(MatplotlibWidget, "plot")
         self.slider: QtWidgets.QSlider = self.window.findChild(
-            QtWidgets.QSlider, "slider"
+            QtWidgets.QSlider,
+            "slider",
         )
         self.spin: QtWidgets.QSpinBox = self.window.findChild(
-            QtWidgets.QSpinBox, "spin"
+            QtWidgets.QSpinBox,
+            "spin",
         )
         self.label: QtWidgets.QLabel = self.window.findChild(QtWidgets.QLabel, "label")
 

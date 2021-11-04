@@ -15,7 +15,8 @@ assert List
 
 
 def read_gpop(
-    path: str, dof: Optional[int] = None
+    path: str,
+    dof: Optional[int] = None,
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     """Read the one-body densities from a file.
 
@@ -36,7 +37,8 @@ def read_gpop(
 
 
 def read_gpop_ascii(
-    path: str, dof: Optional[int] = None
+    path: str,
+    dof: Optional[int] = None,
 ) -> Union[
     Tuple[numpy.ndarray, numpy.ndarray],
     Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
@@ -113,7 +115,9 @@ def read_gpop_ascii(
 
 
 def read_gpop_hdf5(
-    path: Union[Path, str], interior_path: str, dof: Optional[int] = None
+    path: Union[Path, str],
+    interior_path: str,
+    dof: Optional[int] = None,
 ) -> Union[
     Tuple[numpy.ndarray, Dict[int, numpy.ndarray], Dict[int, numpy.ndarray]],
     Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray],
@@ -163,5 +167,6 @@ def add_gpop_to_hdf5(
         ]
 
         grp.create_dataset("density", densities[dof].shape, dtype=numpy.float64)[
-            :, :
+            :,
+            :,
         ] = densities[dof]

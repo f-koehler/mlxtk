@@ -22,7 +22,8 @@ def main():
     num_coeffs = int(binom(N + m - 1, N))
 
     only_spfs = numpy.zeros(
-        shape=(num_frames, frames.shape[1] - num_coeffs), dtype=frames.dtype
+        shape=(num_frames, frames.shape[1] - num_coeffs),
+        dtype=frames.dtype,
     )
     for i, _ in enumerate(times):
         only_spfs[i] = frames[i][num_coeffs:]
@@ -31,7 +32,9 @@ def main():
 
     with h5py.File(args.output, "w") as fptr:
         fptr.create_dataset("spfs", shape=only_spfs.shape, dtype=only_spfs.dtype)[
-            :, :, :
+            :,
+            :,
+            :,
         ] = only_spfs
 
 

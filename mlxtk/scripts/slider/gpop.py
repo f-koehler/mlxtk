@@ -58,11 +58,16 @@ class Gui(PlotSlider):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "path", nargs="?", default="propagate.h5/gpop", help="path to the gpop file"
+        "path",
+        nargs="?",
+        default="propagate.h5/gpop",
+        help="path to the gpop file",
     )
     parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
     parser.add_argument(
-        "--momentum", action="store_true", help="transform to momentum space"
+        "--momentum",
+        action="store_true",
+        help="transform to momentum space",
     )
     plot.add_argparse_2d_args(parser)
     args = parser.parse_args()

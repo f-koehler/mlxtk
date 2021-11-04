@@ -44,7 +44,7 @@ def read_spfs(path: str) -> Tuple[numpy.ndarray, numpy.ndarray]:
 
 
 def read_psi_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = str(path)
 
@@ -59,7 +59,7 @@ def read_psi_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        f"Error extracting time point from label: {line}"
+                        f"Error extracting time point from label: {line}",
                     )
                 time = float(m.group(1))
                 times.append(time)
@@ -84,13 +84,15 @@ def read_psi_ascii(
         numpy.array(tape, dtype=numpy.int64),
         numpy.array(times),
         numpy.array(
-            [numpy.array(psi).transpose() for psi in psis], dtype=numpy.complex128
+            [numpy.array(psi).transpose() for psi in psis],
+            dtype=numpy.complex128,
         ),
     )
 
 
 def read_psi_frame_ascii(
-    path: Union[str, Path], index: int
+    path: Union[str, Path],
+    index: int,
 ) -> Tuple[numpy.ndarray, float, numpy.ndarray]:
     path = str(path)
 
@@ -106,7 +108,7 @@ def read_psi_frame_ascii(
                 m = RE_TIME.match(fhandle.readline())
                 if not m:
                     raise RuntimeError(
-                        f"Error extracting time point from label: {line}"
+                        f"Error extracting time point from label: {line}",
                     )
                 time = float(m.group(1))
                 times.append(time)
@@ -149,17 +151,26 @@ def write_psi_hdf5(path, data):
     tape, time, psis = data
     with h5py.File(path, "w") as fptr:
         dset = fptr.create_dataset(
-            "tape", tape.shape, dtype=numpy.int64, compression="gzip"
+            "tape",
+            tape.shape,
+            dtype=numpy.int64,
+            compression="gzip",
         )
         dset[:] = tape
 
         dset = fptr.create_dataset(
-            "time", time.shape, dtype=numpy.float64, compression="gzip"
+            "time",
+            time.shape,
+            dtype=numpy.float64,
+            compression="gzip",
         )
         dset[:] = time
 
         dset = fptr.create_dataset(
-            "psis", psis.shape, dtype=numpy.complex128, compression="gzip"
+            "psis",
+            psis.shape,
+            dtype=numpy.complex128,
+            compression="gzip",
         )
         dset[:, :] = psis[:, :]
 

@@ -13,14 +13,14 @@ LOGGER = get_logger(__name__)
 
 
 def read_eigenbasis_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
     path_energies = path / "eigenenergies"
     path_vectors = path / "eigenvectors"
 
     regex_energy = re.compile(
-        r"^\s+\d+\s+\(([+-]?\d+\.\d+(?:[eE][+-]?\d+)?),([+-]?\d+\.\d+(?:[eE][+-]?\d+)?)\)$"
+        r"^\s+\d+\s+\(([+-]?\d+\.\d+(?:[eE][+-]?\d+)?),([+-]?\d+\.\d+(?:[eE][+-]?\d+)?)\)$",
     )
 
     energies = []

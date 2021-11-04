@@ -7,7 +7,7 @@ import pandas
 
 
 def read_momentum_distribution_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     data = pandas.read_csv(path, sep=r"\s+", names=["times", "momenta", "distribution"])
     times = numpy.sort(numpy.unique(data["times"].to_numpy()))
@@ -15,13 +15,15 @@ def read_momentum_distribution_ascii(
     num_momenta = len(data["momenta"]) // num_times
     momenta = data["momenta"].to_numpy()[:num_momenta]
     distribution = numpy.reshape(
-        data["distribution"].to_numpy(), (num_times, num_momenta)
+        data["distribution"].to_numpy(),
+        (num_times, num_momenta),
     )
     return times, momenta, distribution
 
 
 def read_momentum_distribution_hdf5(
-    path: Union[Path, str], interior_path: str
+    path: Union[Path, str],
+    interior_path: str,
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     with h5py.File(path, "r") as fptr:
         return (
@@ -56,5 +58,7 @@ def add_momentum_distribution_to_hdf5(
     grp.create_dataset("times", shape=times.shape, dtype=times.dtype)[:] = times
     grp.create_dataset("momenta", shape=momenta.shape, dtype=momenta.dtype)[:] = momenta
     grp.create_dataset(
-        "distribution", shape=distribution.shape, dtype=distribution.dtype
+        "distribution",
+        shape=distribution.shape,
+        dtype=distribution.dtype,
     )[:, :] = distribution

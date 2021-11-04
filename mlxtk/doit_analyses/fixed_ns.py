@@ -19,7 +19,7 @@ def collect_final_total_magnitude(
         output_file = (
             Path("data")
             / "final_total_magnitude_{}".format(
-                fixed_ns_path.name.replace(".fixed_ns.h5", "")
+                fixed_ns_path.name.replace(".fixed_ns.h5", ""),
             )
             / (make_path(scan_dir).name + ".txt")
         )

@@ -47,7 +47,9 @@ def main():
         help="directory of the scan containing the file scan.pickle",
     )
     parser.add_argument(
-        "expval", type=Path, help="relative path to expval within each simulation"
+        "expval",
+        type=Path,
+        help="relative path to expval within each simulation",
     )
     parser.add_argument(
         "-e",

@@ -26,7 +26,9 @@ def main():
     )
     parser.add_argument("-d", "--dof", type=int, default=1, help="degree of freedom")
     parser.add_argument(
-        "--momentum", action="store_true", help="whether to transform to momentum space"
+        "--momentum",
+        action="store_true",
+        help="whether to transform to momentum space",
     )
     parser.add_argument("--logz", action="store_true")
     parser.add_argument("--zmin", type=float)

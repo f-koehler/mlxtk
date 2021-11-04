@@ -81,7 +81,7 @@ def scan_plot_expval(
         del parameters
 
         data = read_expval_hdf5(
-            str((scan_dir / "by_index" / str(index) / expval).with_suffix(".exp.h5"))
+            str((scan_dir / "by_index" / str(index) / expval).with_suffix(".exp.h5")),
         )
         fig, axis = plt.subplots(1, 1)
         plot_expval(axis, *data, **kwargs)
@@ -121,7 +121,7 @@ def scan_plot_variance(
         del parameters
 
         data = read_expval_hdf5(
-            str((scan_dir / "by_index" / str(index) / variance).with_suffix(".var.h5"))
+            str((scan_dir / "by_index" / str(index) / variance).with_suffix(".var.h5")),
         )
         fig, axis = plt.subplots(1, 1)
         plot_expval(axis, *data, **kwargs)

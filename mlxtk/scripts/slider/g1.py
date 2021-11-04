@@ -44,7 +44,11 @@ class Gui(PlotSlider):
 
         X2, X1 = numpy.meshgrid(self.x2, self.x1)
         self.mesh = self.axes.pcolormesh(
-            X1, X2, self.values[0], cmap="gnuplot", rasterized=True
+            X1,
+            X2,
+            self.values[0],
+            cmap="gnuplot",
+            rasterized=True,
         )
         self.plot.canvas.draw()
 

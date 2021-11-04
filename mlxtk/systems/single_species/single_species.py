@@ -98,7 +98,9 @@ class SingleSpeciesSystem(ABC):
         )
 
     def get_truncated_unit_operator(
-        self, xmin: float, xmax: float
+        self,
+        xmin: float,
+        xmax: float,
     ) -> MBOperatorSpecification:
         term = numpy.zeros_like(self.grid.get_x())
         term[
@@ -113,7 +115,9 @@ class SingleSpeciesSystem(ABC):
         )
 
     def get_truncated_com_operator(
-        self, xmin: float, xmax: float
+        self,
+        xmin: float,
+        xmax: float,
     ) -> MBOperatorSpecification:
         term = numpy.copy(self.grid.get_x())
         term[numpy.logical_or(term < xmin, term > xmax)] = 0.0
@@ -126,7 +130,9 @@ class SingleSpeciesSystem(ABC):
         )
 
     def get_truncated_com_operator_squared(
-        self, xmin: float, xmax: float
+        self,
+        xmin: float,
+        xmax: float,
     ) -> MBOperatorSpecification:
         term = numpy.copy(self.grid.get_x())
         term[numpy.logical_or(term < xmin, term > xmax)] = 0.0

@@ -157,7 +157,7 @@ class Propagate(Task):
         )
 
         if self.flags["exact_diag"]:
-            self.qdtk_files: List[str] = []
+            self.qdtk_files: List[str] = ["eigenenergies", "eigenvectors"]
         else:
             self.qdtk_files = ["final.wfn"]
             if self.flags["psi"]:

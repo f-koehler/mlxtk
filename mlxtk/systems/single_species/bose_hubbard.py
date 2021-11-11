@@ -80,6 +80,16 @@ class BoseHubbard:
             ],
         )
 
+    def get_particle_number_operator(self) -> MBOperatorSpecification:
+        term = numpy.ones(self.grid.get().npoints)
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"particle_number_coeff": 1.0},
+            {"particle_number": term},
+            "particle_number_coeff | 1 particle_number",
+        )
+
     def get_site_occupation_operator(self, site_index: int) -> MBOperatorSpecification:
         term = numpy.zeros(self.grid.get().npoints)
         term[site_index] = 1

@@ -320,7 +320,7 @@ class Propagate(Task):
                     shutil.move("result.h5", hdf5_file)
 
                     if self.flags["exact_diag"]:
-                        with open("eigenvectors", "r") as fptr:
+                        with open("eigenvectors") as fptr:
                             lines = fptr.readlines()
                         if not lines[0].startswith("$tape"):
                             with open("eigenvectors", "w") as fptr:
@@ -328,8 +328,10 @@ class Propagate(Task):
                                 fptr.writelines(lines)
 
                         if self.flags["eig_tot"]:
-                            self.logger.info("exact diagonalization with one eigenvector, remove last two lines in eigenvectors file")
-                            with open("eigenvectors", "r") as fptr:
+                            self.logger.info(
+                                "exact diagonalization with one eigenvector, remove last two lines in eigenvectors file"
+                            )
+                            with open("eigenvectors") as fptr:
                                 lines = fptr.readlines()[:-1]
                             with open("eigenvectors", "w") as fptr:
                                 fptr.writelines(lines)

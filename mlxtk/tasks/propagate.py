@@ -329,7 +329,7 @@ class Propagate(Task):
 
                         if self.flags["eig_tot"]:
                             self.logger.info(
-                                "exact diagonalization with one eigenvector, remove last two lines in eigenvectors file"
+                                "exact diagonalization with one eigenvector, remove last two lines in eigenvectors file",
                             )
                             with open("eigenvectors") as fptr:
                                 lines = fptr.readlines()[:-1]

@@ -89,7 +89,6 @@ if HAS_STL:
         mesh.z[:] = Z[tri.triangles]
         mesh.save("test.stl")
 
-
 else:
 
     def create_gpop_model(time, grid, density):

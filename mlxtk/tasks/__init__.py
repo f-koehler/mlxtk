@@ -20,3 +20,4 @@ from mlxtk.tasks.wfn_mcthdb import (
     MCTDHBOverlapStatic,
 )
 from mlxtk.tasks.wfn_sqr import CreateSQRBosonicWaveFunction
+from mlxtk.tasks.wfn_spin_half import CreateSpinHalfWaveFunction

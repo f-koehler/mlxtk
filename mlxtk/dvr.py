@@ -12,6 +12,7 @@ from QDTK.Primitive import (
     rHarmdvr,
 )
 from QDTK.SQR.Primitive import SQRDvrBosonic
+from QDTK.Spin.Primitive import SpinHalfDvr
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,
@@ -22,6 +23,7 @@ DVR_CLASSES = {
     "LaguerreDVR": Laguerredvr,
     "FFT": FFT,
     "SQRDvrBosonic": SQRDvrBosonic,
+    "SpinHalfDvr": SpinHalfDvr,
 }
 DVR_CACHE: Dict[Any, Dict[Tuple[Any], Dvr]] = {CLASS: {} for CLASS in DVR_CLASSES}
 
@@ -256,3 +258,7 @@ def add_fft(npoints: int, xmin: float, xmax: float) -> DVRSpecification:
 
 def add_sqr_dvr_bosonic(particles: int):
     return DVRSpecification("SQRDvrBosonic", particles)
+
+
+def add_spin_half_dvr():
+    return DVRSpecification("SpinHalfDvr")

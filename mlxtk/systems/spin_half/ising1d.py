@@ -67,18 +67,26 @@ class Ising1D:
             table,
         )
 
-    def create_one_point_operator_x(self, site: int) -> OperatorSpecification:
+    def create_x_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
-            {f"one_point_coeff_x_{site}": 1.0},
-            {f"one_point_term_x_{site}": self.grid.get().get_sigma_x()},
-            f"one_point_coeff_x_{site} | {site + 1} one_point_term_x_{site}",
+            {f"sigma_x_coeff_{site}": 1.0},
+            {f"sigma_x_term_{site}": self.grid.get().get_sigma_x()},
+            f"sigma_x_coeff_{site} | {site + 1} sigma_x_term_{site}",
         )
 
-    def create_one_point_operator_z(self, site: int) -> OperatorSpecification:
+    def create_y_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
-            {f"one_point_coeff_z_{site}": 1.0},
-            {f"one_point_term_z_{site}": self.grid.get().get_sigma_z()},
-            f"one_point_coeff_z_{site} | {site + 1} one_point_term_z_{site}",
+            {f"sigma_y_coeff_{site}": 1.0},
+            {f"sigma_y_term_{site}": self.grid.get().get_sigma_y()},
+            f"sigma_y_coeff_{site} | {site + 1} sigma_y_term_{site}",
+        )
+
+    def create_z_operator(self, site: int) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"sigma_z_coeff_{site}": 1.0},
+            {f"sigma_z_term_{site}": self.grid.get().get_sigma_z()},
+            f"sigma_z_coeff_{site} | {site + 1} sigma_z_term_{site}",
         )

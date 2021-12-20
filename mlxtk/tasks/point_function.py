@@ -149,7 +149,7 @@ class ComputePointFunction(Task):
             "targets": [
                 str(self.output),
             ],
-            "file_dep": [str(self.pickle)],
+            "file_dep": [str(self.pickle), str(self.psi)],
         }
 
     def get_tasks_run(self) -> list[Callable[[], dict[str, Any]]]:

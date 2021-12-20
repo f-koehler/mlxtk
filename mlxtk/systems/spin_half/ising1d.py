@@ -67,26 +67,34 @@ class Ising1D:
             table,
         )
 
-    def create_x_operator(self, site: int) -> OperatorSpecification:
+    def create_sx_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
-            {f"sigma_x_coeff_{site}": 1.0},
-            {f"sigma_x_term_{site}": self.grid.get().get_sigma_x()},
-            f"sigma_x_coeff_{site} | {site + 1} sigma_x_term_{site}",
+            {f"sx_coeff_{site}": 1.0},
+            {f"sx_term_{site}": self.grid.get().get_sigma_x()},
+            f"sx_coeff_{site} | {site + 1} sx_term_{site}",
         )
 
-    def create_y_operator(self, site: int) -> OperatorSpecification:
+    def create_sy_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
-            {f"sigma_y_coeff_{site}": 1.0},
-            {f"sigma_y_term_{site}": self.grid.get().get_sigma_y()},
-            f"sigma_y_coeff_{site} | {site + 1} sigma_y_term_{site}",
+            {f"sy_coeff_{site}": 1.0},
+            {f"sy_term_{site}": self.grid.get().get_sigma_y()},
+            f"sy_coeff_{site} | {site + 1} sy_term_{site}",
         )
 
-    def create_z_operator(self, site: int) -> OperatorSpecification:
+    def create_sz_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
-            {f"sigma_z_coeff_{site}": 1.0},
-            {f"sigma_z_term_{site}": self.grid.get().get_sigma_z()},
-            f"sigma_z_coeff_{site} | {site + 1} sigma_z_term_{site}",
+            {f"sz_coeff_{site}": 1.0},
+            {f"sz_term_{site}": self.grid.get().get_sigma_z()},
+            f"sz_coeff_{site} | {site + 1} sz_term_{site}",
+        )
+
+    def create_sz_sz_operator(self, site1: int, site2: int) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"sz_sz_coeff_{site1}_{site2}": 1.0},
+            {f"sz_sz_term_{site1}_{site2}": self.grid.get().get_sigma_z()},
+            f"sz_sz_coeff_{site1}_{site2} | {site1 + 1} sz_sz_term_{site1}_{site2}| {site2 + 1} sz_sz_term_{site1}_{site2}",
         )

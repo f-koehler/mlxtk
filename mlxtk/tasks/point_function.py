@@ -136,7 +136,7 @@ class ComputePointFunction(Task):
                                 dtype=numpy.complex128,
                             )
 
-                        results[:, tuple(combination)] = values[:, numpy.newaxis]
+                        results[tuple([...] + list(combination))] = values[:]
                     with h5py.File(outpath, "w") as fptr:
                         fptr.create_dataset("time", data=time)
                         fptr.create_dataset("values", data=results)

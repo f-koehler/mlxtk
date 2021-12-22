@@ -3,10 +3,10 @@ from __future__ import annotations
 from numpy.typing import ArrayLike
 from QDTK.Spin.Primitive import SpinHalfDvr
 
+from mlxtk import dvr
 from mlxtk.log import get_logger
 from mlxtk.parameters import Parameters
 from mlxtk.tasks import OperatorSpecification
-from mlxtk import dvr
 
 
 class Ising1D:

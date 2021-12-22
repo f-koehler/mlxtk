@@ -1,21 +1,25 @@
 from __future__ import annotations
-from mlxtk.tasks.task import Task
-from mlxtk.log import get_logger
-from mlxtk import cwd
-from typing import Callable, Any
-from pathlib import Path
-import h5py
+
+import itertools
 import os
-from ..operator import OperatorSpecification
+import pickle
+import subprocess
+import tempfile
+from pathlib import Path
+from typing import Any, Callable
+
+import h5py
+import numpy
+
+from mlxtk import cwd
 from mlxtk.doit_compat import DoitAction
 from mlxtk.hashing import inaccurate_hash
-import pickle
-import numpy
-import itertools
-import tempfile
-from mlxtk.util import copy_file
-import subprocess
 from mlxtk.inout.expval import read_expval_ascii
+from mlxtk.log import get_logger
+from mlxtk.tasks.task import Task
+from mlxtk.util import copy_file
+
+from ..operator import OperatorSpecification
 
 
 class ComputePointFunction(Task):
@@ -55,7 +59,7 @@ class ComputePointFunction(Task):
             del targets
 
             example = self.get_operator(
-                [self.start for index in range(self.num_points)]
+                [self.start for index in range(self.num_points)],
             )
 
             obj = [
@@ -118,7 +122,7 @@ class ComputePointFunction(Task):
                     ):
                         with open("operator", "w") as fptr:
                             self.get_operator(
-                                combination
+                                combination,
                             ).get_operator().createOperatorFile(fptr)
 
                         self.logger.info(f'command: {" ".join(cmd)}')

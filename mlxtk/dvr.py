@@ -11,8 +11,8 @@ from QDTK.Primitive import (
     Sindvr,
     rHarmdvr,
 )
-from QDTK.SQR.Primitive import SQRDvrBosonic
 from QDTK.Spin.Primitive import SpinHalfDvr
+from QDTK.SQR.Primitive import SQRDvrBosonic
 
 DVR_CLASSES = {
     "HarmonicDVR": Harmdvr,

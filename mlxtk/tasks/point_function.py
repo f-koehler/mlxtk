@@ -16,6 +16,7 @@ import tempfile
 from mlxtk.util import copy_file
 import subprocess
 from mlxtk.inout.expval import read_expval_ascii
+from numpy.typing import NDArray
 
 
 class ComputePointFunction(Task):
@@ -24,10 +25,7 @@ class ComputePointFunction(Task):
         name: str,
         psi: os.PathLike,
         func: Callable[..., OperatorSpecification],
-        start: int,
-        stop: int,
-        step: int = 1,
-        num_points: int = 1,
+        indices: NDArray[numpy.int64],
         **kwargs,
     ):
         self.logger = get_logger(__name__ + ".ComputePointFunction")
@@ -35,10 +33,7 @@ class ComputePointFunction(Task):
         self.name = name
         self.psi = Path(psi)
         self.func = func
-        self.start = start
-        self.stop = stop
-        self.step = step
-        self.num_points = num_points
+        self.indices = indices
         self.output = (self.psi.parent / name).with_suffix(".h5")
         self.pickle = (self.psi.parent / name).with_suffix(".pickle")
 
@@ -46,25 +41,17 @@ class ComputePointFunction(Task):
             kwargs.get("wave_function", self.psi.parent / "final"),
         ).with_suffix(".wfn")
 
-    def get_operator(self, indices: list[int]) -> OperatorSpecification:
-        return self.func(*indices)
-
     def task_write_parameters(self) -> dict[str, Any]:
         @DoitAction
         def action_write_parameters(targets: list[str]):
             del targets
 
-            example = self.get_operator(
-                [self.start for index in range(self.num_points)]
-            )
+            example = self.func(*self.indices[0])
 
             obj = [
                 self.name,
                 self.psi,
-                self.start,
-                self.stop,
-                self.step,
-                self.num_points,
+                self.indices,
                 example.dofs,
                 example.coefficients,
                 {term: inaccurate_hash(example.terms[term]) for term in example.terms},
@@ -99,8 +86,6 @@ class ComputePointFunction(Task):
                     copy_file(wave_function, "restart")
 
                     results: None | numpy.ndarray = None
-                    indices = numpy.arange(self.start, self.stop, self.step, dtype=int)
-                    num_indices = len(indices)
                     cmd = [
                         "qdtk_expect.x",
                         "-opr",
@@ -113,13 +98,11 @@ class ComputePointFunction(Task):
                         "expval",
                     ]
 
-                    for combination in itertools.product(
-                        *([indices] * self.num_points)
-                    ):
+                    for i, combination in enumerate(self.indices):
                         with open("operator", "w") as fptr:
-                            self.get_operator(
-                                combination
-                            ).get_operator().createOperatorFile(fptr)
+                            self.func(*combination).get_operator().createOperatorFile(
+                                fptr
+                            )
 
                         self.logger.info(f'command: {" ".join(cmd)}')
                         env = os.environ.copy()
@@ -129,16 +112,12 @@ class ComputePointFunction(Task):
                         time, values = read_expval_ascii("expval")
                         if results is None:
                             results = numpy.zeros(
-                                [
-                                    len(time),
-                                ]
-                                + [num_indices for i in range(self.num_points)],
-                                dtype=numpy.complex128,
+                                [len(time), len(self.indices)], dtype=numpy.complex128
                             )
-
-                        results[tuple([...] + list(combination))] = values[:]
+                        results[:, i] = values
                     with h5py.File(outpath, "w") as fptr:
                         fptr.create_dataset("time", data=time)
+                        fptr.create_dataset("indices", data=self.indices)
                         fptr.create_dataset("values", data=results)
 
         return {

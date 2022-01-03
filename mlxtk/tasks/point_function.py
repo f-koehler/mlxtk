@@ -10,15 +10,16 @@ from typing import Any, Callable
 
 import h5py
 import numpy
+from numpy.typing import NDArray
 
 from mlxtk import cwd
 from mlxtk.doit_compat import DoitAction
 from mlxtk.hashing import inaccurate_hash
 from mlxtk.inout.expval import read_expval_ascii
-from numpy.typing import NDArray
 from mlxtk.log import get_logger
 from mlxtk.tasks.task import Task
 from mlxtk.util import copy_file
+
 from ..operator import OperatorSpecification
 
 
@@ -104,7 +105,7 @@ class ComputePointFunction(Task):
                     for i, combination in enumerate(self.indices):
                         with open("operator", "w") as fptr:
                             self.func(*combination).get_operator().createOperatorFile(
-                                fptr
+                                fptr,
                             )
 
                         self.logger.info(f'command: {" ".join(cmd)}')
@@ -115,7 +116,8 @@ class ComputePointFunction(Task):
                         time, values = read_expval_ascii("expval")
                         if results is None:
                             results = numpy.zeros(
-                                [len(time), len(self.indices)], dtype=numpy.complex128
+                                [len(time), len(self.indices)],
+                                dtype=numpy.complex128,
                             )
                         results[:, i] = values
                     with h5py.File(outpath, "w") as fptr:

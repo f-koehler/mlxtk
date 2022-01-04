@@ -22,3 +22,4 @@ from mlxtk.tasks.wfn_mcthdb import (
 )
 from mlxtk.tasks.wfn_spin_half import CreateSpinHalfWaveFunction
 from mlxtk.tasks.wfn_sqr import CreateSQRBosonicWaveFunction
+from mlxtk.tasks.wfn_ml_mctdh import CreateMLMCTDHWaveFunction

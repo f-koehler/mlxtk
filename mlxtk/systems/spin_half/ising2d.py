@@ -76,7 +76,7 @@ class Ising2D:
                 table.append(f"-hz | {i+1} sz")
 
         return OperatorSpecification(
-            [self.grid] * self.parameters.L,
+            [self.grid] * (self.parameters.L ** 2),
             coeffs,
             terms,
             table,

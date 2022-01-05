@@ -111,7 +111,7 @@ class Node(abc.ABC):
         self.compute_dof_numbers()
 
         g = Digraph()
-        g.attr(rankdir="TB")
+        g.attr(rankdir="TB", nodesep="1.5", ranksep="1.0")
         self.add_to_graph(g)
         return g
 
@@ -127,6 +127,15 @@ class Node(abc.ABC):
         else:
             shape = "circle"
             xlabel = None
+
+        for attr in self.attrs:
+            if attr == "dof":
+                continue
+            if attr == "index":
+                continue
+            if xlabel is None:
+                xlabel = ""
+            xlabel += f"\n{attr}={self.attrs[attr]}"
 
         name = str(self.attrs["index"] + 1)
         g.node(name, shape=shape, xlabel=xlabel)

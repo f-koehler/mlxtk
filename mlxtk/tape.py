@@ -1,6 +1,8 @@
 from __future__ import annotations
 import abc
-from typing import Type
+from typing import Generator
+from graphviz import Digraph
+from typing import Any
 
 
 class Node(abc.ABC):
@@ -9,6 +11,7 @@ class Node(abc.ABC):
         self.parent = parent
         self.children: list[Node] = []
         self.has_indist_node = False
+        self.attrs: dict[str, Any] = {}
 
     def __iadd__(self, other: Node) -> Node:
         other.parent = self
@@ -18,6 +21,37 @@ class Node(abc.ABC):
             self.get_root().has_indist_node = True
 
         return self
+
+    def compute_node_indices(self, counter: int | None = None) -> int:
+        if counter is None:
+            if self.is_root():
+                counter = 0
+            else:
+                self.get_root().compute_node_indices(counter)
+                return
+
+        self.attrs["index"] = counter
+        counter += 1
+        for child in self.children:
+            counter = child.compute_node_indices(counter)
+        return counter
+
+    def compute_dof_numbers(self, counter: int = 0) -> int:
+        if counter is None:
+            if self.is_root():
+                counter = 0
+            else:
+                self.get_root().compute_dof_numbers(counter)
+                return
+
+        if self.is_primitive():
+            self.attrs["dof"] = counter
+            counter += 1
+        else:
+            for child in self.children:
+                counter = child.compute_dof_numbers(counter)
+
+        return counter
 
     def is_root(self) -> bool:
         return self.parent is None
@@ -61,6 +95,46 @@ class Node(abc.ABC):
                 del tape[-1]
             tape.append(-2)
         return tape
+
+    def get_primitive_nodes(self) -> list[PrimitiveNode]:
+        if self.is_primitive():
+            return [self]
+
+        result: list[PrimitiveNode] = []
+        for child in self.children:
+            result += child.get_primitive_nodes()
+        return result
+
+    def to_graph(self):
+        self.compute_node_indices()
+        self.compute_dof_numbers()
+
+        g = Digraph()
+        g.attr(rankdir="TB")
+        self.add_to_graph(g)
+        return g
+
+    def add_to_graph(self, g: Digraph, parent: str | None = None):
+        if isinstance(self, PrimitiveNode):
+            shape = "square"
+            dof = self.attrs["dof"]
+            xlabel = f"{dof=}"
+        elif isinstance(self, BosonicNode) or isinstance(self, FermionicNode):
+            shape = "doublecircle"
+            N = self.particles
+            xlabel = "{N=}"
+        else:
+            shape = "circle"
+            xlabel = None
+
+        name = str(self.attrs["index"] + 1)
+        g.node(name, shape=shape, xlabel=xlabel)
+
+        if parent is not None:
+            g.edge(parent, name, label=f"{self.dimension}")
+
+        for child in self.children:
+            child.add_to_graph(g, name)
 
 
 class NormalNode(Node):

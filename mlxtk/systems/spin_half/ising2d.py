@@ -29,10 +29,10 @@ class Ising2D:
             ],
         )
 
-    def get_site_index(self, x: int, y: int) -> int:
-        return self.parameters["L"] * y + x
-
-    def create_hamiltonian(self) -> OperatorSpecification:
+    def create_hamiltonian(
+        self,
+        dof_map: dict[tuple[int, int], int],
+    ) -> OperatorSpecification:
         table: list[str] = []
         coeffs: dict[str, complex] = {}
         terms: dict[str, ArrayLike] = {}
@@ -44,8 +44,8 @@ class Ising2D:
             terms.update({"sz": self.grid.get().get_sigma_z()})
             for y in range(L):
                 for x in range(L if self.parameters["pbc"] else L - 1):
-                    index1 = self.get_site_index(x, y)
-                    index2 = self.get_site_index((x + 1) % L, y)
+                    index1 = dof_map[(x, y)]
+                    index2 = dof_map[((x + 1) % L, y)]
                     table.append(f"-Jx | {index1 + 1} sz | {index2 + 1} sz")
 
         if self.parameters["Jy"] != 0.0:
@@ -53,8 +53,8 @@ class Ising2D:
             terms.update({"sz": self.grid.get().get_sigma_z()})
             for y in range(L if self.parameters["pbc"] else L - 1):
                 for x in range(L):
-                    index1 = self.get_site_index(x, y)
-                    index2 = self.get_site_index(x, (y + 1) % L)
+                    index1 = dof_map[(x, y)]
+                    index2 = dof_map[(x, (y + 1) % L)]
                     table.append(f"-Jy | {index1 + 1} sz | {index2 + 1} sz")
 
         if self.parameters["hx"] != 0.0:

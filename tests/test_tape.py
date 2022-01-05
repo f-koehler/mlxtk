@@ -1,4 +1,4 @@
-from mlxtk.tape import NormalNode, PrimitiveNode, BosonicNode
+from mlxtk.tape import BosonicNode, NormalNode, PrimitiveNode
 
 
 def test_bosonic_1d():

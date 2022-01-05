@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import abc
-from typing import Generator
+from typing import Any, Generator
+
 from graphviz import Digraph
-from typing import Any
 
 
 class Node(abc.ABC):

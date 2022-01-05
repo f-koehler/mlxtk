@@ -6,7 +6,6 @@ from typing import Any, Callable, Dict, List, Union
 
 import numpy
 from numpy.typing import NDArray
-
 from QDTK.Wavefunction import Wavefunction
 
 from mlxtk.doit_compat import DoitAction

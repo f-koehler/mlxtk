@@ -81,3 +81,25 @@ class Ising2D:
             terms,
             table,
         )
+
+    def create_Sx_operator(self) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * (self.parameters.L ** 2),
+            {f"Sx_coeff": 1.0},
+            {f"Sx_term": self.grid.get().get_sigma_x()},
+            [
+                f"Sx_coeff | {site + 1} Sx_term"
+                for site in range(self.parameters["L"] ** 2)
+            ],
+        )
+
+    def create_Sz_operator(self) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * (self.parameters.L ** 2),
+            {f"Sz_coeff": 1.0},
+            {f"Sz_term": self.grid.get().get_sigma_z()},
+            [
+                f"Sz_coeff | {site + 1} Sz_term"
+                for site in range(self.parameters["L"] ** 2)
+            ],
+        )

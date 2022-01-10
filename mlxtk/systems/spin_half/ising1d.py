@@ -67,6 +67,22 @@ class Ising1D:
             table,
         )
 
+    def create_Sx_operator(self) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"Sx_coeff": 1.0},
+            {f"Sx_term": self.grid.get().get_sigma_x()},
+            [f"Sx_coeff | {site + 1} Sx_term" for site in range(self.parameters["L"])],
+        )
+
+    def create_Sz_operator(self) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"Sz_coeff": 1.0},
+            {f"Sz_term": self.grid.get().get_sigma_z()},
+            [f"Sz_coeff | {site + 1} Sz_term" for site in range(self.parameters["L"])],
+        )
+
     def create_sx_operator(self, site: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,

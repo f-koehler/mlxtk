@@ -54,6 +54,19 @@ class Node(abc.ABC):
 
         return counter
 
+    def compute_layers(self, counter: int | None = None):
+        if counter is None:
+            if self.is_root():
+                counter = 0
+            else:
+                self.get_root().compute_layers()
+
+        self.attrs["layer"] = counter
+
+        if not self.is_primitive():
+            for child in self.children:
+                child.compute_layers(counter + 1)
+
     def is_root(self) -> bool:
         return self.parent is None
 

@@ -130,18 +130,22 @@ class Node(abc.ABC):
 
         return self
 
-    def compute_node_indices(self, counter: int | None = None) -> int:
+    def compute_node_indices(
+        self, exclude_primitive: bool = True, counter: int | None = None
+    ) -> int:
         if counter is None:
             if self.is_root():
                 counter = 0
             else:
-                self.get_root().compute_node_indices(counter)
+                self.get_root().compute_node_indices(exclude_primitive, counter)
                 return
 
         self.attrs["index"] = counter
         counter += 1
         for child in self.children:
-            counter = child.compute_node_indices(counter)
+            if exclude_primitive and child.is_primitive():
+                continue
+            counter = child.compute_node_indices(exclude_primitive, counter)
         return counter
 
     def compute_dof_numbers(self, counter: int = 0) -> int:

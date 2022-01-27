@@ -226,6 +226,15 @@ class Node(abc.ABC):
             result += child.get_primitive_nodes()
         return result
 
+    def get_all_nodes(self) -> list[Node]:
+        return self.get_root()._get_all_nodes_recurse([])
+
+    def _get_all_nodes_recurse(self, nodes: list[Node]) -> list[Node]:
+        nodes.append(self)
+        for child in self.children:
+            nodes = child._get_all_nodes_recurse(nodes)
+        return nodes
+
     def to_graph(self):
         self.compute_node_indices()
         self.compute_dof_numbers()

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+from multiprocessing.sharedctypes import Value
 from typing import Any, Generator
 
 from graphviz import Digraph
@@ -13,6 +14,112 @@ class Node(abc.ABC):
         self.children: list[Node] = []
         self.has_indist_node = False
         self.attrs: dict[str, Any] = {}
+
+    @staticmethod
+    def from_tape(tape: list[int]) -> Node:
+        has_indist = False
+        if tape[0] == -10:
+            has_indist = True
+            tape.pop(0)
+
+        root = Node._from_tape_recurse(tape, has_indist, None)
+
+        Node._from_tape_create_primitive_nodes(root)
+
+        return root
+
+    @staticmethod
+    def _from_tape_create_primitive_nodes(current: Node):
+        for childid, childdim in enumerate(current.attrs["childdim"]):
+            if current.children[childid] is not None:
+                Node._from_tape_create_primitive_nodes(current.children[childid])
+            else:
+                current.children[childid] = PrimitiveNode(childdim, current)
+
+    @staticmethod
+    def _from_tape_recurse(
+        tape: list[int], has_indist: bool, current: Node | None = None
+    ) -> Node:
+
+        if tape[0] <= 0:
+            cmd = tape.pop(0)
+            if cmd == -2:
+                # end of tape
+                return current.get_root()
+
+            if cmd == 0:
+                # go to parent
+                if current.parent is None:
+                    raise ValueError("Cannot ascend beyond root node")
+                return Node._from_tape_recurse(tape, has_indist, current.parent)
+
+            if cmd == -1:
+                # go to child
+                childid = tape.pop(0) - 1
+                childdim = current.attrs["childdim"][childid]
+
+                if has_indist:
+                    symm = tape[1]
+                    if symm == 0:
+                        current.children[childid] = Node._from_tape_create_normal(
+                            tape, True, childdim, current
+                        )
+                    else:
+                        current.children[childid] = Node._from_tape_create_indist(
+                            tape, childdim, current
+                        )
+                else:
+                    current.children[childid] = Node._from_tape_create_normal(
+                        tape, False, childdim, current
+                    )
+
+                return Node._from_tape_recurse(
+                    tape, has_indist, current.children[childid]
+                )
+
+        # create root node
+        if has_indist:
+            symm = tape[1]
+            if symm == 0:
+                current = Node._from_tape_create_normal(tape, True, 1, current)
+            else:
+                current = Node._from_tape_create_indist(tape, 1, current)
+        else:
+            current = Node._from_tape_create_normal(tape, False, 1, current)
+
+        return Node._from_tape_recurse(tape, has_indist, current)
+
+    @staticmethod
+    def _from_tape_create_normal(
+        tape: list[int], has_indist: bool, orbitals: int = 1, parent: Node | None = None
+    ) -> NormalNode:
+        num_children = tape.pop(0)
+        node = NormalNode(orbitals, parent)
+        node.has_indist_node = has_indist
+
+        if has_indist:
+            tape.pop(0)
+
+        node.attrs["childdim"] = [tape.pop(0) for _ in range(num_children)]
+        node.children = [None for _ in range(num_children)]
+
+        return node
+
+    @staticmethod
+    def _from_tape_create_indist(
+        tape: list[int], orbitals: int = 1, parent: Node | None = None
+    ) -> FermionicNode | BosonicNode:
+        particles = tape.pop(0)
+        symm = tape.pop(0)
+
+        if symm == -1:
+            node = FermionicNode(particles, orbitals, parent)
+        else:
+            node = BosonicNode(particles, orbitals, parent)
+        node.attrs["childdim"] = [tape.pop(0)]
+        node.children = [None]
+
+        return node
 
     def __iadd__(self, other: Node) -> Node:
         other.parent = self

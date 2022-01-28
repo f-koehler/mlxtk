@@ -22,36 +22,32 @@ class Node(abc.ABC):
             has_indist = True
             tape.pop(0)
 
-        root = Node._from_tape_recurse(tape, has_indist, None)
-
-        Node._from_tape_create_primitive_nodes(root)
-
-        return root
-
-    @staticmethod
-    def _from_tape_create_primitive_nodes(current: Node):
-        for childid, childdim in enumerate(current.attrs["childdim"]):
-            if current.children[childid] is not None:
-                Node._from_tape_create_primitive_nodes(current.children[childid])
+        # create root node
+        if has_indist:
+            symm = tape[1]
+            if symm == 0:
+                root = Node._from_tape_create_normal(tape, True, 1)
             else:
-                current.children[childid] = PrimitiveNode(childdim, current)
+                root = Node._from_tape_create_indist(tape, 1)
+        else:
+            root = Node._from_tape_create_normal(tape, False, 1)
 
-    @staticmethod
-    def _from_tape_recurse(
-        tape: list[int], has_indist: bool, current: Node | None = None
-    ) -> Node:
+        # set current node to root node
+        current = root
 
-        if tape[0] <= 0:
+        while tape:
             cmd = tape.pop(0)
             if cmd == -2:
                 # end of tape
-                return current.get_root()
+                break
 
             if cmd == 0:
                 # go to parent
                 if current.parent is None:
                     raise ValueError("Cannot ascend beyond root node")
-                return Node._from_tape_recurse(tape, has_indist, current.parent)
+
+                current = current.parent
+                continue
 
             if cmd == -1:
                 # go to child
@@ -73,21 +69,11 @@ class Node(abc.ABC):
                         tape, False, childdim, current
                     )
 
-                return Node._from_tape_recurse(
-                    tape, has_indist, current.children[childid]
-                )
+                current = current.children[childid]
 
-        # create root node
-        if has_indist:
-            symm = tape[1]
-            if symm == 0:
-                current = Node._from_tape_create_normal(tape, True, 1, current)
-            else:
-                current = Node._from_tape_create_indist(tape, 1, current)
-        else:
-            current = Node._from_tape_create_normal(tape, False, 1, current)
+        Node._from_tape_create_primitive_nodes(root)
 
-        return Node._from_tape_recurse(tape, has_indist, current)
+        return root
 
     @staticmethod
     def _from_tape_create_normal(
@@ -120,6 +106,14 @@ class Node(abc.ABC):
         node.children = [None]
 
         return node
+
+    @staticmethod
+    def _from_tape_create_primitive_nodes(current: Node):
+        for childid, childdim in enumerate(current.attrs["childdim"]):
+            if current.children[childid] is not None:
+                Node._from_tape_create_primitive_nodes(current.children[childid])
+            else:
+                current.children[childid] = PrimitiveNode(childdim, current)
 
     def __iadd__(self, other: Node) -> Node:
         other.parent = self

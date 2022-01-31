@@ -21,7 +21,7 @@ class HarmonicTrap(SingleSpeciesSystem):
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(
             (self.grid_1b,),
-            {"potential_coeff": 0.5 * (self.parameters.omega ** 2)},
+            {"potential_coeff": 0.5 * (self.parameters.omega**2)},
             {"potential": (self.grid_1b.get_x() - self.parameters.x0) ** 2},
             "potential_coeff | 1 potential",
         )
@@ -33,7 +33,7 @@ class HarmonicTrap(SingleSpeciesSystem):
         return tasks.MBOperatorSpecification(
             (1,),
             (self.grid,),
-            {"potential_coeff": 0.5 * (self.parameters.omega ** 2)},
+            {"potential_coeff": 0.5 * (self.parameters.omega**2)},
             {"potential": (self.grid.get_x() - self.parameters.x0) ** 2},
             "potential_coeff | 1 potential",
         )

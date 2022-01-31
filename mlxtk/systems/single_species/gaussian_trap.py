@@ -8,7 +8,7 @@ from mlxtk.systems.single_species.single_species import SingleSpeciesSystem
 
 
 def gaussian(x: Union[float, numpy.ndarray], x0: float, alpha: float = 1.0):
-    return numpy.exp(-((x - x0) ** 2) / (alpha ** 2))
+    return numpy.exp(-((x - x0) ** 2) / (alpha**2))
 
 
 class GaussianTrap(SingleSpeciesSystem):

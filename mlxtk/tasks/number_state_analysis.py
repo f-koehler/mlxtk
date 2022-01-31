@@ -82,7 +82,7 @@ class NumberStateAnalysisStatic(Task):
                             shape=(1,),
                             dtype=numpy.float64,
                         )
-                        dset[:] = numpy.sum((real ** 2) + (imag ** 2))
+                        dset[:] = numpy.sum((real**2) + (imag**2))
 
                     copy_file("result.h5", result)
 
@@ -171,7 +171,7 @@ class NumberStateAnalysis(Task):
                             shape=times.shape,
                             dtype=numpy.float64,
                         )
-                        dset[:] = numpy.sum((real ** 2) + (imag ** 2), axis=1)
+                        dset[:] = numpy.sum((real**2) + (imag**2), axis=1)
 
                     copy_file("result.h5", result)
 

@@ -58,7 +58,7 @@ prompt-toolkit = "^3.0.7"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
-black = "^21.4b0"
+black = "^22.1"
 flake8 = "^4.0.0"
 isort = "^5.5.4"
 jedi = "^0.18.0"

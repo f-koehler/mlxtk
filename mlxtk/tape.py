@@ -58,15 +58,23 @@ class Node(abc.ABC):
                     symm = tape[1]
                     if symm == 0:
                         current.children[childid] = Node._from_tape_create_normal(
-                            tape, True, childdim, current
+                            tape,
+                            True,
+                            childdim,
+                            current,
                         )
                     else:
                         current.children[childid] = Node._from_tape_create_indist(
-                            tape, childdim, current
+                            tape,
+                            childdim,
+                            current,
                         )
                 else:
                     current.children[childid] = Node._from_tape_create_normal(
-                        tape, False, childdim, current
+                        tape,
+                        False,
+                        childdim,
+                        current,
                     )
 
                 current = current.children[childid]
@@ -77,7 +85,10 @@ class Node(abc.ABC):
 
     @staticmethod
     def _from_tape_create_normal(
-        tape: list[int], has_indist: bool, orbitals: int = 1, parent: Node | None = None
+        tape: list[int],
+        has_indist: bool,
+        orbitals: int = 1,
+        parent: Node | None = None,
     ) -> NormalNode:
         num_children = tape.pop(0)
         node = NormalNode(orbitals, parent)
@@ -93,7 +104,9 @@ class Node(abc.ABC):
 
     @staticmethod
     def _from_tape_create_indist(
-        tape: list[int], orbitals: int = 1, parent: Node | None = None
+        tape: list[int],
+        orbitals: int = 1,
+        parent: Node | None = None,
     ) -> FermionicNode | BosonicNode:
         particles = tape.pop(0)
         symm = tape.pop(0)
@@ -125,7 +138,9 @@ class Node(abc.ABC):
         return self
 
     def compute_node_indices(
-        self, exclude_primitive: bool = True, counter: int | None = None
+        self,
+        exclude_primitive: bool = True,
+        counter: int | None = None,
     ) -> int:
         if counter is None:
             if self.is_root():

@@ -1,41 +1,41 @@
 [build-system]
-requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+requires = ["poetry>=0.12"]
 
 [tool.poetry]
-name = "mlxtk"
-version = "0.10.0"
-description = "Toolkit to design, run and analyze ML-MCTDH(X) simulations"
 authors = ["Fabian Köhler <fkoehler@physnet.uni-hamburg.de>"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Environment :: MacOS X",
+  "Environment :: X11 Applications :: Qt",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Unix",
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Education",
+  "Topic :: Scientific/Engineering",
+  "Topic :: Scientific/Engineering :: Physics",
+]
+description = "Toolkit to design, run and analyze ML-MCTDH(X) simulations"
+documentation = "https://github.com/f-koehler/mlxtk"
+homepage = "https://github.com/f-koehler/mlxtk"
+include = [
+  "changelogs",
+]
+keywords = ["physics", "quantum", "dynamics", "ML-MCTDHX", "MCTDHB", "MCTDHF", "dataflow"]
 license = "MIT"
+name = "mlxtk"
 readme = "README.md"
 repository = "https://github.com/f-koehler/mlxtk"
-homepage = "https://github.com/f-koehler/mlxtk"
-documentation = "https://github.com/f-koehler/mlxtk"
-keywords = ["physics", "quantum", "dynamics", "ML-MCTDHX", "MCTDHB", "MCTDHF", "dataflow"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Environment :: Console",
-    "Environment :: MacOS X",
-    "Environment :: X11 Applications :: Qt",
-    "Intended Audience :: Education",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
-    "Natural Language :: English",
-    "Operating System :: MacOS",
-    "Operating System :: POSIX :: Linux",
-    "Operating System :: Unix",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Education",
-    "Topic :: Scientific/Engineering",
-    "Topic :: Scientific/Engineering :: Physics"
-]
-include = [
-    "changelogs"
-]
+version = "0.10.0"
 
 [tool.poetry.dependencies]
 colorama = "^0.4.3"
@@ -45,17 +45,17 @@ h5py = "^3.0"
 jinja2 = ">=2.11.2,<4.0.0"
 matplotlib = "^3.3.2"
 numpy = "^1.19.2"
-numpy-stl = { version = "^2.11.2", optional = true }
+numpy-stl = {version = "^2.11.2", optional = true}
 pandas = "^1.1.2"
 pathos = "^0.2.6"
+prompt-toolkit = "^3.0.7"
+pyside2 = {version = "^5.15.1", optional = true}
 python = ">=3.7,<3.10"
-pyside2 = { version = "^5.15.1", optional = true }
 pyyaml = ">=5.3.1,<7.0.0"
 scipy = "^1.5.2"
 sympy = "^1.6.2"
 tabulate = "^0.8.7"
 tqdm = "^4.50.0"
-prompt-toolkit = "^3.0.7"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
@@ -64,10 +64,10 @@ flake8 = "^4.0.0"
 isort = "^5.5.4"
 jedi = "^0.18.0"
 mypy = "^0.910"
+pre-commit = "^2.10.1"
 pylint = "^2.6.0"
 pytest = "^6.1.1"
 rope = "^0.21.0"
-pre-commit = "^2.10.1"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"
@@ -85,10 +85,10 @@ export_expval = "mlxtk.scripts.export.expval:main"
 export_gpop = "mlxtk.scripts.export.gpop:main"
 export_output = "mlxtk.scripts.export.output:main"
 
-slider_dmat_gridrep = "mlxtk.scripts.slider.dmat_gridrep:main"
-slider_dmat_spfrep = "mlxtk.scripts.slider.dmat_spfrep:main"
 slider_dmat2_gridrep = "mlxtk.scripts.slider.dmat2_gridrep:main"
 slider_dmat2_spfrep = "mlxtk.scripts.slider.dmat2_spfrep:main"
+slider_dmat_gridrep = "mlxtk.scripts.slider.dmat_gridrep:main"
+slider_dmat_spfrep = "mlxtk.scripts.slider.dmat_spfrep:main"
 slider_g1 = "mlxtk.scripts.slider.g1:main"
 slider_g2 = "mlxtk.scripts.slider.g2:main"
 slider_gpop = "mlxtk.scripts.slider.gpop:main"
@@ -101,15 +101,16 @@ dmat_spf_slider = "mlxtk.scripts.dmat_spf_slider:main"
 fixed_ns = "mlxtk.scripts.fixed_ns:main"
 fixed_ns_table = "mlxtk.scripts.fixed_ns_table:main"
 gpop_model = "mlxtk.scripts.gpop_model:main"
-mlxtkenv = "mlxtkenv_script:main"
 grab_1b_eigenfunction = "mlxtk.scripts.grab_1b_eigenfunction:main"
 grab_spfs = "mlxtk.scripts.grab_spfs:main"
+mlxtkenv = "mlxtkenv_script:main"
 
 plot_energy = "mlxtk.scripts.plot.energy:main"
 plot_energy_diff = "mlxtk.scripts.plot.energy_diff:main"
 plot_entropy = "mlxtk.scripts.plot.entropy:main"
 plot_entropy_diff = "mlxtk.scripts.plot.entropy_diff:main"
 plot_expval = "mlxtk.scripts.plot.expval:main"
+plot_expval_sum = "mlxtk.scripts.plot.expval_sum:main"
 plot_gpop = "mlxtk.scripts.plot.gpop:main"
 plot_momentum_distribution = "mlxtk.scripts.plot.momentum_distribution:main"
 plot_natpop = "mlxtk.scripts.plot.natpop:main"
@@ -120,8 +121,8 @@ plot_spfs_vs_norbs = "mlxtk.scripts.plot.spfs_vs_norbs:main"
 print_unit_system = "mlxtk.scripts.print_unit_system:main"
 
 recreate_output = "mlxtk.scripts.recreate_output:main"
-repickle_simulation = "mlxtk.scripts.repickle_simulation:main"
 repickle_scan = "mlxtk.scripts.repickle_scan:main"
+repickle_simulation = "mlxtk.scripts.repickle_simulation:main"
 
 scan_plot_depletion = "mlxtk.scripts.scan_plot.depletion:main"
 scan_plot_energy = "mlxtk.scripts.scan_plot.energy:main"
@@ -134,5 +135,5 @@ thin_out_psi = "mlxtk.scripts.thin_out_psi:main"
 
 [tool.isort]
 # Maintain compatibility with Black
-profile = "black"
 multi_line_output = 3
+profile = "black"

@@ -46,10 +46,18 @@ def main():
         help="path to the gpop file",
     )
     parser.add_argument(
-        "-d", "--dof", type=int, default=1, help="degree of freedom to use"
+        "-d",
+        "--dof",
+        type=int,
+        default=1,
+        help="degree of freedom to use",
     )
     parser.add_argument(
-        "-o", "--output", type=Path, default=None, help="path for the video file"
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="path for the video file",
     )
     mlxtk.plot.add_argparse_2d_args(parser)
     args = parser.parse_args()

@@ -18,7 +18,9 @@ def get_delta_interaction_dvr(dvr: DVRSpecification, g: float = 1.0) -> numpy.nd
 
 
 def get_kinetic_spf(
-    dvr: DVRSpecification, spfs: numpy.ndarray, prefactor: float = -0.5
+    dvr: DVRSpecification,
+    spfs: numpy.ndarray,
+    prefactor: float = -0.5,
 ) -> numpy.ndarray:
     m = spfs.shape[0]
     n = spfs.shape[1]
@@ -54,7 +56,9 @@ def get_potential_spf(
 
 
 def get_delta_interaction_spf(
-    dvr: DVRSpecification, spfs: numpy.ndarray, g: float = 1.0
+    dvr: DVRSpecification,
+    spfs: numpy.ndarray,
+    g: float = 1.0,
 ) -> numpy.ndarray:
     m = spfs.shape[0]
     spfs_c = numpy.conjugate(spfs)
@@ -66,14 +70,16 @@ def get_delta_interaction_spf(
             for c in range(m):
                 for d in range(m):
                     V[a, b, c, d] = g * numpy.sum(
-                        (1 / w) * spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d]
+                        (1 / w) * spfs_c[a] * spfs_c[b] * spfs[c] * spfs[d],
                     )
 
     return V
 
 
 def get_dmat_spf_naive(
-    coefficients: numpy.ndarray, states: numpy.ndarray, normalize: bool = True
+    coefficients: numpy.ndarray,
+    states: numpy.ndarray,
+    normalize: bool = True,
 ):
     m = len(states[0])
     N = numpy.sum(states[0])
@@ -147,7 +153,9 @@ def get_dmat_spf(
 
 
 def get_dmat2_spf_naive(
-    coefficients: numpy.ndarray, states: numpy.ndarray, normalize: bool = True
+    coefficients: numpy.ndarray,
+    states: numpy.ndarray,
+    normalize: bool = True,
 ) -> numpy.ndarray:
     m = len(states[0])
     N = numpy.sum(states[0])
@@ -188,7 +196,7 @@ def get_dmat2_spf_naive(
                                     (state1[i] - delta_l)
                                     * state1[j]
                                     * state2[k]
-                                    * (state2[l] - delta_r)
+                                    * (state2[l] - delta_r),
                                 )
                             )
 
@@ -238,7 +246,7 @@ def get_dmat2_spf(
                         state_b[l] += 1
                         rho_2[i, j, k, l] += (
                             numpy.sqrt(
-                                (state[i] + 1) * factor_a * (state[j] + 1) * factor_b
+                                (state[i] + 1) * factor_a * (state[j] + 1) * factor_b,
                             )
                             * numpy.conjugate(coefficients[get_index(state_a)])
                             * coefficients[get_index(state_b)]

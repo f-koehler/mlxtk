@@ -19,14 +19,14 @@ LOGGER = get_logger(__name__)
 def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
     if not Path(simulation_dir).exists():
         LOGGER.info(
-            "simulation directory does not exist, simulation was not yet executed -> skipping"
+            "simulation directory does not exist, simulation was not yet executed -> skipping",
         )
         return
 
     with WorkingDir(Path(simulation_dir).resolve()):
         if not Path("doit.json").exists():
             LOGGER.info(
-                "doit.json does not exist, simulation was not yet executed -> skipping"
+                "doit.json does not exist, simulation was not yet executed -> skipping",
             )
             return
 
@@ -41,7 +41,10 @@ def repickle_simulation(simulation_dir: str, bar_offset: Optional[int] = 0):
         }
 
         for task_name in tqdm.tqdm(
-            state, position=bar_offset, leave=False, desc="tasks"
+            state,
+            position=bar_offset,
+            leave=False,
+            desc="tasks",
         ):
             if "deps:" not in state[task_name]:
                 continue

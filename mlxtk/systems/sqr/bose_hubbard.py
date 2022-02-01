@@ -23,7 +23,7 @@ class BoseHubbardSQR(BosonicSQR):
                 ("J", 1.0, "hopping constant"),
                 ("U", 1.0, "interaction strength"),
                 ("pbc", True, "whether to use periodic boundary conditions"),
-            ]
+            ],
         )
 
     def create_hopping_term(self) -> OperatorSpecification:
@@ -38,10 +38,12 @@ class BoseHubbardSQR(BosonicSQR):
         if self.parameters.pbc:
             table += [
                 "hopping_coeff | {} creator | {} annihilator".format(
-                    self.parameters.sites, 1
+                    self.parameters.sites,
+                    1,
                 ),
                 "hopping_coeff | {} creator | {} annihilator".format(
-                    1, self.parameters.sites
+                    1,
+                    self.parameters.sites,
                 ),
             ]
 
@@ -73,7 +75,8 @@ class BoseHubbardSQR(BosonicSQR):
         )
 
     def create_hamiltonian(
-        self, penalty: Optional[float] = None
+        self,
+        penalty: Optional[float] = None,
     ) -> OperatorSpecification:
         terms: List[OperatorSpecification] = []
         penalty = self.parameters.penalty if penalty is None else penalty
@@ -91,7 +94,9 @@ class BoseHubbardSQR(BosonicSQR):
         return hamiltonian
 
     def create_efficient_hamiltonian(
-        self, gamma: Optional[float] = None, zeta: Optional[float] = None
+        self,
+        gamma: Optional[float] = None,
+        zeta: Optional[float] = None,
     ) -> OperatorSpecification:
         terms: List[OperatorSpecification] = []
         gamma = self.parameters.gamma if gamma is None else gamma
@@ -115,9 +120,15 @@ class BoseHubbardSQR(BosonicSQR):
         return hamiltonian
 
     def get_initial_filling(self) -> numpy.ndarray:
+        N = self.parameters["N"]
+        L = self.parameters["sites"]
+
+        if N % L == 0:
+            return numpy.full(L, N // L, self, dtype=numpy.int64)
+
         fillings = numpy.zeros(self.parameters.sites, dtype=numpy.int64)
         loc = 0
         for _ in range(self.parameters.N):
             fillings[loc] += 1
             loc = (loc + 1) % self.parameters.sites
-        return fillings
+        return numpy.roll(fillings, (L - loc) // 2)

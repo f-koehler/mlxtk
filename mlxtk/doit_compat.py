@@ -58,7 +58,7 @@ class DoitAction:
                     "monotonic_time": timer.get_monotonic_time(),
                     "perf_time": timer.get_perf_time(),
                     "process_time": timer.get_process_time(),
-                }
+                },
             }
 
         if isinstance(ret, dict):
@@ -76,11 +76,11 @@ class DoitAction:
                     "monotonic_time": timer.get_monotonic_time(),
                     "perf_time": timer.get_perf_time(),
                     "process_time": timer.get_process_time(),
-                }
+                },
             }
 
         raise NotImplementedError(
-            "The return type {} is not supported for Doit actions"
+            "The return type {} is not supported for Doit actions",
         )
 
 
@@ -108,7 +108,8 @@ def load_doit_timing(path: str, task: str, action: str) -> float:
 
 
 def format_doit_profile(
-    timings: Dict[str, Dict[str, float]], tablefmt: str = "fancy_grid"
+    timings: Dict[str, Dict[str, float]],
+    tablefmt: str = "fancy_grid",
 ) -> str:
     profile = []  # type: List[Tuple[str, str, float]]
     for task in timings:

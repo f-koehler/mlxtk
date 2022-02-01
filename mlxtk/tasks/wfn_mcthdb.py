@@ -84,12 +84,16 @@ class MCTDHBCreateWaveFunction(Task):
 
             with h5py.File(targets[1], "w") as fptr:
                 dset = fptr.create_dataset(
-                    "energies", (self.number_of_spfs,), dtype=numpy.float64
+                    "energies",
+                    (self.number_of_spfs,),
+                    dtype=numpy.float64,
                 )
                 dset[:] = energies
 
                 dset = fptr.create_dataset(
-                    "spfs", spfs_arr.shape, dtype=numpy.complex128
+                    "spfs",
+                    spfs_arr.shape,
+                    dtype=numpy.complex128,
                 )
                 dset[:, :] = spfs_arr
 
@@ -108,7 +112,11 @@ class MCTDHBCreateWaveFunction(Task):
             )
             wfn = WaveFunction(tape=tape)
             wfn.init_coef_sing_spec_B(
-                self.number_state, spfs, 1e-15, 1e-15, full_spf=True
+                self.number_state,
+                spfs,
+                1e-15,
+                1e-15,
+                full_spf=True,
             )
 
             save_wave_function(self.path, wfn)
@@ -180,7 +188,7 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
             indices = numpy.nonzero(
                 (energies > self.threshold)
                 if self.above_threshold
-                else (energies < self.threshold)
+                else (energies < self.threshold),
             )[0]
             m = indices.max() - indices.min() + 1
             if self.max_number > 0:
@@ -193,12 +201,16 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
 
             with h5py.File(targets[1], "w") as fptr:
                 dset = fptr.create_dataset(
-                    "energies", (len(energies),), dtype=numpy.float64
+                    "energies",
+                    (len(energies),),
+                    dtype=numpy.float64,
                 )
                 dset[:] = energies
 
                 dset = fptr.create_dataset(
-                    "spfs", spfs_arr.shape, dtype=numpy.complex128
+                    "spfs",
+                    spfs_arr.shape,
+                    dtype=numpy.complex128,
                 )
                 dset[:, :] = spfs_arr
 
@@ -219,7 +231,11 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
             self.number_state[0] = self.number_of_particles
             wfn = WaveFunction(tape=tape)
             wfn.init_coef_sing_spec_B(
-                self.number_state, spfs, 1e-15, 1e-15, full_spf=True
+                self.number_state,
+                spfs,
+                1e-15,
+                1e-15,
+                full_spf=True,
             )
 
             save_wave_function(self.path, wfn)
@@ -290,7 +306,9 @@ class MCTDHBCreateWaveFunctionMulti(Task):
 
             all_spfs = []
             for m, path_matrix, path_basis in zip(
-                self.number_of_spfs, self.path_matrices, self.path_bases
+                self.number_of_spfs,
+                self.path_matrices,
+                self.path_bases,
             ):
                 with h5py.File(path_matrix, "r") as fptr:
                     matrix = fptr["matrix"][:, :]
@@ -304,7 +322,9 @@ class MCTDHBCreateWaveFunctionMulti(Task):
                     dset[:] = energies
 
                     dset = fptr.create_dataset(
-                        "spfs", spfs_arr.shape, dtype=numpy.complex128
+                        "spfs",
+                        spfs_arr.shape,
+                        dtype=numpy.complex128,
                     )
                     dset[:, :] = spfs_arr[-1]
 
@@ -323,7 +343,11 @@ class MCTDHBCreateWaveFunctionMulti(Task):
             )
             wfn = WaveFunction(tape=tape)
             wfn.init_coef_sing_spec_B(
-                self.number_state, all_spfs, 1e-15, 1e-15, full_spf=True
+                self.number_state,
+                all_spfs,
+                1e-15,
+                1e-15,
+                full_spf=True,
             )
 
             save_wave_function(self.path, wfn)
@@ -341,7 +365,11 @@ class MCTDHBCreateWaveFunctionMulti(Task):
 
 class MCTDHBAddMomentum(Task):
     def __init__(
-        self, name: str, initial: str, momentum: float, grid: DVRSpecification
+        self,
+        name: str,
+        initial: str,
+        momentum: float,
+        grid: DVRSpecification,
     ):
         self.name = name
         self.initial = initial
@@ -392,7 +420,12 @@ class MCTDHBAddMomentum(Task):
 
 class MCTDHBExtendGrid(Task):
     def __init__(
-        self, name: str, initial: str, nleft: int, nright: int, value: complex = 0.0
+        self,
+        name: str,
+        initial: str,
+        nleft: int,
+        nright: int,
+        value: complex = 0.0,
     ):
         self.name = name
         self.initial = initial
@@ -444,7 +477,11 @@ class MCTDHBExtendGrid(Task):
             number_state = numpy.zeros(m, dtype=numpy.int64)
             number_state[0] = N
             wfn_new.init_coef_sing_spec_B(
-                number_state, spfs, 1e-15, 1e-15, full_spf=True
+                number_state,
+                spfs,
+                1e-15,
+                1e-15,
+                full_spf=True,
             )
 
             wfn_new.PSI[0 : wfn_new.tree._subnodes[0]._z0] = wfn.PSI[
@@ -476,9 +513,9 @@ class MCTDHBOverlapStatic(Task):
             kwargs.get(
                 "name",
                 self.wave_function.with_name(
-                    self.wave_function.stem + "_" + self.basis.stem
+                    self.wave_function.stem + "_" + self.basis.stem,
                 ),
-            )
+            ),
         ).with_suffix(".overlap.h5")
 
         self.name = str(self.result.with_suffix(""))
@@ -517,7 +554,7 @@ class MCTDHBOverlapStatic(Task):
                     coeffs = load_wave_function("basis").PSI[: real.shape[1]]
                     overlap = (
                         numpy.abs(
-                            numpy.sum(numpy.conjugate(coeffs) * (real + 1j * imag))
+                            numpy.sum(numpy.conjugate(coeffs) * (real + 1j * imag)),
                         )
                         ** 2
                     )

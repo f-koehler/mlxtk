@@ -77,7 +77,9 @@ class ParameterScan(SimulationSet):
 
             with open("scan.pickle", "wb") as fptr:
                 pickle.dump(
-                    [combination for combination in self.combinations], fptr, protocol=3
+                    [combination for combination in self.combinations],
+                    fptr,
+                    protocol=3,
                 )
 
     def link_simulations(self):
@@ -219,7 +221,7 @@ class ParameterScan(SimulationSet):
 
         with WorkingDir(self.working_dir):
             self.compute_simulation(self.combinations[args.index]).main(
-                ["task-info", args.name]
+                ["task-info", args.name],
             )
 
     def main(self, argv: List[str] = None):

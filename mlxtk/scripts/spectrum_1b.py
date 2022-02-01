@@ -45,7 +45,14 @@ class SpectrumPlot(SingleLinePlot):
 
 class GUI(QObject):
     def __init__(
-        self, min_index, max_index, grid, weights, energies, spfs, parent=None
+        self,
+        min_index,
+        max_index,
+        grid,
+        weights,
+        energies,
+        spfs,
+        parent=None,
     ):
         super().__init__(parent)
 
@@ -86,7 +93,8 @@ class GUI(QObject):
         self.spf_list.currentRowChanged.connect(self.select_item)
         self.update_table(0)
         self.table_properties.horizontalHeader().setSectionResizeMode(
-            0, QHeaderView.Stretch
+            0,
+            QHeaderView.Stretch,
         )
         self.tabs.currentChanged.connect(self.switch_tab)
 
@@ -140,9 +148,10 @@ class GUI(QObject):
         self.table_properties.item(2, 0).setText(
             str(
                 numpy.vdot(
-                    self.spfs[index] * numpy.sqrt(self.weights), self.spfs[index]
-                )
-            )
+                    self.spfs[index] * numpy.sqrt(self.weights),
+                    self.spfs[index],
+                ),
+            ),
         )
 
     def update(self, index, tab_index):

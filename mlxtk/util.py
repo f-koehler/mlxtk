@@ -95,7 +95,7 @@ def load_module(path: str):
 #     [numba.float64(numba.complex128),
 #      numba.float32(numba.complex64)])
 def compute_magnitude(x):
-    return x.real ** 2 + x.imag ** 2
+    return x.real**2 + x.imag**2
 
 
 # @numba.vectorize([
@@ -103,7 +103,7 @@ def compute_magnitude(x):
 #     numba.float32(numba.float32, numba.float32)
 # ])
 def compute_magnitude_split(real, imag):
-    return real ** 2 + imag ** 2
+    return real**2 + imag**2
 
 
 REGEX_FOLDER_SIZE = re.compile(r"^(\d+)\s+")
@@ -112,7 +112,7 @@ REGEX_FOLDER_SIZE = re.compile(r"^(\d+)\s+")
 def get_folder_size(path: Union[str, Path]) -> int:
     path = str(path)
     m = REGEX_FOLDER_SIZE.match(
-        subprocess.check_output(["du", "-s", "-b", path]).decode()
+        subprocess.check_output(["du", "-s", "-b", path]).decode(),
     )
     if not m:
         raise RuntimeError(f'Error getting folder size for "{path}"')
@@ -135,7 +135,8 @@ def compress_folder(path: Union[str, Path], compression: int = 9, jobs: int = 1)
                 with open(archive, "wb") as fptr:
                     size = get_folder_size(folder)
                     process_tar = subprocess.Popen(
-                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE
+                        [exe_tar, "cf", "-", folder],
+                        stdout=subprocess.PIPE,
                     )
                     process_pv = subprocess.Popen(
                         [exe_pv, "-s", str(size)],
@@ -154,7 +155,8 @@ def compress_folder(path: Union[str, Path], compression: int = 9, jobs: int = 1)
                 LOGGER.warning("cannot find pv, no progress will be displayed")
                 with open(archive, "wb") as fptr:
                     process_tar = subprocess.Popen(
-                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE
+                        [exe_tar, "cf", "-", folder],
+                        stdout=subprocess.PIPE,
                     )
                     process_pigz = subprocess.Popen(
                         [exe_pigz, "-" + str(compression), "-p", str(jobs)],
@@ -166,13 +168,14 @@ def compress_folder(path: Union[str, Path], compression: int = 9, jobs: int = 1)
         elif exe_gzip:
             if jobs > 1:
                 LOGGER.warning(
-                    "gzip does not support parallel compression, using one thread only"
+                    "gzip does not support parallel compression, using one thread only",
                 )
             if exe_pv:
                 with open(archive, "wb") as fptr:
                     size = get_folder_size(folder)
                     process_tar = subprocess.Popen(
-                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE
+                        [exe_tar, "cf", "-", folder],
+                        stdout=subprocess.PIPE,
                     )
                     process_pv = subprocess.Popen(
                         [exe_pv, "-s", str(size)],
@@ -191,7 +194,8 @@ def compress_folder(path: Union[str, Path], compression: int = 9, jobs: int = 1)
                 LOGGER.warning("cannot find pv, no progress will be displayed")
                 with open(archive, "wb") as fptr:
                     process_tar = subprocess.Popen(
-                        [exe_tar, "cf", "-", folder], stdout=subprocess.PIPE
+                        [exe_tar, "cf", "-", folder],
+                        stdout=subprocess.PIPE,
                     )
                     process_gzip = subprocess.Popen(
                         [exe_gzip, "-" + str(compression)],
@@ -227,7 +231,8 @@ def map_parallel_progress(func, items: List[Any], processes: int = cpu_count()):
 
 
 def list_files(
-    path: Union[Path, str], extensions: Optional[List[str]] = None
+    path: Union[Path, str],
+    extensions: Optional[List[str]] = None,
 ) -> List[Path]:
     path = make_path(path)
     files = sorted(p for p in path.iterdir() if p.is_file())

@@ -34,10 +34,13 @@ class OperatorSpecification:
     def __add__(self, other):
         if not isinstance(other, OperatorSpecification):
             raise RuntimeError(
-                "other object must be of type " "OperatorSpecification as well"
+                "other object must be of type " "OperatorSpecification as well",
             )
         cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__iadd__(other)
         return cpy
@@ -48,7 +51,7 @@ class OperatorSpecification:
     def __iadd__(self, other):
         if not isinstance(other, OperatorSpecification):
             raise RuntimeError(
-                "other object must be of type " "OperatorSpecification as well"
+                "other object must be of type " "OperatorSpecification as well",
             )
 
         if self.dofs != other.dofs:
@@ -73,7 +76,10 @@ class OperatorSpecification:
 
     def __mul__(self, other):
         cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__imul__(other)
         return cpy
@@ -88,7 +94,10 @@ class OperatorSpecification:
 
     def __truediv__(self, other):
         cpy = OperatorSpecification(
-            self.dofs, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__itruediv__(other)
         return cpy
@@ -111,7 +120,8 @@ class OperatorSpecification:
         return get_operator_matrix(self.get_operator())
 
     def diagonalize(
-        self, number_eigenfunctions: Optional[int] = None
+        self,
+        number_eigenfunctions: Optional[int] = None,
     ) -> Tuple[numpy.ndarray, numpy.ndarray]:
         evals, evecs = diagonalize_1b_operator(self.get_matrix(), number_eigenfunctions)
         return evals, numpy.array(evecs)

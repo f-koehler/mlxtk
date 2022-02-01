@@ -11,7 +11,8 @@ LOGGER = log.get_logger(__name__)
 
 
 def diagonalize_1b_operator(
-    matrix: numpy.ndarray, number_eigenfunctions: Optional[int] = None
+    matrix: numpy.ndarray,
+    number_eigenfunctions: Optional[int] = None,
 ) -> Tuple[numpy.ndarray, List[numpy.ndarray]]:
     """Diagonalize the supplied one-dimensional one-body hamiltonian
 
@@ -35,7 +36,8 @@ def diagonalize_1b_operator(
         number_eigenfunctions = len(eigenvalues)
 
     eigenvectors = QDTK.Wavefunction.grab_lowest_eigenfct(
-        number_eigenfunctions, eigenvectors
+        number_eigenfunctions,
+        eigenvectors,
     )
     eigenvalues = eigenvalues[0:number_eigenfunctions]
     QDTK.Tools.Mathematics.gramSchmidt(eigenvectors)

@@ -14,7 +14,8 @@ if __name__ == "__main__":
 
     sim = mlxtk.Simulation("bose_hubbard")
     sim += tasks.CreateOperator(
-        "fake_hamiltonian.opr", system.get_fake_initial_state_hamiltonian()
+        "fake_hamiltonian.opr",
+        system.get_fake_initial_state_hamiltonian(),
     )
     sim += tasks.CreateMBOperator("hamiltonian.mb_opr", system.get_hamiltonian())
     sim += tasks.MCTDHBCreateWaveFunction(

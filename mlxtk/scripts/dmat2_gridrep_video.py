@@ -35,13 +35,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("input", type=Path, help="path for the input file")
     parser.add_argument(
-        "-o", "--output", type=Path, default=None, help="path for the video file"
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="path for the video file",
     )
     parser.add_argument(
-        "-f", "--fps", type=float, default=5, help="frames per second for the video"
+        "-f",
+        "--fps",
+        type=float,
+        default=5,
+        help="frames per second for the video",
     )
     parser.add_argument(
-        "--dpi", type=int, default=600, help="resolution (dpi) of the individual frames"
+        "--dpi",
+        type=int,
+        default=600,
+        help="resolution (dpi) of the individual frames",
     )
     parser.add_argument(
         "-j",

@@ -23,7 +23,7 @@ def main():
         times = fp["fixed_ns"]["time"][:]
         if len(times) != 1:
             raise RuntimeError(
-                "this script expects exactly one time instance in the ns analysis"
+                "this script expects exactly one time instance in the ns analysis",
             )
 
         magnitudes = compute_magnitude_split(
@@ -51,7 +51,7 @@ def main():
             {"states": states, "magnitudes": magnitudes},
             headers="keys",
             tablefmt="orgtbl",
-        )
+        ),
     )
 
 

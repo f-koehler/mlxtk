@@ -44,7 +44,7 @@ def main():
 
             ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
             ax.set_ylabel(
-                mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}")
+                mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}"),
             )
         else:
             plot_expval(ax, time, values, label=name)

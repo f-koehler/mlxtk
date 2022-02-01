@@ -32,7 +32,7 @@ class ComputeExpectationValue(Task):
         self.psi = make_path(psi)
         if self.unique_name:
             self.expval = self.psi.with_name(
-                self.psi.stem + "_" + self.operator.stem
+                self.psi.stem + "_" + self.operator.stem,
             ).with_suffix(".exp.h5")
         else:
             self.expval = (self.psi.parent / self.operator.stem).with_suffix(".exp.h5")
@@ -41,7 +41,7 @@ class ComputeExpectationValue(Task):
             self.wave_function = make_path(kwargs["wave_function"])
         else:
             self.wave_function = make_path(
-                kwargs.get("wave_function", self.psi.parent / "final")
+                kwargs.get("wave_function", self.psi.parent / "final"),
             ).with_suffix(".wfn")
 
         self.name = str(self.expval.with_suffix(""))
@@ -101,7 +101,7 @@ class ComputeExpectationValueStatic(Task):
         self.operator = make_path(operator)
         self.wave_function = make_path(wave_function)
         self.expval = self.wave_function.with_name(
-            self.wave_function.stem + "_" + self.operator.stem
+            self.wave_function.stem + "_" + self.operator.stem,
         ).with_suffix(".exp.h5")
 
         self.name = str(self.expval.with_suffix(""))

@@ -39,7 +39,7 @@ class ParameterSelection:
                 [p[1].copy() for p in self.parameters],
                 self.path,
                 [p[0] for p in self.parameters],
-            )
+            ),
         )
 
     def partition_single(self, parameter_name: str):
@@ -50,11 +50,13 @@ class ParameterSelection:
         for index, parameter in self.parameters:
             partitions[parameter[parameter_name]][0].append(index)
             partitions[parameter[parameter_name]][1].append(
-                parameter.copy().remove_parameter(parameter_name)
+                parameter.copy().remove_parameter(parameter_name),
             )
         return {
             value: ParameterSelection(
-                partitions[value][1], self.path, partitions[value][0]
+                partitions[value][1],
+                self.path,
+                partitions[value][0],
             )
             for value in parameter_values
         }
@@ -63,7 +65,7 @@ class ParameterSelection:
         if isinstance(parameter_names, str):
             return self.partition_single(parameter_names)
         raise NotImplementedError(
-            "Only partitioning according to a single parameter is implemented yet."
+            "Only partitioning according to a single parameter is implemented yet.",
         )
 
     def fix_parameter(self, name: str, value: Any) -> "ParameterSelection":
@@ -177,7 +179,9 @@ class ParameterSelection:
         return variables, values
 
     def foreach(
-        self, func: Callable[[int, str, Parameters], Any], parallel=True
+        self,
+        func: Callable[[int, str, Parameters], Any],
+        parallel=True,
     ) -> List[Any]:
         """Call a function for each included parameter set.
 
@@ -209,7 +213,9 @@ class ParameterSelection:
         ]
 
     def plot_foreach(
-        self, name: str, func: Callable[[int, str, Parameters], None]
+        self,
+        name: str,
+        func: Callable[[int, str, Parameters], None],
     ) -> Optional[List[Any]]:
         if not self.path:
             raise RuntimeError("No path set for parameter selection")
@@ -238,7 +244,8 @@ def load_scan(path: Union[str, Path]) -> ParameterSelection:
 
 
 def group_scans_by(
-    selections: List[ParameterSelection], parameter_name: str
+    selections: List[ParameterSelection],
+    parameter_name: str,
 ) -> Dict[Any, List[ParameterSelection]]:
     values = set()
     for selection in selections:
@@ -246,8 +253,8 @@ def group_scans_by(
         if len(scan_values) != 1:
             raise RuntimeError(
                 'exactly one parameter for "{}" required per scan'.format(
-                    parameter_name
-                )
+                    parameter_name,
+                ),
             )
         values.add(scan_values.pop())
 

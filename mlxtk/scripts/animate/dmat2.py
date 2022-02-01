@@ -39,10 +39,16 @@ def create_frame(
         + f"{time:8.2f}"
         + r"\,"
         + str(unitsys.get_time_unit())
-        + "$"
+        + "$",
     )
     mesh = ax.pcolormesh(
-        X1, X2, values, rasterized=True, cmap="gnuplot", vmin=valmin, vmax=valmax
+        X1,
+        X2,
+        values,
+        rasterized=True,
+        cmap="gnuplot",
+        vmin=valmin,
+        vmax=valmax,
     )
     fig.colorbar(mesh)
     mlxtk.plot.apply_2d_args(ax, fig, args)
@@ -74,7 +80,8 @@ def main():
     path_input = args.input_.resolve()
 
     times, x1, x2, values = mlxtk.inout.dmat2.read_dmat2_gridrep_hdf5(
-        args.input_, "dmat2_gridrep"
+        args.input_,
+        "dmat2_gridrep",
     )
     values = numpy.abs(values)
 

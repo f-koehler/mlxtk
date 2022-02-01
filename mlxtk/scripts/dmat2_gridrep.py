@@ -13,7 +13,10 @@ from mlxtk.util import copy_file
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--restart", type=Path, default=Path("restart"), help="path to the restart file"
+        "--restart",
+        type=Path,
+        default=Path("restart"),
+        help="path to the restart file",
     )
     parser.add_argument(
         "--operator",
@@ -22,7 +25,10 @@ def main():
         help="path to the hamiltonian operator",
     )
     parser.add_argument(
-        "--psi", type=Path, default=Path("psi"), help="path to the psi file"
+        "--psi",
+        type=Path,
+        default=Path("psi"),
+        help="path to the psi file",
     )
     parser.add_argument("--dof1", type=int, default=1, help="first degree of freedom")
     parser.add_argument("--dof2", type=int, default=1, help="second degree of freedom")
@@ -57,11 +63,12 @@ def main():
                     str(args.dof1),
                     "-dofB",
                     str(args.dof2),
-                ]
+                ],
             )
             with h5py.File(output_file, "w") as fptr:
                 add_dmat2_gridrep_to_hdf5(
-                    fptr, read_dmat2_gridrep_ascii(basename + "_grid")
+                    fptr,
+                    read_dmat2_gridrep_ascii(basename + "_grid"),
                 )
 
 

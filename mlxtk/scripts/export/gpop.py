@@ -21,7 +21,8 @@ def main():
         fptr.create_dataset("time", shape=time.shape, dtype=time.dtype)[:] = time
         fptr.create_dataset("grid", shape=grid.shape, dtype=grid.dtype)[:] = grid
         fptr.create_dataset("density", shape=densities.shape, dtype=densities.dtype)[
-            :, :
+            :,
+            :,
         ] = densities
 
 

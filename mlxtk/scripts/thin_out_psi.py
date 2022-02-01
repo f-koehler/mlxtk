@@ -15,7 +15,11 @@ def main():
     parser.add_argument(metavar="input", dest="input_", type=str, help="input psi file")
     parser.add_argument("-o", "--output", type=str, help="output psi file")
     parser.add_argument(
-        "-t", "--time", type=float, action="append", help="time point for psi"
+        "-t",
+        "--time",
+        type=float,
+        action="append",
+        help="time point for psi",
     )
     parser.add_argument(
         "-s",

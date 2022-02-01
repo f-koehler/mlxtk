@@ -27,10 +27,16 @@ classifiers = [
 description = "Toolkit to design, run and analyze ML-MCTDH(X) simulations"
 documentation = "https://github.com/f-koehler/mlxtk"
 homepage = "https://github.com/f-koehler/mlxtk"
-include = [
-  "changelogs",
+include = ["changelogs"]
+keywords = [
+  "physics",
+  "quantum",
+  "dynamics",
+  "ML-MCTDHX",
+  "MCTDHB",
+  "MCTDHF",
+  "dataflow",
 ]
-keywords = ["physics", "quantum", "dynamics", "ML-MCTDHX", "MCTDHB", "MCTDHF", "dataflow"]
 license = "MIT"
 name = "mlxtk"
 readme = "README.md"
@@ -45,11 +51,11 @@ h5py = "^3.0"
 jinja2 = ">=2.11.2,<4.0.0"
 matplotlib = "^3.3.2"
 numpy = "^1.19.2"
-numpy-stl = {version = "^2.11.2", optional = true}
+numpy-stl = { version = "^2.11.2", optional = true }
 pandas = "^1.1.2"
 pathos = "^0.2.6"
 prompt-toolkit = "^3.0.7"
-pyside2 = {version = "^5.15.1", optional = true}
+pyside2 = { version = "^5.15.1", optional = true }
 python = ">=3.7,<3.10"
 pyyaml = ">=5.3.1,<7.0.0"
 scipy = "^1.5.2"
@@ -59,15 +65,15 @@ tqdm = "^4.50.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
-black = "^21.4b0"
+black = "^22.1"
 flake8 = "^4.0.0"
 isort = "^5.5.4"
 jedi = "^0.18.0"
-mypy = "^0.910"
-pre-commit = "^2.10.1"
+mypy = "^0.931"
 pylint = "^2.6.0"
 pytest = "^6.1.1"
-rope = "^0.21.0"
+rope = "^0.22.0"
+pre-commit = "^2.10.1"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"

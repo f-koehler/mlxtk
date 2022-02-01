@@ -9,7 +9,7 @@ from mlxtk.util import make_path
 
 
 def read_fixed_ns_ascii(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     path = make_path(path)
 
@@ -23,7 +23,11 @@ def read_fixed_ns_ascii(
         )
         usecols = [i for i in range(2 * num_coefficients + 1)]
         data = pandas.read_csv(
-            path, delim_whitespace=True, header=None, names=names, usecols=usecols
+            path,
+            delim_whitespace=True,
+            header=None,
+            names=names,
+            usecols=usecols,
         )[names].values
         times, indices = numpy.unique(data[:, 0], return_index=True)
 
@@ -35,7 +39,7 @@ def read_fixed_ns_ascii(
 
 
 def read_fixed_ns_hdf5(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
     with h5py.File(path, "r") as fptr:
@@ -49,7 +53,7 @@ def read_fixed_ns_hdf5(
 
 
 def read_fixed_ns_total_magnitude_hdf5(
-    path: Union[str, Path]
+    path: Union[str, Path],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, int, int]:
     path = str(path)
 
@@ -57,7 +61,7 @@ def read_fixed_ns_total_magnitude_hdf5(
 
     return (
         time,
-        numpy.sum(coefficients.real ** 2 + coefficients.imag ** 2, axis=1),
+        numpy.sum(coefficients.real**2 + coefficients.imag**2, axis=1),
         N,
         m,
     )

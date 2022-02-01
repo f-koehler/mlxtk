@@ -47,7 +47,11 @@ class MBOperatorSpecification:
 
     def __add__(self, other):
         cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.grids,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__iadd__(other)
         return cpy
@@ -59,7 +63,7 @@ class MBOperatorSpecification:
         if not isinstance(other, MBOperatorSpecification):
             raise RuntimeError(
                 "other object must be of type "
-                "MBOperatorSpecification as well (not {})".format(type(other).__name__)
+                "MBOperatorSpecification as well (not {})".format(type(other).__name__),
             )
 
         if self.dofs != other.dofs:
@@ -73,7 +77,7 @@ class MBOperatorSpecification:
                 "coefficient names are not unique\n"
                 + str(self.coefficients)
                 + "\n"
-                + str(other.coefficients)
+                + str(other.coefficients),
             )
 
         if not set(self.terms.keys()).isdisjoint(set(other.terms.keys())):
@@ -92,7 +96,11 @@ class MBOperatorSpecification:
 
     def __mul__(self, other):
         cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.grids,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__imul__(other)
         return cpy
@@ -107,7 +115,11 @@ class MBOperatorSpecification:
 
     def __truediv__(self, other):
         cpy = MBOperatorSpecification(
-            self.dofs, self.grids, self.coefficients, self.terms, self.table
+            self.dofs,
+            self.grids,
+            self.coefficients,
+            self.terms,
+            self.table,
         )
         cpy.__itruediv__(other)
         return cpy
@@ -129,7 +141,7 @@ class MBOperatorSpecification:
 
         if term_kwargs.get("type", "diag") != "diag":
             raise NotImplementedError(
-                "Only diagonal time-dependent terms are supported by QDTK"
+                "Only diagonal time-dependent terms are supported by QDTK",
             )
         term_kwargs["type"] = "diag"
 

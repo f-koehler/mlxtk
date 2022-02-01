@@ -9,7 +9,8 @@ def cmd_qdel(self: SimulationSetBase, args: argparse.Namespace):
 
     if not self.working_dir.exists():
         self.logger.warning(
-            "working dir %s does not exist, do nothing", self.working_dir
+            "working dir %s does not exist, do nothing",
+            self.working_dir,
         )
 
     with WorkingDir(self.working_dir):

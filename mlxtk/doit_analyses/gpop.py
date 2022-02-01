@@ -101,7 +101,9 @@ def scan_plot_gpop_momentum(
 
 
 def scan_gpop_slideshow(
-    scan_dir: Union[Path, str], dof: int = 1, duration: float = 20.0
+    scan_dir: Union[Path, str],
+    dof: int = 1,
+    duration: float = 20.0,
 ):
     scan_dir = make_path(scan_dir)
     yield create_slideshow(
@@ -112,7 +114,7 @@ def scan_gpop_slideshow(
             ],
         ),
         (Path("videos") / ("gpop_" + str(dof)) / scan_dir.name).with_suffix(
-            scan_dir.suffix + ".mp4"
+            scan_dir.suffix + ".mp4",
         ),
         duration,
     )

@@ -55,7 +55,7 @@ def load_settings_file(settings_path: Path) -> Dict[Any, Any]:
                     settings["env"][entry] = [
                         (
                             settings_path.parent / Path(settings["env"][entry][1:])
-                        ).resolve()
+                        ).resolve(),
                     ]
     else:
         settings["env"] = {}

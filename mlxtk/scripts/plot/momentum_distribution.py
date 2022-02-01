@@ -32,7 +32,8 @@ def main():
     figure, ax = plt.subplots(1, 1)
 
     times, momenta, density = read_momentum_distribution_hdf5(
-        args.path, "momentum_distribution"
+        args.path,
+        "momentum_distribution",
     )
 
     average_momentum = numpy.zeros_like(times)

@@ -17,7 +17,11 @@ def main():
         help="extension of the input files",
     )
     parser.add_argument(
-        "-d", "--duration", type=float, default=20, help="duration for the video"
+        "-d",
+        "--duration",
+        type=float,
+        default=20,
+        help="duration for the video",
     )
     args = parser.parse_args()
 

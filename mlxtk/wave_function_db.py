@@ -224,7 +224,7 @@ class WaveFunctionDB(ParameterScan):
 
         with cwd.WorkingDir(self.working_dir.parent):
             common_parameter_names = parameters.get_common_parameter_names(
-                self.prototype
+                self.prototype,
             )
 
             path = self.get_path(parameters)
@@ -343,7 +343,9 @@ class WaveFunctionDB(ParameterScan):
             return
 
         self.logger.info(
-            'running operation "%s" on %d simulation(s)', operation, len(selection)
+            'running operation "%s" on %d simulation(s)',
+            operation,
+            len(selection),
         )
 
         if operation == "remove":

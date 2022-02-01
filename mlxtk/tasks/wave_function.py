@@ -93,7 +93,10 @@ class RequestWaveFunction(Task):
 
 class FrameFromPsi(Task):
     def __init__(
-        self, psi: Union[str, Path], index: int, path: Union[Path, str] = None
+        self,
+        psi: Union[str, Path],
+        index: int,
+        path: Union[Path, str] = None,
     ):
         self.logger = get_logger(__name__ + ".FrameFromPsi")
         self.psi = make_path(psi)
@@ -126,7 +129,8 @@ class FrameFromPsi(Task):
 
             tape, time, frame = read_psi_frame_ascii(self.psi, self.index)
             write_psi_ascii(
-                targets[0], (tape, numpy.array([time]), numpy.array([frame]))
+                targets[0],
+                (tape, numpy.array([time]), numpy.array([frame])),
             )
 
         return {

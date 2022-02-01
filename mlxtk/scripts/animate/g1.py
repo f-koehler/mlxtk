@@ -39,10 +39,16 @@ def create_frame(
         + f"{time:8.2f}"
         + r"\,"
         + str(unitsys.get_time_unit())
-        + "$"
+        + "$",
     )
     mesh = ax.pcolormesh(
-        X1, X2, values, rasterized=True, cmap="gnuplot", vmin=valmin, vmax=valmax
+        X1,
+        X2,
+        values,
+        rasterized=True,
+        cmap="gnuplot",
+        vmin=valmin,
+        vmax=valmax,
     )
     fig.colorbar(mesh)
     mlxtk.plot.apply_2d_args(ax, fig, args)

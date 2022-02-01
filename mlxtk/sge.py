@@ -31,7 +31,10 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         ),
     )
     parser.add_argument(
-        "-m", "--memory", default="2G", help="amount of memory available to the job(s)"
+        "-m",
+        "--memory",
+        default="2G",
+        help="amount of memory available to the job(s)",
     )
     parser.add_argument(
         "-t",
@@ -40,7 +43,10 @@ def add_parser_arguments(parser: argparse.ArgumentParser):
         help="maximum computation time for the job(s)",
     )
     parser.add_argument(
-        "-c", "--cpus", default="1", help="number of cpus to use for SMP"
+        "-c",
+        "--cpus",
+        default="1",
+        help="number of cpus to use for SMP",
     )
     parser.add_argument(
         "-e",
@@ -103,7 +109,8 @@ def submit(
             job_id = int(fptr.read())
             if job_id in get_jobs_in_queue():
                 LOGGER.error(
-                    "job seems to be in the queue already (with id %d)", job_id
+                    "job seems to be in the queue already (with id %d)",
+                    job_id,
                 )
                 return -1
 

@@ -74,7 +74,7 @@ def crop_pdf(path: Union[str, Path]):
             output = subprocess.check_output(["gs", "--version"]).decode().strip()
             if output == "9.27":
                 LOGGER.error(
-                    "There is a bug when using pdfcrop with ghostscript==9.27 that might remove actual content of the PDF, skip cropping"
+                    "There is a bug when using pdfcrop with ghostscript==9.27 that might remove actual content of the PDF, skip cropping",
                 )
                 return
         except subprocess.CalledProcessError:
@@ -157,7 +157,10 @@ class PlotArgs2D:
 
 def add_argparse_2d_args(parser: argparse.ArgumentParser):
     parser.add_argument(
-        "--logx", action="store_true", dest="logx", help="use log scale on the x-axis"
+        "--logx",
+        action="store_true",
+        dest="logx",
+        help="use log scale on the x-axis",
     )
     parser.add_argument(
         "--no-logx",
@@ -166,7 +169,10 @@ def add_argparse_2d_args(parser: argparse.ArgumentParser):
         help="do not use log scale on the x-axis",
     )
     parser.add_argument(
-        "--logy", action="store_true", dest="logy", help="use log scale on the y-axis"
+        "--logy",
+        action="store_true",
+        dest="logy",
+        help="use log scale on the y-axis",
     )
     parser.add_argument(
         "--no-logy",
@@ -180,7 +186,10 @@ def add_argparse_2d_args(parser: argparse.ArgumentParser):
     parser.add_argument("--ymax", type=float, help="maximum for the y axis")
     parser.add_argument("--grid", action="store_true", dest="grid", help="draw a grid")
     parser.add_argument(
-        "--no-grid", action="store_false", dest="grid", help="do not draw a grid"
+        "--no-grid",
+        action="store_false",
+        dest="grid",
+        help="do not draw a grid",
     )
     parser.add_argument("--dpi", type=int, help="resolution (dpi) of figure")
 
@@ -196,7 +205,10 @@ def apply_2d_args(
 def add_argparse_save_arg(parser: argparse.ArgumentParser):
     parser.add_argument("-o", "--output", type=Path, help="path to the output file")
     parser.add_argument(
-        "--crop-pdf", action="store_true", dest="crop_pdf", help="crop PDF file"
+        "--crop-pdf",
+        action="store_true",
+        dest="crop_pdf",
+        help="crop PDF file",
     )
     parser.add_argument(
         "--no-crop-pdf",

@@ -34,7 +34,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("psi", type=Path, help="psi file to use for the recreation")
     parser.add_argument(
-        "opr", type=Path, help="operator file to use for the recreation"
+        "opr",
+        type=Path,
+        help="operator file to use for the recreation",
     )
     parser.add_argument(
         "-o",
@@ -69,7 +71,7 @@ def main():
                     "-psi",
                     "psi",
                     "-recreate",
-                ]
+                ],
             )
 
             with h5py.File("result.h5", "w") as fptr:

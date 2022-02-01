@@ -6,6 +6,7 @@ from mlxtk.tasks.number_state_analysis import (
     NumberStateAnalysisStatic,
 )
 from mlxtk.tasks.operator import CreateOperator, OperatorSpecification
+from mlxtk.tasks.point_function import ComputePointFunction
 from mlxtk.tasks.propagate import Diagonalize, ImprovedRelax, Propagate, Relax
 from mlxtk.tasks.spectrum import ComputeSpectrum
 from mlxtk.tasks.variance import ComputeVariance
@@ -19,4 +20,6 @@ from mlxtk.tasks.wfn_mcthdb import (
     MCTDHBExtendGrid,
     MCTDHBOverlapStatic,
 )
+from mlxtk.tasks.wfn_ml_mctdh import CreateMLMCTDHWaveFunction
+from mlxtk.tasks.wfn_spin_half import CreateSpinHalfWaveFunction
 from mlxtk.tasks.wfn_sqr import CreateSQRBosonicWaveFunction

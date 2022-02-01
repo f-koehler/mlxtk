@@ -12,7 +12,7 @@ def main():
                 + ":".join([str(p) for p in env[entry]])
                 + ":$"
                 + entry
-                + '"'
+                + '"',
             )
         else:
             print("export " + entry + '="' + env[entry] + '"')

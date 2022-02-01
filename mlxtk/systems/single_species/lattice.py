@@ -17,11 +17,12 @@ class Lattice(SingleSpeciesSystem):
                 ("g", 0.1, "strength of the contact interaction between the particles"),
                 ("wells", 5, "number of wells"),
                 ("V0", 1.0, "depth of the lattice"),
-            ]
+            ],
         )
 
     def get_potential(
-        self, x: Union[float, numpy.ndarray]
+        self,
+        x: Union[float, numpy.ndarray],
     ) -> Union[float, numpy.ndarray]:
         if self.parameters.wells % 2 == 0:
             return numpy.cos(numpy.pi * self.parameters.wells * x) ** 2
@@ -29,9 +30,10 @@ class Lattice(SingleSpeciesSystem):
 
     @staticmethod
     def convert_recoil_energy(
-        energy: Union[float, numpy.ndarray], parameters: Parameters
+        energy: Union[float, numpy.ndarray],
+        parameters: Parameters,
     ) -> Union[float, numpy.ndarray]:
-        return 0.5 * (numpy.pi ** 2) * (parameters.wells ** 2) * energy
+        return 0.5 * (numpy.pi**2) * (parameters.wells**2) * energy
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(

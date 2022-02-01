@@ -24,7 +24,7 @@ class BoseHubbard:
                 ("J", 1.0, "hopping constant"),
                 ("U", 1.0, "interaction strength"),
                 ("pbc", True, "whether to use periodic boundary conditions"),
-            ]
+            ],
         )
 
     def create_hopping_term(self) -> MBOperatorSpecification:
@@ -73,10 +73,21 @@ class BoseHubbard:
             {f"interaction_term_{i}": create_delta_peak(n, i) for i in range(n)},
             [
                 "interaction_coeff | 1 interaction_term_{} | 1* interaction_term_{}".format(
-                    i, i
+                    i,
+                    i,
                 )
                 for i in range(n)
             ],
+        )
+
+    def get_particle_number_operator(self) -> MBOperatorSpecification:
+        term = numpy.ones(self.grid.get().npoints)
+        return MBOperatorSpecification(
+            (1,),
+            (self.grid,),
+            {"particle_number_coeff": 1.0},
+            {"particle_number": term},
+            "particle_number_coeff | 1 particle_number",
         )
 
     def get_site_occupation_operator(self, site_index: int) -> MBOperatorSpecification:
@@ -92,7 +103,8 @@ class BoseHubbard:
         )
 
     def get_site_occupation_operator_squared(
-        self, site_index: int
+        self,
+        site_index: int,
     ) -> MBOperatorSpecification:
         term = numpy.zeros(self.grid.get().npoints)
         term[site_index] = 1
@@ -109,7 +121,9 @@ class BoseHubbard:
         )
 
     def get_site_occupation_pair_operator(
-        self, site_index_1: int, site_index_2: int
+        self,
+        site_index_1: int,
+        site_index_2: int,
     ) -> MBOperatorSpecification:
         n = self.grid.get().npoints
         term_1 = numpy.zeros(n)
@@ -120,7 +134,7 @@ class BoseHubbard:
         terms = {"site_occupation_pair_1": term_1, "site_occupation_pair_2": term_2}
         coefficients = {"site_occupation_pair_2b_coeff": 2.0}
         table = [
-            "site_occupation_pair_2b_coeff | 1 site_occupation_pair_1 | 1* site_occupation_pair_2"
+            "site_occupation_pair_2b_coeff | 1 site_occupation_pair_1 | 1* site_occupation_pair_2",
         ]
         if site_index_1 == site_index_2:
             coefficients["site_occupation_pair_1b_coeff"] = 1.0

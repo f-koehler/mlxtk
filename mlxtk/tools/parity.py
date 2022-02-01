@@ -10,7 +10,8 @@ def compute_state_parity(state: numpy.ndarray) -> numpy.complex128:
 
 
 def compute_parity_operator(
-    state1: numpy.ndarray, state2: numpy.ndarray
+    state1: numpy.ndarray,
+    state2: numpy.ndarray,
 ) -> numpy.ndarray:
     opr = numpy.zeros((2, 2), dtype=numpy.complex128)
     opr[0, 0] = compute_state_parity(state1)
@@ -21,7 +22,8 @@ def compute_parity_operator(
 
 
 def compute_parity_eigenstates(
-    state1: numpy.ndarray, state2: numpy.ndarray
+    state1: numpy.ndarray,
+    state2: numpy.ndarray,
 ) -> Tuple[numpy.ndarray, numpy.ndarray]:
     opr = compute_parity_operator(state1, state2)
     evals, evecs = diagonalize_1b_operator(opr, 2)

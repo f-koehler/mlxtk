@@ -14,7 +14,7 @@ LOGGER = get_logger(__name__)
 
 
 def compute_g1(
-    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]
+    data_dmat: Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray],
 ) -> Tuple[numpy.ndarray, numpy.ndarray, numpy.ndarray, numpy.ndarray]:
     LOGGER.info("compute g1")
 
@@ -45,7 +45,7 @@ def compute_g1_diff(
         for j in range(len(x1)):
             for k in range(len(x2)):
                 g1[i, j, k] = dmat[i, j, k] - cmath.sqrt(dmat[i, j, j]) * cmath.sqrt(
-                    dmat[i, k, k]
+                    dmat[i, k, k],
                 )
 
     if normalize:

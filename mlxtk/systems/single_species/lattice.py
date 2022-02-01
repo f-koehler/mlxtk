@@ -33,7 +33,7 @@ class Lattice(SingleSpeciesSystem):
         energy: Union[float, numpy.ndarray],
         parameters: Parameters,
     ) -> Union[float, numpy.ndarray]:
-        return 0.5 * (numpy.pi ** 2) * (parameters.wells ** 2) * energy
+        return 0.5 * (numpy.pi**2) * (parameters.wells**2) * energy
 
     def get_potential_operator_1b(self) -> tasks.OperatorSpecification:
         return tasks.OperatorSpecification(

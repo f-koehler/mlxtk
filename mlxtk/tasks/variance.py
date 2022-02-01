@@ -30,7 +30,7 @@ class ComputeVariance(Task):
             if not numpy.allclose(t1, t2):
                 raise ValueError("got different time points")
 
-            write_expval_hdf5(self.path_variance, t1, exp2 - (exp ** 2))
+            write_expval_hdf5(self.path_variance, t1, exp2 - (exp**2))
 
         return {
             "name": f"variance:{self.name}:compute",

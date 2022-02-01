@@ -42,13 +42,13 @@ class Unit:
 
     def __pow__(self, other):
         if isinstance(other, Unit):
-            return Unit(self.expression ** other.expression)
-        return Unit(self.expression ** other)
+            return Unit(self.expression**other.expression)
+        return Unit(self.expression**other)
 
     def __rpow__(self, other):
         if isinstance(other, Unit):
-            return Unit(other.expression ** self.expression)
-        return Unit(other ** self.expression)
+            return Unit(other.expression**self.expression)
+        return Unit(other**self.expression)
 
     def is_arbitrary(self) -> bool:
         return False

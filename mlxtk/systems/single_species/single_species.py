@@ -79,7 +79,7 @@ class SingleSpeciesSystem(ABC):
         )
 
     def get_com_operator_squared(self) -> MBOperatorSpecification:
-        N_squared = self.parameters.N ** 2
+        N_squared = self.parameters.N**2
         return MBOperatorSpecification(
             (1,),
             (self.grid,),
@@ -137,7 +137,7 @@ class SingleSpeciesSystem(ABC):
         term = numpy.copy(self.grid.get_x())
         term[numpy.logical_or(term < xmin, term > xmax)] = 0.0
 
-        term2 = term ** 2
+        term2 = term**2
         return MBOperatorSpecification(
             (1,),
             (self.grid,),

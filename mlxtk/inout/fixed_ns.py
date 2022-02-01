@@ -61,7 +61,7 @@ def read_fixed_ns_total_magnitude_hdf5(
 
     return (
         time,
-        numpy.sum(coefficients.real ** 2 + coefficients.imag ** 2, axis=1),
+        numpy.sum(coefficients.real**2 + coefficients.imag**2, axis=1),
         N,
         m,
     )

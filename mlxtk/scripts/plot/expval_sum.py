@@ -44,12 +44,12 @@ def main():
             values_sum += values
 
     if args.fft:
-        plot_expval(ax, *mlxtk.tools.signal.fourier_transform(time, values))
+        plot_expval(ax, *mlxtk.tools.signal.fourier_transform(time, values_sum))
 
         ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))
         ax.set_ylabel(mlxtk.units.ArbitraryUnit().format_label(r"\mathrm{amplitude}"))
     else:
-        plot_expval(ax, time, values)
+        plot_expval(ax, time, values_sum)
         if args.xname == "time":
             ax.set_xlabel(unitsys.get_time_unit().format_label("t"))
         else:

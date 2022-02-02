@@ -80,12 +80,12 @@ class TwoGaussianTraps(GaussianTrap):
         return (
             self.get_kinetic_operator_1b()
             + self.create_gaussian_potential_operator_1b(
-                self.parameters.x0L + vL * t + 0.5 * aL * (t ** 2),
+                self.parameters.x0L + vL * t + 0.5 * aL * (t**2),
                 self.parameters.V0L,
                 "potential_left",
             )
             + self.create_gaussian_potential_operator_1b(
-                self.parameters.x0R + vR * t + 0.5 * aR * (t ** 2),
+                self.parameters.x0R + vR * t + 0.5 * aR * (t**2),
                 self.parameters.V0R,
                 "potential_right",
             )

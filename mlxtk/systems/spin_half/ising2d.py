@@ -60,23 +60,23 @@ class Ising2D:
         if self.parameters["hx"] != 0.0:
             coeffs.update({"-hx": -self.parameters["hx"]})
             terms.update({"sx": self.grid.get().get_sigma_x()})
-            for i in range(L ** 2):
+            for i in range(L**2):
                 table.append(f"-hx | {i+1} sx")
 
         if self.parameters["hy"] != 0.0:
             coeffs.update({"-hy": -self.parameters["hy"]})
             terms.update({"sy": self.grid.get().get_sigma_y()})
-            for i in range(L ** 2):
+            for i in range(L**2):
                 table.append(f"-hy | {i+1} sy")
 
         if self.parameters["hz"] != 0.0:
             coeffs.update({"-hz": -self.parameters["hz"]})
             terms.update({"sz": self.grid.get().get_sigma_z()})
-            for i in range(L ** 2):
+            for i in range(L**2):
                 table.append(f"-hz | {i+1} sz")
 
         return OperatorSpecification(
-            [self.grid] * (self.parameters.L ** 2),
+            [self.grid] * (self.parameters.L**2),
             coeffs,
             terms,
             table,
@@ -84,7 +84,7 @@ class Ising2D:
 
     def create_Sx_operator(self) -> OperatorSpecification:
         return OperatorSpecification(
-            [self.grid] * (self.parameters.L ** 2),
+            [self.grid] * (self.parameters.L**2),
             {f"Sx_coeff": 1.0},
             {f"Sx_term": self.grid.get().get_sigma_x()},
             [
@@ -95,7 +95,7 @@ class Ising2D:
 
     def create_Sz_operator(self) -> OperatorSpecification:
         return OperatorSpecification(
-            [self.grid] * (self.parameters.L ** 2),
+            [self.grid] * (self.parameters.L**2),
             {f"Sz_coeff": 1.0},
             {f"Sz_term": self.grid.get().get_sigma_z()},
             [

@@ -95,7 +95,7 @@ class BosonicSQR(ABC):
             {
                 "penalty_coeff_2_lambda": 2 * penalty,
                 "penalty_coeff_lambda": penalty,
-                "penalty_coeff_lambda_N^2": penalty * (self.parameters.N ** 2),
+                "penalty_coeff_lambda_N^2": penalty * (self.parameters.N**2),
                 "penalty_coeff_m2_lambda_N": -2 * penalty * self.parameters.N,
             },
             {
@@ -112,9 +112,9 @@ class BosonicSQR(ABC):
         zeta: float = 0.0625,
     ) -> OperatorSpecification:
         N = self.parameters.N
-        prefactor_1 = gamma / (zeta ** 2) * numpy.exp(-zeta * N)
-        prefactor_2 = gamma / (zeta ** 2) * numpy.exp(zeta * N)
-        constant = -2 * gamma / (zeta ** 2)
+        prefactor_1 = gamma / (zeta**2) * numpy.exp(-zeta * N)
+        prefactor_2 = gamma / (zeta**2) * numpy.exp(zeta * N)
+        constant = -2 * gamma / (zeta**2)
 
         term_1 = numpy.exp(zeta * self.grid.get_x())
         term_2 = numpy.exp(-zeta * self.grid.get_x())

@@ -18,12 +18,9 @@ def transform_to_momentum_space(
         new_densities = {}  # type: Dict[int, numpy.ndarray]
         for key in data[1]:
             dx = numpy.abs(data[1][key][1] - data[1][key][0])
-            new_grids[key] = (
-                fftpack.fftshift(
-                    fftpack.fftfreq(len(data[1][key]), dx),
-                )
-                / (2.0 * numpy.pi)
-            )
+            new_grids[key] = fftpack.fftshift(
+                fftpack.fftfreq(len(data[1][key]), dx),
+            ) / (2.0 * numpy.pi)
             new_densities[key] = numpy.abs(
                 fftpack.fftshift(fftpack.fft(data[2][key], axis=1), axes=1),
             )

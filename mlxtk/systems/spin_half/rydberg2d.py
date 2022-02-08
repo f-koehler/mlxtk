@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import numpy
 from numpy.typing import ArrayLike
 from QDTK.Spin.Primitive import SpinHalfDvr
-import numpy
 
-from mlxtk.parameters import Parameters
-from mlxtk.log import get_logger
 from mlxtk import dvr
+from mlxtk.log import get_logger
+from mlxtk.parameters import Parameters
 from mlxtk.tasks import OperatorSpecification
 
 
@@ -25,7 +25,7 @@ class Rydberg2D:
                 ("delta", 1.0, "laser detuning"),
                 ("Rb", 1.0, "blockade radius"),
                 ("Rc", 4.0, "cutoff for long-range interactions"),
-            ]
+            ],
         )
 
     def create_hamiltonian(
@@ -56,14 +56,14 @@ class Rydberg2D:
                             dx = x2 - x1
                             dy = y2 - y1
 
-                            r = numpy.sqrt((dx ** 2) + (dy ** 2))
+                            r = numpy.sqrt((dx**2) + (dy**2))
                             if (Rc > 0.0) and (r >= Rc):
                                 continue
 
                             prefactor = 0.5 * ((Rb / r) ** 6)
                             coeffs[f"prefactor_{i1}_{i2}"] = prefactor
                             table.append(
-                                f"prefactor_{i1}_{i2} | {i1+1} pup | {i2+1} pup"
+                                f"prefactor_{i1}_{i2} | {i1+1} pup | {i2+1} pup",
                             )
 
         coeffs.update({"0.5": 0.5})

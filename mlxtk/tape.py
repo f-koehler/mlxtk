@@ -249,7 +249,7 @@ class Node(abc.ABC):
         return nodes
 
     def to_graph(self):
-        self.compute_node_indices()
+        self.compute_node_indices(False)
         self.compute_dof_numbers()
 
         g = Digraph()

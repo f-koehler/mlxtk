@@ -33,7 +33,7 @@ class AnyonHubbardSQR(BosonicSQR):
         result = numpy.zeros((n, n))
         for n in range(0, n - 1):
             result[n, n + 1] = numpy.sqrt(n + 1) * numpy.exp(
-                1j * self.parameters["theta"] * n
+                1j * self.parameters["theta"] * n,
             )
         return result
 

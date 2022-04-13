@@ -107,6 +107,14 @@ class Ising1D:
             f"sz_coeff_{site} | {site + 1} sz_term_{site}",
         )
 
+    def create_sx_sx_operator(self, site1: int, site2: int) -> OperatorSpecification:
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"sx_sx_coeff_{site1}_{site2}": 1.0},
+            {f"sx_sx_term_{site1}_{site2}": self.grid.get().get_sigma_x()},
+            f"sx_sx_coeff_{site1}_{site2} | {site1 + 1} sx_sx_term_{site1}_{site2}| {site2 + 1} sx_sx_term_{site1}_{site2}",
+        )
+
     def create_sz_sz_operator(self, site1: int, site2: int) -> OperatorSpecification:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,

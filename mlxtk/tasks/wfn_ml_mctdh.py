@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pickle
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Callable, Dict, List, Union, Optional
 
 import numpy
 from numpy.typing import NDArray
@@ -19,11 +19,22 @@ class CreateMLMCTDHWaveFunction(Task):
         name: str,
         tape: list[int],
         spfs: list[NDArray],
+        shake: Optional[dict[str,Any]] = None
     ):
         self.logger = get_logger(__name__ + ".CreateMLMCTDHWaveFunction")
         self.name = name
         self.tape = tape
         self.spfs = spfs
+        self.shake = None
+
+        if shake is not None:
+            self.shake = {
+                "strength": shake.get("strength", 0.1),
+                "primitive": shake.get("primitive", False),
+                "onlytop": shake.get("onlytop", False),
+                "cmplx": shake.get("cmplx", False),
+                "seed": shake.get("seed", 0),
+            }
 
         self.path = Path(name)
         self.path_pickle = Path(name + ".pickle")
@@ -38,6 +49,8 @@ class CreateMLMCTDHWaveFunction(Task):
                 self.tape,
                 self.spfs,
             ]
+            if self.shake is not None:
+                obj.append(["shake", self.shake["primitive"], self.shake["onlytop"], self.shake["cmplx"], self.shake["seed"],])
             with open(self.path_pickle, "wb") as fptr:
                 pickle.dump(obj, fptr, protocol=3)
 
@@ -55,6 +68,8 @@ class CreateMLMCTDHWaveFunction(Task):
             wfn = Wavefunction(tape=self.tape)
             wfn.build_primitive_SPF(self.spfs)
             wfn.build_coefs()
+            if self.shake is not None:
+                wfn.shake(**self.shake)
             wfn.createWfnFile(self.path)
 
         return {

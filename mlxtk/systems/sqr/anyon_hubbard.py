@@ -30,7 +30,7 @@ class AnyonHubbardSQR(BosonicSQR):
     def get_modified_annihilation_operator(self) -> numpy.ndarray:
         """Compute <m|e^(iΘn) b|n>=√(n+1) e^(iΘn) δ_{m,n+1}"""
         n = self.grid.get().npoints
-        result = numpy.zeros((n, n))
+        result = numpy.zeros((n, n), dtype=numpy.complex128)
         for n in range(0, n - 1):
             result[n, n + 1] = numpy.sqrt(n + 1) * numpy.exp(
                 1j * self.parameters["theta"] * n,
@@ -39,7 +39,7 @@ class AnyonHubbardSQR(BosonicSQR):
 
     def get_modified_creation_operator(self) -> numpy.ndarray:
         """Compute <m|b^† e^(iΘn)|n>=√(n) e^(iΘ(n-1)) δ_{m,n-1}"""
-        self.get_modified_annihilation_operator().T
+        return self.get_modified_annihilation_operator().T
 
     def create_hopping_term(self) -> OperatorSpecification:
         table: List[str] = []

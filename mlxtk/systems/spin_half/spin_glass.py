@@ -40,15 +40,18 @@ class DisorderedXYSpinGlass:
         dist_matrix = numpy.ones((L, L), dtype=numpy.float64)
         for i in range(L):
             for j in range(i):
-                Jmatrix[i,j] = prng.uniform(self.parameters["Jmin"], self.parameters["Jmax"])
-                Jmatrix[j,i] = Jmatrix[i,j]
-                dist_matrix[i,j] = numpy.abs(i-j)
+                Jmatrix[i, j] = prng.uniform(
+                    self.parameters["Jmin"],
+                    self.parameters["Jmax"],
+                )
+                Jmatrix[j, i] = Jmatrix[i, j]
+                dist_matrix[i, j] = numpy.abs(i - j)
         coupling_matrix = Jmatrix / (dist_matrix ** self.parameters["alpha"])
 
         terms.update({"s+": dvr.get_sigma_plus(), "s-": dvr.get_sigma_minus()})
         for i in range(L):
             for j in range(i):
-                coeffs.update({f"J_{i}_{j}": coupling_matrix[i,j]})
+                coeffs.update({f"J_{i}_{j}": coupling_matrix[i, j]})
                 table.append(f"J_{i}_{j} | {i+1} s+ | {j+1} s-")
                 table.append(f"J_{i}_{j} | {i+1} s- | {j+1} s+")
 

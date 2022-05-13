@@ -1,11 +1,12 @@
-from numpy.typing import ArrayLike
 import numpy
+from numpy.typing import ArrayLike
 from QDTK.Spin.Primitive import SpinHalfDvr
 
-from mlxtk.parameters import Parameters
-from mlxtk.log import get_logger
-from mlxtk.tasks import OperatorSpecification
 from mlxtk import dvr
+from mlxtk.log import get_logger
+from mlxtk.parameters import Parameters
+from mlxtk.tasks import OperatorSpecification
+
 
 class DisorderedXYSpinGlass:
     def __init__(self, parameters: Parameters):
@@ -21,7 +22,7 @@ class DisorderedXYSpinGlass:
                 ("Jmin", -1.0, "minimal coupling constant"),
                 ("Jmax", 1.0, "maximal coupling constant"),
                 ("alpha", 2.0, "exponent of the interaction term"),
-                ("seed", 0, "seed for the disorder")
+                ("seed", 0, "seed for the disorder"),
             ],
         )
 
@@ -113,5 +114,3 @@ class DisorderedXYSpinGlass:
             {f"sz_sz_term_{site1}_{site2}": self.grid.get().get_sigma_z()},
             f"sz_sz_coeff_{site1}_{site2} | {site1 + 1} sz_sz_term_{site1}_{site2}| {site2 + 1} sz_sz_term_{site1}_{site2}",
         )
-
-

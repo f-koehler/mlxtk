@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pickle
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Union, Optional
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import numpy
 from numpy.typing import NDArray
@@ -19,7 +19,7 @@ class CreateMLMCTDHWaveFunction(Task):
         name: str,
         tape: list[int],
         spfs: list[NDArray],
-        shake: Optional[dict[str,Any]] = None
+        shake: dict[str,Any] | None = None,
     ):
         self.logger = get_logger(__name__ + ".CreateMLMCTDHWaveFunction")
         self.name = name
@@ -50,7 +50,7 @@ class CreateMLMCTDHWaveFunction(Task):
                 self.spfs,
             ]
             if self.shake is not None:
-                obj.append(["shake", self.shake["primitive"], self.shake["onlytop"], self.shake["cmplx"], self.shake["seed"],])
+                obj.append(["shake", self.shake["primitive"], self.shake["onlytop"], self.shake["cmplx"], self.shake["seed"]])
             with open(self.path_pickle, "wb") as fptr:
                 pickle.dump(obj, fptr, protocol=3)
 

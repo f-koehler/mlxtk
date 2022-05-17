@@ -108,6 +108,14 @@ class Ising1D:
         )
 
     def create_sx_sx_operator(self, site1: int, site2: int) -> OperatorSpecification:
+        if site1 == site2:
+            return OperatorSpecification(
+                [self.grid] * self.parameters.L,
+                {f"sx_sx_coeff_{site1}_{site2}": 1.0},
+                {f"sx_sx_term_{site1}_{site2}": self.grid.get().get_sigma_0()},
+                f"sx_sx_coeff_{site1}_{site2} | {site1 + 1} sx_sx_term_{site1}_{site2}",
+            )
+
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
             {f"sx_sx_coeff_{site1}_{site2}": 1.0},
@@ -115,7 +123,31 @@ class Ising1D:
             f"sx_sx_coeff_{site1}_{site2} | {site1 + 1} sx_sx_term_{site1}_{site2}| {site2 + 1} sx_sx_term_{site1}_{site2}",
         )
 
+    def create_sy_sy_operator(self, site1: int, site2: int) -> OperatorSpecification:
+        if site1 == site2:
+            return OperatorSpecification(
+                [self.grid] * self.parameters.L,
+                {f"sy_sy_coeff_{site1}_{site2}": 1.0},
+                {f"sy_sy_term_{site1}_{site2}": self.grid.get().get_sigma_0()},
+                f"sy_sy_coeff_{site1}_{site2} | {site1 + 1} sy_sy_term_{site1}_{site2}",
+            )
+
+        return OperatorSpecification(
+            [self.grid] * self.parameters.L,
+            {f"sy_sy_coeff_{site1}_{site2}": 1.0},
+            {f"sy_sy_term_{site1}_{site2}": self.grid.get().get_sigma_y()},
+            f"sy_sy_coeff_{site1}_{site2} | {site1 + 1} sy_sy_term_{site1}_{site2}| {site2 + 1} sy_sy_term_{site1}_{site2}",
+        )
+
     def create_sz_sz_operator(self, site1: int, site2: int) -> OperatorSpecification:
+        if site1 == site2:
+            return OperatorSpecification(
+                [self.grid] * self.parameters.L,
+                {f"sz_sz_coeff_{site1}_{site2}": 1.0},
+                {f"sz_sz_term_{site1}_{site2}": self.grid.get().get_sigma_0()},
+                f"sz_sz_coeff_{site1}_{site2} | {site1 + 1} sz_sz_term_{site1}_{site2}",
+            )
+
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
             {f"sz_sz_coeff_{site1}_{site2}": 1.0},

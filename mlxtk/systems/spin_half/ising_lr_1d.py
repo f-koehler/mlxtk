@@ -21,7 +21,8 @@ class IsingLR1D:
             [
                 ("L", 4, "number of sites"),
                 ("J", 1.0, "interaction strength"),
-                ("hx", 1.0, "transversal field in x durection"),
+                ("hx", 1.0, "transversal field in x direction"),
+                ("hy", 0.0, "transversal field in y direction"),
                 ("hz", 0.0, "longitudinal field in z direction"),
                 ("alpha", 6.0, "exponent for the interaction"),
                 (

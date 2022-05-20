@@ -44,7 +44,7 @@ class IsingLR1D:
                 self.parameters.L,
             ):
                 for j in range(i):
-                    coupling = self.parameters["J"] / (
+                    coupling = -self.parameters["J"] / (
                         numpy.abs(i - j) ** self.parameters["alpha"]
                     )
                     if coupling < self.parameters["cutoff"]:

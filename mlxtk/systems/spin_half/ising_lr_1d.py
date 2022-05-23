@@ -11,7 +11,7 @@ from mlxtk.tasks import OperatorSpecification
 
 class IsingLR1D:
     def __init__(self, parameters: Parameters):
-        self.logger = get_logger(__name__ + "IsingLR1D")
+        self.logger = get_logger(__name__ + ".IsingLR1D")
         self.parameters = parameters
         self.grid = dvr.add_spin_half_dvr()
 
@@ -26,9 +26,9 @@ class IsingLR1D:
                 ("hz", 0.0, "longitudinal field in z direction"),
                 ("alpha", 6.0, "exponent for the interaction"),
                 (
-                    "cutoff",
+                    "cutoff_radius",
                     -1.0,
-                    "cutoff for the interaction (negative number => no cutoff)",
+                    "cutoff_radius for the interaction (negative number => no cutoff)",
                 ),
             ],
         )
@@ -44,11 +44,14 @@ class IsingLR1D:
                 self.parameters.L,
             ):
                 for j in range(i):
+                    if (self.parameters["cutoff_radius"] > 0.0) and (
+                        numpy.abs(i - j) > self.parameters["cutoff_radius"]
+                    ):
+                        continue
+
                     coupling = -self.parameters["J"] / (
                         numpy.abs(i - j) ** self.parameters["alpha"]
                     )
-                    if coupling < self.parameters["cutoff"]:
-                        continue
 
                     coeffs.update({f"-J_{i}_{j}": coupling})
                     table.append(f"-J_{i}_{j} | {i+1} sz | {j+1} sz")

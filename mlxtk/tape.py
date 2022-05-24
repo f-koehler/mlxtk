@@ -8,12 +8,17 @@ from graphviz import Digraph
 
 
 class Node(abc.ABC):
-    def __init__(self, dimension: int, parent: Node | None = None):
+    def __init__(
+        self,
+        dimension: int,
+        parent: Node | None = None,
+        attrs: dict[str, Any] = {},
+    ):
         self.dimension = dimension
         self.parent = parent
         self.children: list[Node] = []
         self.has_indist_node = False
-        self.attrs: dict[str, Any] = {}
+        self.attrs: dict[str, Any] = attrs
 
     @staticmethod
     def from_tape(tape: list[int]) -> Node:
@@ -290,7 +295,12 @@ class Node(abc.ABC):
 
 
 class NormalNode(Node):
-    def __init__(self, orbitals: int = 1, parent: Node | None = None):
+    def __init__(
+        self,
+        orbitals: int = 1,
+        parent: Node | None = None,
+        attrs: dict[str, Any] = {},
+    ):
         super().__init__(orbitals, parent)
         self.orbitals = orbitals
 
@@ -306,7 +316,13 @@ class NormalNode(Node):
 
 
 class BosonicNode(Node):
-    def __init__(self, particles: int, orbitals: int = 1, parent: Node | None = None):
+    def __init__(
+        self,
+        particles: int,
+        orbitals: int = 1,
+        parent: Node | None = None,
+        attrs: dict[str, Any] = {},
+    ):
         super().__init__(orbitals, parent)
         self.orbitals = orbitals
         self.particles = particles
@@ -325,7 +341,13 @@ class BosonicNode(Node):
 
 
 class FermionicNode(Node):
-    def __init__(self, particles: int, orbitals: int, parent: Node | None = None):
+    def __init__(
+        self,
+        particles: int,
+        orbitals: int,
+        parent: Node | None = None,
+        attrs: dict[str, Any] = {},
+    ):
         super().__init__(orbitals, parent)
 
         if orbitals < particles:
@@ -342,7 +364,12 @@ class FermionicNode(Node):
 
 
 class PrimitiveNode(Node):
-    def __init__(self, grid_points: int, parent: Node | None = None) -> PrimitiveNode:
+    def __init__(
+        self,
+        grid_points: int,
+        parent: Node | None = None,
+        attrs: dict[str, Any] = {},
+    ) -> PrimitiveNode:
         super().__init__(grid_points, parent)
         self.grid_points = grid_points
 

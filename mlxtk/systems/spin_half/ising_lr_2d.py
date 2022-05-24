@@ -59,7 +59,9 @@ class IsingLR2D:
                     if i < j:
                         continue
 
-                    dist = numpy.abs(i - j)
+                    dx = x1 - x2
+                    dy = y1 - y2
+                    dist = numpy.sqrt((dx**2) + (dy**2))
                     if (rc > 0.0) and (dist > rc):
                         continue
 
@@ -86,7 +88,7 @@ class IsingLR2D:
                 table.append(f"-hz | {i+1} sz")
 
         return OperatorSpecification(
-            [self.grid] * self.parameters.L,
+            [self.grid] * N,
             coeffs,
             terms,
             table,

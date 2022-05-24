@@ -18,7 +18,7 @@ class IsingLR2D:
         self.grid = dvr.add_spin_half_dvr()
 
     @staticmethod
-    def create_parameter() -> Parameters:
+    def create_parameters() -> Parameters:
         return Parameters(
             [
                 ("Lx", 4, "width and height of the lattice"),

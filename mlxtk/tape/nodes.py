@@ -300,7 +300,7 @@ class NormalNode(Node):
         parent: Node | None = None,
         attrs: dict[str, Any] = {},
     ):
-        super().__init__(orbitals, parent)
+        super().__init__(orbitals, parent, attrs=attrs)
         self.orbitals = orbitals
 
     def get_node_tape(self) -> list[int]:
@@ -322,7 +322,7 @@ class BosonicNode(Node):
         parent: Node | None = None,
         attrs: dict[str, Any] = {},
     ):
-        super().__init__(orbitals, parent)
+        super().__init__(orbitals, parent, attrs=attrs)
         self.orbitals = orbitals
         self.particles = particles
         self.has_indist_node = True
@@ -347,7 +347,7 @@ class FermionicNode(Node):
         parent: Node | None = None,
         attrs: dict[str, Any] = {},
     ):
-        super().__init__(orbitals, parent)
+        super().__init__(orbitals, parent, attrs=attrs)
 
         if orbitals < particles:
             raise ValueError("expected at least one orbital per fermion")
@@ -369,7 +369,7 @@ class PrimitiveNode(Node):
         parent: Node | None = None,
         attrs: dict[str, Any] = {},
     ) -> PrimitiveNode:
-        super().__init__(grid_points, parent)
+        super().__init__(grid_points, parent, attrs=attrs)
         self.grid_points = grid_points
 
     def get_node_tape(self) -> list[int]:

@@ -56,7 +56,7 @@ class IsingLR2D:
                 i = dof_map[(x1, y1)]
                 for (x2, y2) in itertools.product(range(Lx), range(Ly)):
                     j = dof_map[(x2, y2)]
-                    if i < j:
+                    if i <= j:
                         continue
 
                     dx = x1 - x2

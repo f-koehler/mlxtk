@@ -141,8 +141,8 @@ def create_alternating_binary_tree(
     orbitals_ = orbitals.copy()
     orbitals_.append(1)
     top_layer = AlternatingBinaryTreeLayer.create_bottom(L, primitive_dim)
-    while (top_layer.size_x != 1) and (top_layer.size_y):
-        top_layer = top_layer.create_parent(orbitals.pop(0))
+    while (top_layer.size_x > 1) or (top_layer.size_y > 1):
+        top_layer = top_layer.create_parent(orbitals_.pop(0))
 
     if orbitals_:
         raise ValueError(f"Too many orbital numbers provided, remainder: {orbitals_}")

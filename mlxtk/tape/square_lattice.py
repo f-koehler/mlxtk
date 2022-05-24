@@ -14,11 +14,10 @@ class QuadTreeLayer:
 
     @staticmethod
     def create_bottom(L: int, primitive_dim: int) -> QuadTreeLayer:
-        if (not L) or (not (L & (L - 1))):
+        if (not L) or (L & (L - 1)):
             raise ValueError("L must be a positive power of two")
 
         return QuadTreeLayer(
-            L,
             L,
             {
                 (x, y): PrimitiveNode(primitive_dim, attrs={"x": x, "y": y})
@@ -33,7 +32,6 @@ class QuadTreeLayer:
         new_size = self.size // 2
 
         layer = QuadTreeLayer(
-            new_size,
             new_size,
             {
                 (x, y): NormalNode(orbitals, attrs={"x": x, "y": y})
@@ -56,9 +54,10 @@ def create_quad_tree(
     orbitals: list[int],
 ) -> tuple[NormalNode, dict[tuple(int, int), int]]:
     orbitals_ = orbitals.copy()
+    orbitals_.append(1)
     top_layer = QuadTreeLayer.create_bottom(L, primitive_dim)
     while top_layer.size != 1:
-        top_layer.create_parent(orbitals_.pop(0))
+        top_layer = top_layer.create_parent(orbitals_.pop(0))
 
     if orbitals_:
         raise ValueError(f"Too many orbital numbers provided, remainder: {orbitals_}")

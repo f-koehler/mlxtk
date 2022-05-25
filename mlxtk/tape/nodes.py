@@ -17,7 +17,7 @@ class Node(abc.ABC):
         self.parent = parent
         self.children: list[Node] = []
         self.has_indist_node = False
-        self.attrs: dict[str, Any] = attrs
+        self.attrs: dict[str, Any] = attrs.copy()
 
     @staticmethod
     def from_tape(tape: list[int]) -> Node:

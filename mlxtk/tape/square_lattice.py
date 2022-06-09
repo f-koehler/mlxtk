@@ -156,3 +156,95 @@ def create_alternating_binary_tree(
         dof_map[(node.attrs["x"], node.attrs["y"])] = node.attrs["dof"]
 
     return top_node, dof_map
+
+
+@dataclass
+class AlternatingBinaryQuadLowestTreeLayer:
+    even: bool
+    size_x: int
+    size_y: int
+    nodes: dict[tuple[int, int], Node]
+    height: int
+
+    @staticmethod
+    def create_bottom(
+        L: int,
+        primitive_dim: int,
+    ) -> AlternatingBinaryQuadLowestTreeLayer:
+        if (not L) or (L & (L - 1)):
+            raise ValueError("L must be a positive power of two")
+
+        return AlternatingBinaryQuadLowestTreeLayer(
+            True,
+            L,
+            L,
+            {
+                (x, y): PrimitiveNode(primitive_dim, attrs={"x": x, "y": y})
+                for x, y in itertools.product(range(L), range(L))
+            },
+            0,
+        )
+
+    def create_parent(self, orbitals: int = 1):
+        if (self.size_x == 1) and (self.size_y == 1):
+            raise ValueError("Already reached top layer, cannot create parent layer")
+
+        if self.even:
+            if self.height == 0:
+                new_size_x = self.size_x // 2
+                new_size_y = self.size_y // 2
+                layer = AlternatingBinaryQuadLowestTreeLayer(
+                    False,
+                    new_size_x,
+                    new_size_y,
+                    {
+                        (x, y): NormalNode(orbitals, attrs={"x": x, "y": y})
+                        for x, y in itertools.product(
+                            range(new_size_x),
+                            range(new_size_y),
+                        )
+                    },
+                    self.height + 1,
+                )
+                for (x, y) in itertools.product(range(new_size_x), range(new_size_y)):
+                    layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y)]
+                    layer.nodes[(x, y)] += self.nodes[(2 * x + 1, 2 * y)]
+                    layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y + 1)]
+                    layer.nodes[(x, y)] += self.nodes[(2 * x + 1, 2 * y + 1)]
+            else:
+                new_size_x = self.size_x // 2
+                new_size_y = self.size_y
+                layer = AlternatingBinaryQuadLowestTreeLayer(
+                    False,
+                    new_size_x,
+                    new_size_y,
+                    {
+                        (x, y): NormalNode(orbitals, attrs={"x": x, "y": y})
+                        for x, y in itertools.product(
+                            range(new_size_x),
+                            range(new_size_y),
+                        )
+                    },
+                    self.height + 1,
+                )
+                for x, y in itertools.product(range(new_size_x), range(new_size_y)):
+                    layer.nodes[(x, y)] += self.nodes[(2 * x, y)]
+                    layer.nodes[(x, y)] += self.nodes[(2 * x + 1, y)]
+        else:
+            new_size_x = self.size_x
+            new_size_y = self.size_y // 2
+            layer = AlternatingBinaryQuadLowestTreeLayer(
+                True,
+                new_size_x,
+                new_size_y,
+                {
+                    (x, y): NormalNode(orbitals, attrs={"x": x, "y": y})
+                    for x, y in itertools.product(range(new_size_x), range(new_size_y))
+                },
+                self.height + 1,
+            )
+            for x, y in itertools.product(range(new_size_x), range(new_size_y)):
+                layer.nodes[(x, y)] += self.nodes[(x, 2 * y)]
+                layer.nodes[(x, y)] += self.nodes[(x, 2 * y + 1)]
+
+        return layer

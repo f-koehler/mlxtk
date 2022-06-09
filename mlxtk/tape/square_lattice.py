@@ -248,3 +248,28 @@ class AlternatingBinaryQuadLowestTreeLayer:
                 layer.nodes[(x, y)] += self.nodes[(x, 2 * y + 1)]
 
         return layer
+
+
+def create_alteranting_binary_quad_lowest_tree(
+    L: int,
+    primitive_dim: int,
+    orbitals: list[int],
+) -> tuple[NormalNode, dict[tuple[int, int], int]]:
+    orbitals_ = orbitals.copy()
+    orbitals_.append(1)
+    top_layer = AlternatingBinaryQuadLowestTreeLayer.create_bottom(L, primitive_dim)
+    while (top_layer.size_x > 1) and (top_layer.size_y > 1):
+        top_layer = top_layer.create_parent(orbitals_.pop(0))
+
+    if orbitals_:
+        raise ValueError(f"Too many orbital numbers provided, remainder: {orbitals_}")
+
+    top_node = top_layer.nodes[(0, 0)]
+    top_node.compute_layers()
+    top_node.compute_dof_numbers()
+
+    dof_map: dict[tuple[int, int], int] = {}
+    for node in top_node.get_primitive_nodes():
+        dof_map[(node.attrs["x"], node.attrs["y"])] = node.attrs["dof"]
+
+    return top_node, dof_map

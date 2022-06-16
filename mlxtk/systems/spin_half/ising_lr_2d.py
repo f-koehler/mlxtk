@@ -52,6 +52,7 @@ class IsingLR2D:
         N = Lx * Ly
 
         if self.parameters["J"] != 0.0:
+            terms.update({"sz": self.grid.get().get_sigma_z()})
             for (x1, y1) in itertools.product(range(Lx), range(Ly)):
                 i = dof_map[(x1, y1)]
                 for (x2, y2) in itertools.product(range(Lx), range(Ly)):

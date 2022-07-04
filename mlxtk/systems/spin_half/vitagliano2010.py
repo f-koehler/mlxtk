@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from typing import Mapping
-from numpy.typing import ArrayLike
+
 import numpy
+from numpy.typing import ArrayLike
 
 from mlxtk import dvr
 from mlxtk.log import get_logger
@@ -11,7 +12,7 @@ from mlxtk.tasks import OperatorSpecification
 
 
 class Vitagliano2010:
-    def __init__(self, parameters: Parameters, dof_map: Mapping[int,int]):
+    def __init__(self, parameters: Parameters, dof_map: Mapping[int, int]):
         self.logger = get_logger(__name__ + ".Vitagliano2010")
         self.parameters = parameters
         self.grid = dvr.add_spin_half_dvr()
@@ -23,7 +24,11 @@ class Vitagliano2010:
             [
                 ("L", 4, "number of sites"),
                 ("J0", 1.0, "central coupling constant"),
-                ("function", "gaussian", "function for the coupling constants [uniform, exponential, gaussian]"),
+                (
+                    "function",
+                    "gaussian",
+                    "function for the coupling constants [uniform, exponential, gaussian]",
+                ),
             ],
         )
 
@@ -44,14 +49,14 @@ class Vitagliano2010:
         elif funcname == "exponential":
             function = lambda n: numpy.exp(-n)
         elif funcname == "gaussian":
-            function = lambda n: numpy.exp(-2*n*n)
+            function = lambda n: numpy.exp(-2 * n * n)
         else:
             raise ValueError("Invalid function name")
 
-        for i in range(L-1):
+        for i in range(L - 1):
             dof_1 = self.dof_map[i]
-            dof_2 = self.dof_map[i+1]
-            n = abs(L//2-1-i)
+            dof_2 = self.dof_map[i + 1]
+            n = abs(L // 2 - 1 - i)
             coeffs[f"J_{i}"] = 0.5 * J0 * function(n)
             table.append(f"J_{i} | {dof_1+1} sx | {dof_2+1} sx")
             table.append(f"J_{i} | {dof_1+1} sy | {dof_2+1} sy")

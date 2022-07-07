@@ -25,7 +25,7 @@ LOGGER = get_logger(__name__)
 def copy_file(src: Union[str, Path], dst: Union[str, Path]):
     src = str(src)
     dst = str(dst)
-    LOGGER.debug("copy file: %s -> %s", src, dst)
+    LOGGER.debug("copy file: %s -> %s", src, Path(dst).resolve())
     shutil.copy2(src, dst)
 
 

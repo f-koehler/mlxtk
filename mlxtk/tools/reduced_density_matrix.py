@@ -11,8 +11,8 @@ from typing import Mapping, Sequence
 
 import h5py
 import numpy
-import tqdm
 from numpy.typing import ArrayLike
+from tqdm import tqdm
 
 from mlxtk.cwd import WorkingDir
 from mlxtk.dvr import DVRSpecification

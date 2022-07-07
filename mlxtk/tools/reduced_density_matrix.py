@@ -13,15 +13,17 @@ from typing import Mapping, Sequence
 import h5py
 import numpy
 from numpy.typing import ArrayLike
-from tqdm import tqdm
 
 from mlxtk.cwd import WorkingDir
 from mlxtk.dvr import DVRSpecification
 from mlxtk.inout.expval import read_expval_ascii
 from mlxtk.inout.psi import read_psi_frame_ascii, write_psi_ascii
+from mlxtk.log import get_logger
 from mlxtk.tasks.operator import OperatorSpecification
 from mlxtk.temporary_dir import TemporaryDir
 from mlxtk.util import copy_file
+
+LOGGER = get_logger(__name__)
 
 
 # function to compute one element of the reduced density matrix
@@ -75,6 +77,8 @@ def compute_reduced_density_matrix_element(
     Path(output_name).unlink()
     Path(operator_name).unlink()
 
+    LOGGER.info(f"computed element ({a},{b}) of the reduced density matrix")
+
     return a, b, time, values
 
 
@@ -84,7 +88,6 @@ def compute_reduced_density_matrix(
     dvrs: Sequence[DVRSpecification],
     dofs_A: Sequence[int],
     basis_states: Mapping[int, Sequence[ArrayLike]] | None = None,
-    progressbar: bool = False,
     threads: int = 1,
 ):
     # convert paths
@@ -178,6 +181,11 @@ def compute_reduced_density_matrix(
 
     # create parent directory of output file
     Path(output_file).parent.mkdir(exist_ok=True, parents=True)
+
+    # make sure that results array is a 3rd order tensor
+    # first index denotes time
+    if len(results_arr.shape) == 2:
+        results_arr = results_arr[numpy.newaxis, :, :]
 
     # store results in a HDF5 file
     with h5py.File(output_file, "w") as fptr:

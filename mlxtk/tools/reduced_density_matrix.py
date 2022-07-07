@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import multiprocessing
 import os
 import subprocess
 from functools import reduce
@@ -23,6 +24,60 @@ from mlxtk.temporary_dir import TemporaryDir
 from mlxtk.util import copy_file
 
 
+# function to compute one element of the reduced density matrix
+def compute_reduced_density_matrix_element(
+    dvrs: Mapping[int, DVRSpecification],
+    dofs_A: Sequence[int],
+    a: int,
+    state_a: Sequence[ArrayLike],
+    b: int,
+    state_b: Sequence[ArrayLike],
+) -> tuple[int, int, ArrayLike, ArrayLike]:
+    # create projection operator |b><a| on the A system
+    # unit operator acts on B for tracing it out
+    operator_name = f"op_{a}_{b}.opr"
+    operator = OperatorSpecification(
+        dvrs,
+        {"one": 1.0},
+        {
+            f"proj_{dof}": numpy.outer(
+                numpy.conjugate(state_b[j]),
+                state_a[j],
+            )
+            for j, dof in enumerate(dofs_A)
+        },
+        "one | " + " | ".join([f"{dof+1} proj_{dof}" for dof in dofs_A]),
+    )
+    operator.get_operator().createOperatorFile(operator_name)
+
+    # compute expectation value
+    output_name = f"ev_{a}_{b}.exp"
+    env = os.environ.copy()
+    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
+    subprocess.check_output(
+        [
+            "qdtk_expect.x",
+            "-psi",
+            "psi",
+            "-rst",
+            "restart",
+            "-opr",
+            operator_name,
+            "-save",
+            output_name,
+        ],
+        env=env,
+    )
+
+    # read and store result
+    time, values = read_expval_ascii(output_name)
+
+    Path(output_name).unlink()
+    Path(operator_name).unlink()
+
+    return a, b, time, values
+
+
 def compute_reduced_density_matrix(
     wave_function: PathLike,
     output_file: PathLike,
@@ -30,6 +85,7 @@ def compute_reduced_density_matrix(
     dofs_A: Sequence[int],
     basis_states: Mapping[int, Sequence[ArrayLike]] | None = None,
     progressbar: bool = False,
+    threads: int = 1,
 ):
     # convert paths
     wave_function = Path(wave_function).resolve()
@@ -77,9 +133,6 @@ def compute_reduced_density_matrix(
     # create storage for results
     results: dict[tuple[int, int], complex] = {}
 
-    if progressbar:
-        pbar = tqdm(total=dim_A * (dim_A + 1) // 2)
-
     with TemporaryDir(
         Path(output_file).parent / ("." + Path(output_file).name + ".tmp"),
     ) as tmpdir:
@@ -91,64 +144,27 @@ def compute_reduced_density_matrix(
             tape, times, psi = read_psi_frame_ascii("psi", 0)
             write_psi_ascii("restart", [tape, [times], psi[numpy.newaxis, :]])
 
-            for a, state_a in enumerate(
-                product(*(basis_states[dof] for dof in dofs_A)),
-            ):
+            # generate the tasks for the multiprocessing pool
+            tasks = (
+                [dvrs, dofs_A, a, state_a, b, state_b]
+                for a, state_a in enumerate(
+                    product(*(basis_states[dof] for dof in dofs_A)),
+                )
                 for b, state_b in enumerate(
                     product(*(basis_states[dof] for dof in dofs_A)),
+                )
+                if b <= a
+            )
+
+            with multiprocessing.Pool(threads) as pool:
+                for a, b, time, values in pool.starmap(
+                    compute_reduced_density_matrix_element,
+                    tasks,
+                    1,
                 ):
-                    if b > a:
-                        continue
-
-                    # create projection operator |b><a| on the A system
-                    # unit operator acts on B for tracing it out
-                    operator_name = f"op_{a}_{b}.opr"
-                    operator = OperatorSpecification(
-                        dvrs,
-                        {"one": 1.0},
-                        {
-                            f"proj_{dof}": numpy.outer(
-                                numpy.conjugate(state_b[j]),
-                                state_a[j],
-                            )
-                            for j, dof in enumerate(dofs_A)
-                        },
-                        "one | "
-                        + " | ".join([f"{dof+1} proj_{dof}" for dof in dofs_A]),
-                    )
-                    operator.get_operator().createOperatorFile(operator_name)
-
-                    # compute expectation value
-                    output_name = f"ev_{a}_{b}.exp"
-                    env = os.environ.copy()
-                    env["OMP_NUM_THREADS"] = env.get("OMP_NUM_THREADS", "1")
-                    subprocess.check_output(
-                        [
-                            "qdtk_expect.x",
-                            "-psi",
-                            "psi",
-                            "-rst",
-                            "restart",
-                            "-opr",
-                            operator_name,
-                            "-save",
-                            output_name,
-                        ],
-                        env=env,
-                    )
-
-                    # read and store result
-                    time, values = read_expval_ascii(output_name)
                     results[(a, b)] = values
 
-                    Path(output_name).unlink()
-                    Path(operator_name).unlink()
-
-                    if progressbar:
-                        pbar.update(1)
-
-    if progressbar:
-        pbar.close()
+        tmpdir.complete = True
 
     # convert results to an array
     steps = len(results[(0, 0)])

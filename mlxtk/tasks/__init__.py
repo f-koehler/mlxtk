@@ -8,6 +8,7 @@ from mlxtk.tasks.number_state_analysis import (
 from mlxtk.tasks.operator import CreateOperator, OperatorSpecification
 from mlxtk.tasks.point_function import ComputePointFunction
 from mlxtk.tasks.propagate import Diagonalize, ImprovedRelax, Propagate, Relax
+from mlxtk.tasks.reduced_density_matrix import ComputeReducedDensityMatrix
 from mlxtk.tasks.spectrum import ComputeSpectrum
 from mlxtk.tasks.variance import ComputeVariance
 from mlxtk.tasks.wave_function import FrameFromPsi, RequestWaveFunction

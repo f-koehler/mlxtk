@@ -29,6 +29,7 @@ class ComputeReducedDensityMatrix(Task):
         basis_states: Mapping[int, Sequence[ArrayLike]] | None = None,
         diagonalize: bool = False,
         store_eigenvectors: bool = False,
+        diag_cleanup: bool = False,
         threads: int = 1,
     ):
         self.name = name
@@ -40,6 +41,7 @@ class ComputeReducedDensityMatrix(Task):
         self.basis_states = basis_states
         self.diagonalize = diagonalize
         self.store_eigenvectors = store_eigenvectors
+        self.diag_cleanup = diag_cleanup
         self.threads = threads
 
     def task_write_parameters(self) -> dict[str, Any]:
@@ -58,7 +60,7 @@ class ComputeReducedDensityMatrix(Task):
                 )
             else:
                 obj.append(None)
-            obj += [self.diagonalize, self.store_eigenvectors]
+            obj += [self.diagonalize, self.store_eigenvectors, self.diag_cleanup]
 
             with open(self.picklename, "wb") as fptr:
                 pickle.dump(obj, fptr, protocol=3)
@@ -120,6 +122,11 @@ class ComputeReducedDensityMatrix(Task):
 
                     evals = evals[evals > 1e-19]
                     dset_entropy[i] = -numpy.sum(evals * numpy.log(evals))
+
+                if self.diag_cleanup:
+                    del fptr["rho_A"]
+                    for dof in self.dofs_A:
+                        del fptr[f"basis_states_{dof}"]
 
         return {
             "name": f"reduced_density_matrix:{self.name}:compute",

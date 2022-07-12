@@ -3,6 +3,7 @@ import os
 import pickle
 import shutil
 import subprocess
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -23,6 +24,8 @@ from mlxtk.util import copy_file, make_path
 
 FLAG_TYPES = {
     "MBop_apply": bool,
+    "arpack_max_iter": int,
+    "arpack_tolerance": float,
     "atol": float,
     "cont": bool,
     "dt": float,
@@ -103,6 +106,10 @@ def create_flags(**kwargs) -> Tuple[Dict[str, Any], List[str]]:
     if flags["itg"] == "zvode":
         flags["zvode_mf"] = flags.get("zvode_mf", 10)
 
+    if flags["improved_relax"]:
+        flags["arpack_max_iter"] = flags.get("arpack_max_iter", 10000)
+        flags["arpack_tolerance"] = flags.get("arpack_tolerance", 1e-13)
+
     flag_list = []
     for flag in flags:
         if FLAG_TYPES[flag] == bool:
@@ -170,11 +177,15 @@ class Propagate(Task):
         def action_write_parameters(targets: List[str]):
             del targets
 
+            flags_to_store = OrderedDict(
+                [(key, self.flags[key]) for key in sorted(self.flags.keys())],
+            )
+
             obj = [
                 self.name,
                 str(self.wave_function),
                 str(self.hamiltonian),
-                self.flags,
+                flags_to_store,
             ]
             if self.diag_gauge_oper:
                 obj.append(self.diag_gauge_oper)
@@ -392,6 +403,8 @@ class ImprovedRelax(Propagate):
         kwargs["nstep_diag"] = kwargs.get("nstep_diag", 50)
         kwargs["statsteps"] = kwargs.get("stat_steps", 80)
         kwargs["eig_index"] = eig_index
+        kwargs["arpack_max_iter"] = kwargs.get("arpack_max_iter", 10000)
+        kwargs["arpack_tolerance"] = kwargs.get("arpack_max_tolerance", 1e-13)
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 
@@ -409,6 +422,8 @@ class Diagonalize(Propagate):
     ):
         kwargs["exact_diag"] = True
         kwargs["eig_tot"] = number_of_states
+        kwargs["arpack_max_iter"] = kwargs.get("arpack_max_iter", 10000)
+        kwargs["arpack_tolerance"] = kwargs.get("arpack_max_tolerance", 1e-13)
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 

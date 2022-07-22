@@ -87,7 +87,7 @@ class IsingLR1D:
             {f"all_up_coeff": 1.0},
             {f"all_up_term": self.grid.get().get_projector_up()},
             "all_up_coeff "
-            + " ".join(f"| all_up_term {site+1}" for site in range(self.parameters.L)),
+            + " ".join(f"| {site+1} all_up_term" for site in range(self.parameters.L)),
         )
 
     def create_all_down_projector(self) -> OperatorSpecification:
@@ -97,7 +97,7 @@ class IsingLR1D:
             {f"all_down_term": self.grid.get().get_projector_up()},
             "all_down_coeff "
             + " ".join(
-                f"| all_down_term {site+1}" for site in range(self.parameters.L)
+                f"| {site+1} all_down_term" for site in range(self.parameters.L)
             ),
         )
 

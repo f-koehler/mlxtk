@@ -26,6 +26,7 @@ FLAG_TYPES = {
     "MBop_apply": bool,
     "arpack_max_iter": int,
     "arpack_tolerance": float,
+    "arpack_ncv": int,
     "atol": float,
     "cont": bool,
     "dt": float,

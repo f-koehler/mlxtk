@@ -94,7 +94,7 @@ class IsingLR1D:
         return OperatorSpecification(
             [self.grid] * self.parameters.L,
             {f"all_down_coeff": 1.0},
-            {f"all_down_term": self.grid.get().get_projector_up()},
+            {f"all_down_term": self.grid.get().get_projector_down()},
             "all_down_coeff "
             + " ".join(
                 f"| {site+1} all_down_term" for site in range(self.parameters.L)

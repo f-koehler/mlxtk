@@ -405,7 +405,7 @@ class ImprovedRelax(Propagate):
         kwargs["statsteps"] = kwargs.get("stat_steps", 80)
         kwargs["eig_index"] = eig_index
         kwargs["arpack_max_iter"] = kwargs.get("arpack_max_iter", 10000)
-        kwargs["arpack_tolerance"] = kwargs.get("arpack_max_tolerance", 1e-13)
+        kwargs["arpack_tolerance"] = kwargs.get("arpack_tolerance", 1e-13)
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 
@@ -424,7 +424,7 @@ class Diagonalize(Propagate):
         kwargs["exact_diag"] = True
         kwargs["eig_tot"] = number_of_states
         kwargs["arpack_max_iter"] = kwargs.get("arpack_max_iter", 10000)
-        kwargs["arpack_tolerance"] = kwargs.get("arpack_max_tolerance", 1e-13)
+        kwargs["arpack_tolerance"] = kwargs.get("arpack_tolerance", 1e-13)
 
         super().__init__(name, wave_function, hamiltonian, **kwargs)
 

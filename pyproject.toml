@@ -53,7 +53,7 @@ matplotlib = "^3.3.2"
 numpy = "^1.19.2"
 numpy-stl = { version = "^2.11.2", optional = true }
 pandas = "^1.1.2"
-pathos = "^0.2.6"
+pathos = "^0.3.0"
 prompt-toolkit = "^3.0.7"
 pyside2 = { version = "^5.15.1", optional = true }
 python = ">=3.7,<3.11"

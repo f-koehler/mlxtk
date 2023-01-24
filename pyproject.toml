@@ -73,7 +73,7 @@ mypy = "^0.991"
 pylint = "^2.6.0"
 pytest = "^7.0.0"
 rope = "^1.0.0"
-pre-commit = "^2.10.1"
+pre-commit = "^3.0.0"
 
 [tool.poetry.scripts]
 animate_dmat = "mlxtk.scripts.animate.dmat:main"

@@ -45,11 +45,11 @@ repos:
   #   hooks:
   #     - id: flake8
   - repo: https://github.com/PyCQA/isort
-    rev: 5.11.4
+    rev: 5.12.0
     hooks:
       - id: isort
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
   - repo: https://github.com/asottile/blacken-docs
@@ -69,6 +69,6 @@ repos:
   #   hooks:
   #     - id: conda-env-store
   - repo: https://github.com/snakemake/snakefmt
-    rev: v0.8.0
+    rev: v0.8.1
     hooks:
       - id: snakefmt

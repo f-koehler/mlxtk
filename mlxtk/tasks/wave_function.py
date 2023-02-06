@@ -28,7 +28,6 @@ class RequestWaveFunction(Task):
         variable_name: str = "db",
         compute: bool = True,
     ):
-
         db_path = make_path(db_path)
         if not db_path.is_absolute():
             self.db_path = Path(sys.argv[0]).resolve().parent / db_path

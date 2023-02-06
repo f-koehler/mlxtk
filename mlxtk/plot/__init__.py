@@ -135,7 +135,6 @@ class PlotArgs2D:
         return PlotArgs2D.from_dict(namespace.__dict__)
 
     def apply(self, axes: matplotlib.axes.Axes, figure: matplotlib.figure.Figure):
-
         axes.grid(self.grid)
         if self.logx:
             axes.set_xscale("log")

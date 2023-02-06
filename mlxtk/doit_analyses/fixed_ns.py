@@ -12,7 +12,6 @@ def collect_final_total_magnitude(
     output_file: Union[Path, str] = None,
     missing_ok: bool = True,
 ):
-
     fixed_ns_path = make_path(fixed_ns_path).with_suffix(".fixed_ns.h5")
 
     if output_file is None:

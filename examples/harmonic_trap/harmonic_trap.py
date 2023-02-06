@@ -12,7 +12,6 @@ parameters.g = 0.1
 parameters.x0 = 10.0
 
 if __name__ == "__main__":
-
     parameters_quenched = parameters.copy()
     parameters_quenched.x0 = 0.0
 

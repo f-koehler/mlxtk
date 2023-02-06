@@ -39,7 +39,7 @@ class QuadTreeLayer:
             },
         )
 
-        for (x, y) in itertools.product(range(new_size), range(new_size)):
+        for x, y in itertools.product(range(new_size), range(new_size)):
             layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y)]
             layer.nodes[(x, y)] += self.nodes[(2 * x + 1, 2 * y)]
             layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y + 1)]
@@ -206,7 +206,7 @@ class AlternatingBinaryQuadLowestTreeLayer:
                     },
                     self.height + 1,
                 )
-                for (x, y) in itertools.product(range(new_size_x), range(new_size_y)):
+                for x, y in itertools.product(range(new_size_x), range(new_size_y)):
                     layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y)]
                     layer.nodes[(x, y)] += self.nodes[(2 * x + 1, 2 * y)]
                     layer.nodes[(x, y)] += self.nodes[(2 * x, 2 * y + 1)]

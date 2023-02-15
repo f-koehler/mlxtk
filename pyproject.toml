@@ -65,7 +65,7 @@ tqdm = "^4.50.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.6.2"
-black = "^22.1"
+black = "^23.1"
 flake8 = "^6.0.0"
 isort = "^5.5.4"
 jedi = "^0.18.0"

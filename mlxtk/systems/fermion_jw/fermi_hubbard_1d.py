@@ -1,8 +1,9 @@
-from mlxtk.parameters import Parameters
-from mlxtk.log import get_logger
-from mlxtk import dvr
-from mlxtk.tasks import OperatorSpecification
 from numpy.typing import ArrayLike
+
+from mlxtk import dvr
+from mlxtk.log import get_logger
+from mlxtk.parameters import Parameters
+from mlxtk.tasks import OperatorSpecification
 
 
 class FermiHubbard1D:
@@ -31,7 +32,7 @@ class FermiHubbard1D:
                 "sx": self.grid.get().get_sigma_x(),
                 "sy": self.grid.get().get_sigma_y(),
                 "szp1": self.grid.get().get_sigma_z() + self.grid.get().get_identity(),
-            }
+            },
         )
 
         if self.parameters["J"] != 0.0:
@@ -48,5 +49,8 @@ class FermiHubbard1D:
                 table.append(f"U | {2*i+1} szp1 | {2*i+2} szp1")
 
         return OperatorSpecification(
-            [self.grid] * (2 * self.parameters.L), coeffs, terms, table
+            [self.grid] * (2 * self.parameters.L),
+            coeffs,
+            terms,
+            table,
         )

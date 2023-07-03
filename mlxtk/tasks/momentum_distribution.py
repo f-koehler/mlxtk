@@ -115,7 +115,8 @@ class MCTDHBMomentumDistribution(Task):
 
                 with h5py.File(path_output, "w") as fptr:
                     add_momentum_distribution_to_hdf5(
-                        fptr, *read_momentum_distribution_ascii("mom_distr_1")
+                        fptr,
+                        *read_momentum_distribution_ascii("mom_distr_1"),
                     )
 
             shutil.rmtree(path_temp)

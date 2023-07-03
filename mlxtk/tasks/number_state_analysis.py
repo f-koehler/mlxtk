@@ -17,7 +17,10 @@ from mlxtk.util import copy_file, make_path
 
 class NumberStateAnalysisStatic(Task):
     def __init__(
-        self, wave_function: Union[str, Path], basis: Union[str, Path], **kwargs
+        self,
+        wave_function: Union[str, Path],
+        basis: Union[str, Path],
+        **kwargs,
     ):
         self.logger = get_logger(__name__ + ".NumberStateAnalysisStatic")
 

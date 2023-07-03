@@ -76,7 +76,8 @@ def main():
 
             with h5py.File("result.h5", "w") as fptr:
                 mlxtk.inout.gpop.add_gpop_to_hdf5(
-                    fptr.create_group("gpop"), *mlxtk.inout.gpop.read_gpop_ascii("gpop")
+                    fptr.create_group("gpop"),
+                    *mlxtk.inout.gpop.read_gpop_ascii("gpop"),
                 )
                 mlxtk.inout.natpop.add_natpop_to_hdf5(
                     fptr.create_group("natpop"),

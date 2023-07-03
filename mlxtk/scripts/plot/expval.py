@@ -39,7 +39,9 @@ def main():
         time, values = read_expval_hdf5(file, xname=args.xname)
         if args.fft:
             plot_expval(
-                ax, *mlxtk.tools.signal.fourier_transform(time, values), label=name
+                ax,
+                *mlxtk.tools.signal.fourier_transform(time, values),
+                label=name,
             )
 
             ax.set_xlabel((1 / unitsys.get_time_unit()).format_label(r"\omega"))

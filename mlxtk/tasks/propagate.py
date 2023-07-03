@@ -300,7 +300,8 @@ class Propagate(Task):
                         shutil.move("restart", "final.wfn")
                         with h5py.File("result.h5", "w") as fptr:
                             add_gpop_to_hdf5(
-                                fptr.create_group("gpop"), *read_gpop_ascii("gpop")
+                                fptr.create_group("gpop"),
+                                *read_gpop_ascii("gpop"),
                             )
                             add_natpop_to_hdf5(
                                 fptr.create_group("natpop"),

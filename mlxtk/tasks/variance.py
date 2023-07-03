@@ -9,7 +9,10 @@ from mlxtk.tasks.task import Task
 
 class ComputeVariance(Task):
     def __init__(
-        self, expectation_value: str, expectation_value_squared: str, **kwargs
+        self,
+        expectation_value: str,
+        expectation_value_squared: str,
+        **kwargs,
     ):
         self.name = kwargs.get("name", expectation_value)
         self.expectation_value = expectation_value

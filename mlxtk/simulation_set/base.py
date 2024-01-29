@@ -1,5 +1,6 @@
 """Work with a collection of simulations.
 """
+
 import os
 import sys
 from pathlib import Path

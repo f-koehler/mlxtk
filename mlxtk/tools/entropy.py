@@ -1,5 +1,6 @@
 """Compute entropy
 """
+
 from typing import Union
 
 import numpy

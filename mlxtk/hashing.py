@@ -3,6 +3,7 @@
 Functions to hash files and other data using standard hashing programs such
 as ``sha256sum``.
 """
+
 import subprocess
 from pathlib import Path
 from typing import Union

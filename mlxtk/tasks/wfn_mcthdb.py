@@ -186,9 +186,11 @@ class MCTDHBCreateWaveFunctionEnergyThreshold(Task):
             energies, spfs = diagonalize_1b_operator(matrix, -1)
 
             indices = numpy.nonzero(
-                (energies > self.threshold)
-                if self.above_threshold
-                else (energies < self.threshold),
+                (
+                    (energies > self.threshold)
+                    if self.above_threshold
+                    else (energies < self.threshold)
+                ),
             )[0]
             m = indices.max() - indices.min() + 1
             if self.max_number > 0:

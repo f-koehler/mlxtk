@@ -2,6 +2,7 @@
 Todo:
     * Implement interaction properly.
 """
+
 from mlxtk import tasks
 from mlxtk.parameters import Parameters
 from mlxtk.systems.single_species import harmonic_trap

@@ -1,5 +1,6 @@
 """Change the working directory properly.
 """
+
 import os
 from pathlib import Path
 from typing import Union

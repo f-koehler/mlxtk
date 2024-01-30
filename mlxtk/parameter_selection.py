@@ -1,5 +1,6 @@
 """Selecting simulations from a scan based on parameters.
 """
+
 import os
 import pickle
 from copy import deepcopy

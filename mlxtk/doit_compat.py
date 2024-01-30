@@ -3,6 +3,7 @@
 This module provides various helper functions and classes to use the
 `DoIt <http://pydoit.org/>`_ library in a way that is adequate for mlxtk.
 """
+
 import json
 import sqlite3
 from typing import Any, Dict, List, Tuple

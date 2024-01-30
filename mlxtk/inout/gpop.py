@@ -1,5 +1,6 @@
 """Read one-body density from ASCII and HDF5 files.
 """
+
 import io
 import re
 from pathlib import Path

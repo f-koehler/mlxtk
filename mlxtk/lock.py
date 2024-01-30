@@ -6,6 +6,7 @@ to prevent simultaneous accesses.
 Todo:
     * Use ``pathlib.Path.touch`` with ``exist_ok=False`` to create file.
 """
+
 import json
 import os
 import platform

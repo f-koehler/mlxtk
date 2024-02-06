@@ -69,6 +69,6 @@ repos:
   #   hooks:
   #     - id: conda-env-store
   - repo: https://github.com/snakemake/snakefmt
-    rev: v0.9.0
+    rev: v0.10.0
     hooks:
       - id: snakefmt

@@ -50,7 +50,7 @@ future = "^1.0.0"
 h5py = "^3.0"
 jinja2 = ">=2.11.2,<4.0.0"
 matplotlib = "^3.3.2"
-numpy = "^1.19.2"
+numpy = "^2.0.0"
 numpy-stl = { version = "^3.0.0", optional = true }
 pandas = "^2.0.0"
 pathos = "^0.3.0"

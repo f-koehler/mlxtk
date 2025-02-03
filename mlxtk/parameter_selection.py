@@ -1,5 +1,4 @@
-"""Selecting simulations from a scan based on parameters.
-"""
+"""Selecting simulations from a scan based on parameters."""
 
 import os
 import pickle

@@ -1,5 +1,4 @@
-"""Helpers for debugging
-"""
+"""Helpers for debugging"""
 
 import traceback
 

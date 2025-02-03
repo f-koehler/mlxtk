@@ -1,5 +1,4 @@
-"""Change the working directory properly.
-"""
+"""Change the working directory properly."""
 
 import os
 from pathlib import Path

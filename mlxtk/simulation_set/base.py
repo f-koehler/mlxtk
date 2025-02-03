@@ -1,5 +1,4 @@
-"""Work with a collection of simulations.
-"""
+"""Work with a collection of simulations."""
 
 import os
 import sys

@@ -1,5 +1,4 @@
-"""Read one-body density from ASCII and HDF5 files.
-"""
+"""Read one-body density from ASCII and HDF5 files."""
 
 import io
 import re

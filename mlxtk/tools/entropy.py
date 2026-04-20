@@ -1,5 +1,4 @@
-"""Compute entropy
-"""
+"""Compute entropy"""
 
 from typing import Union
 
